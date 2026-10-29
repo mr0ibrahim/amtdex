@@ -3,6 +3,10 @@ export interface AmtdexRuntimeConfig {
   csrfToken?: string
   appName?: string
   basename?: string
+  blogSubdomain?: string
+  isBlogSubdomain?: boolean
+  host?: string
+  scheme?: string
 }
 
 declare global {

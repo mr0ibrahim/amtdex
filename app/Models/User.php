@@ -37,7 +37,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Collection<int, Membership> $teamMemberships
  * @property-read Collection<int, Team> $teams
  */
-#[Fillable(['name', 'email', 'password', 'role', 'current_team_id'])]
+#[Fillable(['name', 'email', 'password', 'role', 'current_team_id', 'bio', 'avatar', 'social_links'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
@@ -54,6 +54,16 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return in_array($this->role, ['admin', 'editor']);
     }
 
+    public function isAuthor(): bool
+    {
+        return in_array($this->role, ['admin', 'editor', 'author']);
+    }
+
+    public function blogPosts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(BlogPost::class, 'author_id');
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -65,6 +75,7 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'social_links' => 'array',
         ];
     }
 }

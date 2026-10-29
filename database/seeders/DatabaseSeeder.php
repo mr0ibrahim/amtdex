@@ -270,6 +270,9 @@ class DatabaseSeeder extends Seeder
             'action' => 'تهيئة النظام والبيانات الأساسية',
             'ip' => '127.0.0.1',
         ]);
+
+        // 8. Seed Blog System
+        $this->call(BlogSeeder::class);
     }
 }
 

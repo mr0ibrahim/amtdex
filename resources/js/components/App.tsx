@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Amtdex - App shell (routing + lazy code-splitting + auth + SEO).
  * Layout Routes: Marketing (Header/Footer) | Auth (standalone) | Dashboard (own shell) | 404
  */
@@ -10,6 +10,7 @@ import { ForbiddenPage, ProtectedRoute } from "@/components/layout/ProtectedRout
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Seo } from "@/components/Seo"
 import { useToast } from "@/components/ui/Toast"
+import { isBlogSubdomain } from "@/lib/subdomain"
 
 const HomePage = lazy(() => import("@/pages/Home/HomePage").then((m) => ({ default: m.HomePage })))
 const ServicesPage = lazy(() => import("@/pages/Services/ServicesPage").then((m) => ({ default: m.ServicesPage })))
@@ -31,6 +32,13 @@ const SettingsPage = lazy(() => import("@/pages/Dashboard/Settings").then((m) =>
 const UsersPage = lazy(() => import("@/pages/Dashboard/Users").then((m) => ({ default: m.UsersPage })))
 const AuditPage = lazy(() => import("@/pages/Dashboard/Audit").then((m) => ({ default: m.AuditPage })))
 const NotFoundPage = lazy(() => import("@/pages/NotFound/NotFoundPage").then((m) => ({ default: m.NotFoundPage })))
+
+// Blog Pages
+const BlogHomePage = lazy(() => import("@/pages/Blog/BlogHomePage").then((m) => ({ default: m.BlogHomePage })))
+const BlogPostPage = lazy(() => import("@/pages/Blog/BlogPostPage").then((m) => ({ default: m.BlogPostPage })))
+const BlogCategoryPage = lazy(() => import("@/pages/Blog/BlogCategoryPage").then((m) => ({ default: m.BlogCategoryPage })))
+const BlogTagPage = lazy(() => import("@/pages/Blog/BlogTagPage").then((m) => ({ default: m.BlogTagPage })))
+const BlogNotFoundPage = lazy(() => import("@/pages/Blog/BlogNotFoundPage").then((m) => ({ default: m.BlogNotFoundPage })))
 
 function PageLoader() {
   return (
@@ -56,38 +64,62 @@ function DashboardFrame({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const { show, el } = useToast()
+  const onBlogSubdomain = isBlogSubdomain()
+
   return (
     <>
       {el}
       <ErrorBoundary>
         <Suspense fallback={<PageLoader />}>
           <Routes>
-            <Route element={<MarketingLayout onToast={show} />}>
-              <Route path="/" element={<><Seo title="الرئيسية" description="Amtdex - شركة يمنية للحلول البرمجية: مواقع، تطبيقات، ERP/CRM، ذكاء اصطناعي." /><HomePage onToast={show} /></>} />
-              <Route path="/services" element={<><Seo title="الخدمات" /><ServicesPage /></>} />
-              <Route path="/services/:slug" element={<ServiceDetailPage />} />
-              <Route path="/portfolio" element={<><Seo title="اعمالنا" /><PortfolioPage /></>} />
-              <Route path="/portfolio/:slug" element={<PortfolioDetailPage />} />
-              <Route path="/pricing" element={<><Seo title="الاسعار" /><PricingPage onToast={show} /></>} />
-              <Route path="/about" element={<><Seo title="من نحن" /><AboutPage /></>} />
-              <Route path="/contact" element={<><Seo title="تواصل معنا" /><ContactPage onToast={show} /></>} />
-              <Route path="/quote" element={<><Seo title="اطلب عرض سعر" /><QuotePage onToast={show} /></>} />
-            </Route>
-            <Route element={<AuthLayout />}>
-              <Route path="/login" element={<><Seo title="تسجيل الدخول" noindex /><LoginPage /></>} />
-              <Route path="/403" element={<><Seo title="غير مصرح" noindex /><ForbiddenPage /></>} />
-            </Route>
-            <Route path="/dashboard" element={<DashboardFrame><OverviewPage onToast={show} /></DashboardFrame>} />
-            <Route path="/dashboard/overview" element={<DashboardFrame><OverviewPage onToast={show} /></DashboardFrame>} />
-            <Route path="/dashboard/content" element={<DashboardFrame><ContentPage /></DashboardFrame>} />
-            <Route path="/dashboard/leads" element={<DashboardFrame><LeadsPage /></DashboardFrame>} />
-            <Route path="/dashboard/seo" element={<DashboardFrame><SeoPage /></DashboardFrame>} />
-            <Route path="/dashboard/media" element={<DashboardFrame><MediaPage /></DashboardFrame>} />
-            <Route path="/dashboard/settings" element={<DashboardFrame><SettingsPage /></DashboardFrame>} />
-            <Route path="/dashboard/users" element={<DashboardFrame><UsersPage /></DashboardFrame>} />
-            <Route path="/dashboard/audit" element={<DashboardFrame><AuditPage /></DashboardFrame>} />
-            <Route path="/dashboard/legacy" element={<><Seo title="لوحة التحكم قديم" noindex /><ProtectedRoute><DashboardPageOld onToast={show} /></ProtectedRoute></>} />
-            <Route path="*" element={<NotFoundPage />} />
+            {/* If on blog subdomain (e.g. blog.amtdex.com or blog.localhost) */}
+            {onBlogSubdomain ? (
+              <Route element={<MarketingLayout onToast={show} />}>
+                <Route path="/" element={<BlogHomePage />} />
+                <Route path="/posts/:slug" element={<BlogPostPage />} />
+                <Route path="/categories/:slug" element={<BlogCategoryPage />} />
+                <Route path="/tags/:slug" element={<BlogTagPage />} />
+                <Route path="*" element={<BlogNotFoundPage />} />
+              </Route>
+            ) : (
+              /* Main site domain routes */
+              <>
+                <Route element={<MarketingLayout onToast={show} />}>
+                  <Route path="/" element={<><Seo title="الرئيسية" description="Amtdex - شركة يمنية للحلول البرمجية: مواقع، تطبيقات، ERP/CRM، ذكاء اصطناعي." /><HomePage onToast={show} /></>} />
+                  <Route path="/services" element={<><Seo title="الخدمات" /><ServicesPage /></>} />
+                  <Route path="/services/:slug" element={<ServiceDetailPage />} />
+                  <Route path="/portfolio" element={<><Seo title="اعمالنا" /><PortfolioPage /></>} />
+                  <Route path="/portfolio/:slug" element={<PortfolioDetailPage />} />
+                  <Route path="/pricing" element={<><Seo title="الاسعار" /><PricingPage onToast={show} /></>} />
+                  <Route path="/about" element={<><Seo title="من نحن" /><AboutPage /></>} />
+                  <Route path="/contact" element={<><Seo title="تواصل معنا" /><ContactPage onToast={show} /></>} />
+                  <Route path="/quote" element={<><Seo title="اطلب عرض سعر" /><QuotePage onToast={show} /></>} />
+
+                  {/* Blog routes on main site */}
+                  <Route path="/blog" element={<BlogHomePage />} />
+                  <Route path="/blog/posts/:slug" element={<BlogPostPage />} />
+                  <Route path="/blog/categories/:slug" element={<BlogCategoryPage />} />
+                  <Route path="/blog/tags/:slug" element={<BlogTagPage />} />
+                </Route>
+
+                <Route element={<AuthLayout />}>
+                  <Route path="/login" element={<><Seo title="تسجيل الدخول" noindex /><LoginPage /></>} />
+                  <Route path="/403" element={<><Seo title="غير مصرح" noindex /><ForbiddenPage /></>} />
+                </Route>
+
+                <Route path="/dashboard" element={<DashboardFrame><OverviewPage onToast={show} /></DashboardFrame>} />
+                <Route path="/dashboard/overview" element={<DashboardFrame><OverviewPage onToast={show} /></DashboardFrame>} />
+                <Route path="/dashboard/content" element={<DashboardFrame><ContentPage /></DashboardFrame>} />
+                <Route path="/dashboard/leads" element={<DashboardFrame><LeadsPage /></DashboardFrame>} />
+                <Route path="/dashboard/seo" element={<DashboardFrame><SeoPage /></DashboardFrame>} />
+                <Route path="/dashboard/media" element={<DashboardFrame><MediaPage /></DashboardFrame>} />
+                <Route path="/dashboard/settings" element={<DashboardFrame><SettingsPage /></DashboardFrame>} />
+                <Route path="/dashboard/users" element={<DashboardFrame><UsersPage /></DashboardFrame>} />
+                <Route path="/dashboard/audit" element={<DashboardFrame><AuditPage /></DashboardFrame>} />
+                <Route path="/dashboard/legacy" element={<><Seo title="لوحة التحكم قديم" noindex /><ProtectedRoute><DashboardPageOld onToast={show} /></ProtectedRoute></>} />
+                <Route path="*" element={<NotFoundPage />} />
+              </>
+            )}
           </Routes>
         </Suspense>
       </ErrorBoundary>

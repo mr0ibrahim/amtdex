@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import { SERVICES } from "@/data/services"
+import { getBlogUrl } from "@/lib/subdomain"
 
 export function Footer({ onToast }: { onToast: (m: string) => void }) {
   return (
@@ -49,6 +50,7 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
             {
               title: "الموارد",
               links: [
+                { label: "المدونة التقنية", href: getBlogUrl("/") },
                 { label: "الأسئلة الشائعة", to: "/about#faq" },
                 { label: "سياسة الخصوصية", to: "/contact" },
                 { label: "الشروط", to: "/contact" },
@@ -68,11 +70,17 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
             <div key={col.title}>
               <div className="text-[12px] font-bold text-[var(--color-text)]">{col.title}</div>
               <ul className="mt-3 space-y-2">
-                {col.links.map((l: { label: string; to: string }) => (
+                {col.links.map((l: { label: string; to?: string; href?: string }) => (
                   <li key={l.label}>
-                    <Link to={l.to} className="text-[12px] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">
-                      {l.label}
-                    </Link>
+                    {l.href ? (
+                      <a href={l.href} className="text-[12px] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">
+                        {l.label}
+                      </a>
+                    ) : (
+                      <Link to={l.to ?? "/"} className="text-[12px] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">
+                        {l.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

@@ -1,6 +1,7 @@
 import { Icon } from "@/components/ui/Icon"
 import { useEffect, useRef, useState } from "react"
 import { Link, NavLink, useLocation } from "react-router-dom"
+import { getBlogUrl } from "@/lib/subdomain"
 
 export function Header({ onToast }: { onToast: (m: string) => void }) {
   const [open, setOpen] = useState(false)
@@ -74,6 +75,9 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
               <NavLink to="/portfolio" className={({ isActive }) => `text-[13.5px] font-medium ${isActive ? "text-[var(--color-ink)] font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"}`}>
                 أعمالنا
               </NavLink>
+              <a href={getBlogUrl("/")} className="text-[13.5px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-ink)] transition-colors">
+                المدونة
+              </a>
               <Link to="/services" className="text-[13.5px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-ink)]">
                 التقنيات
               </Link>
@@ -124,6 +128,9 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
               <NavLink to="/portfolio" className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
                 أعمالنا
               </NavLink>
+              <a href={getBlogUrl("/")} className="py-3 px-3 rounded-xl text-[15px] font-medium hover:bg-[var(--color-lavender)]">
+                المدونة
+              </a>
               <NavLink to="/pricing" className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
                 الأسعار
               </NavLink>

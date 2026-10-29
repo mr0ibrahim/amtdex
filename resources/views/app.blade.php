@@ -19,7 +19,11 @@
             apiUrl: @json(url('/api/v1')),
             csrfToken: @json(csrf_token()),
             appName: @json(config('app.name', 'Amtdex')),
-            basename: @json(rtrim(parse_url(url('/'), PHP_URL_PATH) ?? '', '/') ?: '/')
+            basename: @json(rtrim(parse_url(url('/'), PHP_URL_PATH) ?? '', '/') ?: '/'),
+            blogSubdomain: @json(env('BLOG_SUBDOMAIN', 'blog.amtdex.com')),
+            isBlogSubdomain: @json(str_starts_with(request()->getHost(), 'blog.')),
+            host: @json(request()->getHost()),
+            scheme: @json(request()->getScheme())
         };
     </script>
 
