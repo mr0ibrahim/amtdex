@@ -1,7 +1,28 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Blog\PublicBlogController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+
+// Health check endpoint for database diagnosis
+Route::get('/api/health-check', function () {
+    try {
+        DB::connection()->getPdo();
+        return response()->json([
+            'status' => 'ok',
+            'database' => 'connected',
+            'posts_count' => DB::table('blog_posts')->count(),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'host' => config('database.connections.mysql.host'),
+            'port' => config('database.connections.mysql.port'),
+            'user' => config('database.connections.mysql.username'),
+        ], 500);
+    }
+});
 
 // Dynamic RSS 2.0 Feed for Blog
 Route::get('/feed', [PublicBlogController::class, 'feed']);
