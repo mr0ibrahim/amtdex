@@ -2,15 +2,15 @@
  * Amtdex - App shell (routing + lazy code-splitting + auth + SEO).
  * Layout Routes: Marketing (Header/Footer) | Auth (standalone) | Dashboard (own shell) | 404
  */
-import { Suspense, lazy } from "react"
-import { Route, Routes } from "react-router-dom"
+import { Suspense, lazy, useEffect } from "react"
+import { Route, Routes, useLocation } from "react-router-dom"
 import { AuthLayout, MarketingLayout } from "@/components/layout/MarketingLayout"
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary"
 import { ForbiddenPage, ProtectedRoute } from "@/components/layout/ProtectedRoute"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Seo } from "@/components/Seo"
 import { useToast } from "@/components/ui/Toast"
-import { isBlogSubdomain } from "@/lib/subdomain"
+import { isBlogSubdomain, getMainUrl } from "@/lib/subdomain"
 
 const HomePage = lazy(() => import("@/pages/Home/HomePage").then((m) => ({ default: m.HomePage })))
 const ServicesPage = lazy(() => import("@/pages/Services/ServicesPage").then((m) => ({ default: m.ServicesPage })))
@@ -52,6 +52,23 @@ function PageLoader() {
   )
 }
 
+function SubdomainCrossRedirect() {
+  const loc = useLocation()
+  useEffect(() => {
+    const target = getMainUrl(loc.pathname + loc.search + loc.hash)
+    window.location.replace(target)
+  }, [loc])
+
+  return (
+    <div className="grid place-items-center py-24">
+      <div className="flex items-center gap-3 text-[13px] text-[var(--color-text-faint)]">
+        <span className="size-4 rounded-full border-2 border-[var(--color-border)] border-t-[var(--color-text-faint)] animate-spin" aria-hidden />
+        جارِ التحويل إلى الموقع الرئيسي...
+      </div>
+    </div>
+  )
+}
+
 function DashboardFrame({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute>
@@ -82,13 +99,21 @@ export default function App() {
                   <Route path="/categories/:slug" element={<BlogCategoryPage />} />
                   <Route path="/tags/:slug" element={<BlogTagPage />} />
                 </Route>
-                <Route element={<AuthLayout />}>
-                  <Route path="/login" element={<><Seo title="تسجيل الدخول" noindex /><LoginPage /></>} />
-                  <Route path="/403" element={<><Seo title="غير مصرح" noindex /><ForbiddenPage /></>} />
-                </Route>
-                <Route path="/dashboard" element={<DashboardFrame><DashboardBlogPage onToast={show} /></DashboardFrame>} />
-                <Route path="/dashboard/blog" element={<DashboardFrame><DashboardBlogPage onToast={show} /></DashboardFrame>} />
-                <Route path="/dashboard/*" element={<DashboardFrame><DashboardBlogPage onToast={show} /></DashboardFrame>} />
+
+                {/* Subdomain automatic redirects to main site for non-blog routes */}
+                <Route path="/dashboard" element={<SubdomainCrossRedirect />} />
+                <Route path="/dashboard/*" element={<SubdomainCrossRedirect />} />
+                <Route path="/login" element={<SubdomainCrossRedirect />} />
+                <Route path="/403" element={<SubdomainCrossRedirect />} />
+                <Route path="/about" element={<SubdomainCrossRedirect />} />
+                <Route path="/services" element={<SubdomainCrossRedirect />} />
+                <Route path="/services/*" element={<SubdomainCrossRedirect />} />
+                <Route path="/portfolio" element={<SubdomainCrossRedirect />} />
+                <Route path="/portfolio/*" element={<SubdomainCrossRedirect />} />
+                <Route path="/pricing" element={<SubdomainCrossRedirect />} />
+                <Route path="/contact" element={<SubdomainCrossRedirect />} />
+                <Route path="/quote" element={<SubdomainCrossRedirect />} />
+
                 <Route path="*" element={<BlogNotFoundPage />} />
               </>
             ) : (
@@ -117,6 +142,7 @@ export default function App() {
                   <Route path="/403" element={<><Seo title="غير مصرح" noindex /><ForbiddenPage /></>} />
                 </Route>
 
+                {/* Unified Central Dashboard */}
                 <Route path="/dashboard" element={<DashboardFrame><OverviewPage onToast={show} /></DashboardFrame>} />
                 <Route path="/dashboard/overview" element={<DashboardFrame><OverviewPage onToast={show} /></DashboardFrame>} />
                 <Route path="/dashboard/blog" element={<DashboardFrame><DashboardBlogPage onToast={show} /></DashboardFrame>} />

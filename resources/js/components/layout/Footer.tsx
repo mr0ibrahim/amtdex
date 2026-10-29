@@ -1,8 +1,46 @@
 import { Link } from "react-router-dom"
 import { SERVICES } from "@/data/services"
-import { getBlogUrl } from "@/lib/subdomain"
+import { getBlogUrl, getMainUrl, isBlogSubdomain } from "@/lib/subdomain"
 
 export function Footer({ onToast }: { onToast: (m: string) => void }) {
+  const onBlog = isBlogSubdomain()
+
+  const columns = [
+    {
+      title: "الخدمات",
+      links: SERVICES.map((s) => ({ label: s.title, to: `/services/${s.slug}` })),
+    },
+    {
+      title: "الشركة",
+      links: [
+        { label: "من نحن", to: "/about" },
+        { label: "الأعمال", to: "/portfolio" },
+        { label: "الأسعار", to: "/pricing" },
+        { label: "تواصل", to: "/contact" },
+        { label: "لوحة التحكم", to: "/dashboard" },
+      ],
+    },
+    {
+      title: "الموارد",
+      links: [
+        { label: "المدونة التقنية", href: onBlog ? "/" : getBlogUrl("/") },
+        { label: "الأسئلة الشائعة", to: "/about#faq" },
+        { label: "سياسة الخصوصية", to: "/contact" },
+        { label: "الشروط", to: "/contact" },
+        { label: "API Docs", to: "/services" },
+        { label: "الحالة", to: "/" },
+      ],
+    },
+    {
+      title: "تواصل سريع",
+      links: [
+        { label: "اطلب عرض سعر", to: "/quote" },
+        { label: "واتساب", to: "/contact" },
+        { label: "حجز استشارة", to: "/contact" },
+      ],
+    },
+  ]
+
   return (
     <footer className="border-t border-[var(--color-border)] bg-[var(--color-surface)]">
       <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-10">
@@ -10,11 +48,19 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
             <div className="flex items-center gap-2">
               <span className="size-8 rounded-xl bg-[var(--color-ink)] text-white grid place-items-center text-[12px] font-bold">A</span>
-              <span className="font-bold tracking-tight text-[var(--color-text)]" style={{ fontFamily: "var(--font-display)" }}>
-                amtdex
-              </span>
+              {onBlog ? (
+                <a href={getMainUrl("/")} className="font-bold tracking-tight text-[var(--color-text)]" style={{ fontFamily: "var(--font-display)" }}>
+                  amtdex
+                </a>
+              ) : (
+                <Link to="/" className="font-bold tracking-tight text-[var(--color-text)]" style={{ fontFamily: "var(--font-display)" }}>
+                  amtdex
+                </Link>
+              )}
             </div>
-            <p className="mt-3 text-[12px] leading-6 text-[var(--color-text-muted)] max-w-[260px]">حلول برمجية متكاملة — من الفكرة للكود للإطلاق. نبني مواقع، تطبيقات، وأنظمة أعمال بمعايير عالمية.</p>
+            <p className="mt-3 text-[12px] leading-6 text-[var(--color-text-muted)] max-w-[260px]">
+              حلول برمجية متكاملة — من الفكرة للكود للإطلاق. نبني مواقع، تطبيقات، وأنظمة أعمال بمعايير عالمية.
+            </p>
             <div className="mt-4 flex gap-2">
               {["𝕏", "in", "ig"].map((s) => (
                 <button
@@ -35,54 +81,41 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
               </div>
             </div>
           </div>
-          {[
-            { title: "الخدمات", links: SERVICES.map((s) => ({ label: s.title, to: `/services/${s.slug}` })) },
-            {
-              title: "الشركة",
-              links: [
-                { label: "من نحن", to: "/about" },
-                { label: "الأعمال", to: "/portfolio" },
-                { label: "الأسعار", to: "/pricing" },
-                { label: "تواصل", to: "/contact" },
-                { label: "لوحة التحكم", to: "/dashboard" },
-              ],
-            },
-            {
-              title: "الموارد",
-              links: [
-                { label: "المدونة التقنية", href: getBlogUrl("/") },
-                { label: "الأسئلة الشائعة", to: "/about#faq" },
-                { label: "سياسة الخصوصية", to: "/contact" },
-                { label: "الشروط", to: "/contact" },
-                { label: "API Docs", to: "/services" },
-                { label: "الحالة", to: "/" },
-              ],
-            },
-            {
-              title: "تواصل سريع",
-              links: [
-                { label: "اطلب عرض سعر", to: "/quote" },
-                { label: "واتساب", to: "/contact" },
-                { label: "حجز استشارة", to: "/contact" },
-              ],
-            },
-          ].map((col) => (
+
+          {columns.map((col) => (
             <div key={col.title}>
               <div className="text-[12px] font-bold text-[var(--color-text)]">{col.title}</div>
               <ul className="mt-3 space-y-2">
-                {col.links.map((l: { label: string; to?: string; href?: string }) => (
-                  <li key={l.label}>
-                    {l.href ? (
-                      <a href={l.href} className="text-[12px] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">
-                        {l.label}
-                      </a>
-                    ) : (
-                      <Link to={l.to ?? "/"} className="text-[12px] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">
+                {col.links.map((l: { label: string; to?: string; href?: string }) => {
+                  if (l.href) {
+                    return (
+                      <li key={l.label}>
+                        <a href={l.href} className="text-[12px] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">
+                          {l.label}
+                        </a>
+                      </li>
+                    )
+                  }
+
+                  const targetPath = l.to ?? "/"
+                  if (onBlog) {
+                    return (
+                      <li key={l.label}>
+                        <a href={getMainUrl(targetPath)} className="text-[12px] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">
+                          {l.label}
+                        </a>
+                      </li>
+                    )
+                  }
+
+                  return (
+                    <li key={l.label}>
+                      <Link to={targetPath} className="text-[12px] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors">
                         {l.label}
                       </Link>
-                    )}
-                  </li>
-                ))}
+                    </li>
+                  )
+                })}
               </ul>
             </div>
           ))}

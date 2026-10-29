@@ -1,14 +1,72 @@
 import { Icon } from "@/components/ui/Icon"
 import { useEffect, useRef, useState } from "react"
 import { Link, NavLink, useLocation } from "react-router-dom"
-import { getBlogUrl } from "@/lib/subdomain"
+import { getBlogUrl, getMainUrl, isBlogSubdomain } from "@/lib/subdomain"
+
+function SiteNavLink({
+  to,
+  className,
+  children,
+  onClick,
+}: {
+  to: string
+  className: (props: { isActive: boolean }) => string
+  children: React.ReactNode
+  onClick?: () => void
+}) {
+  const onBlog = isBlogSubdomain()
+  if (onBlog) {
+    const href = getMainUrl(to)
+    return (
+      <a href={href} onClick={onClick} className={className({ isActive: false })}>
+        {children}
+      </a>
+    )
+  }
+  return (
+    <NavLink to={to} onClick={onClick} className={className}>
+      {children}
+    </NavLink>
+  )
+}
+
+function SiteLink({
+  to,
+  className,
+  style,
+  children,
+  onClick,
+}: {
+  to: string
+  className?: string
+  style?: React.CSSProperties
+  children: React.ReactNode
+  onClick?: () => void
+}) {
+  const onBlog = isBlogSubdomain()
+  if (onBlog) {
+    const href = getMainUrl(to)
+    return (
+      <a href={href} onClick={onClick} className={className} style={style}>
+        {children}
+      </a>
+    )
+  }
+  return (
+    <Link to={to} onClick={onClick} className={className} style={style}>
+      {children}
+    </Link>
+  )
+}
 
 export function Header({ onToast }: { onToast: (m: string) => void }) {
+  void onToast
   const [open, setOpen] = useState(false)
   const loc = useLocation()
   const prevPath = useRef(loc.pathname)
   const menuRef = useRef<HTMLDivElement>(null)
   const toggleRef = useRef<HTMLButtonElement>(null)
+  const onBlog = isBlogSubdomain()
 
   useEffect(() => {
     if (prevPath.current !== loc.pathname) {
@@ -62,46 +120,55 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
       <header className="sticky top-0 z-40 backdrop-blur-[14px] bg-[var(--color-bg)]/95 border-b border-[var(--color-border)]">
         <nav className="mx-auto max-w-[1280px] xl:max-w-[1440px] px-4 sm:px-6 lg:px-10 h-16 sm:h-[75.5px] flex items-center justify-between gap-4 sm:gap-6" aria-label="التنقل">
           <div className="flex items-center gap-7 h-full">
-            <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
+            <SiteLink to="/" className="flex items-center gap-2.5 shrink-0 group">
               <span className="size-2.5 rounded-full bg-[var(--color-primary)] shrink-0" aria-hidden />
               <span className="font-extrabold text-[18px] tracking-[-0.5px] text-[var(--color-ink)]" style={{ fontFamily: "var(--font-display)" }}>
                 AMTDEX
               </span>
-            </Link>
+            </SiteLink>
             <div className="hidden lg:flex items-center gap-[22px]">
-              <NavLink to="/services" className={({ isActive }) => `text-[13.5px] font-medium ${isActive ? "text-[var(--color-ink)] font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"}`}>
+              <SiteNavLink to="/services" className={({ isActive }) => `text-[13.5px] font-medium ${isActive ? "text-[var(--color-ink)] font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"}`}>
                 الخدمات
-              </NavLink>
-              <NavLink to="/portfolio" className={({ isActive }) => `text-[13.5px] font-medium ${isActive ? "text-[var(--color-ink)] font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"}`}>
+              </SiteNavLink>
+              <SiteNavLink to="/portfolio" className={({ isActive }) => `text-[13.5px] font-medium ${isActive ? "text-[var(--color-ink)] font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"}`}>
                 أعمالنا
-              </NavLink>
-              <a href={getBlogUrl("/")} className="text-[13.5px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-ink)] transition-colors">
-                المدونة
-              </a>
-              <Link to="/services" className="text-[13.5px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-ink)]">
+              </SiteNavLink>
+              {onBlog ? (
+                <NavLink to="/" className="text-[13.5px] font-semibold text-[var(--color-ink)] transition-colors">
+                  المدونة
+                </NavLink>
+              ) : (
+                <a href={getBlogUrl("/")} className="text-[13.5px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-ink)] transition-colors">
+                  المدونة
+                </a>
+              )}
+              <SiteLink to="/services" className="text-[13.5px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-ink)]">
                 التقنيات
-              </Link>
-              <NavLink to="/about" className={({ isActive }) => `text-[13.5px] font-medium ${isActive ? "text-[var(--color-ink)] font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"}`}>
+              </SiteLink>
+              <SiteNavLink to="/about" className={({ isActive }) => `text-[13.5px] font-medium ${isActive ? "text-[var(--color-ink)] font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"}`}>
                 من نحن
-              </NavLink>
+              </SiteNavLink>
             </div>
           </div>
 
-          {/* Desktop right — يطابق المرجع: تواصل نص + CTA غامق مع سهم */}
+          {/* Desktop right — لوحة التحكم + تواصل + عرض سعر */}
           <div className="hidden lg:flex items-center gap-2.5">
-            <Link to="/contact" className="text-[13.5px] font-semibold text-[var(--color-ink)] hover:opacity-70 transition-opacity">
+            <SiteLink to="/dashboard" className="text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-ink)] px-3 py-1.5 rounded-full border border-[var(--color-border)] hover:border-[var(--color-ink)] transition-all">
+              لوحة التحكم
+            </SiteLink>
+            <SiteLink to="/contact" className="text-[13.5px] font-semibold text-[var(--color-ink)] hover:opacity-70 transition-opacity">
               تواصل معنا
-            </Link>
-            <Link to="/quote" className="inline-flex items-center gap-2 text-white text-[13.5px] font-bold px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity" style={{ background: "var(--gradient-primary)" }}>
+            </SiteLink>
+            <SiteLink to="/quote" className="inline-flex items-center gap-2 text-white text-[13.5px] font-bold px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity" style={{ background: "var(--gradient-primary)" }}>
               اطلب عرض سعر <span aria-hidden>←</span>
-            </Link>
+            </SiteLink>
           </div>
 
           {/* Mobile toggle */}
           <div className="flex lg:hidden items-center gap-2">
-            <Link to="/quote" className="bg-[var(--color-ink)] text-white text-[12px] font-semibold px-4 py-2 rounded-full">
+            <SiteLink to="/quote" className="bg-[var(--color-ink)] text-white text-[12px] font-semibold px-4 py-2 rounded-full">
               عرض سعر
-            </Link>
+            </SiteLink>
             <button
               ref={toggleRef}
               onClick={() => setOpen((v) => !v)}
@@ -113,39 +180,44 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
               <Icon name={open ? "close" : "menu"} size={19} />
             </button>
           </div>
-
-
         </nav>
+
         {open && (
           <div id="mobile-menu" ref={menuRef} className="lg:hidden border-t border-[var(--color-border)] bg-white px-4 py-4" style={{ animation: "fadeIn 0.2s ease" }}>
             <div className="grid gap-1">
-              <NavLink to="/" className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
+              <SiteNavLink to="/" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
                 الرئيسية
-              </NavLink>
-              <NavLink to="/services" className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
+              </SiteNavLink>
+              <SiteNavLink to="/services" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
                 الخدمات
-              </NavLink>
-              <NavLink to="/portfolio" className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
+              </SiteNavLink>
+              <SiteNavLink to="/portfolio" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
                 أعمالنا
-              </NavLink>
-              <a href={getBlogUrl("/")} className="py-3 px-3 rounded-xl text-[15px] font-medium hover:bg-[var(--color-lavender)]">
-                المدونة
-              </a>
-              <NavLink to="/pricing" className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
+              </SiteNavLink>
+              {onBlog ? (
+                <NavLink to="/" onClick={() => setOpen(false)} className="py-3 px-3 rounded-xl text-[15px] font-medium bg-[var(--color-ink)] text-white">
+                  المدونة
+                </NavLink>
+              ) : (
+                <a href={getBlogUrl("/")} onClick={() => setOpen(false)} className="py-3 px-3 rounded-xl text-[15px] font-medium hover:bg-[var(--color-lavender)]">
+                  المدونة
+                </a>
+              )}
+              <SiteNavLink to="/pricing" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
                 الأسعار
-              </NavLink>
-              <NavLink to="/about" className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
+              </SiteNavLink>
+              <SiteNavLink to="/about" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
                 من نحن
-              </NavLink>
-              <NavLink to="/contact" className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
+              </SiteNavLink>
+              <SiteNavLink to="/contact" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
                 تواصل
-              </NavLink>
-              <NavLink to="/dashboard" className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium border mt-1 ${isActive ? "bg-[var(--color-ink)] text-white border-[var(--color-ink)]" : "border-[var(--color-border)] hover:bg-[var(--color-lavender)]"}`}>
-                لوحة التحكم — تجريبي
-              </NavLink>
-              <button onClick={() => onToast("سيتم فتح تسجيل الدخول عند ربط Laravel")} className="mt-2 w-full py-3 rounded-full border border-[var(--color-border)] font-medium">
+              </SiteNavLink>
+              <SiteNavLink to="/dashboard" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium border mt-1 ${isActive ? "bg-[var(--color-ink)] text-white border-[var(--color-ink)]" : "border-[var(--color-border)] hover:bg-[var(--color-lavender)]"}`}>
+                لوحة التحكم
+              </SiteNavLink>
+              <SiteLink to="/login" onClick={() => setOpen(false)} className="mt-2 text-center w-full py-3 rounded-full border border-[var(--color-border)] font-medium text-[13px] hover:bg-[var(--color-lavender)] transition-colors">
                 تسجيل الدخول
-              </button>
+              </SiteLink>
             </div>
           </div>
         )}
