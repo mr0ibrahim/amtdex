@@ -315,7 +315,11 @@ class PublicBlogController extends Controller
         $xml .= '</channel>';
         $xml .= '</rss>';
 
-        return response($xml, 200, ['Content-Type' => 'application/xml; charset=utf-8']);
+        if (ob_get_length()) {
+            ob_clean();
+        }
+
+        return response(trim($xml), 200, ['Content-Type' => 'application/xml; charset=utf-8']);
     }
 
     /**
@@ -378,6 +382,10 @@ class PublicBlogController extends Controller
 
         $xml .= '</urlset>';
 
-        return response($xml, 200, ['Content-Type' => 'application/xml; charset=utf-8']);
+        if (ob_get_length()) {
+            ob_clean();
+        }
+
+        return response(trim($xml), 200, ['Content-Type' => 'application/xml; charset=utf-8']);
     }
 }
