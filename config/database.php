@@ -47,7 +47,9 @@ return [
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
+            'host' => (env('APP_ENV') === 'production' && in_array(env('DB_HOST'), ['127.0.0.1', 'localhost', null], true))
+                ? 'localhost'
+                : env('DB_HOST', 'localhost'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'u430010969_amtdex_db'),
             'username' => env('DB_USERNAME', 'u430010969_amtdex_usr'),
