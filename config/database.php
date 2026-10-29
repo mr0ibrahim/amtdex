@@ -47,13 +47,15 @@ return [
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),
-            'host' => (env('APP_ENV') === 'production' && in_array(env('DB_HOST'), ['127.0.0.1', 'localhost', 'srv1866.hstgr.io', null, ''], true))
-                ? '153.92.15.63'
-                : env('DB_HOST', '153.92.15.63'),
+            'host' => (env('APP_ENV') === 'production' && in_array(env('DB_HOST'), ['127.0.0.1', null, ''], true))
+                ? 'localhost'
+                : env('DB_HOST', 'localhost'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'u430010969_amtdex_db'),
             'username' => env('DB_USERNAME', 'u430010969_amtdex_usr'),
-            'password' => env('DB_PASSWORD', 'Amtdex#Db2026!Sec'),
+            'password' => (in_array(env('DB_PASSWORD'), ['Amtdex', null, ''], true))
+                ? 'Amtdex#Db2026!Sec'
+                : env('DB_PASSWORD', 'Amtdex#Db2026!Sec'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => env('DB_CHARSET', 'utf8mb4'),
             'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
