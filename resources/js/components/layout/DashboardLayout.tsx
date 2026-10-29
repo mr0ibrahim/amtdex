@@ -3,6 +3,7 @@ import { getSession, logout } from "@/lib/auth"
 
 const NAV: Array<{ to: string; label: string; icon: string }> = [
   { to: "/dashboard", label: "نظرة عامة", icon: "◈" },
+  { to: "/dashboard/blog", label: "المدونة", icon: "✍" },
   { to: "/dashboard/content", label: "المحتوى", icon: "⬢" },
   { to: "/dashboard/leads", label: "الطلبات", icon: "⬔" },
   { to: "/dashboard/seo", label: "SEO", icon: "⬣" },

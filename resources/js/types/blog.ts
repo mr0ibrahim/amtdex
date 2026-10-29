@@ -126,6 +126,7 @@ export interface BlogRedirect {
   target_path: string
   status_code: number
   hits_count: number
+  hits?: number
   created_at: string
   updated_at: string
 }
@@ -142,6 +143,7 @@ export interface BlogSettings {
   rss_enabled: boolean
   comments_enabled: boolean
   comments_require_approval: boolean
+  comments_auto_approve?: boolean
   google_analytics_id?: string
   gtm_id?: string
   google_search_console?: string
@@ -153,6 +155,8 @@ export interface BlogStats {
   published_posts: number
   total_views: number
   pending_comments: number
+  categories_count?: number
+  tags_count?: number
   top_posts: Array<{
     id: number
     title: string

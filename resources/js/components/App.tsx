@@ -39,6 +39,7 @@ const BlogPostPage = lazy(() => import("@/pages/Blog/BlogPostPage").then((m) => 
 const BlogCategoryPage = lazy(() => import("@/pages/Blog/BlogCategoryPage").then((m) => ({ default: m.BlogCategoryPage })))
 const BlogTagPage = lazy(() => import("@/pages/Blog/BlogTagPage").then((m) => ({ default: m.BlogTagPage })))
 const BlogNotFoundPage = lazy(() => import("@/pages/Blog/BlogNotFoundPage").then((m) => ({ default: m.BlogNotFoundPage })))
+const DashboardBlogPage = lazy(() => import("@/pages/Dashboard/Blog/DashboardBlogPage").then((m) => ({ default: m.DashboardBlogPage })))
 
 function PageLoader() {
   return (
@@ -74,13 +75,22 @@ export default function App() {
           <Routes>
             {/* If on blog subdomain (e.g. blog.amtdex.com or blog.localhost) */}
             {onBlogSubdomain ? (
-              <Route element={<MarketingLayout onToast={show} />}>
-                <Route path="/" element={<BlogHomePage />} />
-                <Route path="/posts/:slug" element={<BlogPostPage />} />
-                <Route path="/categories/:slug" element={<BlogCategoryPage />} />
-                <Route path="/tags/:slug" element={<BlogTagPage />} />
+              <>
+                <Route element={<MarketingLayout onToast={show} />}>
+                  <Route path="/" element={<BlogHomePage />} />
+                  <Route path="/posts/:slug" element={<BlogPostPage />} />
+                  <Route path="/categories/:slug" element={<BlogCategoryPage />} />
+                  <Route path="/tags/:slug" element={<BlogTagPage />} />
+                </Route>
+                <Route element={<AuthLayout />}>
+                  <Route path="/login" element={<><Seo title="تسجيل الدخول" noindex /><LoginPage /></>} />
+                  <Route path="/403" element={<><Seo title="غير مصرح" noindex /><ForbiddenPage /></>} />
+                </Route>
+                <Route path="/dashboard" element={<DashboardFrame><DashboardBlogPage onToast={show} /></DashboardFrame>} />
+                <Route path="/dashboard/blog" element={<DashboardFrame><DashboardBlogPage onToast={show} /></DashboardFrame>} />
+                <Route path="/dashboard/*" element={<DashboardFrame><DashboardBlogPage onToast={show} /></DashboardFrame>} />
                 <Route path="*" element={<BlogNotFoundPage />} />
-              </Route>
+              </>
             ) : (
               /* Main site domain routes */
               <>
@@ -109,6 +119,7 @@ export default function App() {
 
                 <Route path="/dashboard" element={<DashboardFrame><OverviewPage onToast={show} /></DashboardFrame>} />
                 <Route path="/dashboard/overview" element={<DashboardFrame><OverviewPage onToast={show} /></DashboardFrame>} />
+                <Route path="/dashboard/blog" element={<DashboardFrame><DashboardBlogPage onToast={show} /></DashboardFrame>} />
                 <Route path="/dashboard/content" element={<DashboardFrame><ContentPage /></DashboardFrame>} />
                 <Route path="/dashboard/leads" element={<DashboardFrame><LeadsPage /></DashboardFrame>} />
                 <Route path="/dashboard/seo" element={<DashboardFrame><SeoPage /></DashboardFrame>} />
