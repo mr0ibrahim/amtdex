@@ -23,6 +23,11 @@
         };
     </script>
 
+    @php
+        if (file_exists(public_path('hot')) && !app()->isLocal()) {
+            @unlink(public_path('hot'));
+        }
+    @endphp
     @vite(['resources/css/app.css', 'resources/js/app.tsx'])
 </head>
 <body>
