@@ -1,0 +1,26 @@
+@import "tailwindcss";
+@import "./tokens.css";
+@import "./motion.css";
+@import "./brand-motion.css";
+@import "./cards.css";
+
+@theme {
+  --font-arabic: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-display: "Instrument Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+* { scrollbar-width: thin; scrollbar-color: var(--color-border) transparent; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-arabic);
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 999px; }
+
+/* Laravel-ready markers: every form has name attrs, every API call is a fetch stub */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}

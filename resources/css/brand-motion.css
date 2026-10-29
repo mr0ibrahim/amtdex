@@ -1,0 +1,20 @@
+/* Motion layers preserve the dimensions and composition of existing sections. */
+.brand-motion [data-motion="bar"] { transform-origin: center bottom; }
+.brand-motion [data-motion="draw"] { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.brand-motion .brand-core { position: relative; isolation: isolate; }
+.brand-core-orbits { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; color: var(--color-gold); }
+.brand-core-orbits .orbit-track { stroke: var(--color-lavender); opacity: .35; }
+.brand-core > span { position: relative; z-index: 1; }
+.brand-motion .brand-workflow { position: relative; }
+.brand-workflow-track { position: absolute; inset-inline-start: 19px; top: 24px; height: calc(100% - 48px); width: 2px; pointer-events: none; color: var(--color-violet-mid); }
+.brand-motion .brand-workflow > div { position: relative; }
+.brand-motion .brand-workflow > div > span { position: relative; z-index: 1; }
+.brand-motion .brand-cta { transition: box-shadow 220ms ease, translate 220ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .brand-motion .brand-cta:hover { translate: 0 -3px; box-shadow: 0 14px 28px rgb(40 16 113 / 22%); }
+  .brand-motion .brand-cta:active { translate: 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-motion *, .brand-motion *::before, .brand-motion *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .brand-motion .brand-cta:hover { translate: none; }
+}

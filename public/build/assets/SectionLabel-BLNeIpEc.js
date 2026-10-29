@@ -1,0 +1,1 @@
+import{a as e}from"./vendor-react-CnJtcb2D.js";var t=e();function n({children:e}){return(0,t.jsxs)(`div`,{className:`inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.14em] text-[var(--color-text-faint)]`,children:[(0,t.jsx)(`span`,{className:`size-1.5 rounded-full bg-[var(--color-ink)]`}),` `,e]})}export{n as t};

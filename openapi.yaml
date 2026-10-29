@@ -1,0 +1,613 @@
+openapi: 3.1.0
+info:
+  title: Amtdex API
+  description: Official REST API specification for Amtdex marketing website and client/admin dashboard.
+  version: 1.0.0
+servers:
+  - url: /api/v1
+    description: Current Laravel Host (Relative)
+  - url: http://127.0.0.1:8000/api/v1
+    description: Local Laravel Development Server
+
+paths:
+  /contact:
+    post:
+      summary: Submit a contact message (Lead capture)
+      operationId: submitContact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactInput'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContactInput'
+      responses:
+        '201':
+          description: Contact request submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '429':
+          description: Too many requests
+
+  /quotes:
+    post:
+      summary: Submit a 3-step quote request
+      operationId: submitQuote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuoteInput'
+      responses:
+        '201':
+          description: Quote created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /newsletter:
+    post:
+      summary: Subscribe to newsletter
+      operationId: subscribeNewsletter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '201':
+          description: Subscribed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+
+  /login:
+    post:
+      summary: Authenticate session via Laravel Sanctum
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '422':
+          description: Invalid credentials
+
+  /me:
+    get:
+      summary: Get currently authenticated user and roles
+      operationId: getCurrentUser
+      security:
+        - sanctumCookie: []
+      responses:
+        '200':
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthenticated
+
+  /logout:
+    post:
+      summary: Destroy current session
+      operationId: logout
+      security:
+        - sanctumCookie: []
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /dashboard/stats:
+    get:
+      summary: Get overview metrics for dashboard
+      operationId: getDashboardStats
+      security:
+        - sanctumCookie: []
+      responses:
+        '200':
+          description: Metrics summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStats'
+
+  /leads:
+    get:
+      summary: List contact and quote leads with pagination and filters
+      operationId: listLeads
+      security:
+        - sanctumCookie: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: source
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 15
+      responses:
+        '200':
+          description: List of leads
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Lead'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+
+  /leads/{id}/status:
+    patch:
+      summary: Update lead status
+      operationId: updateLeadStatus
+      security:
+        - sanctumCookie: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: ["جديد", "قيد المراجعة", "تم التواصل", "مغلق"]
+      responses:
+        '200':
+          description: Updated successfully
+
+  /leads/{id}:
+    delete:
+      summary: Delete lead entry
+      operationId: deleteLead
+      security:
+        - sanctumCookie: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted successfully
+
+  /services:
+    get:
+      summary: List all catalog services
+      operationId: listServices
+      responses:
+        '200':
+          description: Services list
+    post:
+      summary: Create new service
+      operationId: createService
+      security:
+        - sanctumCookie: []
+      responses:
+        '201':
+          description: Created
+
+  /services/{slug}:
+    put:
+      summary: Update existing service
+      operationId: updateService
+      security:
+        - sanctumCookie: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Updated
+    delete:
+      summary: Delete service
+      operationId: deleteService
+      security:
+        - sanctumCookie: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+
+  /projects:
+    get:
+      summary: List portfolio projects
+      operationId: listProjects
+      responses:
+        '200':
+          description: Projects list
+    post:
+      summary: Create project
+      operationId: createProject
+      security:
+        - sanctumCookie: []
+      responses:
+        '201':
+          description: Created
+
+  /projects/{slug}:
+    put:
+      summary: Update project
+      operationId: updateProject
+      security:
+        - sanctumCookie: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Updated
+    delete:
+      summary: Delete project
+      operationId: deleteProject
+      security:
+        - sanctumCookie: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+
+  /seo:
+    get:
+      summary: List SEO metadata by route
+      operationId: listSeo
+      security:
+        - sanctumCookie: []
+      responses:
+        '200':
+          description: List of SEO entries
+    post:
+      summary: Upsert SEO metadata for a route
+      operationId: upsertSeo
+      security:
+        - sanctumCookie: []
+      responses:
+        '200':
+          description: Saved
+    delete:
+      summary: Delete SEO metadata for a route
+      operationId: deleteSeo
+      security:
+        - sanctumCookie: []
+      parameters:
+        - name: path
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+
+  /media:
+    get:
+      summary: List uploaded media assets
+      operationId: listMedia
+      security:
+        - sanctumCookie: []
+      responses:
+        '200':
+          description: Media assets
+    post:
+      summary: Upload new media asset (Max 10MB)
+      operationId: uploadMedia
+      security:
+        - sanctumCookie: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Uploaded successfully
+
+  /media/{id}:
+    delete:
+      summary: Delete media asset
+      operationId: deleteMedia
+      security:
+        - sanctumCookie: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+
+  /settings:
+    get:
+      summary: Get general site configuration
+      operationId: getSettings
+      security:
+        - sanctumCookie: []
+      responses:
+        '200':
+          description: Settings
+    put:
+      summary: Update general site configuration
+      operationId: updateSettings
+      security:
+        - sanctumCookie: []
+      responses:
+        '200':
+          description: Updated
+
+  /users:
+    get:
+      summary: List staff users and RBAC roles
+      operationId: listUsers
+      security:
+        - sanctumCookie: []
+      responses:
+        '200':
+          description: Users list
+
+  /audit:
+    get:
+      summary: View security logs and blocked IP entries
+      operationId: listAuditLogs
+      security:
+        - sanctumCookie: []
+      responses:
+        '200':
+          description: Audit logs
+
+components:
+  securitySchemes:
+    sanctumCookie:
+      type: apiKey
+      in: cookie
+      name: amtdex_session
+
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+
+    SuccessMessage:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "تمت العملية بنجاح"
+
+    ValidationError:
+      type: object
+      required: [message, errors]
+      properties:
+        message:
+          type: string
+          example: "البيانات المقدمة غير صالحة."
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+    ContactInput:
+      type: object
+      required: [name, email, message]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 150
+        phone:
+          type: string
+          maxLength: 20
+        subject:
+          type: string
+          maxLength: 100
+        message:
+          type: string
+          minLength: 10
+          maxLength: 3000
+
+    QuoteInput:
+      type: object
+      required: [service, budget, timeline, name, email, phone]
+      properties:
+        service:
+          type: string
+          enum: [web, mobile, erp, ai, security, cloud]
+        budget:
+          type: string
+        timeline:
+          type: string
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        details:
+          type: string
+          maxLength: 4000
+
+    UserResponse:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            email:
+              type: string
+            role:
+              type: string
+              enum: [admin, editor, viewer]
+
+    DashboardStats:
+      type: object
+      properties:
+        activeProjects:
+          type: object
+          properties:
+            value:
+              type: integer
+            sub:
+              type: string
+        contactRequests:
+          type: object
+          properties:
+            value:
+              type: integer
+            sub:
+              type: string
+        quotes:
+          type: object
+          properties:
+            value:
+              type: integer
+            sub:
+              type: string
+
+    Lead:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+          enum: ["جديد", "قيد المراجعة", "تم التواصل", "مغلق"]
+        source:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        meta:
+          type: object
+
+    PaginationMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        last_page:
+          type: integer
+        total:
+          type: integer
+

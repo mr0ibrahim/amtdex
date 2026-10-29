@@ -1,0 +1,53 @@
+/* ── Amtdex Design Tokens ──
+   R2: هوية Amtdex الرسمية — 10 ألوان مستخلصة من الشعار
+   لا تستخدم hex مباشر — استخدم هذه المتغيرات. */
+
+:root {
+  /* ── الهوية الأساسية (10 ألوان) ── */
+  --color-ink: #16064F;              /* الكحلي الملكي — العناوين والنصوص المهمة */
+  --color-primary: #281071;          /* البنفسجي الداكن — الأزرار والعناصر الأساسية */
+  --color-primary-light: #5425A4;    /* البنفسجي الملكي — التدرجات والأيقونات والتفاعل */
+  --color-violet-mid: #9775D1;        /* البنفسجي المتوسط — الزخارف والرسومات الثانوية */
+  --color-gold: #FFBF08;              /* الذهبي الأساسي — التمييز والعروض والعناصر البارزة */
+  --color-gold-dark: #E69A12;         /* الذهبي المتدرج — التدرجات الذهبية */
+  --color-lavender: #E9DDF4;          /* اللافندر الفاتح — خلفيات الأقسام الهادئة */
+  --color-card-soft: #F4EAF7;         /* البنفسجي الضبابي — خلفية البطاقات والمساحات */
+  --color-surface: #FFFFFF;           /* الأبيض — الخلفية الرئيسية */
+  --color-bg: #FFFFFF;                /* الخلفية الرئيسية (alias) */
+
+  /* ── مشتقات ── */
+  --color-ink-soft: #281071;
+  --color-beige: #F4EAF7;
+  --color-border: #E9DDF4;
+  --color-border-strong: #281071;
+  --color-outline-peach: #E9DDF4;
+  --color-text: #16064F;
+  --color-text-muted: #6B7280;
+  --color-text-faint: #9AA0AB;
+  --color-success: #0E9F6E;
+  --color-success-bg: #E6F4EA;
+  --color-accent: #FFBF08;
+  --color-accent-purple: #5425A4;
+
+  /* ── تدرجات معتمدة ── */
+  --gradient-primary: linear-gradient(135deg, #281071 0%, #5425A4 100%);
+  --gradient-gold: linear-gradient(135deg, #FFBF08 0%, #E69A12 100%);
+  --gradient-hero: linear-gradient(180deg, #FFFFFF 0%, #E9DDF4 100%);
+  --gradient-card: linear-gradient(135deg, #F4EAF7 0%, #FFFFFF 100%);
+
+  /* ── Radii ── */
+  --radius-card: 24px;
+  --radius-card-lg: 28px;
+  --radius-pill: 9999px;
+  --radius-input: 12px;
+
+  /* ── Shadows ── */
+  --shadow-card: 0 10px 24px rgba(22, 6, 79, 0.08);
+  --shadow-card-lg: 0 16px 32px rgba(22, 6, 79, 0.13);
+  --shadow-toast: 0 12px 40px rgba(22, 6, 79, 0.18);
+  --shadow-modal: 0 24px 80px rgba(22, 6, 79, 0.12), 0 4px 16px rgba(22, 6, 79, 0.06);
+
+  /* ── Focus ── */
+  --ring: 0 0 0 3px rgba(84, 37, 164, 0.20);
+  --ring-gold: 0 0 0 3px rgba(255, 191, 8, 0.25);
+}

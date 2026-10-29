@@ -1,0 +1,58 @@
+.ui-icon { display: inline-block; flex-shrink: 0; vertical-align: middle; }
+.service-card { position: relative; display: flex; flex-direction: column; padding: 28px; min-width: 0; border-radius: 22px; border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-ink); box-shadow: 0 3px 5px rgb(22 6 79 / 2%); transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease; text-decoration: none; }
+.service-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 26px; }
+.service-card-icon { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 16px; background: var(--color-card-soft); color: var(--color-primary-light); border: 1px solid var(--color-border); }
+.service-card-badge { font-size: 10px; font-weight: 600; color: var(--color-primary-light); border: 1px solid var(--color-border); border-radius: 6px; padding: 5px 8px; }
+.service-card h3 { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.6; letter-spacing: -.25px; }
+.service-card > p { color: var(--color-text-muted); font-size: 13px; line-height: 1.95; margin-top: 9px; margin-bottom: 26px; }
+.service-card ul { margin: 0 0 24px; display: grid; gap: 10px; }
+.service-card li { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; line-height: 1.8; color: var(--color-text-muted); }
+.service-card li .ui-icon { margin-top: 3px; color: var(--color-primary-light); }
+.service-card-footer { margin-top: auto; display: flex; align-items: center; justify-content: space-between; padding-top: 18px; border-top: 1px solid var(--color-border); font-size: 12px; font-weight: 600; }
+.service-card-arrow { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--color-card-soft); transition: background 220ms ease, color 220ms ease; }
+.service-card-featured { background: var(--color-ink); color: white; border-color: var(--color-ink); }
+.service-card-featured .service-card-icon { background: rgb(255 255 255 / 7%); border-color: rgb(255 255 255 / 15%); color: var(--color-gold); }
+.service-card-featured > p, .service-card-featured li { color: var(--color-lavender); }
+.service-card-featured .service-card-badge { color: var(--color-gold); border-color: rgb(255 191 8 / 25%); }
+.service-card-featured .service-card-footer { border-color: rgb(255 255 255 / 14%); }
+.service-card-featured .service-card-arrow { background: rgb(255 255 255 / 10%); }
+.service-card-featured li .ui-icon { color: var(--color-gold); }
+.service-card:focus-visible, .testimonial-panel button:focus-visible, .testimonial-link:focus-visible { outline: 3px solid var(--color-primary-light); outline-offset: 4px; }
+.testimonial-panel { display: flex; flex-direction: column; min-width: 0; padding: 30px; border: 1px solid var(--color-border); border-radius: 28px; background: white; box-shadow: 0 10px 32px rgb(22 6 79 / 4%); }
+.testimonial-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.testimonial-heading > .ui-icon { color: var(--color-violet-mid); }
+.testimonial-heading span { font-size: 10px; font-weight: 600; color: var(--color-primary-light); }
+.testimonial-heading h3 { margin-top: 7px; font-size: 22px; font-weight: 700; line-height: 1.5; }
+.testimonial-story { flex: 1; padding-top: 24px; }
+.testimonial-story blockquote { min-height: 112px; font-size: 19px; font-weight: 500; line-height: 1.9; color: var(--color-ink); margin: 0; animation: testimonial-enter 240ms ease-out; }
+.testimonial-author { display: flex; align-items: center; gap: 12px; padding-block: 20px 24px; }
+.testimonial-avatar { display: grid; place-items: center; width: 46px; height: 46px; flex-shrink: 0; border-radius: 14px; background: var(--color-card-soft); border: 1px solid var(--color-border); color: var(--color-primary); font-size: 21px; font-weight: 700; }
+.testimonial-author strong { font-size: 13px; font-weight: 700; }
+.testimonial-author p { font-size: 11px; color: var(--color-text-muted); margin-top: 4px; line-height: 1.7; }
+.testimonial-navigation { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 14px; border-top: 1px solid var(--color-border); }
+.testimonial-dots, .testimonial-arrows { display: flex; align-items: center; gap: 6px; }
+.testimonial-dots button { width: 32px; height: 44px; display: grid; place-items: center; cursor: pointer; }
+.testimonial-dots button span { width: 6px; height: 6px; border-radius: 99px; background: var(--color-lavender); transition: width 180ms ease, background 180ms ease; }
+.testimonial-dots button[aria-pressed="true"] span { width: 22px; background: var(--color-primary); }
+.testimonial-arrows button { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--color-border); color: var(--color-primary); cursor: pointer; transition: background 180ms ease, color 180ms ease; }
+.testimonial-arrows button:last-child { background: var(--color-primary); border-color: var(--color-primary); color: white; }
+.testimonial-link { display: flex; align-items: center; gap: 8px; width: fit-content; margin-top: 18px; font-size: 11px; font-weight: 600; color: var(--color-text-muted); }
+@keyframes testimonial-enter { from { opacity: .3; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+@media (hover: hover) and (pointer: fine) {
+  .service-card:hover { transform: translateY(-5px); border-color: var(--color-violet-mid); box-shadow: 0 14px 32px rgb(22 6 79 / 8%); }
+  .service-card:hover .service-card-arrow { background: var(--color-primary); color: white; }
+  .service-card-featured:hover .service-card-arrow { background: var(--color-gold); color: var(--color-ink); }
+  .testimonial-arrows button:hover { background: var(--color-lavender); color: var(--color-primary); }
+  .testimonial-link:hover { color: var(--color-primary); }
+}
+@media (max-width: 640px) {
+  .service-card { padding: 24px; }
+  .service-card-top { margin-bottom: 20px; }
+  .testimonial-panel { padding: 24px; }
+  .testimonial-heading h3 { font-size: 20px; }
+  .testimonial-story blockquote { font-size: 18px; min-height: 125px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .service-card, .service-card-arrow, .testimonial-panel *, .testimonial-link { animation: none !important; transition: none !important; }
+  .service-card:hover { transform: none; }
+}

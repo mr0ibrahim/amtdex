@@ -1,0 +1,184 @@
+import { useState } from "react"
+import { useSeoQuery, useUpsertSeoMutation, useDeleteSeoMutation } from "@/lib/queries"
+import { generateRobots, generateSitemap } from "@/lib/seoStore"
+import type { SeoEntry } from "@/lib/seoStore"
+
+export function SeoPage() {
+  const { data: entries = [], isLoading, error, refetch } = useSeoQuery()
+  const upsertMutation = useUpsertSeoMutation()
+  const deleteMutation = useDeleteSeoMutation()
+
+  const [editing, setEditing] = useState<SeoEntry | null>(null)
+  const [showSitemap, setShowSitemap] = useState(false)
+
+  const copy = async (txt: string) => {
+    await navigator.clipboard.writeText(txt)
+    alert("تم النسخ")
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-[18px] font-bold text-[var(--color-ink)]">إدارة محركات البحث (SEO)</h1>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowSitemap((v) => !v)}
+            className="text-[11px] border border-[var(--color-border)] px-3 py-1.5 rounded-full"
+          >
+            sitemap / robots
+          </button>
+          <button
+            onClick={() => setEditing({ path: "", title: "", description: "" })}
+            className="text-[11px] font-bold bg-[var(--color-ink)] text-white px-4 py-2 rounded-full"
+          >
+            + صفحة جديدة
+          </button>
+        </div>
+      </div>
+
+      {showSitemap && (
+        <div className="space-y-3">
+          <div className="bg-[var(--color-ink)] text-white rounded-2xl p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold">sitemap.xml</span>
+              <button onClick={() => copy(generateSitemap())} className="text-[11px] bg-white text-black px-3 py-1 rounded-full">
+                نسخ
+              </button>
+            </div>
+            <pre className="mt-2 text-[10px] leading-4 whitespace-pre-wrap break-all">{generateSitemap()}</pre>
+          </div>
+          <div className="bg-white border border-[var(--color-border)] rounded-2xl p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold">robots.txt</span>
+              <button onClick={() => copy(generateRobots())} className="text-[11px] border border-[var(--color-border)] px-3 py-1 rounded-full">
+                نسخ
+              </button>
+            </div>
+            <pre className="mt-2 text-[11px] leading-5 whitespace-pre-wrap">{generateRobots()}</pre>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white border border-[var(--color-border)] rounded-2xl overflow-hidden">
+        {isLoading ? (
+          <div className="p-8 text-center text-[12px] text-[var(--color-text-faint)]">
+            <span className="inline-block size-4 border-2 border-[var(--color-border)] border-t-[var(--color-primary)] rounded-full animate-spin mr-2" />
+            جار تحميل إعدادات SEO...
+          </div>
+        ) : error ? (
+          <div className="p-6 text-center text-[12px] text-red-600">
+            تعذر تحميل إعدادات SEO.
+            <button onClick={() => refetch()} className="mr-2 underline font-bold">إعادة المحاولة</button>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-[12px]">
+              <thead className="bg-[var(--color-card-soft)] text-[11px] text-[var(--color-text-faint)]">
+                <tr>
+                  <th className="text-right px-4 py-3">المسار</th>
+                  <th className="text-right px-4 py-3">العنوان</th>
+                  <th className="text-right px-4 py-3">الوصف</th>
+                  <th className="px-4 py-3" />
+                </tr>
+              </thead>
+              <tbody>
+                {entries.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="text-center py-8 text-[var(--color-text-faint)]">
+                      لا توجد مسارات مسجلة حالياً.
+                    </td>
+                  </tr>
+                ) : (
+                  entries.map((e) => (
+                    <tr key={e.path} className="border-t border-[var(--color-border)]">
+                      <td className="px-4 py-3 font-mono text-[11px]">
+                        {e.path}{" "}
+                        {e.noindex && (
+                          <span className="mr-1 bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full text-[10px]">
+                            noindex
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 font-bold text-[var(--color-ink)]">{e.title}</td>
+                      <td className="px-4 py-3 text-[var(--color-text-muted)] line-clamp-1 max-w-[280px]">
+                        {e.description}
+                      </td>
+                      <td className="px-4 py-3 flex gap-1.5 justify-end">
+                        <button
+                          onClick={() => setEditing({ ...e })}
+                          className="text-[11px] border border-[var(--color-border)] px-3 py-1 rounded-full hover:bg-[var(--color-lavender)]"
+                        >
+                          تعديل
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`حذف إعدادات SEO للمسار ${e.path}؟`)) {
+                              deleteMutation.mutate(e.path)
+                            }
+                          }}
+                          className="text-[11px] text-red-600 border border-red-200 px-3 py-1 rounded-full hover:bg-red-50"
+                        >
+                          حذف
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* SEO Edit Modal */}
+      {editing && (
+        <div className="fixed inset-0 z-50 bg-black/40 grid place-items-center p-4">
+          <div className="bg-white rounded-2xl max-w-[500px] w-full p-6 space-y-4 shadow-xl">
+            <h3 className="text-[15px] font-bold text-[var(--color-ink)]">
+              {editing.path ? "تعديل إعدادات SEO" : "إضافة مسار جديد"}
+            </h3>
+            <input
+              placeholder="المسار (مثال: /services/web)"
+              value={editing.path}
+              onChange={(e) => setEditing({ ...editing, path: e.target.value })}
+              className="w-full border border-[var(--color-border)] rounded-xl px-3 py-2 text-[12px]"
+            />
+            <input
+              placeholder="عنوان الصفحة (Title)"
+              value={editing.title}
+              onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+              className="w-full border border-[var(--color-border)] rounded-xl px-3 py-2 text-[12px]"
+            />
+            <textarea
+              placeholder="الوصف (Meta Description)"
+              value={editing.description}
+              onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+              className="w-full border border-[var(--color-border)] rounded-xl px-3 py-2 text-[12px] h-20"
+            />
+            <label className="flex items-center gap-2 text-[12px]">
+              <input
+                type="checkbox"
+                checked={!!editing.noindex}
+                onChange={(e) => setEditing({ ...editing, noindex: e.target.checked })}
+              />
+              تفعيل noindex (منع أرشفة محركات البحث)
+            </label>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setEditing(null)} className="px-4 py-1.5 border rounded-full text-[12px]">إلغاء</button>
+              <button
+                onClick={() => {
+                  upsertMutation.mutate(editing, {
+                    onSuccess: () => setEditing(null),
+                  })
+                }}
+                className="px-4 py-1.5 bg-[var(--color-ink)] text-white rounded-full text-[12px] font-bold"
+              >
+                حفظ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
