@@ -5,6 +5,7 @@
 /amtdex-deploy.zip
 /artifacts
 /test-results
+/prod.env
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage
