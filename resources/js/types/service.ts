@@ -9,6 +9,9 @@ export type Service = {
   bullets: string[]
   tech: string[]
   detail?: string
+  meta_title?: string
+  meta_description?: string
+  og_image?: string
   sort_order?: number
   is_published?: boolean
 }

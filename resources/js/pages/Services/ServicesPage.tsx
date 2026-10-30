@@ -1,9 +1,12 @@
 import { ServiceCard } from "@/components/ui/ServiceCard"
 import { SectionLabel } from "@/components/ui/SectionLabel"
 import { useServices } from "@/lib/contentStore"
+import { useServicesQuery } from "@/lib/queries"
 
 export function ServicesPage() {
-  const SERVICES = useServices()
+  const { data: apiServices } = useServicesQuery()
+  const fallbackServices = useServices()
+  const SERVICES = (apiServices && apiServices.length > 0) ? apiServices : fallbackServices
   return (
     <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       <SectionLabel>خدماتنا</SectionLabel>

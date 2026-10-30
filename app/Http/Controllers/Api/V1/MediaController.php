@@ -24,6 +24,7 @@ class MediaController extends Controller
                 'name' => $item->name,
                 'size' => $item->size,
                 'mime' => $item->mime,
+                'alt_text' => $item->alt_text,
             ];
         });
 
@@ -60,11 +61,14 @@ class MediaController extends Controller
         $url = Storage::url($path);
 
         $media = Media::create([
+            'user_id' => $request->user()?->id,
             'name' => $originalName,
             'path' => $path,
             'url' => $url,
             'size' => $file->getSize(),
             'mime' => $file->getMimeType() ?? 'application/octet-stream',
+            'disk' => 'public',
+            'alt_text' => $request->input('alt_text'),
         ]);
 
         AuditLog::record("رفع ملف وسائط جديد: {$originalName}", $request->user()?->email);

@@ -601,6 +601,18 @@ export function ContentPage() {
               />
             </div>
 
+            <div>
+              <label className="block text-[11px] font-bold text-[var(--color-ink)] mb-1">
+                التفاصيل الموسعة (تظهر في صفحة الخدمة المنفصلة)
+              </label>
+              <textarea
+                placeholder="شرح موسع وتفصيلي لما تشمله هذه الخدمة والحلول التي نقدمها للعميل..."
+                value={editingService.detail || ""}
+                onChange={(e) => setEditingService({ ...editingService, detail: e.target.value })}
+                className="w-full border border-[var(--color-border)] rounded-xl px-3 py-2 text-[12px] h-24 outline-none focus:border-[var(--color-primary)]"
+              />
+            </div>
+
             <TagsInput
               label="المميزات الرئيسية (Bullets) — اضغط Enter للإضافة"
               tags={editingService.bullets || []}
@@ -614,6 +626,24 @@ export function ContentPage() {
               placeholder="مثال: React Native, Flutter, Swift"
               onChange={(tech) => setEditingService({ ...editingService, tech })}
             />
+
+            <div className="p-3 bg-[var(--color-card-soft)] rounded-xl border border-[var(--color-border)] space-y-2">
+              <span className="text-[11px] font-bold text-[var(--color-ink)] block">
+                تحسين محركات البحث للخدمة (SEO)
+              </span>
+              <input
+                placeholder="عنوان صفحة الخدمة في جوجل (Meta Title)"
+                value={editingService.meta_title || ""}
+                onChange={(e) => setEditingService({ ...editingService, meta_title: e.target.value })}
+                className="w-full border border-[var(--color-border)] rounded-xl px-3 py-1.5 text-[11px] bg-white outline-none focus:border-[var(--color-primary)]"
+              />
+              <textarea
+                placeholder="وصف مختصر للخدمة في نتائج البحث (Meta Description)"
+                value={editingService.meta_description || ""}
+                onChange={(e) => setEditingService({ ...editingService, meta_description: e.target.value })}
+                className="w-full border border-[var(--color-border)] rounded-xl px-3 py-1.5 text-[11px] h-14 bg-white outline-none focus:border-[var(--color-primary)]"
+              />
+            </div>
 
             <label className="flex items-center gap-2 cursor-pointer pt-1">
               <input

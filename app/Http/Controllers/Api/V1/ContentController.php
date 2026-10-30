@@ -26,6 +26,17 @@ class ContentController extends Controller
         ]);
     }
 
+    public function service(string $slug): JsonResponse
+    {
+        $service = Service::where('slug', $slug)
+            ->where('is_published', true)
+            ->firstOrFail();
+
+        return response()->json([
+            'data' => $service,
+        ]);
+    }
+
     public function storeService(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -36,6 +47,9 @@ class ContentController extends Controller
             'bullets' => ['nullable', 'array'],
             'tech' => ['nullable', 'array'],
             'detail' => ['nullable', 'string'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string'],
+            'og_image' => ['nullable', 'string'],
             'sort_order' => ['nullable', 'integer'],
             'is_published' => ['nullable', 'boolean'],
         ]);
@@ -66,6 +80,9 @@ class ContentController extends Controller
             'bullets' => ['nullable', 'array'],
             'tech' => ['nullable', 'array'],
             'detail' => ['nullable', 'string'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string'],
+            'og_image' => ['nullable', 'string'],
             'sort_order' => ['nullable', 'integer'],
             'is_published' => ['nullable', 'boolean'],
         ]);

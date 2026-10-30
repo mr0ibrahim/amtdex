@@ -243,6 +243,7 @@ export function useUpsertSeoMutation() {
   })
 }
 
+
 export function useDeleteSeoMutation() {
   const qc = useQueryClient()
   return useMutation({

@@ -1,10 +1,13 @@
 import { Icon } from "@/components/ui/Icon"
 import { Link, useParams } from "react-router-dom"
 import { useServices } from "@/lib/contentStore"
+import { useServicesQuery } from "@/lib/queries"
 
 export function ServiceDetailPage() {
   const { slug } = useParams()
-  const SERVICES = useServices()
+  const { data: apiServices } = useServicesQuery()
+  const fallbackServices = useServices()
+  const SERVICES = (apiServices && apiServices.length > 0) ? apiServices : fallbackServices
   const s = SERVICES.find((x) => x.slug === slug)
 
   if (!s)

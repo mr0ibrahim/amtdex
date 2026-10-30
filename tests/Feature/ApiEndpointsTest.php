@@ -250,7 +250,7 @@ class ApiEndpointsTest extends TestCase
             ->assertStatus(200)
             ->assertJson(['ok' => true]);
 
-        $this->assertDatabaseMissing('leads', ['id' => $lead->id]);
+        $this->assertSoftDeleted('leads', ['id' => $lead->id]);
     }
 
     public function test_content_and_seo_management_rbac(): void
@@ -267,6 +267,11 @@ class ApiEndpointsTest extends TestCase
             ->postJson('/api/v1/services', $servicePayload)
             ->assertStatus(201);
 
+        // Public single service endpoint
+        $this->getJson('/api/v1/services/cyber-sec')
+            ->assertStatus(200)
+            ->assertJsonPath('data.title', 'الأمن السيبراني');
+
         // Editor CANNOT delete service (403)
         $this->actingAs($this->editor, 'sanctum')
             ->deleteJson('/api/v1/services/cyber-sec')
@@ -276,6 +281,8 @@ class ApiEndpointsTest extends TestCase
         $this->actingAs($this->admin, 'sanctum')
             ->deleteJson('/api/v1/services/cyber-sec')
             ->assertStatus(200);
+
+        $this->assertSoftDeleted('services', ['slug' => 'cyber-sec']);
 
         // SEO Upsert
         $this->actingAs($this->editor, 'sanctum')

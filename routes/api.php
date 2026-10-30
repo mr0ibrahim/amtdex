@@ -1,3 +1,4 @@
+
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
@@ -22,6 +23,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/newsletter', [NewsletterController::class, 'store'])->middleware('throttle:10,1');
 
     Route::get('/services', [ContentController::class, 'services']);
+    Route::get('/services/{slug}', [ContentController::class, 'service']);
     Route::get('/projects', [ContentController::class, 'projects']);
     Route::get('/projects/{slug}', [ContentController::class, 'project']);
     Route::get('/settings/public', [SettingsController::class, 'get']);
