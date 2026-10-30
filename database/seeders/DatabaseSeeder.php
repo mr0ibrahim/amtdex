@@ -3,11 +3,17 @@
 namespace Database\Seeders;
 
 use App\Models\AuditLog;
+use App\Models\Client;
+use App\Models\Faq;
 use App\Models\Lead;
+use App\Models\PricingFeature;
+use App\Models\PricingPlan;
 use App\Models\Project;
 use App\Models\SeoMetadata;
 use App\Models\Service;
 use App\Models\SiteSetting;
+use App\Models\TeamMember;
+use App\Models\Testimonial;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -271,7 +277,207 @@ class DatabaseSeeder extends Seeder
             'ip' => '127.0.0.1',
         ]);
 
-        // 8. Seed Blog System
+        // 8. Seed Pricing Plans & Features
+        $plans = [
+            [
+                'name' => 'الانطلاقة',
+                'slug' => 'starter',
+                'badge' => null,
+                'description' => 'للمشاريع الناشئة والمتاجر البسيطة التي تحتاج وجوداً رقمياً قوياً وسريعاً.',
+                'price' => '4,900',
+                'currency' => 'SAR',
+                'period' => 'مرة واحدة',
+                'cta' => 'اطلب الآن',
+                'highlight' => false,
+                'sort_order' => 1,
+                'features' => [
+                    'موقع تعريفي 5 صفحات بتصميم متجاوب',
+                    'لوحة تحكم إدارية سريعة',
+                    'استضافة سحابية 6 أشهر + شهادة SSL مجاناً',
+                    'دعم فني وضمان برمجي لمدة شهر كامل',
+                ],
+            ],
+            [
+                'name' => 'النمو',
+                'slug' => 'growth',
+                'badge' => 'الأكثر طلباً',
+                'description' => 'للشركات والمتاجر التي تتطلب منصة متكاملة وربطاً مع بوابات الدفع والشحن.',
+                'price' => '14,900',
+                'currency' => 'SAR',
+                'period' => 'مرة واحدة',
+                'cta' => 'الأكثر طلباً — اطلب الآن',
+                'highlight' => true,
+                'sort_order' => 2,
+                'features' => [
+                    'متجر إلكتروني أو منصة ويب متكاملة',
+                    'تكامل بوابات دفع (مدى، أبل باي، STC Pay)',
+                    'تطبيق ويب تقدمي (PWA) للعملاء',
+                    'تكامل شركات الشحن وإصدار الفواتير التلقائية',
+                    'دعم فني مستمر لمدة 3 أشهر + تدريب الفريق',
+                ],
+            ],
+            [
+                'name' => 'المؤسسي',
+                'slug' => 'enterprise',
+                'badge' => 'حلول مخصصة',
+                'description' => 'للمؤسسات والجهات الكبرى التي تحتاج بنية تحتية مخصصة وتطبيقات جوال.',
+                'price' => 'حسب الطلب',
+                'currency' => 'SAR',
+                'period' => 'عقد شهري / مشروع',
+                'cta' => 'تحدث مع مستشارنا',
+                'highlight' => false,
+                'sort_order' => 3,
+                'features' => [
+                    'نظام أعمال متقدم (ERP / CRM) مخصص بالكامل',
+                    'تطبيقات جوال أصلية (iOS + Android)',
+                    'اتفاقية مستوى الخدمة (SLA 99.9%) + مدير حساب مخصص',
+                    'بنية تحتية سحابية عالية التوافر ومراقبة أمنية 24/7',
+                ],
+            ],
+        ];
+
+        foreach ($plans as $pData) {
+            $features = $pData['features'];
+            unset($pData['features']);
+
+            $plan = PricingPlan::updateOrCreate(['slug' => $pData['slug']], $pData);
+
+            // Re-seed features
+            $plan->features()->delete();
+            foreach ($features as $fIndex => $fText) {
+                PricingFeature::create([
+                    'plan_id' => $plan->id,
+                    'text' => $fText,
+                    'included' => true,
+                    'sort_order' => $fIndex + 1,
+                ]);
+            }
+        }
+
+        // 9. Seed Testimonials
+        $testimonials = [
+            [
+                'author' => 'سارة العتيبي',
+                'role' => 'مديرة المنتج',
+                'company' => 'stc pay',
+                'content' => 'أمـتـدِكس سلّمت قبل الموعد، والكود نظيف لدرجة أن فريقنا أكمل عليه بدون أي احتكاك.',
+                'avatar' => null,
+                'rating' => 5,
+                'sort_order' => 1,
+            ],
+            [
+                'author' => 'عمر الحربي',
+                'role' => 'المؤسس',
+                'company' => 'متجر زاد',
+                'content' => 'المتجر الجديد ضاعف التحويل 2.1×. الدعم الفني متجاوب خلال دقائق حتى في ساعات المساء.',
+                'avatar' => null,
+                'rating' => 5,
+                'sort_order' => 2,
+            ],
+            [
+                'author' => 'نورة القحطاني',
+                'role' => 'المدير التقني CTO',
+                'company' => 'شركة رواء',
+                'content' => 'نظام الـ ERP غيّر إدارة العمليات بالكامل. كل البيانات مرئية لحظياً والتقارير المالية شديدة الدقة.',
+                'avatar' => null,
+                'rating' => 5,
+                'sort_order' => 3,
+            ],
+        ];
+
+        foreach ($testimonials as $t) {
+            Testimonial::updateOrCreate(['author' => $t['author'], 'company' => $t['company']], $t);
+        }
+
+        // 10. Seed FAQs
+        $faqs = [
+            [
+                'question' => 'كم يستغرق بناء وتطوير المشروع البرمجي عادةً؟',
+                'answer' => 'يعتمد ذلك على حجم النطاق: المشاريع التعريفية ومتاجر MVP تستغرق عادة من 4 إلى 6 أسابيع، بينما المنصات الكبيرة وتطبيقات الجوال تتراوح بين 8 إلى 16 أسبوعاً مع تسليم نسخ تجريبية أسبوعية.',
+                'category' => 'general',
+                'sort_order' => 1,
+            ],
+            [
+                'question' => 'كيف تتم آلية الدفع وتقسيم الدفعات؟',
+                'answer' => 'نعتمد نظام الدفعات المرحلية المرتبط بإنجاز معالم واضحة (Milestones)، عادة 30% دفعة أولى، و40% بعد تسليم النسخة التجريبية الأولى، و30% بعد الإطلاق والاعتماد النهائي.',
+                'category' => 'pricing',
+                'sort_order' => 2,
+            ],
+            [
+                'question' => 'هل نحصل على الكود المصدري وحقوق الملكية الفكرية؟',
+                'answer' => 'نعم بالكامل. الكود المصدري يُسلم كاملاً على مستودع خاص بك مع كامل الحقوق الفكرية والتراخيص بمجرد سداد الدفعة النهائية.',
+                'category' => 'legal',
+                'sort_order' => 3,
+            ],
+            [
+                'question' => 'هل توفرون ضماناً ودعماً فنياً بعد إطلاق المشروع؟',
+                'answer' => 'نعم، جميع مشاريعنا تشمل فترة ضمان ودعم فني مجانية بعد الإطلاق لمعالجة أي ملاحظات وضمان استقرار النظام تحت الضغط الفعلي.',
+                'category' => 'support',
+                'sort_order' => 4,
+            ],
+        ];
+
+        foreach ($faqs as $f) {
+            Faq::updateOrCreate(['question' => $f['question']], $f);
+        }
+
+        // 11. Seed Company Team Members
+        $team = [
+            [
+                'name' => 'أحمد الغامدي',
+                'role' => 'المؤسس والرئيس التنفيذي — CEO',
+                'bio' => 'أكثر من 12 عاماً في قيادة وتطوير المنتجات التقنية والمنصات السحابية للشركات الناشئة والمؤسسات.',
+                'avatar' => null,
+                'social_links' => ['linkedin' => 'https://linkedin.com', 'twitter' => 'https://x.com'],
+                'sort_order' => 1,
+            ],
+            [
+                'name' => 'ريم الدوسري',
+                'role' => 'رئيسة التصميم وتجربة المستخدم — Head of Design',
+                'bio' => 'متخصصة في بناء هويات رقمية متميزة وتجارب مستخدم فائقة البساطة تعزز معدلات التحويل.',
+                'avatar' => null,
+                'social_links' => ['linkedin' => 'https://linkedin.com'],
+                'sort_order' => 2,
+            ],
+            [
+                'name' => 'فيصل المطيري',
+                'role' => 'المدير التقني — CTO & Cloud Architect',
+                'bio' => 'خبير في معمارية الأنظمة السحابية الموزعة وLaravel/Next.js والبنية التحتية المقاومة للأعطال.',
+                'avatar' => null,
+                'social_links' => ['github' => 'https://github.com'],
+                'sort_order' => 3,
+            ],
+            [
+                'name' => 'لينا عسيري',
+                'role' => 'مديرة المنتجات والمشاريع — Product Lead',
+                'bio' => 'شغوفة بتوجيه فرق العمل الرشيقة وضمان تسليم المشاريع بدقة متناهية وفي الوقت المحدد.',
+                'avatar' => null,
+                'social_links' => ['linkedin' => 'https://linkedin.com'],
+                'sort_order' => 4,
+            ],
+        ];
+
+        foreach ($team as $tm) {
+            TeamMember::updateOrCreate(['name' => $tm['name']], $tm);
+        }
+
+        // 12. Seed Clients & Partners
+        $clients = [
+            ['name' => 'شركة نون', 'logo' => 'https://amtdex.com/logos/noon.svg', 'sort_order' => 1],
+            ['name' => 'شركة STC', 'logo' => 'https://amtdex.com/logos/stc.svg', 'sort_order' => 2],
+            ['name' => 'شركة أرامكو', 'logo' => 'https://amtdex.com/logos/aramco.svg', 'sort_order' => 3],
+            ['name' => 'شركة سابك', 'logo' => 'https://amtdex.com/logos/sabic.svg', 'sort_order' => 4],
+            ['name' => 'مصرف الراجحي', 'logo' => 'https://amtdex.com/logos/rajhi.svg', 'sort_order' => 5],
+            ['name' => 'تطبيق جاهز', 'logo' => 'https://amtdex.com/logos/jahez.svg', 'sort_order' => 6],
+            ['name' => 'تطبيق مرسول', 'logo' => 'https://amtdex.com/logos/mrsool.svg', 'sort_order' => 7],
+            ['name' => 'هنقرستيشن', 'logo' => 'https://amtdex.com/logos/hungerstation.svg', 'sort_order' => 8],
+        ];
+
+        foreach ($clients as $cl) {
+            Client::updateOrCreate(['name' => $cl['name']], $cl);
+        }
+
+        // 13. Seed Blog System
         $this->call(BlogSeeder::class);
     }
 }

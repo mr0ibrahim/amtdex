@@ -11,6 +11,13 @@ import {
 import type { Service } from "@/types/service"
 import type { Project } from "@/types/project"
 import { Icon, type IconName } from "@/components/ui/Icon"
+import { PricingTab } from "./PricingTab"
+import { TestimonialsTab } from "./TestimonialsTab"
+import { FaqsTab } from "./FaqsTab"
+import { TeamTab } from "./TeamTab"
+import { ClientsTab } from "./ClientsTab"
+
+type ContentTab = "projects" | "services" | "pricing" | "testimonials" | "faqs" | "team" | "clients"
 
 const SERVICE_ICONS: Array<{ id: IconName; label: string }> = [
   { id: "web", label: "مواقع ويب (Web)" },
@@ -139,6 +146,7 @@ export function ContentPage() {
   const uploadMutation = useUploadMediaMutation()
 
   const [editingService, setEditingService] = useState<Service | null>(null)
+  const [activeTab, setActiveTab] = useState<ContentTab>("projects")
   const [editingProject, setEditingProject] = useState<Project | null>(null)
   const [serviceError, setServiceError] = useState<string | null>(null)
   const [projectError, setProjectError] = useState<string | null>(null)
@@ -291,7 +299,89 @@ export function ContentPage() {
         <h1 className="text-[18px] font-bold text-[var(--color-ink)]">إدارة المحتوى</h1>
       </div>
 
+      {/* Navigation Tabs */}
+      <div className="flex items-center gap-1 overflow-x-auto border-b border-[var(--color-border)] pb-px">
+        <button
+          type="button"
+          onClick={() => setActiveTab("projects")}
+          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
+            activeTab === "projects"
+              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
+              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
+          }`}
+        >
+          معرض المشاريع ({projects.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("services")}
+          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
+            activeTab === "services"
+              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
+              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
+          }`}
+        >
+          الخدمات ({services.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("pricing")}
+          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
+            activeTab === "pricing"
+              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
+              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
+          }`}
+        >
+          باقات الأسعار
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("testimonials")}
+          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
+            activeTab === "testimonials"
+              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
+              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
+          }`}
+        >
+          آراء العملاء
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("faqs")}
+          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
+            activeTab === "faqs"
+              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
+              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
+          }`}
+        >
+          الأسئلة الشائعة
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("team")}
+          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
+            activeTab === "team"
+              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
+              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
+          }`}
+        >
+          فريق العمل
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("clients")}
+          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
+            activeTab === "clients"
+              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
+              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
+          }`}
+        >
+          الشركاء والعملاء
+        </button>
+      </div>
+
       {/* Services Section */}
+      {activeTab === "services" && (
       <Section
         title={`الخدمات (${services.length})`}
         addLabel="+ إضافة خدمة"
@@ -374,8 +464,10 @@ export function ContentPage() {
           </div>
         )}
       </Section>
+      )}
 
       {/* Projects Section */}
+      {activeTab === "projects" && (
       <Section
         title={`المشاريع (${projects.length})`}
         addLabel="+ إضافة مشروع"
@@ -506,8 +598,14 @@ export function ContentPage() {
           </div>
         )}
       </Section>
+      )}
 
-      {/* Service Edit Modal */}
+      {/* Dynamic Content Tabs */}
+      {activeTab === "pricing" && <PricingTab />}
+      {activeTab === "testimonials" && <TestimonialsTab />}
+      {activeTab === "faqs" && <FaqsTab />}
+      {activeTab === "team" && <TeamTab />}
+      {activeTab === "clients" && <ClientsTab />}
       {editingService && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-center p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-[620px] w-full p-6 space-y-4 shadow-2xl my-8 max-h-[90vh] overflow-y-auto border border-[var(--color-border)]">

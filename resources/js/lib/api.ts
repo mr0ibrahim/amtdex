@@ -439,4 +439,79 @@ export const API = {
       }>("/dashboard/stats", "GET")
     },
   },
+
+  pricing: {
+    list() {
+      return apiClient<{ data: Array<any> }>("/pricing", "GET")
+    },
+    create(data: any) {
+      return apiClient<{ ok: boolean; data: any }>("/pricing", "POST", data)
+    },
+    update(id: number | string, data: any) {
+      return apiClient<{ ok: boolean; data: any }>(`/pricing/${id}`, "PUT", data)
+    },
+    delete(id: number | string) {
+      return apiClient<{ ok: boolean }>(`/pricing/${id}`, "DELETE")
+    },
+  },
+
+  testimonials: {
+    list() {
+      return apiClient<{ data: Array<any> }>("/testimonials", "GET")
+    },
+    create(data: any) {
+      return apiClient<{ ok: boolean; data: any }>("/testimonials", "POST", data)
+    },
+    update(id: number | string, data: any) {
+      return apiClient<{ ok: boolean; data: any }>(`/testimonials/${id}`, "PUT", data)
+    },
+    delete(id: number | string) {
+      return apiClient<{ ok: boolean }>(`/testimonials/${id}`, "DELETE")
+    },
+  },
+
+  faqs: {
+    list() {
+      return apiClient<{ data: Array<any> }>("/faqs", "GET")
+    },
+    create(data: any) {
+      return apiClient<{ ok: boolean; data: any }>("/faqs", "POST", data)
+    },
+    update(id: number | string, data: any) {
+      return apiClient<{ ok: boolean; data: any }>(`/faqs/${id}`, "PUT", data)
+    },
+    delete(id: number | string) {
+      return apiClient<{ ok: boolean }>(`/faqs/${id}`, "DELETE")
+    },
+  },
+
+  team: {
+    list() {
+      return apiClient<{ data: Array<any> }>("/team", "GET")
+    },
+    create(data: any) {
+      return apiClient<{ ok: boolean; data: any }>("/team", "POST", data)
+    },
+    update(id: number | string, data: any) {
+      return apiClient<{ ok: boolean; data: any }>(`/team/${id}`, "PUT", data)
+    },
+    delete(id: number | string) {
+      return apiClient<{ ok: boolean }>(`/team/${id}`, "DELETE")
+    },
+  },
+
+  clients: {
+    list() {
+      return apiClient<{ data: Array<any> }>("/clients", "GET")
+    },
+    create(data: any) {
+      return apiClient<{ ok: boolean; data: any }>("/clients", "POST", data)
+    },
+    update(id: number | string, data: any) {
+      return apiClient<{ ok: boolean; data: any }>(`/clients/${id}`, "PUT", data)
+    },
+    delete(id: number | string) {
+      return apiClient<{ ok: boolean }>(`/clients/${id}`, "DELETE")
+    },
+  },
 } as const

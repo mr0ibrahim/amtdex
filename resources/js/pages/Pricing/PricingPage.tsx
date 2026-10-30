@@ -1,10 +1,23 @@
 import { Icon } from "@/components/ui/Icon"
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { PRICING } from "@/data/pricing"
+import { PRICING as FALLBACK_PRICING } from "@/data/pricing"
+import { usePricingPlansQuery } from "@/lib/queries"
 
 export function PricingPage({ onToast }: { onToast: (m: string) => void }) {
   const [billing, setBilling] = useState<"once" | "monthly">("once")
+  const { data: apiPlans } = usePricingPlansQuery()
+
+  const plans = (apiPlans && apiPlans.length > 0)
+    ? apiPlans.map((p: any) => ({
+        name: p.name,
+        price: p.price,
+        unit: p.period ? `${p.currency || "﷼"} — ${p.period}` : "ريال — مرة واحدة",
+        features: Array.isArray(p.features) ? p.features.map((f: any) => typeof f === "string" ? f : f.text) : [],
+        cta: p.cta || "اطلب الآن",
+        popular: !!p.highlight,
+      }))
+    : FALLBACK_PRICING
 
   return (
     <div className="mx-auto max-w-[1440px] px-10 py-16 bg-white">
@@ -22,7 +35,7 @@ export function PricingPage({ onToast }: { onToast: (m: string) => void }) {
         </div>
       </div>
       <div className="mt-8 grid lg:grid-cols-3 gap-3.5 items-end">
-        {PRICING.map((p) => (
+        {plans.map((p: any) => (
           <div key={p.name} className={`rounded-[24px] border p-7 flex flex-col ${p.popular ? "bg-[var(--color-ink)] text-white border-[var(--color-primary)] border-2 shadow-[0_16px_32px_rgba(10,102,255,0.15)]" : "bg-white border-[var(--color-border)] shadow-[0_8px_20px_rgba(7,11,26,0.04)]"}`}>
             {p.popular && <span className="self-start text-[11px] font-bold bg-[var(--color-primary)] text-white rounded-full px-3 py-1"><Icon name="star" size={13} /> الأكثر طلباً</span>}
             <h3 className={`mt-3 text-[16px] font-extrabold ${p.popular ? "text-white" : "text-[var(--color-ink)]"}`}>{p.name}</h3>
@@ -34,7 +47,7 @@ export function PricingPage({ onToast }: { onToast: (m: string) => void }) {
             </div>
             <div className={`h-px my-4 ${p.popular ? "bg-[var(--color-border-strong)]" : "bg-[var(--color-border)]"}`} />
             <ul className="space-y-2.5 flex-1">
-              {p.features.map((f) => (
+              {p.features.map((f: string) => (
                 <li key={f} className="flex items-center gap-2.5 text-[12.5px]">
                   <span className={`size-5 rounded-full grid place-items-center text-[10px] shrink-0 ${p.popular ? "bg-[var(--color-border-strong)] text-[#7DD3A0]" : "bg-[var(--color-beige)] text-[var(--color-ink)]"}`}><Icon name="check" size={16} /></span>
                   <span className={p.popular ? "text-[var(--color-border)]" : "text-[var(--color-ink)]"}>{String(f)}</span>

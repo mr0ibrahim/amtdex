@@ -10,6 +10,7 @@ import { newsletterSchema, zodErrors } from "@/lib/schemas"
 import { addLead } from "@/lib/leadStore"
 import { useServices } from "@/lib/contentStore"
 import { LOGOS } from "@/data/site"
+import { useClientsQuery } from "@/lib/queries"
 import { FinalCTA } from "@/pages/Home/FinalCTA"
 import { GuaranteeBanner } from "@/pages/Home/GuaranteeBanner"
 import { OrbitSection } from "@/pages/Home/OrbitSection"
@@ -19,6 +20,7 @@ import { WorkflowSection } from "@/pages/Home/WorkflowSection"
 
 export function HomePage({ onToast }: { onToast: (m: string) => void }) {
   const services = useServices()
+  const { data: dbClients } = useClientsQuery()
   const motionRef = useBrandMotion()
   const [email, setEmail] = useState("")
   const [err, setErr] = useState("")
@@ -197,9 +199,9 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
         <div className="mt-10 border-y border-[var(--color-border)] py-6 bg-gradient-to-l from-white to-[var(--color-bg)]">
           <div className="text-[11px] tracking-[0.4px] text-[var(--color-text-faint)] font-semibold text-center">شركاؤنا في التحول الرقمي — من صنعاء إلى المنطقة</div>
           <div className="mt-3 flex flex-wrap justify-between gap-4">
-            {LOGOS.map((l) => (
-              <span key={l} className="text-[14px] font-extrabold tracking-[-0.5px] text-[var(--color-ink)] opacity-[0.18]">
-                {l}
+            {(dbClients && dbClients.length > 0 ? dbClients : LOGOS).map((l: any, idx: number) => (
+              <span key={typeof l === "string" ? l : (l.id || idx)} className="text-[14px] font-extrabold tracking-[-0.5px] text-[var(--color-ink)] opacity-[0.18] inline-flex items-center gap-1.5">
+                {typeof l === "string" ? l : (l.logo ? <img src={l.logo} alt={l.name} className="h-5 inline-block opacity-60 grayscale" /> : l.name)}
               </span>
             ))}
           </div>

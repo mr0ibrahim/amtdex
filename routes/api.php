@@ -26,6 +26,11 @@ Route::prefix('v1')->group(function () {
     Route::get('/services/{slug}', [ContentController::class, 'service']);
     Route::get('/projects', [ContentController::class, 'projects']);
     Route::get('/projects/{slug}', [ContentController::class, 'project']);
+    Route::get('/pricing', [ContentController::class, 'pricing']);
+    Route::get('/testimonials', [ContentController::class, 'testimonials']);
+    Route::get('/faqs', [ContentController::class, 'faqs']);
+    Route::get('/team', [ContentController::class, 'team']);
+    Route::get('/clients', [ContentController::class, 'clients']);
     Route::get('/settings/public', [SettingsController::class, 'get']);
 
     // ── Public Blog Endpoints ──
@@ -66,6 +71,31 @@ Route::prefix('v1')->group(function () {
         Route::post('/projects', [ContentController::class, 'storeProject'])->middleware('role:admin,editor');
         Route::put('/projects/{slug}', [ContentController::class, 'updateProject'])->middleware('role:admin,editor');
         Route::delete('/projects/{slug}', [ContentController::class, 'destroyProject'])->middleware('role:admin');
+
+        // Content Management: Pricing Plans
+        Route::post('/pricing', [ContentController::class, 'storePricingPlan'])->middleware('role:admin,editor');
+        Route::put('/pricing/{id}', [ContentController::class, 'updatePricingPlan'])->middleware('role:admin,editor');
+        Route::delete('/pricing/{id}', [ContentController::class, 'destroyPricingPlan'])->middleware('role:admin');
+
+        // Content Management: Testimonials
+        Route::post('/testimonials', [ContentController::class, 'storeTestimonial'])->middleware('role:admin,editor');
+        Route::put('/testimonials/{id}', [ContentController::class, 'updateTestimonial'])->middleware('role:admin,editor');
+        Route::delete('/testimonials/{id}', [ContentController::class, 'destroyTestimonial'])->middleware('role:admin');
+
+        // Content Management: FAQs
+        Route::post('/faqs', [ContentController::class, 'storeFaq'])->middleware('role:admin,editor');
+        Route::put('/faqs/{id}', [ContentController::class, 'updateFaq'])->middleware('role:admin,editor');
+        Route::delete('/faqs/{id}', [ContentController::class, 'destroyFaq'])->middleware('role:admin');
+
+        // Content Management: Team
+        Route::post('/team', [ContentController::class, 'storeTeamMember'])->middleware('role:admin,editor');
+        Route::put('/team/{id}', [ContentController::class, 'updateTeamMember'])->middleware('role:admin,editor');
+        Route::delete('/team/{id}', [ContentController::class, 'destroyTeamMember'])->middleware('role:admin');
+
+        // Content Management: Clients / Partners
+        Route::post('/clients', [ContentController::class, 'storeClient'])->middleware('role:admin,editor');
+        Route::put('/clients/{id}', [ContentController::class, 'updateClient'])->middleware('role:admin,editor');
+        Route::delete('/clients/{id}', [ContentController::class, 'destroyClient'])->middleware('role:admin');
 
         // SEO Metadata Management
         Route::get('/seo', [SeoController::class, 'index']);

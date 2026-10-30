@@ -157,6 +157,13 @@ class ApiEndpointsTest extends TestCase
         $this->getJson('/api/v1/settings/public')
             ->assertStatus(200)
             ->assertJson(['siteName' => 'Amtdex Pro']);
+
+        // Check new dynamic endpoints
+        $this->getJson('/api/v1/pricing')->assertStatus(200);
+        $this->getJson('/api/v1/testimonials')->assertStatus(200);
+        $this->getJson('/api/v1/faqs')->assertStatus(200);
+        $this->getJson('/api/v1/team')->assertStatus(200);
+        $this->getJson('/api/v1/clients')->assertStatus(200);
     }
 
     public function test_authentication_flow(): void
@@ -379,5 +386,106 @@ class ApiEndpointsTest extends TestCase
 
         // Record is soft deleted
         $this->assertSoftDeleted('projects', ['slug' => 'test-fintech-app']);
+    }
+
+    public function test_dynamic_content_pricing_testimonials_faqs_team_clients(): void
+    {
+        // 1. Pricing Plan CRUD
+        $planRes = $this->actingAs($this->editor, 'sanctum')
+            ->postJson('/api/v1/pricing', [
+                'name' => 'باقة الذكاء الاصطناعي',
+                'description' => 'تطوير نماذج ذكاء اصطناعي مخصصة',
+                'price' => '35,000',
+                'currency' => 'SAR',
+                'features' => ['تضمين RAG', 'لوحة تحكم إدارية'],
+            ])
+            ->assertStatus(201)
+            ->assertJsonPath('data.name', 'باقة الذكاء الاصطناعي');
+
+        $planId = $planRes->json('data.id');
+
+        // 2. Testimonial CRUD
+        $testiRes = $this->actingAs($this->editor, 'sanctum')
+            ->postJson('/api/v1/testimonials', [
+                'author' => 'خالد السقاف',
+                'role' => 'المدير التنفيذي',
+                'company' => 'تقنية المستقبل',
+                'content' => 'خدمة ممتازة وفريق احترافي جداً.',
+                'rating' => 5,
+            ])
+            ->assertStatus(201)
+            ->assertJsonPath('data.author', 'خالد السقاف');
+
+        $testiId = $testiRes->json('data.id');
+
+        // 3. FAQ CRUD
+        $faqRes = $this->actingAs($this->editor, 'sanctum')
+            ->postJson('/api/v1/faqs', [
+                'question' => 'هل تدعمون تكامل سلة وزد؟',
+                'answer' => 'نعم، نوفر ربطاً متكاملاً مع منصات التجارة الإلكترونية عبر الـ APIs.',
+            ])
+            ->assertStatus(201);
+
+        $faqId = $faqRes->json('data.id');
+
+        // 4. Team Member CRUD
+        $teamRes = $this->actingAs($this->editor, 'sanctum')
+            ->postJson('/api/v1/team', [
+                'name' => 'محمد اليافعي',
+                'role' => 'مهندس ذكاء اصطناعي — AI Engineer',
+                'bio' => 'خبير تعلم آلي ومعالجة لغات طبيعية.',
+            ])
+            ->assertStatus(201);
+
+        $memberId = $teamRes->json('data.id');
+
+        // 5. Client / Partner CRUD
+        $clientRes = $this->actingAs($this->editor, 'sanctum')
+            ->postJson('/api/v1/clients', [
+                'name' => 'بنك التضامن',
+                'logo' => 'https://amtdex.com/logos/tadhamon.svg',
+            ])
+            ->assertStatus(201);
+
+        $clientId = $clientRes->json('data.id');
+
+        // Updates (PUT)
+        $this->actingAs($this->editor, 'sanctum')
+            ->putJson("/api/v1/pricing/{$planId}", ['name' => 'باقة الذكاء الاصطناعي المتقدم'])
+            ->assertStatus(200)
+            ->assertJsonPath('data.name', 'باقة الذكاء الاصطناعي المتقدم');
+
+        $this->actingAs($this->editor, 'sanctum')
+            ->putJson("/api/v1/testimonials/{$testiId}", ['company' => 'تقنية المستقبل المحدودة'])
+            ->assertStatus(200)
+            ->assertJsonPath('data.company', 'تقنية المستقبل المحدودة');
+
+        $this->actingAs($this->editor, 'sanctum')
+            ->putJson("/api/v1/faqs/{$faqId}", ['category' => 'التقنيات'])
+            ->assertStatus(200)
+            ->assertJsonPath('data.category', 'التقنيات');
+
+        $this->actingAs($this->editor, 'sanctum')
+            ->putJson("/api/v1/team/{$memberId}", ['role' => 'Lead AI Engineer'])
+            ->assertStatus(200)
+            ->assertJsonPath('data.role', 'Lead AI Engineer');
+
+        $this->actingAs($this->editor, 'sanctum')
+            ->putJson("/api/v1/clients/{$clientId}", ['name' => 'بنك التضامن الإسلامي'])
+            ->assertStatus(200)
+            ->assertJsonPath('data.name', 'بنك التضامن الإسلامي');
+
+        // Admin Deletions (SoftDeletes)
+        $this->actingAs($this->admin, 'sanctum')->deleteJson("/api/v1/pricing/{$planId}")->assertStatus(200);
+        $this->actingAs($this->admin, 'sanctum')->deleteJson("/api/v1/testimonials/{$testiId}")->assertStatus(200);
+        $this->actingAs($this->admin, 'sanctum')->deleteJson("/api/v1/faqs/{$faqId}")->assertStatus(200);
+        $this->actingAs($this->admin, 'sanctum')->deleteJson("/api/v1/team/{$memberId}")->assertStatus(200);
+        $this->actingAs($this->admin, 'sanctum')->deleteJson("/api/v1/clients/{$clientId}")->assertStatus(200);
+
+        $this->assertSoftDeleted('pricing_plans', ['id' => $planId]);
+        $this->assertSoftDeleted('testimonials', ['id' => $testiId]);
+        $this->assertSoftDeleted('faqs', ['id' => $faqId]);
+        $this->assertSoftDeleted('company_team_members', ['id' => $memberId]);
+        $this->assertSoftDeleted('clients', ['id' => $clientId]);
     }
 }

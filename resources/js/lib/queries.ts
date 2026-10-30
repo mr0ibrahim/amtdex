@@ -493,3 +493,214 @@ export function useDashboardStatsQuery() {
   })
 }
 
+// ── PRICING PLANS QUERY & MUTATIONS ──
+export function usePricingPlansQuery() {
+  return useQuery({
+    queryKey: ["content", "pricing"],
+    queryFn: async () => {
+      try {
+        const res = await API.pricing.list()
+        return res.data
+      } catch (err) {
+        if (import.meta.env.DEV) {
+          const { PRICING } = await import("@/data/pricing")
+          return PRICING as any
+        }
+        throw err
+      }
+    },
+  })
+}
+
+export function useCreatePricingPlanMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: any) => API.pricing.create(data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "pricing"] }),
+  })
+}
+
+export function useUpdatePricingPlanMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number | string; data: any }) => API.pricing.update(id, data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "pricing"] }),
+  })
+}
+
+export function useDeletePricingPlanMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number | string) => API.pricing.delete(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "pricing"] }),
+  })
+}
+
+// ── TESTIMONIALS QUERY & MUTATIONS ──
+export function useTestimonialsQuery() {
+  return useQuery({
+    queryKey: ["content", "testimonials"],
+    queryFn: async () => {
+      try {
+        const res = await API.testimonials.list()
+        return res.data
+      } catch (err) {
+        if (import.meta.env.DEV) {
+          const { TESTIMONIALS } = await import("@/data/site")
+          return TESTIMONIALS as any
+        }
+        throw err
+      }
+    },
+  })
+}
+
+export function useCreateTestimonialMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: any) => API.testimonials.create(data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "testimonials"] }),
+  })
+}
+
+export function useUpdateTestimonialMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number | string; data: any }) => API.testimonials.update(id, data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "testimonials"] }),
+  })
+}
+
+export function useDeleteTestimonialMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number | string) => API.testimonials.delete(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "testimonials"] }),
+  })
+}
+
+// ── FAQS QUERY & MUTATIONS ──
+export function useFaqsQuery() {
+  return useQuery({
+    queryKey: ["content", "faqs"],
+    queryFn: async () => {
+      try {
+        const res = await API.faqs.list()
+        return res.data
+      } catch (err) {
+        return []
+      }
+    },
+  })
+}
+
+export function useCreateFaqMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: any) => API.faqs.create(data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "faqs"] }),
+  })
+}
+
+export function useUpdateFaqMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number | string; data: any }) => API.faqs.update(id, data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "faqs"] }),
+  })
+}
+
+export function useDeleteFaqMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number | string) => API.faqs.delete(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "faqs"] }),
+  })
+}
+
+// ── TEAM QUERY & MUTATIONS ──
+export function useTeamQuery() {
+  return useQuery({
+    queryKey: ["content", "team"],
+    queryFn: async () => {
+      try {
+        const res = await API.team.list()
+        return res.data
+      } catch (err) {
+        if (import.meta.env.DEV) {
+          const { TEAM } = await import("@/data/site")
+          return TEAM as any
+        }
+        throw err
+      }
+    },
+  })
+}
+
+export function useCreateTeamMemberMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: any) => API.team.create(data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "team"] }),
+  })
+}
+
+export function useUpdateTeamMemberMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number | string; data: any }) => API.team.update(id, data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "team"] }),
+  })
+}
+
+export function useDeleteTeamMemberMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number | string) => API.team.delete(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "team"] }),
+  })
+}
+
+// ── CLIENTS QUERY & MUTATIONS ──
+export function useClientsQuery() {
+  return useQuery({
+    queryKey: ["content", "clients"],
+    queryFn: async () => {
+      try {
+        const res = await API.clients.list()
+        return res.data
+      } catch (err) {
+        if (import.meta.env.DEV) {
+          const { LOGOS } = await import("@/data/site")
+          return LOGOS as any
+        }
+        throw err
+      }
+    },
+  })
+}
+
+export function useCreateClientMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: any) => API.clients.create(data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "clients"] }),
+  })
+}
+
+export function useUpdateClientMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number | string; data: any }) => API.clients.update(id, data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "clients"] }),
+  })
+}
+
+export function useDeleteClientMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number | string) => API.clients.delete(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["content", "clients"] }),
+  })
+}
+
