@@ -30,3 +30,4 @@ class Testimonial extends Model
         ];
     }
 }
+

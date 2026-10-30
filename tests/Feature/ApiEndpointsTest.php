@@ -14,6 +14,7 @@ use Tests\TestCase;
 
 class ApiEndpointsTest extends TestCase
 {
+    
     use RefreshDatabase;
 
     protected User $admin;

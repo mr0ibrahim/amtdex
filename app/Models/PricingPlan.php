@@ -39,3 +39,4 @@ class PricingPlan extends Model
         return $this->hasMany(PricingFeature::class, 'plan_id')->orderBy('sort_order');
     }
 }
+

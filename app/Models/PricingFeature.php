@@ -30,3 +30,4 @@ class PricingFeature extends Model
         return $this->belongsTo(PricingPlan::class, 'plan_id');
     }
 }
+

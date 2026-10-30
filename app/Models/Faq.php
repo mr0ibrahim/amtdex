@@ -26,3 +26,4 @@ class Faq extends Model
         ];
     }
 }
+
