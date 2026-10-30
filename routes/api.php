@@ -23,6 +23,7 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/services', [ContentController::class, 'services']);
     Route::get('/projects', [ContentController::class, 'projects']);
+    Route::get('/projects/{slug}', [ContentController::class, 'project']);
     Route::get('/settings/public', [SettingsController::class, 'get']);
 
     // ── Public Blog Endpoints ──

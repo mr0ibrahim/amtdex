@@ -113,9 +113,21 @@ export function useProjectsQuery() {
 export function useUpsertServiceMutation() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (service: Service) => {
+    mutationFn: async (service: Service & { isNew?: boolean }) => {
       try {
-        await API.services.update(service.slug, service)
+        if (service.isNew) {
+          await API.services.create(service)
+        } else {
+          try {
+            await API.services.update(service.slug, service)
+          } catch (err: any) {
+            if (err?.status === 404) {
+              await API.services.create(service)
+            } else {
+              throw err
+            }
+          }
+        }
       } catch (err) {
         if (!import.meta.env.DEV) throw err
         const { upsertService } = await import("./contentStore")
@@ -149,9 +161,21 @@ export function useDeleteServiceMutation() {
 export function useUpsertProjectMutation() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (project: Project) => {
+    mutationFn: async (project: Project & { isNew?: boolean }) => {
       try {
-        await API.projects.update(project.slug, project)
+        if (project.isNew) {
+          await API.projects.create(project)
+        } else {
+          try {
+            await API.projects.update(project.slug, project)
+          } catch (err: any) {
+            if (err?.status === 404) {
+              await API.projects.create(project)
+            } else {
+              throw err
+            }
+          }
+        }
       } catch (err) {
         if (!import.meta.env.DEV) throw err
         const { upsertProject } = await import("./contentStore")
@@ -242,7 +266,11 @@ export interface DashboardUser {
   id: string
   name: string
   email: string
-  role: "admin" | "editor" | "viewer"
+  role: "admin" | "editor" | "author" | "viewer"
+  avatar?: string | null
+  bio?: string | null
+  social_links?: Record<string, string> | null
+  createdAt?: string
 }
 
 export function useUsersQuery() {
@@ -262,6 +290,42 @@ export function useUsersQuery() {
         }
         throw err
       }
+    },
+  })
+}
+
+export function useCreateUserMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (data: { name: string; email: string; password?: string; role: string; avatar?: string; bio?: string; social_links?: Record<string, string> }) => {
+      return API.users.create(data)
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["users"] })
+    },
+  })
+}
+
+export function useUpdateUserMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: { name?: string; email?: string; password?: string; role?: string; avatar?: string; bio?: string; social_links?: Record<string, string> } }) => {
+      return API.users.update(id, data)
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["users"] })
+    },
+  })
+}
+
+export function useDeleteUserMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      return API.users.delete(id)
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["users"] })
     },
   })
 }
@@ -345,6 +409,18 @@ export function useUploadMediaMutation() {
         throw new ApiError(422, "نوع الملف غير مدعوم. الأنواع المدعومة: JPG, PNG, WebP, SVG, PDF")
       }
       return API.media.upload(file)
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["media"] })
+    },
+  })
+}
+
+export function useDeleteMediaMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      return API.media.delete(id)
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["media"] })

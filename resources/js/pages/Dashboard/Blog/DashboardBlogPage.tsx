@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { BlogAPI } from "@/lib/blogApi"
+import { API } from "@/lib/api"
 import { Button } from "@/components/ui/Button"
 import { Badge } from "@/components/ui/Badge"
 import { useToast } from "@/components/ui/Toast"
@@ -358,6 +359,48 @@ function ArticleEditorModal({
   const [faqList, setFaqList] = useState<{ question: string; answer: string }[]>(
     initialData.faq_schema ?? []
   )
+  const [uploadingCover, setUploadingCover] = useState(false)
+  const [uploadingInline, setUploadingInline] = useState(false)
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingCover(true)
+    try {
+      const res = await API.media.upload(file)
+      const url = res?.url || (res as any)?.data?.url
+      if (url) {
+        setForm((prev) => ({
+          ...prev,
+          cover_image: url,
+          cover_image_alt: prev.cover_image_alt || file.name.split(".")[0],
+        }))
+      }
+    } catch (err: any) {
+      alert(err?.message || "فشل رفع صورة الغلاف")
+    } finally {
+      setUploadingCover(false)
+    }
+  }
+
+  const handleInlineImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingInline(true)
+    try {
+      const res = await API.media.upload(file)
+      const url = res?.url || (res as any)?.data?.url
+      if (url) {
+        const alt = file.name.split(".")[0]
+        const snippet = `\n<figure class="my-6 text-center">\n  <img src="${url}" alt="${alt}" class="rounded-2xl max-w-full h-auto mx-auto border shadow-sm" loading="lazy" />\n  <figcaption class="text-xs text-gray-500 mt-2">${alt}</figcaption>\n</figure>\n`
+        setForm((prev) => ({ ...prev, content: (prev.content ?? "") + snippet }))
+      }
+    } catch (err: any) {
+      alert(err?.message || "فشل رفع الصورة")
+    } finally {
+      setUploadingInline(false)
+    }
+  }
 
   const { data: categoriesRes } = useQuery({
     queryKey: ["admin-categories"],
@@ -500,14 +543,52 @@ function ArticleEditorModal({
             </div>
 
             <div>
-              <label className="block font-bold text-[var(--color-ink)] mb-1">صورة الغلاف (URL)</label>
+              <label className="block font-bold text-[var(--color-ink)] mb-1">صورة الغلاف الرئيسية</label>
+              <div className="flex gap-2 items-center">
+                <input
+                  type="url"
+                  value={form.cover_image ?? ""}
+                  onChange={(e) => setForm({ ...form, cover_image: e.target.value })}
+                  placeholder="https://amtdex.com/images/screens/... أو اضغط رفع صورة"
+                  className="flex-1 px-3 py-2 rounded-xl border border-[var(--color-border)] text-xs focus:ring-2 focus:ring-[var(--color-primary)] outline-none font-mono"
+                />
+                <label className="shrink-0 inline-flex items-center justify-center bg-[var(--color-lavender)] text-[var(--color-primary)] text-xs font-bold px-3 py-2 rounded-xl cursor-pointer hover:bg-[var(--color-primary)] hover:text-white transition-colors">
+                  {uploadingCover ? "جار الرفع..." : "رفع غلاف 📤"}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    disabled={uploadingCover}
+                    onChange={handleCoverUpload}
+                  />
+                </label>
+              </div>
               <input
-                type="url"
-                value={form.cover_image ?? ""}
-                onChange={(e) => setForm({ ...form, cover_image: e.target.value })}
-                placeholder="https://amtdex.com/images/screens/..."
-                className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-xs focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+                type="text"
+                value={form.cover_image_alt ?? ""}
+                onChange={(e) => setForm({ ...form, cover_image_alt: e.target.value })}
+                placeholder="النص البديل لصورة الغلاف (Alt Text) لمحركات البحث..."
+                className="w-full px-3 py-1.5 mt-1.5 rounded-lg border border-[var(--color-border)] text-[11px] outline-none"
               />
+              {form.cover_image && (
+                <div className="mt-2 flex items-center gap-3 p-2 bg-gray-50 rounded-xl border border-gray-200">
+                  <img
+                    src={form.cover_image}
+                    alt="معاينة الغلاف"
+                    className="h-10 w-16 object-cover rounded-lg border"
+                  />
+                  <span className="text-[11px] text-gray-500 truncate flex-1">
+                    معاينة صورة الغلاف الحالية
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, cover_image: "" })}
+                    className="text-[11px] text-red-600 font-bold hover:underline"
+                  >
+                    إزالة
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -527,11 +608,21 @@ function ArticleEditorModal({
 
           {/* Content Body Editor */}
           <div>
-            <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
               <label className="block font-bold text-[var(--color-ink)]">
                 محتوى المقال (HTML / Markdown) <span className="text-red-500">*</span>
               </label>
-              <div className="flex gap-1">
+              <div className="flex gap-1.5 items-center flex-wrap">
+                <label className="px-2.5 py-1 rounded bg-[var(--color-lavender)] hover:bg-[var(--color-primary)] hover:text-white text-[10px] font-bold cursor-pointer transition-colors flex items-center gap-1">
+                  {uploadingInline ? "جار الرفع..." : "🖼️ إدراج صورة في المقال"}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    disabled={uploadingInline}
+                    onChange={handleInlineImageUpload}
+                  />
+                </label>
                 {[
                   { tag: "<h2>عنوان فرعي</h2>\n", label: "H2" },
                   { tag: "<h3>عنوان ثانوي</h3>\n", label: "H3" },

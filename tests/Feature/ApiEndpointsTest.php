@@ -307,4 +307,70 @@ class ApiEndpointsTest extends TestCase
             ->assertStatus(200)
             ->assertJson(['ok' => true]);
     }
+
+    public function test_project_media_details_crud_and_soft_deletes(): void
+    {
+        $payload = [
+            'slug' => 'test-fintech-app',
+            'title' => 'تطبيق التقنية المالية',
+            'cat' => 'أنظمة أعمال',
+            'client' => 'بنك التضامن',
+            'year' => '2026',
+            'summary' => 'منصة مصرفية ذكية وسريعة',
+            'cover_image' => 'https://amtdex.com/storage/uploads/cover.webp',
+            'cover_image_alt' => 'غلاف تطبيق التقنية المالية',
+            'gallery' => [
+                'https://amtdex.com/storage/uploads/shot1.webp',
+                'https://amtdex.com/storage/uploads/shot2.webp',
+            ],
+            'challenge' => 'الحاجة لمنظومة مدفوعات فورية متوافقة مع معايير البنك المركزي.',
+            'deliverables' => [
+                'تطبيق جوال Flutter للعملاء',
+                'بوابة تاجر مع Webhooks',
+            ],
+            'metrics' => [
+                ['v' => '+50%', 'l' => 'تسريع المعاملات'],
+                ['v' => '99.99%', 'l' => 'توافرية'],
+            ],
+            'duration' => '12 أسبوعاً',
+            'team_size' => '6 مهندسين',
+            'project_url' => 'https://fintech.example.com',
+            'meta_title' => 'دراسة حالة: تطبيق التقنية المالية',
+            'meta_description' => 'كيف طورنا منظومة مصرفية متكاملة لعميلنا.',
+            'og_image' => 'https://amtdex.com/storage/uploads/og.webp',
+            'sort_order' => 1,
+            'is_published' => true,
+        ];
+
+        // Editor creates project
+        $this->actingAs($this->editor, 'sanctum')
+            ->postJson('/api/v1/projects', $payload)
+            ->assertStatus(201)
+            ->assertJsonPath('data.cover_image', 'https://amtdex.com/storage/uploads/cover.webp')
+            ->assertJsonPath('data.challenge', 'الحاجة لمنظومة مدفوعات فورية متوافقة مع معايير البنك المركزي.')
+            ->assertJsonPath('data.duration', '12 أسبوعاً');
+
+        // Public single endpoint
+        $this->getJson('/api/v1/projects/test-fintech-app')
+            ->assertStatus(200)
+            ->assertJsonPath('data.title', 'تطبيق التقنية المالية')
+            ->assertJsonPath('data.cover_image', 'https://amtdex.com/storage/uploads/cover.webp');
+
+        // Editor updates project
+        $this->actingAs($this->editor, 'sanctum')
+            ->putJson('/api/v1/projects/test-fintech-app', [
+                'duration' => '14 أسبوعاً',
+                'summary' => 'منصة مصرفية ذكية محدثة',
+            ])
+            ->assertStatus(200)
+            ->assertJsonPath('data.duration', '14 أسبوعاً');
+
+        // Admin deletes project (Soft delete)
+        $this->actingAs($this->admin, 'sanctum')
+            ->deleteJson('/api/v1/projects/test-fintech-app')
+            ->assertStatus(200);
+
+        // Record is soft deleted
+        $this->assertSoftDeleted('projects', ['slug' => 'test-fintech-app']);
+    }
 }

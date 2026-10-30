@@ -28,7 +28,7 @@ class DashboardOverviewController extends Controller
 
         return response()->json([
             'activeProjects' => [
-                'value' => max($projectsCount, 12),
+                'value' => $projectsCount,
                 'sub' => 'مشاريع معتمدة',
             ],
             'contactRequests' => [

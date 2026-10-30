@@ -1,10 +1,12 @@
 import { useState } from "react"
-import { useMediaQuery, useUploadMediaMutation } from "@/lib/queries"
+import { useMediaQuery, useUploadMediaMutation, useDeleteMediaMutation } from "@/lib/queries"
 
 export function MediaPage() {
   const { data: media = [], isLoading, error, refetch } = useMediaQuery()
   const uploadMutation = useUploadMediaMutation()
+  const deleteMutation = useDeleteMediaMutation()
   const [uploadError, setUploadError] = useState<string | null>(null)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUploadError(null)
@@ -31,9 +33,31 @@ export function MediaPage() {
     })
   }
 
+  const handleCopy = async (id: string, url: string) => {
+    try {
+      const fullUrl = url.startsWith("http") ? url : `${window.location.origin}${url}`
+      await navigator.clipboard.writeText(fullUrl)
+      setCopiedId(id)
+      setTimeout(() => setCopiedId(null), 2500)
+    } catch {
+      alert("تعذر نسخ الرابط إلى الحافظة")
+    }
+  }
+
+  const handleDelete = (id: string, name: string) => {
+    if (window.confirm(`هل أنت متأكد من حذف الملف "${name}" نهائياً من التخزين؟`)) {
+      deleteMutation.mutate(id, {
+        onError: (err: any) => alert(err?.message || "فشل حذف الملف"),
+      })
+    }
+  }
+
   return (
     <div className="space-y-4">
-      <h1 className="text-[18px] font-bold text-[var(--color-ink)]">مستودع الوسائط</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-[18px] font-bold text-[var(--color-ink)]">مستودع الوسائط والملفات</h1>
+        <span className="text-[11px] text-[var(--color-text-faint)]">إجمالي الملفات: {media.length}</span>
+      </div>
 
       <div className="border-2 border-dashed border-[var(--color-border)] rounded-2xl p-8 text-center bg-[var(--color-card-soft)]">
         <div className="text-[14px] font-bold text-[var(--color-ink)]">اسحب الصور والملفات هنا أو اختر من جهازك</div>
@@ -47,8 +71,8 @@ export function MediaPage() {
           </div>
         )}
 
-        <label className="mt-4 inline-flex items-center gap-2 bg-[var(--color-ink)] text-white text-[12px] font-bold px-5 py-2.5 rounded-full cursor-pointer hover:opacity-90 transition-opacity">
-          {uploadMutation.isPending ? "جار الرفع..." : "اختيار ملف"}
+        <label className="mt-4 inline-flex items-center gap-2 bg-[var(--color-ink)] text-white text-[12px] font-bold px-5 py-2.5 rounded-full cursor-pointer hover:bg-black transition-colors">
+          {uploadMutation.isPending ? "جار الرفع..." : "اختيار ملف 📤"}
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf"
@@ -77,20 +101,87 @@ export function MediaPage() {
             لا توجد وسائط مرفوعة حالياً.
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {media.map((item) => (
-              <div key={item.id} className="border border-[var(--color-border)] rounded-xl p-3 flex flex-col items-center justify-center text-center bg-white">
-                <div className="size-16 rounded-lg bg-[var(--color-card-soft)] grid place-items-center text-[18px]">
-                  {item.mime.includes("svg") ? "🎨" : item.mime.includes("pdf") ? "📄" : "🖼️"}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
+            {media.map((item) => {
+              const isImage = item.mime.startsWith("image/") && !item.mime.includes("svg")
+              const isSvg = item.mime.includes("svg")
+              const isPdf = item.mime.includes("pdf")
+
+              return (
+                <div
+                  key={item.id}
+                  className="group relative border border-[var(--color-border)] rounded-2xl p-3 flex flex-col justify-between bg-white hover:border-[var(--color-primary)] hover:shadow-md transition-all"
+                >
+                  {/* Thumbnail / Icon */}
+                  <div className="w-full h-28 rounded-xl bg-[var(--color-card-soft)] overflow-hidden flex items-center justify-center border border-black/5 relative">
+                    {isImage || isSvg ? (
+                      <img
+                        src={item.url}
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                        onError={(e) => {
+                          // Fallback to emoji if image fails to load
+                          (e.target as HTMLElement).style.display = "none"
+                        }}
+                      />
+                    ) : isPdf ? (
+                      <div className="text-center p-2">
+                        <span className="text-3xl">📄</span>
+                        <div className="text-[10px] font-bold text-red-600 mt-1">PDF</div>
+                      </div>
+                    ) : (
+                      <span className="text-3xl">📁</span>
+                    )}
+
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="absolute top-1.5 left-1.5 bg-black/60 hover:bg-black text-white text-[10px] size-6 rounded-full grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="فتح في نافذة جديدة"
+                    >
+                      ↗
+                    </a>
+                  </div>
+
+                  {/* Info */}
+                  <div className="mt-2.5 w-full">
+                    <div className="text-[12px] font-bold text-[var(--color-ink)] truncate w-full" title={item.name}>
+                      {item.name}
+                    </div>
+                    <div className="flex items-center justify-between text-[10px] text-[var(--color-text-faint)] mt-1 font-mono">
+                      <span>{(item.size / 1024).toFixed(1)} KB</span>
+                      <span className="truncate max-w-[80px]">{item.mime.split("/")[1]?.toUpperCase() || ""}</span>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="mt-3 pt-2 border-t border-[var(--color-border)] flex items-center justify-between gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(item.id, item.url)}
+                      className={`flex-1 text-[10.5px] font-bold py-1 px-2 rounded-lg border transition-colors ${
+                        copiedId === item.id
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                          : "border-[var(--color-border)] hover:bg-[var(--color-lavender)] text-[var(--color-ink)]"
+                      }`}
+                    >
+                      {copiedId === item.id ? "تم النسخ ✓" : "نسخ الرابط"}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={deleteMutation.isPending}
+                      onClick={() => handleDelete(item.id, item.name)}
+                      className="text-[11px] text-red-600 hover:bg-red-50 p-1 rounded-lg border border-transparent hover:border-red-200 transition-colors"
+                      title="حذف الملف"
+                    >
+                      🗑️
+                    </button>
+                  </div>
                 </div>
-                <div className="text-[12px] font-bold text-[var(--color-ink)] mt-2 truncate w-full" title={item.name}>
-                  {item.name}
-                </div>
-                <div className="text-[10px] text-[var(--color-text-faint)] mt-1">
-                  {(item.size / 1024).toFixed(1)} KB
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>

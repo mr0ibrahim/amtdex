@@ -6,6 +6,7 @@ export type SeoEntry = {
   description: string
   canonical?: string
   ogImage?: string
+  og_image?: string
   noindex?: boolean
   jsonLd?: string // raw JSON string
 }

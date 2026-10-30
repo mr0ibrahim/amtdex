@@ -23,6 +23,9 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->role ?? 'viewer',
+                'avatar' => $user->avatar,
+                'bio' => $user->bio,
+                'social_links' => $user->social_links,
                 'createdAt' => $user->created_at?->toISOString() ?? now()->toISOString(),
             ];
         });
@@ -41,7 +44,10 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6'],
-            'role' => ['required', Rule::in(['admin', 'editor', 'viewer'])],
+            'role' => ['required', Rule::in(['admin', 'editor', 'author', 'viewer'])],
+            'avatar' => ['nullable', 'string', 'max:500'],
+            'bio' => ['nullable', 'string', 'max:1000'],
+            'social_links' => ['nullable', 'array'],
         ]);
 
         $user = User::create([
@@ -49,6 +55,9 @@ class UserController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
+            'avatar' => $validated['avatar'] ?? null,
+            'bio' => $validated['bio'] ?? null,
+            'social_links' => $validated['social_links'] ?? null,
             'email_verified_at' => now(),
         ]);
 
@@ -61,6 +70,9 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
+                'avatar' => $user->avatar,
+                'bio' => $user->bio,
+                'social_links' => $user->social_links,
             ],
         ], 201);
     }
@@ -76,7 +88,10 @@ class UserController extends Controller
             'name' => ['sometimes', 'string', 'max:100'],
             'email' => ['sometimes', 'email', Rule::unique('users')->ignore($user->id)],
             'password' => ['nullable', 'string', 'min:6'],
-            'role' => ['sometimes', Rule::in(['admin', 'editor', 'viewer'])],
+            'role' => ['sometimes', Rule::in(['admin', 'editor', 'author', 'viewer'])],
+            'avatar' => ['nullable', 'string', 'max:500'],
+            'bio' => ['nullable', 'string', 'max:1000'],
+            'social_links' => ['nullable', 'array'],
         ]);
 
         if (!empty($validated['password'])) {
@@ -96,6 +111,9 @@ class UserController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
+                'avatar' => $user->avatar,
+                'bio' => $user->bio,
+                'social_links' => $user->social_links,
             ],
         ]);
     }
@@ -110,6 +128,11 @@ class UserController extends Controller
         // Prevent self deletion
         if ($request->user() && $request->user()->id === $user->id) {
             return response()->json(['message' => 'لا يمكنك حذف حسابك الحالي.'], 422);
+        }
+
+        // Prevent deleting the last admin
+        if ($user->role === 'admin' && User::where('role', 'admin')->count() <= 1) {
+            return response()->json(['message' => 'لا يمكن حذف المسؤول (Admin) الوحيد في النظام.'], 422);
         }
 
         $email = $user->email;

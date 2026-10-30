@@ -36,11 +36,14 @@ class ContentController extends Controller
             'bullets' => ['nullable', 'array'],
             'tech' => ['nullable', 'array'],
             'detail' => ['nullable', 'string'],
+            'sort_order' => ['nullable', 'integer'],
+            'is_published' => ['nullable', 'boolean'],
         ]);
 
         $validated['slug'] = $validated['slug'] ?? Str::slug($validated['title']);
         $validated['icon'] = $validated['icon'] ?? 'web';
-        $validated['is_published'] = true;
+        $validated['is_published'] = $validated['is_published'] ?? true;
+        $validated['sort_order'] = $validated['sort_order'] ?? 0;
 
         $service = Service::create($validated);
 
@@ -63,6 +66,8 @@ class ContentController extends Controller
             'bullets' => ['nullable', 'array'],
             'tech' => ['nullable', 'array'],
             'detail' => ['nullable', 'string'],
+            'sort_order' => ['nullable', 'integer'],
+            'is_published' => ['nullable', 'boolean'],
         ]);
 
         $service->update($validated);
@@ -102,6 +107,17 @@ class ContentController extends Controller
         ]);
     }
 
+    public function project(string $slug): JsonResponse
+    {
+        $project = Project::where('slug', $slug)
+            ->where('is_published', true)
+            ->firstOrFail();
+
+        return response()->json([
+            'data' => $project,
+        ]);
+    }
+
     public function storeProject(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -114,10 +130,25 @@ class ContentController extends Controller
             'color' => ['nullable', 'string'],
             'accent' => ['nullable', 'string'],
             'summary' => ['required', 'string'],
+            'cover_image' => ['nullable', 'string'],
+            'cover_image_alt' => ['nullable', 'string', 'max:255'],
+            'gallery' => ['nullable', 'array'],
+            'challenge' => ['nullable', 'string'],
+            'deliverables' => ['nullable', 'array'],
+            'metrics' => ['nullable', 'array'],
+            'duration' => ['nullable', 'string', 'max:50'],
+            'team_size' => ['nullable', 'string', 'max:50'],
+            'project_url' => ['nullable', 'string', 'max:255'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string'],
+            'og_image' => ['nullable', 'string'],
+            'sort_order' => ['nullable', 'integer'],
+            'is_published' => ['nullable', 'boolean'],
         ]);
 
         $validated['slug'] = $validated['slug'] ?? Str::slug($validated['title']);
-        $validated['is_published'] = true;
+        $validated['is_published'] = $validated['is_published'] ?? true;
+        $validated['sort_order'] = $validated['sort_order'] ?? 0;
 
         $project = Project::create($validated);
 
@@ -142,6 +173,20 @@ class ContentController extends Controller
             'color' => ['nullable', 'string'],
             'accent' => ['nullable', 'string'],
             'summary' => ['sometimes', 'string'],
+            'cover_image' => ['nullable', 'string'],
+            'cover_image_alt' => ['nullable', 'string', 'max:255'],
+            'gallery' => ['nullable', 'array'],
+            'challenge' => ['nullable', 'string'],
+            'deliverables' => ['nullable', 'array'],
+            'metrics' => ['nullable', 'array'],
+            'duration' => ['nullable', 'string', 'max:50'],
+            'team_size' => ['nullable', 'string', 'max:50'],
+            'project_url' => ['nullable', 'string', 'max:255'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string'],
+            'og_image' => ['nullable', 'string'],
+            'sort_order' => ['nullable', 'integer'],
+            'is_published' => ['nullable', 'boolean'],
         ]);
 
         $project->update($validated);

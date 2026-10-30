@@ -15,7 +15,7 @@ class SeoController extends Controller
      */
     public function index(): JsonResponse
     {
-        $seo = SeoMetadata::all(['path', 'title', 'description', 'noindex']);
+        $seo = SeoMetadata::all(['path', 'title', 'description', 'noindex', 'og_image']);
 
         return response()->json([
             'data' => $seo,
@@ -32,6 +32,7 @@ class SeoController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:500'],
             'noindex' => ['nullable', 'boolean'],
+            'og_image' => ['nullable', 'string', 'max:500'],
         ]);
 
         $entry = SeoMetadata::updateOrCreate(
@@ -40,6 +41,7 @@ class SeoController extends Controller
                 'title' => $validated['title'],
                 'description' => $validated['description'],
                 'noindex' => (bool) ($validated['noindex'] ?? false),
+                'og_image' => $validated['og_image'] ?? null,
             ]
         );
 

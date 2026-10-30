@@ -388,7 +388,16 @@ export const API = {
 
   users: {
     list() {
-      return apiClient<{ data: Array<{ id: string; name: string; email: string; role: string; createdAt?: string }> }>("/users", "GET")
+      return apiClient<{ data: Array<{ id: string; name: string; email: string; role: string; avatar?: string | null; bio?: string | null; social_links?: Record<string, string> | null; createdAt?: string }> }>("/users", "GET")
+    },
+    create(data: { name: string; email: string; password?: string; role: string; avatar?: string; bio?: string; social_links?: Record<string, string> }) {
+      return apiClient<{ ok: boolean; data: any }>("/users", "POST", data)
+    },
+    update(id: string, data: { name?: string; email?: string; password?: string; role?: string; avatar?: string; bio?: string; social_links?: Record<string, string> }) {
+      return apiClient<{ ok: boolean; data: any }>(`/users/${id}`, "PUT", data)
+    },
+    delete(id: string) {
+      return apiClient<{ ok: boolean }>(`/users/${id}`, "DELETE")
     },
   },
 
