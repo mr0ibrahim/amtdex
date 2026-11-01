@@ -22,25 +22,35 @@ class ContentController extends Controller
 
     public function services(): JsonResponse
     {
-        $services = Service::query()
-            ->where('is_published', true)
-            ->orderBy('sort_order')
-            ->get();
+        try {
+            $services = Service::query()
+                ->where('is_published', true)
+                ->orderBy('sort_order')
+                ->get();
 
-        return response()->json([
-            'data' => $services,
-        ]);
+            return response()->json([
+                'data' => $services,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('ContentController@services error: ' . $e->getMessage());
+            return response()->json(['data' => []], 200);
+        }
     }
 
     public function service(string $slug): JsonResponse
     {
-        $service = Service::where('slug', $slug)
-            ->where('is_published', true)
-            ->firstOrFail();
+        try {
+            $service = Service::where('slug', $slug)
+                ->where('is_published', true)
+                ->firstOrFail();
 
-        return response()->json([
-            'data' => $service,
-        ]);
+            return response()->json([
+                'data' => $service,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('ContentController@service error: ' . $e->getMessage());
+            return response()->json(['message' => 'Service not found'], 404);
+        }
     }
 
     public function storeService(Request $request): JsonResponse
@@ -120,25 +130,35 @@ class ContentController extends Controller
 
     public function projects(): JsonResponse
     {
-        $projects = Project::query()
-            ->where('is_published', true)
-            ->orderBy('sort_order')
-            ->get();
+        try {
+            $projects = Project::query()
+                ->where('is_published', true)
+                ->orderBy('sort_order')
+                ->get();
 
-        return response()->json([
-            'data' => $projects,
-        ]);
+            return response()->json([
+                'data' => $projects,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('ContentController@projects error: ' . $e->getMessage());
+            return response()->json(['data' => []], 200);
+        }
     }
 
     public function project(string $slug): JsonResponse
     {
-        $project = Project::where('slug', $slug)
-            ->where('is_published', true)
-            ->firstOrFail();
+        try {
+            $project = Project::where('slug', $slug)
+                ->where('is_published', true)
+                ->firstOrFail();
 
-        return response()->json([
-            'data' => $project,
-        ]);
+            return response()->json([
+                'data' => $project,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('ContentController@project error: ' . $e->getMessage());
+            return response()->json(['message' => 'Project not found'], 404);
+        }
     }
 
     public function storeProject(Request $request): JsonResponse
@@ -239,14 +259,19 @@ class ContentController extends Controller
 
     public function pricing(): JsonResponse
     {
-        $plans = PricingPlan::with('features')
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
+        try {
+            $plans = PricingPlan::with('features')
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->get();
 
-        return response()->json([
-            'data' => $plans,
-        ]);
+            return response()->json([
+                'data' => $plans,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('ContentController@pricing error: ' . $e->getMessage());
+            return response()->json(['data' => []], 200);
+        }
     }
 
     public function storePricingPlan(Request $request): JsonResponse
@@ -344,13 +369,18 @@ class ContentController extends Controller
 
     public function testimonials(): JsonResponse
     {
-        $testimonials = Testimonial::where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
+        try {
+            $testimonials = Testimonial::where('is_active', true)
+                ->orderBy('sort_order')
+                ->get();
 
-        return response()->json([
-            'data' => $testimonials,
-        ]);
+            return response()->json([
+                'data' => $testimonials,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('ContentController@testimonials error: ' . $e->getMessage());
+            return response()->json(['data' => []], 200);
+        }
     }
 
     public function storeTestimonial(Request $request): JsonResponse
@@ -416,13 +446,18 @@ class ContentController extends Controller
 
     public function faqs(): JsonResponse
     {
-        $faqs = Faq::where('is_published', true)
-            ->orderBy('sort_order')
-            ->get();
+        try {
+            $faqs = Faq::where('is_published', true)
+                ->orderBy('sort_order')
+                ->get();
 
-        return response()->json([
-            'data' => $faqs,
-        ]);
+            return response()->json([
+                'data' => $faqs,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('ContentController@faqs error: ' . $e->getMessage());
+            return response()->json(['data' => []], 200);
+        }
     }
 
     public function storeFaq(Request $request): JsonResponse
@@ -481,13 +516,18 @@ class ContentController extends Controller
 
     public function team(): JsonResponse
     {
-        $team = TeamMember::where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
+        try {
+            $team = TeamMember::where('is_active', true)
+                ->orderBy('sort_order')
+                ->get();
 
-        return response()->json([
-            'data' => $team,
-        ]);
+            return response()->json([
+                'data' => $team,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('ContentController@team error: ' . $e->getMessage());
+            return response()->json(['data' => []], 200);
+        }
     }
 
     public function storeTeamMember(Request $request): JsonResponse
@@ -551,13 +591,18 @@ class ContentController extends Controller
 
     public function clients(): JsonResponse
     {
-        $clients = Client::where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
+        try {
+            $clients = Client::where('is_active', true)
+                ->orderBy('sort_order')
+                ->get();
 
-        return response()->json([
-            'data' => $clients,
-        ]);
+            return response()->json([
+                'data' => $clients,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('ContentController@clients error: ' . $e->getMessage());
+            return response()->json(['data' => []], 200);
+        }
     }
 
     public function storeClient(Request $request): JsonResponse

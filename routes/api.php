@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\MediaController;
 use App\Http\Controllers\Api\V1\NewsletterController;
 use App\Http\Controllers\Api\V1\SeoController;
 use App\Http\Controllers\Api\V1\SettingsController;
+use App\Http\Controllers\Api\V1\SystemDiagnosticsController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +33,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/team', [ContentController::class, 'team']);
     Route::get('/clients', [ContentController::class, 'clients']);
     Route::get('/settings/public', [SettingsController::class, 'get']);
+    Route::get('/seo', [SeoController::class, 'index']);
+    Route::get('/system/diagnose', [SystemDiagnosticsController::class, 'diagnose']);
 
     // ── Public Blog Endpoints ──
     Route::get('/blog/posts', [PublicBlogController::class, 'posts']);
@@ -98,7 +101,6 @@ Route::prefix('v1')->group(function () {
         Route::delete('/clients/{id}', [ContentController::class, 'destroyClient'])->middleware('role:admin');
 
         // SEO Metadata Management
-        Route::get('/seo', [SeoController::class, 'index']);
         Route::post('/seo', [SeoController::class, 'upsert'])->middleware('role:admin,editor');
         Route::delete('/seo', [SeoController::class, 'destroy'])->middleware('role:admin');
 

@@ -1,10 +1,11 @@
 import { useState } from "react"
 import { useSeoQuery, useUpsertSeoMutation, useDeleteSeoMutation, useUploadMediaMutation } from "@/lib/queries"
-import { generateRobots, generateSitemap } from "@/lib/seoStore"
+import { generateRobots, generateSitemap, getSeo } from "@/lib/seoStore"
 import type { SeoEntry } from "@/lib/seoStore"
 
 export function SeoPage() {
-  const { data: entries = [], isLoading, error, refetch } = useSeoQuery()
+  const { data: rawEntries = [], isLoading, error, refetch } = useSeoQuery()
+  const entries = (rawEntries && rawEntries.length > 0) ? rawEntries : getSeo()
   const upsertMutation = useUpsertSeoMutation()
   const deleteMutation = useDeleteSeoMutation()
   const uploadMutation = useUploadMediaMutation()
@@ -81,16 +82,20 @@ export function SeoPage() {
         </div>
       )}
 
+      {error && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 text-[12px] flex items-center justify-between">
+          <span>يتم عرض إعدادات SEO من التخزين المحلي الاحتياطي لتعذر الاتصال المباشر.</span>
+          <button onClick={() => refetch()} className="font-bold underline hover:text-amber-900">
+            إعادة المحاولة
+          </button>
+        </div>
+      )}
+
       <div className="bg-white border border-[var(--color-border)] rounded-2xl overflow-hidden">
-        {isLoading ? (
+        {isLoading && entries.length === 0 ? (
           <div className="p-8 text-center text-[12px] text-[var(--color-text-faint)]">
             <span className="inline-block size-4 border-2 border-[var(--color-border)] border-t-[var(--color-primary)] rounded-full animate-spin mr-2" />
             جار تحميل إعدادات SEO...
-          </div>
-        ) : error ? (
-          <div className="p-6 text-center text-[12px] text-red-600">
-            تعذر تحميل إعدادات SEO.
-            <button onClick={() => refetch()} className="mr-2 underline font-bold">إعادة المحاولة</button>
           </div>
         ) : (
           <div className="overflow-x-auto">

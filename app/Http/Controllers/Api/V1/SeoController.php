@@ -15,11 +15,20 @@ class SeoController extends Controller
      */
     public function index(): JsonResponse
     {
-        $seo = SeoMetadata::all(['path', 'title', 'description', 'noindex', 'og_image']);
+        try {
+            $seo = SeoMetadata::all(['path', 'title', 'description', 'noindex', 'og_image']);
 
-        return response()->json([
-            'data' => $seo,
-        ]);
+            return response()->json([
+                'data' => $seo,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('SeoController@index fallback: ' . $e->getMessage());
+
+            return response()->json([
+                'data' => [],
+                'warning' => 'Unable to read SEO from database, falling back to static config.',
+            ], 200);
+        }
     }
 
     /**

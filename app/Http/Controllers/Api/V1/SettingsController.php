@@ -15,7 +15,17 @@ class SettingsController extends Controller
      */
     public function get(): JsonResponse
     {
-        return response()->json(SiteSetting::getAsMap());
+        try {
+            return response()->json(SiteSetting::getAsMap());
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('SettingsController@get fallback: ' . $e->getMessage());
+
+            return response()->json([
+                'siteName' => 'Amtdex',
+                'email' => 'contact@amtdex.com',
+                'phone' => '+967 777 000 000',
+            ]);
+        }
     }
 
     /**

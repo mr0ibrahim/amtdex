@@ -22,14 +22,14 @@ export function useLeadsQuery(filter?: { status?: string; source?: string }) {
     queryFn: async () => {
       try {
         const res = await API.leads.list(filter)
-        return res.data as Lead[]
-      } catch (err) {
-        if (import.meta.env.DEV) {
-          // Dev fallback to local store
-          const { getLeads } = await import("./leadStore")
-          return getLeads()
+        if (Array.isArray(res?.data) && res.data.length > 0) {
+          return res.data as Lead[]
         }
-        throw err
+        const { getLeads } = await import("./leadStore")
+        return getLeads()
+      } catch (err) {
+        const { getLeads } = await import("./leadStore")
+        return getLeads()
       }
     },
   })
@@ -80,13 +80,15 @@ export function useServicesQuery() {
     queryFn: async () => {
       try {
         const res = await API.services.list()
-        return res.data as Service[]
-      } catch (err) {
-        if (import.meta.env.DEV) {
-          const { getServices } = await import("./contentStore")
-          return getServices() || SEED_SERVICES
+        const data = res?.data as Service[]
+        if (Array.isArray(data) && data.length > 0) {
+          return data
         }
-        throw err
+        const { getServices } = await import("./contentStore")
+        return getServices() || SEED_SERVICES
+      } catch (err) {
+        const { getServices } = await import("./contentStore")
+        return getServices() || SEED_SERVICES
       }
     },
   })
@@ -98,13 +100,15 @@ export function useProjectsQuery() {
     queryFn: async () => {
       try {
         const res = await API.projects.list()
-        return res.data as Project[]
-      } catch (err) {
-        if (import.meta.env.DEV) {
-          const { getProjects } = await import("./contentStore")
-          return getProjects() || SEED_PROJECTS
+        const data = res?.data as Project[]
+        if (Array.isArray(data) && data.length > 0) {
+          return data
         }
-        throw err
+        const { getProjects } = await import("./contentStore")
+        return getProjects() || SEED_PROJECTS
+      } catch (err) {
+        const { getProjects } = await import("./contentStore")
+        return getProjects() || SEED_PROJECTS
       }
     },
   })
@@ -213,13 +217,14 @@ export function useSeoQuery() {
     queryFn: async () => {
       try {
         const res = await API.seo.list()
-        return res.data as SeoEntry[]
-      } catch (err) {
-        if (import.meta.env.DEV) {
-          const { getSeo } = await import("./seoStore")
-          return getSeo()
+        if (Array.isArray(res?.data) && res.data.length > 0) {
+          return res.data as SeoEntry[]
         }
-        throw err
+        const { getSeo } = await import("./seoStore")
+        return getSeo()
+      } catch (err) {
+        const { getSeo } = await import("./seoStore")
+        return getSeo()
       }
     },
   })
@@ -232,17 +237,16 @@ export function useUpsertSeoMutation() {
       try {
         await API.seo.upsert(entry)
       } catch (err) {
-        if (!import.meta.env.DEV) throw err
-        const { upsertSeo } = await import("./seoStore")
-        upsertSeo(entry)
+        console.warn("API.seo.upsert fallback to local store:", err)
       }
+      const { upsertSeo } = await import("./seoStore")
+      upsertSeo(entry)
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["seo"] })
     },
   })
 }
-
 
 export function useDeleteSeoMutation() {
   const qc = useQueryClient()
@@ -251,10 +255,10 @@ export function useDeleteSeoMutation() {
       try {
         await API.seo.delete(path)
       } catch (err) {
-        if (!import.meta.env.DEV) throw err
-        const { deleteSeo } = await import("./seoStore")
-        deleteSeo(path)
+        console.warn("API.seo.delete fallback to local store:", err)
       }
+      const { deleteSeo } = await import("./seoStore")
+      deleteSeo(path)
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["seo"] })
@@ -500,13 +504,14 @@ export function usePricingPlansQuery() {
     queryFn: async () => {
       try {
         const res = await API.pricing.list()
-        return res.data
-      } catch (err) {
-        if (import.meta.env.DEV) {
-          const { PRICING } = await import("@/data/pricing")
-          return PRICING as any
+        if (Array.isArray(res?.data) && res.data.length > 0) {
+          return res.data
         }
-        throw err
+        const { PRICING } = await import("@/data/pricing")
+        return PRICING as any
+      } catch (err) {
+        const { PRICING } = await import("@/data/pricing")
+        return PRICING as any
       }
     },
   })
@@ -543,13 +548,14 @@ export function useTestimonialsQuery() {
     queryFn: async () => {
       try {
         const res = await API.testimonials.list()
-        return res.data
-      } catch (err) {
-        if (import.meta.env.DEV) {
-          const { TESTIMONIALS } = await import("@/data/site")
-          return TESTIMONIALS as any
+        if (Array.isArray(res?.data) && res.data.length > 0) {
+          return res.data
         }
-        throw err
+        const { TESTIMONIALS } = await import("@/data/site")
+        return TESTIMONIALS as any
+      } catch (err) {
+        const { TESTIMONIALS } = await import("@/data/site")
+        return TESTIMONIALS as any
       }
     },
   })
@@ -625,13 +631,14 @@ export function useTeamQuery() {
     queryFn: async () => {
       try {
         const res = await API.team.list()
-        return res.data
-      } catch (err) {
-        if (import.meta.env.DEV) {
-          const { TEAM } = await import("@/data/site")
-          return TEAM as any
+        if (Array.isArray(res?.data) && res.data.length > 0) {
+          return res.data
         }
-        throw err
+        const { TEAM } = await import("@/data/site")
+        return TEAM as any
+      } catch (err) {
+        const { TEAM } = await import("@/data/site")
+        return TEAM as any
       }
     },
   })
@@ -668,13 +675,14 @@ export function useClientsQuery() {
     queryFn: async () => {
       try {
         const res = await API.clients.list()
-        return res.data
-      } catch (err) {
-        if (import.meta.env.DEV) {
-          const { LOGOS } = await import("@/data/site")
-          return LOGOS as any
+        if (Array.isArray(res?.data) && res.data.length > 0) {
+          return res.data
         }
-        throw err
+        const { LOGOS } = await import("@/data/site")
+        return LOGOS as any
+      } catch (err) {
+        const { LOGOS } = await import("@/data/site")
+        return LOGOS as any
       }
     },
   })
