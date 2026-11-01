@@ -1,67 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://amtdex.ye/</loc>
+    <loc>https://amtdex.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://amtdex.ye/services</loc>
+    <loc>https://amtdex.com/services</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://amtdex.ye/services/web</loc>
+    <loc>https://amtdex.com/services/web</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://amtdex.ye/services/mobile</loc>
+    <loc>https://amtdex.com/services/mobile</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://amtdex.ye/services/erp</loc>
+    <loc>https://amtdex.com/services/erp</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://amtdex.ye/services/ai</loc>
+    <loc>https://amtdex.com/services/ai</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://amtdex.ye/services/security</loc>
+    <loc>https://amtdex.com/services/security</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://amtdex.ye/services/cloud</loc>
+    <loc>https://amtdex.com/services/cloud</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://amtdex.ye/portfolio</loc>
+    <loc>https://amtdex.com/portfolio</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://amtdex.ye/pricing</loc>
+    <loc>https://amtdex.com/pricing</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://amtdex.ye/about</loc>
+    <loc>https://amtdex.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://amtdex.ye/contact</loc>
+    <loc>https://amtdex.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://amtdex.ye/quote</loc>
+    <loc>https://amtdex.com/quote</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

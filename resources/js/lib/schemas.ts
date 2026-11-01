@@ -2,14 +2,19 @@ import { z } from "zod"
 
 // Shared helpers
 const requiredString = (label: string) => z.string().trim().min(1, `${label} مطلوب`)
-const emailSchema = z.string().trim().email("بريد صحيح مطلوب")
+const emailSchema = z.string().trim().email("يرجى إدخال بريد إلكتروني صالح")
+const phoneSchema = z
+  .string()
+  .trim()
+  .min(1, "رقم الجوال مطلوب")
+  .regex(/^[0-9+\s-]{7,20}$/, "رقم الجوال غير صحيح (7 إلى 20 رقماً)")
 
 export const contactSchema = z.object({
-  name: requiredString("الاسم"),
+  name: z.string().trim().min(2, "الاسم مطلوب ولا يقل عن حرفين"),
   email: emailSchema,
-  phone: z.string().trim().optional(),
+  phone: phoneSchema,
   subject: z.string().trim().optional(),
-  message: z.string().trim().min(10, "اكتب رسالة 10 أحرف على الأقل"),
+  message: z.string().trim().min(10, "الرسالة يجب ألا تقل عن 10 أحرف"),
 })
 
 export const newsletterSchema = z.object({
@@ -20,10 +25,10 @@ export const quoteSchema = z.object({
   service: requiredString("الخدمة"),
   budget: requiredString("الميزانية"),
   timeline: requiredString("الجدول الزمني"),
-  name: requiredString("الاسم"),
+  name: z.string().trim().min(2, "الاسم مطلوب ولا يقل عن حرفين"),
   email: emailSchema,
-  phone: z.string().trim().optional(),
-  details: z.string().trim().optional(),
+  phone: phoneSchema,
+  details: z.string().trim().min(10, "يرجى كتابة تفاصيل المشروع (10 أحرف على الأقل)"),
 })
 
 export type ContactInput = z.infer<typeof contactSchema>

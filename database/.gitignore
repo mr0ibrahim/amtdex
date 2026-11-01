@@ -1,1 +1,4 @@
 *.sqlite*
+*.sql
+backup_mysql.php
+

@@ -49,11 +49,9 @@ return [
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'u430010969_amtdex_db'),
-            'username' => env('DB_USERNAME', 'u430010969_amtdex_usr'),
-            'password' => (in_array(env('DB_PASSWORD'), ['Amtdex', null, ''], true))
-                ? 'Amtdex#Db2026!Sec'
-                : env('DB_PASSWORD', 'Amtdex#Db2026!Sec'),
+            'database' => env('DB_DATABASE', 'laravel'),
+            'username' => env('DB_USERNAME', 'root'),
+            'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => env('DB_CHARSET', 'utf8mb4'),
             'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),

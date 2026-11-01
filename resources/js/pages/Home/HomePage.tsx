@@ -8,9 +8,9 @@ import { Testimonials } from "./Testimonials"
 import { API } from "@/lib/api"
 import { newsletterSchema, zodErrors } from "@/lib/schemas"
 import { addLead } from "@/lib/leadStore"
-import { useServices } from "@/lib/contentStore"
+import { SERVICES as SEED_SERVICES } from "@/data/services"
 import { LOGOS } from "@/data/site"
-import { useClientsQuery } from "@/lib/queries"
+import { useClientsQuery, useServicesQuery } from "@/lib/queries"
 import { FinalCTA } from "@/pages/Home/FinalCTA"
 import { GuaranteeBanner } from "@/pages/Home/GuaranteeBanner"
 import { OrbitSection } from "@/pages/Home/OrbitSection"
@@ -19,7 +19,8 @@ import { StatsBand } from "@/pages/Home/StatsBand"
 import { WorkflowSection } from "@/pages/Home/WorkflowSection"
 
 export function HomePage({ onToast }: { onToast: (m: string) => void }) {
-  const services = useServices()
+  const { data: apiServices } = useServicesQuery()
+  const services = (apiServices && apiServices.length > 0) ? apiServices : SEED_SERVICES
   const { data: dbClients } = useClientsQuery()
   const motionRef = useBrandMotion()
   const [email, setEmail] = useState("")

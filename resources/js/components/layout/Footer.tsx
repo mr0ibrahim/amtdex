@@ -1,14 +1,17 @@
 import { Link } from "react-router-dom"
-import { SERVICES } from "@/data/services"
+import { SERVICES as SEED_SERVICES } from "@/data/services"
+import { useServicesQuery } from "@/lib/queries"
 import { getBlogUrl, getMainUrl, isBlogSubdomain } from "@/lib/subdomain"
 
 export function Footer({ onToast }: { onToast: (m: string) => void }) {
   const onBlog = isBlogSubdomain()
+  const { data: apiServices } = useServicesQuery()
+  const services = (apiServices && apiServices.length > 0) ? apiServices : SEED_SERVICES
 
   const columns = [
     {
       title: "الخدمات",
-      links: SERVICES.map((s) => ({ label: s.title, to: `/services/${s.slug}` })),
+      links: services.map((s) => ({ label: s.title, to: `/services/${s.slug}` })),
     },
     {
       title: "الشركة",

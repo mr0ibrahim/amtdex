@@ -7,5 +7,5 @@ Disallow: /403
 Disallow: /api/
 Disallow: /sanctum/
 
-Sitemap: https://amtdex.ye/sitemap.xml
+Sitemap: https://amtdex.com/sitemap.xml
 

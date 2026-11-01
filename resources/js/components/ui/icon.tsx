@@ -18,16 +18,42 @@ const paths = {
   play: "m9 5 11 7-11 7Z",
   menu: "M4 6h16M4 12h16M4 18h16",
   close: "m6 6 12 12M18 6 6 18",
+  x: "m6 6 12 12M18 6 6 18",
   mail: "M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Zm-1 2 9 7 9-7",
   code: "m8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18",
   launch: "M14 5c2-2 5-3 7-2 1 2 0 5-2 7l-7 7-5-5ZM7 12H3l3-6h6m0 11v4l6-3v-6m-13 4c-2 0-3 3-3 5 2 0 5-1 5-3M15 7h.01",
   folder: "M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm0 0h8",
   invoice: "M6 2h9l4 4v16l-3-2-4 2-4-2-3 2V3a1 1 0 0 1 1-1Zm8 0v5h5M8 11h8m-8 4h5",
   settings: "M4 6h16M4 12h16M4 18h16M8 3v6m8 0v6M10 15v6",
+  chevronDown: "m6 9 6 6 6-6",
+  chevronUp: "m18 15-6-6-6 6",
+  phone: "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z",
+  mapPin: "M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z",
+  clock: "M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 5v5l4 2",
+  alertCircle: "M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 14h.01M12 8v4",
+  shield: "M12 2 3 6v6c0 5 5 8 9 10 4-2 9-5 9-10V6Z",
 } as const
 
 export type IconName = keyof typeof paths
 
 export function Icon({ name, size = 24, ...props }: Omit<SVGProps<SVGSVGElement>, "name"> & { name: IconName; size?: number }) {
-  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" className="ui-icon" {...props}><path d={paths[name]} /></svg>
+  const pathD = paths[name] || paths.settings
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.7}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+      className="ui-icon"
+      {...props}
+    >
+      <path d={pathD} />
+    </svg>
+  )
 }

@@ -53,7 +53,27 @@ class MediaController extends Controller
 
         $file = $request->file('file');
         $originalName = $file->getClientOriginalName();
-        $extension = $file->getClientOriginalExtension();
+        $extension = strtolower($file->getClientOriginalExtension());
+
+        // Web security hardening: Prevent Stored XSS via malicious SVG files
+        if (in_array($extension, ['svg', 'svgz'], true) || str_contains(strtolower($file->getMimeType() ?? ''), 'svg')) {
+            $content = file_get_contents($file->getRealPath());
+            if ($content !== false) {
+                if (
+                    preg_match('/<script[\s>]/i', $content) ||
+                    preg_match('/on\w+\s*=/i', $content) ||
+                    preg_match('/javascript\s*:/i', $content) ||
+                    preg_match('/<!ENTITY/i', $content) ||
+                    preg_match('/<foreignObject[\s>]/i', $content)
+                ) {
+                    return response()->json([
+                        'message' => 'ملف SVG المرفوع يحتوي على وسوم غير آمنة.',
+                        'errors' => ['file' => ['ملف SVG المرفوع يحتوي على وسوم أو عناصر غير آمنة (Stored XSS Prevention).']],
+                    ], 422);
+                }
+            }
+        }
+
         $safeName = Str::random(24) . '.' . $extension;
 
         // Store into public disk
