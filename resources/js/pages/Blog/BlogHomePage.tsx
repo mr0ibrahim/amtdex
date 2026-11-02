@@ -88,26 +88,33 @@ export function BlogHomePage() {
     })
   }
 
-  // Schema.org
+  // Prefer server-generated Organization + WebSite JSON-LD from Laravel.
   const blogUrl = getBlogUrl("/")
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Blog",
-    name: settings?.blog_title ?? "المدونة التقنية — Amtdex",
-    description: settings?.blog_description ?? "مقالات وأدلة عملية في هندسة البرمجيات والذكاء الاصطناعي.",
-    url: blogUrl,
-    publisher: {
-      "@type": "Organization",
-      name: "Amtdex",
-      url: "https://amtdex.com",
-      logo: "https://amtdex.com/favicon.svg",
-    },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${blogUrl}?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
-  }
+  const jsonLd =
+    settingsRes?.json_ld && settingsRes.json_ld.length > 0
+      ? settingsRes.json_ld
+      : {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: settings?.blog_title ?? "المدونة التقنية — Amtdex",
+          description:
+            settings?.blog_description ?? "مقالات وأدلة عملية في هندسة البرمجيات والذكاء الاصطناعي.",
+          url: blogUrl,
+          publisher: {
+            "@type": "Organization",
+            name: "Amtdex",
+            url: "https://amtdex.com",
+            logo: { "@type": "ImageObject", url: "https://amtdex.com/logo.png" },
+          },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: `${blogUrl}?q={search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
+          },
+        }
 
   return (
     <>

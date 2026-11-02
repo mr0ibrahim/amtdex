@@ -1,5 +1,5 @@
-import { useTransition } from "react"
-import { useParams, Link, useSearchParams } from "react-router-dom"
+import { useEffect, useTransition } from "react"
+import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { BlogAPI } from "@/lib/blogApi"
 import { Seo } from "@/components/Seo"
@@ -11,25 +11,28 @@ import type { BlogPost, BlogCategory } from "@/types/blog"
 export function BlogCategoryPage() {
   const { slug } = useParams<{ slug: string }>()
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const page = parseInt(searchParams.get("page") ?? "1", 10)
   const [, startTransition] = useTransition()
 
-  // Fetch category & posts in category
-  const { data: postsRes, isLoading: postsLoading } = useQuery({
-    queryKey: ["blog-category-posts", slug, page],
-    queryFn: () => BlogAPI.getPosts({ category: slug, page, per_page: 9 }),
+  const { data: categoryRes, isLoading: postsLoading, isError } = useQuery({
+    queryKey: ["blog-category", slug, page],
+    queryFn: () => BlogAPI.getCategory(slug!, page),
     enabled: Boolean(slug),
   })
 
-  const { data: categoriesRes } = useQuery({
-    queryKey: ["blog-categories"],
-    queryFn: () => BlogAPI.getCategories(),
-  })
+  useEffect(() => {
+    if (!categoryRes?.redirect || !categoryRes.target) return
+    const targetSlug = categoryRes.target.replace(/^\/?categories\//, "").replace(/\/$/, "")
+    if (!targetSlug || targetSlug === slug) return
+    navigate(isBlogSubdomain() ? `/categories/${targetSlug}` : getBlogUrl(`/categories/${targetSlug}`), {
+      replace: true,
+    })
+  }, [categoryRes, navigate, slug])
 
-  const categories = categoriesRes?.data ?? []
-  const currentCategory = categories.find((c: BlogCategory) => c.slug === slug)
-  const posts = postsRes?.data ?? []
-  const meta = postsRes?.meta
+  const currentCategory = categoryRes?.category
+  const posts = categoryRes?.posts ?? []
+  const meta = categoryRes?.meta
 
   const handlePageChange = (newPage: number) => {
     startTransition(() => {
@@ -45,36 +48,8 @@ export function BlogCategoryPage() {
     currentCategory?.meta_description ||
     currentCategory?.description ||
     `أحدث المقالات التقنية والشروحات ضمن تصنيف ${currentCategory?.name || slug}.`
-  const canonicalUrl = getBlogUrl(`/categories/${slug}`)
-
-  // Schema.org CollectionPage & BreadcrumbList
-  const schema: Record<string, unknown>[] = [
-    {
-      "@context": "https://schema.org",
-      "@type": "CollectionPage",
-      name: categoryTitle,
-      description: categoryDesc,
-      url: canonicalUrl,
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "المدونة",
-          item: getBlogUrl("/"),
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: currentCategory?.name || slug,
-          item: canonicalUrl,
-        },
-      ],
-    },
-  ]
+  const canonicalUrl = currentCategory?.canonical_url || getBlogUrl(`/categories/${slug}`)
+  const schema = categoryRes?.json_ld
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-subtle)] text-[var(--color-ink)]">
@@ -83,9 +58,9 @@ export function BlogCategoryPage() {
         description={categoryDesc}
         canonical={canonicalUrl}
         jsonLd={schema}
+        noindex={Boolean(currentCategory?.noindex)}
       />
 
-      {/* Header Banner */}
       <section className="bg-white border-b border-[var(--color-border)] py-12 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto space-y-4">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
@@ -101,9 +76,6 @@ export function BlogCategoryPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-card-soft)] text-[var(--color-primary)] text-xs font-bold mb-3">
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                </svg>
                 تصنيف مقالات
               </div>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-[var(--color-ink)] font-heading">
@@ -118,15 +90,12 @@ export function BlogCategoryPage() {
 
             {meta && (
               <div className="bg-[var(--color-bg-subtle)] px-4 py-3 rounded-2xl border border-[var(--color-border)] text-center shrink-0">
-                <span className="text-2xl font-extrabold text-[var(--color-ink)] block font-mono">
-                  {meta.total}
-                </span>
+                <span className="text-2xl font-extrabold text-[var(--color-ink)] block font-mono">{meta.total}</span>
                 <span className="text-xs text-[var(--color-text-muted)]">مقال منشور</span>
               </div>
             )}
           </div>
 
-          {/* Subcategories if any */}
           {currentCategory?.children && currentCategory.children.length > 0 && (
             <div className="flex flex-wrap items-center gap-2 pt-4">
               <span className="text-xs font-bold text-[var(--color-text-muted)]">التصنيفات الفرعية:</span>
@@ -144,7 +113,6 @@ export function BlogCategoryPage() {
         </div>
       </section>
 
-      {/* Posts Grid */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
         {postsLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
@@ -156,17 +124,19 @@ export function BlogCategoryPage() {
               </div>
             ))}
           </div>
+        ) : isError ? (
+          <div className="bg-white rounded-3xl p-12 text-center border border-[var(--color-border)] max-w-lg mx-auto space-y-4">
+            <h2 className="text-lg font-bold text-[var(--color-ink)]">تعذر تحميل التصنيف</h2>
+            <Link to={isBlogSubdomain() ? "/" : getBlogUrl("/")}>
+              <Button className="mt-2 text-xs rounded-xl">العودة للمدونة</Button>
+            </Link>
+          </div>
         ) : posts.length === 0 ? (
           <div className="bg-white rounded-3xl p-12 text-center border border-[var(--color-border)] max-w-lg mx-auto space-y-4">
-            <span className="text-4xl">📂</span>
             <h2 className="text-lg font-bold text-[var(--color-ink)]">لا توجد مقالات في هذا التصنيف حالياً</h2>
-            <p className="text-xs text-[var(--color-text-muted)]">
-              تابعنا قريباً، نقوم بإعداد مقالات قيمة ضمن هذا التخصص.
-            </p>
+            <p className="text-xs text-[var(--color-text-muted)]">تابعنا قريباً، نقوم بإعداد مقالات قيمة ضمن هذا التخصص.</p>
             <Link to={isBlogSubdomain() ? "/" : getBlogUrl("/")}>
-              <Button className="mt-2 text-xs rounded-xl">
-                العودة لكافة المقالات
-              </Button>
+              <Button className="mt-2 text-xs rounded-xl">العودة لكافة المقالات</Button>
             </Link>
           </div>
         ) : (
@@ -186,6 +156,8 @@ export function BlogCategoryPage() {
                         src={post.cover_image}
                         alt={post.cover_image_alt || post.title}
                         loading="lazy"
+                        width={640}
+                        height={360}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
@@ -208,18 +180,14 @@ export function BlogCategoryPage() {
                         </Link>
                       </h3>
                       {post.summary && (
-                        <p className="text-xs text-[var(--color-text-muted)] line-clamp-2 mt-2 leading-relaxed">
-                          {post.summary}
-                        </p>
+                        <p className="text-xs text-[var(--color-text-muted)] line-clamp-2 mt-2 leading-relaxed">{post.summary}</p>
                       )}
                     </div>
 
                     <div className="pt-4 border-t border-[var(--color-border)] flex items-center justify-between text-xs">
-                      <span className="font-semibold text-[var(--color-ink)] group-hover:-translate-x-1 rtl:group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                        قراءة المقال ←
-                      </span>
+                      <span className="font-semibold text-[var(--color-ink)]">قراءة المقال</span>
                       <span className="text-[11px] text-[var(--color-text-muted)]">
-                        {post.views_count.toLocaleString("ar-EG")} مشاهدة
+                        {(post.views_count ?? 0).toLocaleString("ar-EG")} مشاهدة
                       </span>
                     </div>
                   </div>
@@ -227,16 +195,9 @@ export function BlogCategoryPage() {
               ))}
             </div>
 
-            {/* Pagination */}
             {meta && meta.last_page > 1 && (
-              <div className="flex items-center justify-center gap-2 pt-6">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page <= 1}
-                  onClick={() => handlePageChange(page - 1)}
-                  className="rounded-xl text-xs"
-                >
+              <div className="flex items-center justify-center gap-2 pt-6 flex-wrap">
+                <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => handlePageChange(page - 1)} className="rounded-xl text-xs">
                   السابق
                 </Button>
                 {Array.from({ length: meta.last_page }).map((_, idx) => {

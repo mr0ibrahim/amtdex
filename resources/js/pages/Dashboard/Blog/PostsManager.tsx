@@ -1,10 +1,19 @@
 import { useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { BlogAPI } from "@/lib/blogApi"
-import { API } from "@/lib/api"
+import { API, ApiError } from "@/lib/api"
 import { Button } from "@/components/ui/Button"
 import { getBlogUrl } from "@/lib/subdomain"
 import type { BlogCategory, BlogPost } from "@/types/blog"
+
+function formatSeoPublishError(err: unknown): string {
+  if (err instanceof ApiError && err.errors) {
+    const messages = Object.values(err.errors).flat().filter(Boolean)
+    if (messages.length) return messages.slice(0, 3).join(" — ")
+  }
+  if (err instanceof Error && err.message) return err.message
+  return "تعذر إكمال العملية بسبب متطلبات SEO أو التحقق."
+}
 
 function statusLabel(status?: string) {
   if (status === "published") return "منشور"
@@ -56,6 +65,7 @@ export function PostsManager({ onNotify }: { onNotify: (m: string) => void }) {
       queryClient.invalidateQueries({ queryKey: ["admin-posts"] })
       queryClient.invalidateQueries({ queryKey: ["admin-blog-stats"] })
     },
+    onError: (err) => onNotify(formatSeoPublishError(err)),
   })
 
   const handleNewPost = () => {
@@ -328,6 +338,8 @@ function ArticleEditorModal({
   })
   const categories = categoriesRes?.data ?? []
 
+  const [saveError, setSaveError] = useState<string | null>(null)
+
   const saveMutation = useMutation({
     mutationFn: (payload: Partial<BlogPost>) => {
       const dataToSave = { ...payload, faq_schema: faqList }
@@ -335,8 +347,10 @@ function ArticleEditorModal({
       return BlogAPI.createAdminPost(dataToSave)
     },
     onSuccess: (_, vars) => {
+      setSaveError(null)
       onSaved(vars.status === "published" ? "تم حفظ المقال ونشره بنجاح." : "تم حفظ المسودة بنجاح.")
     },
+    onError: (err) => setSaveError(formatSeoPublishError(err)),
   })
 
   const focusKey = form.focus_keyword?.trim().toLowerCase() ?? ""
@@ -445,6 +459,11 @@ function ArticleEditorModal({
         </div>
 
         <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1 text-xs">
+          {saveError && (
+            <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-[11px] text-rose-700 font-semibold">
+              {saveError}
+            </div>
+          )}
           {section === "content" && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
