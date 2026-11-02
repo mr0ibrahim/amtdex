@@ -14,6 +14,7 @@ use App\Models\BlogRevision;
 use App\Models\BlogSetting;
 use App\Models\BlogTag;
 use App\Models\User;
+use App\Services\Blog\IndexNowService;
 use App\Services\Blog\PostPublishSeoGuard;
 use App\Services\Blog\TaxonomySlugService;
 use Illuminate\Http\JsonResponse;
@@ -154,6 +155,10 @@ class AdminBlogController extends Controller
             'ip' => $request->ip(),
         ]);
 
+        if ($post->status === 'published') {
+            IndexNowService::submitPost($post);
+        }
+
         return response()->json(['ok' => true, 'post' => $post->load(['category', 'tags'])], 201);
     }
 
@@ -227,7 +232,12 @@ class AdminBlogController extends Controller
             'ip' => $request->ip(),
         ]);
 
-        return response()->json(['ok' => true, 'post' => $post->fresh(['category', 'tags'])]);
+        $fresh = $post->fresh(['category', 'tags']);
+        if ($fresh && $fresh->status === 'published') {
+            IndexNowService::submitPost($fresh);
+        }
+
+        return response()->json(['ok' => true, 'post' => $fresh]);
     }
 
     /**
@@ -288,12 +298,21 @@ class AdminBlogController extends Controller
                     ], 422);
                 }
 
+                $publishedUrls = [];
                 foreach ($posts as $post) {
                     $enriched = PostPublishSeoGuard::enrich([], $post);
                     $post->update(array_merge($enriched, [
                         'status' => 'published',
                         'published_at' => $post->published_at ?? now(),
                     ]));
+                    $fresh = $post->fresh();
+                    if ($fresh) {
+                        $publishedUrls[] = $fresh->canonical_url
+                            ?: PostPublishSeoGuard::buildCanonicalUrl($fresh->slug);
+                    }
+                }
+                if ($publishedUrls !== []) {
+                    IndexNowService::submit($publishedUrls);
                 }
                 break;
             case 'draft':

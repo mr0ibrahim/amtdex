@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'indexnow' => [
+        'enabled' => env('INDEXNOW_ENABLED', true),
+        'key' => env('INDEXNOW_KEY', ''),
+        'host' => env('INDEXNOW_HOST', ''),
+    ],
+
 ];
