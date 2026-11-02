@@ -30,7 +30,7 @@ export function AboutPage() {
 
   return (
     <div className="bg-[var(--color-beige)]">
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="page-container py-8 sm:py-12">
         <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 items-start">
           <div>
             <div className="text-[11px] font-bold tracking-[0.6px] text-[var(--color-primary)]">من نحن</div>
@@ -95,7 +95,7 @@ export function AboutPage() {
       </div>
 
       {/* FAQ — خلفية var(--color-beige) مثل المرجع + رسائل محسنة */}
-      <div id="faq" className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-12 grid lg:grid-cols-[400px_1fr] gap-8 items-start">
+      <div id="faq" className="page-container py-12 grid lg:grid-cols-[minmax(0,360px)_1fr] gap-8 items-start">
         <div>
           <div className="text-[11px] font-bold tracking-[0.6px] text-[var(--color-primary)]">الأسئلة الشائعة</div>
           <h2 className="mt-2 text-[34px] leading-[39px] font-bold tracking-[-0.5px] text-[var(--color-ink)]">

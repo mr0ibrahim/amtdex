@@ -118,29 +118,61 @@ export function UsersPage() {
     }
   }
 
+  const roleBadge = (role?: string) => (
+    <span
+      className={`text-[10px] px-2.5 py-1 rounded-full font-bold inline-block ${
+        role === "admin"
+          ? "bg-[var(--color-ink)] text-white"
+          : role === "editor"
+            ? "bg-[var(--color-lavender)] text-[var(--color-primary)]"
+            : role === "author"
+              ? "bg-emerald-100 text-emerald-800"
+              : "bg-gray-100 text-gray-600"
+      }`}
+    >
+      {role === "admin"
+        ? "مدير (Admin)"
+        : role === "editor"
+          ? "محرر (Editor)"
+          : role === "author"
+            ? "كاتب (Author)"
+            : "مشاهد (Viewer)"}
+    </span>
+  )
+
+  const openEdit = (u?: DashboardUser) => {
+    setFormError(null)
+    if (u) {
+      setEditingUser({
+        ...u,
+        password: "",
+        social_links: u.social_links || { twitter: "", github: "", linkedin: "" },
+      })
+      return
+    }
+    setEditingUser({
+      name: "",
+      email: "",
+      password: "",
+      role: "editor",
+      avatar: "",
+      bio: "",
+      social_links: { twitter: "", github: "", linkedin: "" },
+    })
+  }
+
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-[18px] font-bold text-[var(--color-ink)]">إدارة المستخدمين والصلاحيات</h1>
-          <span className="text-[11px] text-[var(--color-text-faint)]">
+          <h1 className="text-lg sm:text-[18px] font-extrabold text-[var(--color-ink)]">إدارة المستخدمين والصلاحيات</h1>
+          <span className="text-[11px] text-[var(--color-text-faint)] block mt-1">
             مسجل الدخول حالياً كـ: <strong className="text-[var(--color-ink)]">{me?.email ?? "-"}</strong>
           </span>
         </div>
         <button
-          onClick={() => {
-            setFormError(null)
-            setEditingUser({
-              name: "",
-              email: "",
-              password: "",
-              role: "editor",
-              avatar: "",
-              bio: "",
-              social_links: { twitter: "", github: "", linkedin: "" },
-            })
-          }}
-          className="text-[11px] font-bold bg-[var(--color-ink)] text-white px-4 py-2 rounded-full hover:bg-black transition-colors"
+          onClick={() => openEdit()}
+          className="text-[11px] font-bold bg-[var(--color-ink)] text-white px-4 py-2.5 rounded-xl hover:bg-black transition-colors w-full sm:w-auto"
         >
           + إضافة مستخدم جديد
         </button>
@@ -159,26 +191,68 @@ export function UsersPage() {
               إعادة المحاولة
             </button>
           </div>
+        ) : users.length === 0 ? (
+          <div className="p-8 text-center text-[12px] text-[var(--color-text-faint)]">لا يوجد مستخدمون حالياً.</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-[12px]">
-              <thead className="bg-[var(--color-card-soft)] text-[11px] text-[var(--color-text-faint)]">
-                <tr>
-                  <th className="text-right px-4 py-3">المستخدم</th>
-                  <th className="text-right px-4 py-3">البريد الإلكتروني</th>
-                  <th className="text-right px-4 py-3">الدور والصلاحية</th>
-                  <th className="px-4 py-3" />
-                </tr>
-              </thead>
-              <tbody>
-                {users.length === 0 ? (
+          <>
+            <div className="dash-mobile-cards p-3">
+              {users.map((u) => (
+                <article key={u.id || u.email} className="dash-post-card">
+                  <div className="flex items-start gap-3">
+                    {u.avatar ? (
+                      <img
+                        src={u.avatar}
+                        alt=""
+                        className="size-10 rounded-full object-cover border border-black/10 shrink-0"
+                      />
+                    ) : (
+                      <div className="size-10 rounded-full bg-[var(--color-ink)] text-white font-bold grid place-items-center text-[13px] shrink-0">
+                        {u.name?.charAt(0) || "U"}
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-[13px] text-[var(--color-ink)]">{u.name}</div>
+                      <div className="text-[11px] text-[var(--color-text-muted)] font-mono break-all mt-0.5" dir="ltr">
+                        {u.email}
+                      </div>
+                      {u.bio && (
+                        <p className="text-[10px] text-[var(--color-text-faint)] mt-1 line-clamp-2">{u.bio}</p>
+                      )}
+                    </div>
+                    {roleBadge(u.role)}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => openEdit(u)}
+                      className="rounded-xl border border-[var(--color-border)] py-2 text-[11px] font-bold text-[var(--color-ink)]"
+                    >
+                      تعديل
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(u)}
+                      className="rounded-xl border border-rose-200 text-rose-600 py-2 text-[11px] font-bold"
+                    >
+                      حذف
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <div className="dash-desktop-table overflow-x-auto">
+              <table className="w-full text-[12px] min-w-[640px]">
+                <thead className="bg-[var(--color-card-soft)] text-[11px] text-[var(--color-text-faint)]">
                   <tr>
-                    <td colSpan={4} className="text-center py-8 text-[var(--color-text-faint)]">
-                      لا يوجد مستخدمون حالياً.
-                    </td>
+                    <th className="text-right px-4 py-3">المستخدم</th>
+                    <th className="text-right px-4 py-3">البريد الإلكتروني</th>
+                    <th className="text-right px-4 py-3">الدور والصلاحية</th>
+                    <th className="px-4 py-3" />
                   </tr>
-                ) : (
-                  users.map((u) => (
+                </thead>
+                <tbody>
+                  {users.map((u) => (
                     <tr key={u.id || u.email} className="border-t border-[var(--color-border)] hover:bg-gray-50/50">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
@@ -206,63 +280,40 @@ export function UsersPage() {
                       <td className="px-4 py-3 font-mono text-[11px] text-[var(--color-text-muted)]" dir="ltr">
                         {u.email}
                       </td>
+                      <td className="px-4 py-3">{roleBadge(u.role)}</td>
                       <td className="px-4 py-3">
-                        <span
-                          className={`text-[10px] px-2.5 py-1 rounded-full font-bold inline-block ${
-                            u.role === "admin"
-                              ? "bg-[var(--color-ink)] text-white"
-                              : u.role === "editor"
-                              ? "bg-[var(--color-lavender)] text-[var(--color-primary)]"
-                              : u.role === "author"
-                              ? "bg-emerald-100 text-emerald-800"
-                              : "bg-gray-100 text-gray-600"
-                          }`}
-                        >
-                          {u.role === "admin"
-                            ? "مدير (Admin)"
-                            : u.role === "editor"
-                            ? "محرر (Editor)"
-                            : u.role === "author"
-                            ? "كاتب (Author)"
-                            : "مشاهد (Viewer)"}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 flex gap-2 justify-end">
-                        <button
-                          onClick={() => {
-                            setFormError(null)
-                            setEditingUser({
-                              ...u,
-                              password: "",
-                              social_links: u.social_links || { twitter: "", github: "", linkedin: "" },
-                            })
-                          }}
-                          className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-1.5 rounded-full hover:bg-[var(--color-lavender)] transition-colors"
-                        >
-                          تعديل
-                        </button>
-                        <button
-                          onClick={() => handleDelete(u)}
-                          className="text-[11px] font-bold text-red-600 border border-red-200 px-3 py-1.5 rounded-full hover:bg-red-50 transition-colors"
-                        >
-                          حذف
-                        </button>
+                        <div className="flex gap-2 justify-end">
+                          <button
+                            type="button"
+                            onClick={() => openEdit(u)}
+                            className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-1.5 rounded-full hover:bg-[var(--color-lavender)] transition-colors"
+                          >
+                            تعديل
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(u)}
+                            className="text-[11px] font-bold text-red-600 border border-red-200 px-3 py-1.5 rounded-full hover:bg-red-50 transition-colors"
+                          >
+                            حذف
+                          </button>
+                        </div>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
       {/* User Form Modal */}
       {editingUser && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-[540px] w-full p-6 space-y-4 shadow-2xl border border-[var(--color-border)] my-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
-              <h3 className="text-[16px] font-bold text-[var(--color-ink)]">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-end sm:place-items-center p-0 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-t-3xl sm:rounded-2xl max-w-[540px] w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-[var(--color-border)] my-0 sm:my-8 max-h-[92vh] overflow-y-auto">
+            <div className="flex items-start justify-between gap-3 pb-3 border-b border-[var(--color-border)]">
+              <h3 className="text-[15px] sm:text-[16px] font-bold text-[var(--color-ink)] leading-snug">
                 {editingUser.id ? `تعديل المستخدم: ${editingUser.name}` : "إضافة مستخدم جديد للنظام"}
               </h3>
               <button

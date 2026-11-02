@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
-import { SectionLabel } from "@/components/ui/SectionLabel"
+import { Container } from "@/components/layout/Container"
+import { PageHeader } from "@/components/layout/PageHeader"
 import { PROJECTS as SEED_PROJECTS } from "@/data/projects"
 import { useProjectsQuery } from "@/lib/queries"
 import { CardSkeleton } from "@/components/ui/Skeleton"
 
 export function PortfolioPage() {
   const { data: apiProjects, isLoading } = useProjectsQuery()
-  const PROJECTS = (apiProjects && apiProjects.length > 0) ? apiProjects : SEED_PROJECTS
+  const PROJECTS = apiProjects && apiProjects.length > 0 ? apiProjects : SEED_PROJECTS
   const [filter, setFilter] = useState<string>("الكل")
 
   const cats = useMemo(() => ["الكل", ...Array.from(new Set(PROJECTS.map((p) => p.cat)))], [PROJECTS])
@@ -17,18 +18,19 @@ export function PortfolioPage() {
   )
 
   return (
-    <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <SectionLabel>أعمالنا ومشاريعنا</SectionLabel>
-      <h1 className="mt-3 text-[32px] sm:text-[44px] font-bold tracking-tight text-[var(--color-ink)] leading-tight">
-        نصنع منتجات
-        <br />
-        يحبها الناس وتصنع فارقاً.
-      </h1>
-      <p className="mt-3 text-[14px] leading-relaxed text-[var(--color-text-muted)] max-w-[560px]">
-        نماذج من مشاريع ومنصات رقمية قمنا بتطويرها وإطلاقها بنجاح — كل مشروع يمثل قصة نجاح وقيمة عملية قابلة للقياس.
-      </p>
+    <Container className="py-8 sm:py-12">
+      <PageHeader
+        eyebrow="أعمالنا ومشاريعنا"
+        title={
+          <>
+            نصنع منتجات
+            <br />
+            يحبها الناس وتصنع فارقاً.
+          </>
+        }
+        description="نماذج من مشاريع ومنصات رقمية قمنا بتطويرها وإطلاقها بنجاح — كل مشروع يمثل قصة نجاح وقيمة عملية قابلة للقياس."
+      />
 
-      {/* Categories Filter Tabs */}
       <div className="mt-8 flex flex-wrap gap-2">
         {cats.map((c) => (
           <button
@@ -59,7 +61,7 @@ export function PortfolioPage() {
             <Link
               key={p.slug}
               to={`/portfolio/${p.slug}`}
-              className="group rounded-[24px] overflow-hidden bg-white border border-[var(--color-border)] hover:shadow-[var(--shadow-card-lg)] hover:-translate-y-1 transition-all flex flex-col"
+              className="group rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)] hover:shadow-[var(--shadow-card-lg)] hover:-translate-y-1 transition-all flex flex-col"
             >
               <div
                 className="h-[210px] relative overflow-hidden bg-[var(--color-ink)]"
@@ -125,6 +127,6 @@ export function PortfolioPage() {
           ))
         )}
       </div>
-    </div>
+    </Container>
   )
 }

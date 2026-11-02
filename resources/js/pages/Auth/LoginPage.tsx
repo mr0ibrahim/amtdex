@@ -51,7 +51,7 @@ export function LoginPage() {
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} dir="ltr" className={`mt-1.5 w-full rounded-xl border px-4 py-2.5 text-[13px] outline-none ${fieldErrs.password ? "border-red-400" : "border-[var(--color-border)] focus:border-[var(--color-primary)]"}`} placeholder="••••••••" />
         {fieldErrs.password && <p className="text-[11px] text-red-600 mt-1">{fieldErrs.password}</p>}
 
-        <button type="submit" className="mt-6 w-full text-white font-bold text-[13px] py-3 rounded-full hover:opacity-90 transition-opacity" style={{ background: "var(--gradient-primary)" }}>دخول</button>
+        <button type="submit" className="mt-6 w-full text-white font-bold text-[13px] py-3 rounded-full hover:opacity-90 transition-opacity bg-gradient-primary">دخول</button>
 
         <div className="mt-3 flex gap-2 text-[11px] text-[var(--color-text-faint)]">
           <span>أدوار للتجربة:</span>

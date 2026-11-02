@@ -46,17 +46,17 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
 
   return (
     <footer className="border-t border-[var(--color-border)] bg-[var(--color-surface)]">
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-10">
+      <div className="page-container page-container--wide py-10">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
             <div className="flex items-center gap-2">
               <span className="size-8 rounded-xl bg-[var(--color-ink)] text-white grid place-items-center text-[12px] font-bold">A</span>
               {onBlog ? (
-                <a href={getMainUrl("/")} className="font-bold tracking-tight text-[var(--color-text)]" style={{ fontFamily: "var(--font-display)" }}>
+                <a href={getMainUrl("/")} className="font-display font-bold tracking-tight text-[var(--color-text)]">
                   amtdex
                 </a>
               ) : (
-                <Link to="/" className="font-bold tracking-tight text-[var(--color-text)]" style={{ fontFamily: "var(--font-display)" }}>
+                <Link to="/" className="font-display font-bold tracking-tight text-[var(--color-text)]">
                   amtdex
                 </Link>
               )}

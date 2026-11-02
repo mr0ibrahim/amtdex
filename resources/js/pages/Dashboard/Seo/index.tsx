@@ -41,18 +41,21 @@ export function SeoPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-[18px] font-bold text-[var(--color-ink)]">إدارة محركات البحث (SEO)</h1>
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-lg sm:text-[18px] font-extrabold text-[var(--color-ink)]">إدارة محركات البحث (SEO)</h1>
+          <p className="text-[12px] text-[var(--color-text-muted)] mt-1">عناوين الصفحات، الوصف، وصور المشاركة لكل مسار.</p>
+        </div>
+        <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
           <button
             onClick={() => setShowSitemap((v) => !v)}
-            className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-1.5 rounded-full hover:bg-[var(--color-lavender)] transition-colors"
+            className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-2.5 rounded-xl hover:bg-[var(--color-lavender)] transition-colors"
           >
             sitemap / robots
           </button>
           <button
             onClick={() => setEditing({ path: "", title: "", description: "", og_image: "" })}
-            className="text-[11px] font-bold bg-[var(--color-ink)] text-white px-4 py-2 rounded-full hover:bg-black transition-colors"
+            className="text-[11px] font-bold bg-[var(--color-ink)] text-white px-4 py-2.5 rounded-xl hover:bg-black transition-colors"
           >
             + مسار جديد
           </button>
@@ -97,27 +100,68 @@ export function SeoPage() {
             <span className="inline-block size-4 border-2 border-[var(--color-border)] border-t-[var(--color-primary)] rounded-full animate-spin mr-2" />
             جار تحميل إعدادات SEO...
           </div>
+        ) : entries.length === 0 ? (
+          <div className="p-8 text-center text-[12px] text-[var(--color-text-faint)]">لا توجد مسارات مسجلة حالياً.</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-[12px]">
-              <thead className="bg-[var(--color-card-soft)] text-[11px] text-[var(--color-text-faint)]">
-                <tr>
-                  <th className="text-right px-4 py-3">المسار</th>
-                  <th className="text-right px-4 py-3">صورة OG</th>
-                  <th className="text-right px-4 py-3">العنوان</th>
-                  <th className="text-right px-4 py-3">الوصف</th>
-                  <th className="px-4 py-3" />
-                </tr>
-              </thead>
-              <tbody>
-                {entries.length === 0 ? (
+          <>
+            <div className="dash-mobile-cards p-3">
+              {entries.map((e) => {
+                const og = e.og_image || e.ogImage
+                return (
+                  <article key={e.path} className="dash-post-card">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="font-mono text-[11px] text-[var(--color-text-muted)] break-all">{e.path}</div>
+                        <div className="font-bold text-[13px] text-[var(--color-ink)] mt-1">{e.title || "بدون عنوان"}</div>
+                        <p className="text-[11px] text-[var(--color-text-faint)] mt-1 line-clamp-2">{e.description}</p>
+                      </div>
+                      {og ? (
+                        <img src={og} alt="" className="size-12 rounded-xl object-cover border border-black/10 shrink-0" />
+                      ) : null}
+                    </div>
+                    {e.noindex && (
+                      <span className="w-fit bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-[10px] font-bold">
+                        noindex
+                      </span>
+                    )}
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setEditing({ ...e, og_image: og || "" })}
+                        className="rounded-xl border border-[var(--color-border)] py-2 text-[11px] font-bold"
+                      >
+                        تعديل
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(`حذف إعدادات SEO للمسار ${e.path}؟`)) {
+                            deleteMutation.mutate(e.path)
+                          }
+                        }}
+                        className="rounded-xl border border-rose-200 text-rose-600 py-2 text-[11px] font-bold"
+                      >
+                        حذف
+                      </button>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+
+            <div className="dash-desktop-table overflow-x-auto">
+              <table className="w-full text-[12px] min-w-[720px]">
+                <thead className="bg-[var(--color-card-soft)] text-[11px] text-[var(--color-text-faint)]">
                   <tr>
-                    <td colSpan={5} className="text-center py-8 text-[var(--color-text-faint)]">
-                      لا توجد مسارات مسجلة حالياً.
-                    </td>
+                    <th className="text-right px-4 py-3">المسار</th>
+                    <th className="text-right px-4 py-3">صورة OG</th>
+                    <th className="text-right px-4 py-3">العنوان</th>
+                    <th className="text-right px-4 py-3">الوصف</th>
+                    <th className="px-4 py-3" />
                   </tr>
-                ) : (
-                  entries.map((e) => {
+                </thead>
+                <tbody>
+                  {entries.map((e) => {
                     const og = e.og_image || e.ogImage
                     return (
                       <tr key={e.path} className="border-t border-[var(--color-border)] hover:bg-gray-50/50">
@@ -144,43 +188,45 @@ export function SeoPage() {
                         <td className="px-4 py-3 text-[var(--color-text-muted)] line-clamp-1 max-w-[280px]">
                           {e.description}
                         </td>
-                        <td className="px-4 py-3 flex gap-1.5 justify-end">
-                          <button
-                            onClick={() =>
-                              setEditing({
-                                ...e,
-                                og_image: og || "",
-                              })
-                            }
-                            className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-1 rounded-full hover:bg-[var(--color-lavender)] transition-colors"
-                          >
-                            تعديل
-                          </button>
-                          <button
-                            onClick={() => {
-                              if (window.confirm(`حذف إعدادات SEO للمسار ${e.path}؟`)) {
-                                deleteMutation.mutate(e.path)
+                        <td className="px-4 py-3">
+                          <div className="flex gap-1.5 justify-end">
+                            <button
+                              onClick={() =>
+                                setEditing({
+                                  ...e,
+                                  og_image: og || "",
+                                })
                               }
-                            }}
-                            className="text-[11px] font-bold text-red-600 border border-red-200 px-3 py-1 rounded-full hover:bg-red-50 transition-colors"
-                          >
-                            حذف
-                          </button>
+                              className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-1 rounded-full hover:bg-[var(--color-lavender)] transition-colors"
+                            >
+                              تعديل
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (window.confirm(`حذف إعدادات SEO للمسار ${e.path}؟`)) {
+                                  deleteMutation.mutate(e.path)
+                                }
+                              }}
+                              className="text-[11px] font-bold text-red-600 border border-red-200 px-3 py-1 rounded-full hover:bg-red-50 transition-colors"
+                            >
+                              حذف
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     )
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
       {/* SEO Edit Modal */}
       {editing && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-center p-4">
-          <div className="bg-white rounded-2xl max-w-[540px] w-full p-6 space-y-4 shadow-2xl border border-[var(--color-border)] max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-end sm:place-items-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-3xl sm:rounded-2xl max-w-[540px] w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-[var(--color-border)] max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-2 border-b border-[var(--color-border)]">
               <h3 className="text-[15px] font-bold text-[var(--color-ink)]">
                 {editing.path ? "تعديل إعدادات SEO للمسار" : "إضافة مسار جديد لمحركات البحث"}

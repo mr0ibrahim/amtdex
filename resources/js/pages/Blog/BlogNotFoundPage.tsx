@@ -19,7 +19,7 @@ export function BlogNotFoundPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-subtle,#FAF8F6)] text-[var(--color-ink,#16064F)] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[var(--color-bg-subtle)] text-[var(--color-ink)] flex items-center justify-center p-4">
       <Seo
         title="الصفحة غير موجودة 404 | مدونة Amtdex"
         description="الصفحة المطلوبة في مدونة Amtdex غير موجودة أو تم نقلها."
@@ -27,16 +27,16 @@ export function BlogNotFoundPage() {
         nofollow={true}
       />
 
-      <div className="max-w-lg w-full bg-white rounded-3xl p-8 sm:p-10 border border-[var(--color-border,#E2E0DF)] shadow-sm text-center space-y-6">
-        <div className="w-20 h-20 mx-auto rounded-3xl bg-[var(--color-card-soft,#F4EAF7)] text-[var(--color-primary,#281071)] flex items-center justify-center font-bold text-3xl font-mono">
+      <div className="max-w-lg w-full bg-white rounded-3xl p-8 sm:p-10 border border-[var(--color-border)] shadow-sm text-center space-y-6">
+        <div className="w-20 h-20 mx-auto rounded-3xl bg-[var(--color-card-soft)] text-[var(--color-primary)] flex items-center justify-center font-bold text-3xl font-mono">
           404
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-2xl font-extrabold text-[var(--color-ink,#16064F)] font-heading">
+          <h1 className="text-2xl font-extrabold text-[var(--color-ink)] font-heading">
             عذراً، المقال أو الصفحة غير موجودة!
           </h1>
-          <p className="text-sm text-[var(--color-text-muted,#605856)] leading-relaxed">
+          <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
             ربما تم نقل المقال إلى مسار جديد أو تغيير الرابط الدائم، يمكنك البحث في المدونة أو العودة للرئيسية.
           </p>
         </div>
@@ -48,11 +48,11 @@ export function BlogNotFoundPage() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="ابحث عن مقال، موضوع، أو وسم..."
-            className="w-full px-4 py-3 rounded-2xl border border-[var(--color-border,#E2E0DF)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary,#281071)] bg-[var(--color-bg-subtle,#FAF8F6)] pl-10"
+            className="w-full px-4 py-3 rounded-2xl border border-[var(--color-border)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-bg-subtle)] ps-4 pe-10"
           />
           <button
             type="submit"
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted,#605856)] hover:text-[var(--color-primary,#281071)]"
+            className="absolute end-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -75,7 +75,7 @@ export function BlogNotFoundPage() {
           </Button>
           <a
             href={getMainUrl("/")}
-            className="w-full sm:w-auto inline-flex items-center justify-center text-xs font-semibold px-6 py-2.5 rounded-xl border border-[var(--color-border,#E2E0DF)] hover:bg-[var(--color-bg-subtle,#FAF8F6)] text-[var(--color-ink,#16064F)] transition-colors"
+            className="w-full sm:w-auto inline-flex items-center justify-center text-xs font-semibold px-6 py-2.5 rounded-xl border border-[var(--color-border)] hover:bg-[var(--color-bg-subtle)] text-[var(--color-ink)] transition-colors"
           >
             الموقع الرئيسي Amtdex
           </a>

@@ -1,6 +1,8 @@
 import { useState } from "react"
-import { SectionLabel } from "@/components/ui/SectionLabel"
+import { Container } from "@/components/layout/Container"
+import { PageHeader } from "@/components/layout/PageHeader"
 import { Icon, type IconName } from "@/components/ui/Icon"
+import { Input, Textarea, Select } from "@/components/ui/Input"
 import { API } from "@/lib/api"
 import { contactSchema, zodErrors } from "@/lib/schemas"
 import { addLead } from "@/lib/leadStore"
@@ -62,19 +64,20 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
   }
 
   return (
-    <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
-      <SectionLabel>تواصل معنا</SectionLabel>
-      <div className="mt-4 grid lg:grid-cols-[1fr_1fr] gap-10 items-start">
-        {/* Left Information Column */}
+    <Container className="py-8 sm:py-16">
+      <div className="grid lg:grid-cols-[1fr_1fr] gap-10 items-start">
         <div>
-          <h1 className="text-[32px] sm:text-[44px] font-bold tracking-tight text-[var(--color-ink)] leading-tight">
-            لنتحدث عن
-            <br />
-            مشروعك التقني القادم.
-          </h1>
-          <p className="mt-3 text-[14px] leading-relaxed text-[var(--color-text-muted)] max-w-[480px]">
-            يسعدنا الإجابة عن استفساراتك وتقديم استشارة أولية مجانية لمشروعك البرمجي، ومساعدتك في اختيار التقنيات والحلول المعمارية الأنسب.
-          </p>
+          <PageHeader
+            eyebrow="تواصل معنا"
+            title={
+              <>
+                لنتحدث عن
+                <br />
+                مشروعك التقني القادم.
+              </>
+            }
+            description="يسعدنا الإجابة عن استفساراتك وتقديم استشارة أولية مجانية لمشروعك البرمجي، ومساعدتك في اختيار التقنيات والحلول المعمارية الأنسب."
+          />
 
           <div className="mt-8 space-y-3.5">
             {contacts.map((c) => (
@@ -141,116 +144,61 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
           )}
 
           <div className="mt-6 grid gap-4">
-            <div>
-              <label htmlFor="c-name" className="text-[12.5px] font-bold text-[var(--color-ink)]">
-                الاسم الكامل <span className="text-rose-500">*</span>
-              </label>
-              <input
-                id="c-name"
-                name="name"
-                autoComplete="name"
-                placeholder="أحمد محمد"
-                aria-invalid={!!errors.name}
-                className={`mt-1.5 w-full bg-[var(--color-card-soft)]/30 border rounded-xl px-4 py-3 text-[13px] outline-none transition-colors ${
-                  errors.name ? "border-rose-400 bg-rose-50/20" : "border-[var(--color-border)] focus:border-[var(--color-primary)]"
-                }`}
-              />
-              {errors.name && (
-                <p role="alert" className="mt-1.5 text-[11px] font-semibold text-rose-500">
-                  {errors.name}
-                </p>
-              )}
-            </div>
+            <Input
+              id="c-name"
+              name="name"
+              label="الاسم الكامل"
+              required
+              autoComplete="name"
+              placeholder="أحمد محمد"
+              error={errors.name}
+            />
 
             <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="c-email" className="text-[12.5px] font-bold text-[var(--color-ink)]">
-                  البريد الإلكتروني <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  id="c-email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="name@company.com"
-                  dir="ltr"
-                  aria-invalid={!!errors.email}
-                  className={`mt-1.5 w-full bg-[var(--color-card-soft)]/30 border rounded-xl px-4 py-3 text-[13px] outline-none transition-colors ${
-                    errors.email ? "border-rose-400 bg-rose-50/20" : "border-[var(--color-border)] focus:border-[var(--color-primary)]"
-                  }`}
-                />
-                {errors.email && (
-                  <p role="alert" className="mt-1.5 text-[11px] font-semibold text-rose-500">
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="c-phone" className="text-[12.5px] font-bold text-[var(--color-ink)]">
-                  رقم الجوال <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  id="c-phone"
-                  name="phone"
-                  type="tel"
-                  autoComplete="tel"
-                  placeholder="+966 50 123 4567"
-                  dir="ltr"
-                  aria-invalid={!!errors.phone}
-                  className={`mt-1.5 w-full bg-[var(--color-card-soft)]/30 border rounded-xl px-4 py-3 text-[13px] outline-none transition-colors ${
-                    errors.phone ? "border-rose-400 bg-rose-50/20" : "border-[var(--color-border)] focus:border-[var(--color-primary)]"
-                  }`}
-                />
-                {errors.phone && (
-                  <p role="alert" className="mt-1.5 text-[11px] font-semibold text-rose-500">
-                    {errors.phone}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="c-subject" className="text-[12.5px] font-bold text-[var(--color-ink)]">
-                موضوع الاستفسار
-              </label>
-              <select
-                id="c-subject"
-                name="subject"
-                defaultValue=""
-                className="mt-1.5 w-full bg-[var(--color-card-soft)]/30 border border-[var(--color-border)] rounded-xl px-4 py-3 text-[13px] outline-none focus:border-[var(--color-primary)] transition-colors"
-              >
-                <option value="" disabled>
-                  اختر مجال المشروع أو الاستفسار
-                </option>
-                <option value="web">تطوير منصة ويب أو متجر إلكتروني</option>
-                <option value="mobile">تطبيقات الهواتف الذكية (iOS & Android)</option>
-                <option value="erp">أنظمة إدارة الموارد السحابية (ERP & CRM)</option>
-                <option value="consultation">استشارة فنية وهندسة برمجيات</option>
-                <option value="other">استفسار عام آخر</option>
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="c-message" className="text-[12.5px] font-bold text-[var(--color-ink)]">
-                تفاصيل الرسالة <span className="text-rose-500">*</span>
-              </label>
-              <textarea
-                id="c-message"
-                name="message"
-                rows={4}
-                placeholder="أخبرنا عن فكرتك، الميزات الرئيسية المطلوبة، والموعد المستهدف للإطلاق..."
-                aria-invalid={!!errors.message}
-                className={`mt-1.5 w-full bg-[var(--color-card-soft)]/30 border rounded-xl px-4 py-3 text-[13px] outline-none transition-colors resize-none ${
-                  errors.message ? "border-rose-400 bg-rose-50/20" : "border-[var(--color-border)] focus:border-[var(--color-primary)]"
-                }`}
+              <Input
+                id="c-email"
+                name="email"
+                type="email"
+                label="البريد الإلكتروني"
+                required
+                autoComplete="email"
+                placeholder="name@company.com"
+                dir="ltr"
+                error={errors.email}
               />
-              {errors.message && (
-                <p role="alert" className="mt-1.5 text-[11px] font-semibold text-rose-500">
-                  {errors.message}
-                </p>
-              )}
+              <Input
+                id="c-phone"
+                name="phone"
+                type="tel"
+                label="رقم الجوال"
+                required
+                autoComplete="tel"
+                placeholder="+966 50 123 4567"
+                dir="ltr"
+                error={errors.phone}
+              />
             </div>
+
+            <Select id="c-subject" name="subject" label="موضوع الاستفسار" defaultValue="">
+              <option value="" disabled>
+                اختر مجال المشروع أو الاستفسار
+              </option>
+              <option value="web">تطوير منصة ويب أو متجر إلكتروني</option>
+              <option value="mobile">تطبيقات الهواتف الذكية (iOS & Android)</option>
+              <option value="erp">أنظمة إدارة الموارد السحابية (ERP & CRM)</option>
+              <option value="consultation">استشارة فنية وهندسة برمجيات</option>
+              <option value="other">استفسار عام آخر</option>
+            </Select>
+
+            <Textarea
+              id="c-message"
+              name="message"
+              label="تفاصيل الرسالة"
+              required
+              rows={4}
+              placeholder="أخبرنا عن فكرتك، الميزات الرئيسية المطلوبة، والموعد المستهدف للإطلاق..."
+              error={errors.message}
+            />
 
             <button
               type="submit"
@@ -269,6 +217,6 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
           </div>
         </form>
       </div>
-    </div>
+    </Container>
   )
 }

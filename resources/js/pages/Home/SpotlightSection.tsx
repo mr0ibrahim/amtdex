@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 
 export function SpotlightSection() {
   return (
-    <section className="mx-auto max-w-[1280px] xl:max-w-[1440px] px-4 sm:px-6 lg:px-10 py-8 sm:py-10 bg-white border-y border-[var(--color-border)]">
+    <section className="page-container page-container--wide py-8 sm:py-10 bg-[var(--color-surface)] border-y border-[var(--color-border)]">
       <div className="grid lg:grid-cols-[minmax(0,560px)_1fr] gap-5 items-start">
         <div>
           <div className="text-[11px] font-bold text-[var(--color-primary)]">قصة نجاح — من ورشة الى منصة</div>

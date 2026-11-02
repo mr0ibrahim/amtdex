@@ -54,15 +54,18 @@ export function MediaPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-[18px] font-bold text-[var(--color-ink)]">مستودع الوسائط والملفات</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h1 className="text-[18px] font-extrabold text-[var(--color-ink)]">مستودع الوسائط</h1>
+          <p className="text-[12px] text-[var(--color-text-muted)] mt-1">ارفع الصور والملفات وانسخ روابطها للنشر.</p>
+        </div>
         <span className="text-[11px] text-[var(--color-text-faint)]">إجمالي الملفات: {media.length}</span>
       </div>
 
-      <div className="border-2 border-dashed border-[var(--color-border)] rounded-2xl p-8 text-center bg-[var(--color-card-soft)]">
-        <div className="text-[14px] font-bold text-[var(--color-ink)]">اسحب الصور والملفات هنا أو اختر من جهازك</div>
-        <p className="mt-1 text-[11px] text-[var(--color-text-muted)]">
-          الحد الأقصى: 10 ميجابايت (الامتدادات المدعومة: JPG, PNG, WebP, SVG, PDF)
+      <div className="border-2 border-dashed border-[var(--color-border)] rounded-2xl p-5 sm:p-8 text-center bg-[var(--color-card-soft)]">
+        <div className="text-[13px] sm:text-[14px] font-bold text-[var(--color-ink)]">اسحب الصور والملفات هنا أو اختر من جهازك</div>
+        <p className="mt-1 text-[11px] text-[var(--color-text-muted)] leading-relaxed">
+          الحد الأقصى: 10 ميجابايت — JPG, PNG, WebP, SVG, PDF
         </p>
 
         {uploadError && (
@@ -72,7 +75,7 @@ export function MediaPage() {
         )}
 
         <label className="mt-4 inline-flex items-center gap-2 bg-[var(--color-ink)] text-white text-[12px] font-bold px-5 py-2.5 rounded-full cursor-pointer hover:bg-black transition-colors">
-          {uploadMutation.isPending ? "جار الرفع..." : "اختيار ملف 📤"}
+          {uploadMutation.isPending ? "جار الرفع..." : "اختيار ملف"}
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf"
@@ -101,7 +104,7 @@ export function MediaPage() {
             لا توجد وسائط مرفوعة حالياً.
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {media.map((item) => {
               const isImage = item.mime.startsWith("image/") && !item.mime.includes("svg")
               const isSvg = item.mime.includes("svg")

@@ -12,22 +12,21 @@ function renderWithClient(ui: React.ReactElement) {
   })
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
-        {ui}
-      </MemoryRouter>
-    </QueryClientProvider>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </QueryClientProvider>,
   )
 }
 
 describe("OverviewPage (Dashboard)", () => {
-  it("renders overview stats heading and welcoming card", async () => {
+  it("renders enterprise overview hero, stats, and modules", async () => {
     renderWithClient(<OverviewPage onToast={() => {}} />)
 
-    expect(screen.getByRole("heading", { name: "نظرة عامة" })).toBeInTheDocument()
+    expect(screen.getByText("مركز Amtdex التشغيلي")).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/ابحث عن طلب/)).toBeInTheDocument()
     expect(await screen.findByText("المشاريع النشطة")).toBeInTheDocument()
     expect(screen.getByText("طلبات التواصل")).toBeInTheDocument()
     expect(screen.getByText("عروض الأسعار")).toBeInTheDocument()
-    expect(screen.getByText(/مرحباً في لوحة Amtdex/)).toBeInTheDocument()
+    expect(screen.getByText("تابع من حيث توقفت")).toBeInTheDocument()
+    expect(screen.getByText("المحتوى والنشر")).toBeInTheDocument()
   })
 })
-

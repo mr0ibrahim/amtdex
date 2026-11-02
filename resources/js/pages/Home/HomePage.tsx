@@ -44,10 +44,10 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
   return (
     <div ref={motionRef} className="brand-motion">
       {/* HERO — R2: gradient uses var(--gradient-hero), responsive container */}
-      <section data-motion-group className="mx-auto max-w-[1280px] xl:max-w-[1440px] px-4 sm:px-6 lg:px-10 pt-8 sm:pt-12 pb-10" style={{ background: "var(--gradient-hero)" }}>
+      <section data-motion-group className="page-container page-container--wide pt-8 sm:pt-12 pb-10 bg-gradient-hero">
         <div className="grid lg:grid-cols-[minmax(0,600px)_1fr] gap-6 sm:gap-8 items-start">
           <div>
-            <div className="inline-flex items-center gap-2 bg-[#EEF3FF] border border-[var(--color-outline-peach)] rounded-full px-3 py-1.5 text-[11px] font-semibold text-[var(--color-primary)]">
+            <div className="inline-flex items-center gap-2 bg-[var(--color-signal)] border border-[var(--color-outline-peach)] rounded-full px-3 py-1.5 text-[11px] font-semibold text-[var(--color-primary)]">
               <span className="size-1.5 rounded-full bg-[var(--color-primary)] animate-pulse" />
               AMTDEX — شريكك للتحول الرقمي والحلول البرمجية
               <span className="text-[var(--color-primary)]"><Icon name="sparkles" size={14} /></span>
@@ -59,11 +59,11 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
             </h1>
             <p data-motion="rise" data-motion-delay="140" className="mt-4 text-[15px] leading-7 text-[var(--color-text-muted)] max-w-[500px]">شركة برمجيات يمنية نطوّر أنظمة مخصصة، تطبيقات جوال، ومنصات سحابية — من الفكرة إلى الإطلاق والدعم، بجودة مؤسسية وسرعة تنفيذ.</p>
             <div data-motion="rise" data-motion-delay="260" className="mt-6 flex flex-wrap gap-2.5">
-              <Link to="/quote" className="brand-cta inline-flex items-center gap-2.5 text-white font-bold text-[15px] px-5 sm:px-7 py-3 sm:py-4 rounded-full hover:opacity-90 transition-opacity shadow-[0_8px_20px_rgba(40,16,113,0.25)]" style={{ background: "var(--gradient-primary)" }}>
+              <Link to="/quote" className="brand-cta inline-flex items-center gap-2.5 text-white font-bold text-[15px] px-5 sm:px-7 py-3 sm:py-4 rounded-full hover:opacity-90 transition-opacity shadow-[var(--shadow-primary)] bg-gradient-primary">
                 اطلب استشارة مجانية
                 <span className="size-[26px] rounded-full bg-white text-[var(--color-primary)] grid place-items-center text-[14px]">←</span>
               </Link>
-              <Link to="/portfolio" className="inline-flex items-center gap-2 bg-white border border-[var(--color-border)] font-semibold text-[13.5px] px-[22px] py-[15px] rounded-full hover:bg-[var(--color-lavender)] transition-colors shadow-[0_4px_12px_rgba(7,11,26,0.04)]">
+              <Link to="/portfolio" className="inline-flex items-center gap-2 bg-white border border-[var(--color-border)] font-semibold text-[13.5px] px-5 py-3.5 rounded-full hover:bg-[var(--color-lavender)] transition-colors shadow-[var(--shadow-sm)]">
                 <span className="text-[14px]"><Icon name="play" size={15} /></span> استعرض أعمالنا
               </Link>
             </div>
@@ -219,7 +219,7 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
       <GuaranteeBanner />
 
       {/* Services preview — محدث بهوية R2 */}
-      <section className="mx-auto max-w-[1280px] xl:max-w-[1440px] px-4 sm:px-6 lg:px-10 py-10 sm:py-16" style={{ background: "var(--gradient-card)" }}>
+      <section className="page-container page-container--wide py-10 sm:py-16 bg-gradient-card">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
           <div>
             <div className="text-[11px] font-bold tracking-[0.6px] text-[var(--color-primary)]">لماذا AMTDEX</div>
@@ -321,7 +321,7 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
                   {err}
                 </p>
               )}
-              <button type="submit" className="mt-3 w-full text-white rounded-full py-3 text-[13px] font-semibold hover:opacity-90 transition-opacity" style={{ background: "var(--gradient-primary)" }}>
+              <button type="submit" className="mt-3 w-full text-white rounded-full py-3 text-[13px] font-semibold hover:opacity-90 transition-opacity bg-gradient-primary">
                 اشتراك
               </button>
               <p className="mt-2 text-[10px] text-center text-[var(--color-text-faint)]">POST /api/newsletter — جاهز للربط مع Laravel</p>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 
 export function WorkflowSection() {
   return (
-    <section data-motion-group className="mx-auto max-w-[1280px] xl:max-w-[1440px] px-4 sm:px-6 lg:px-10 py-10 sm:py-14 bg-white">
+    <section data-motion-group className="page-container page-container--wide py-10 sm:py-14 bg-[var(--color-surface)]">
       <div className="grid lg:grid-cols-[minmax(0,520px)_1fr] gap-6 sm:gap-8 items-start">
         {/* Left */}
         <div>
@@ -63,7 +63,7 @@ export function WorkflowSection() {
               <span className="text-[var(--color-text-faint)]">↓</span>
               <span className="w-px h-4 bg-[var(--color-border)]" />
             </div>
-            <Link to="/contact" className="flex items-center justify-center gap-2 bg-[#EEF3FF] border-[1.5px] border-[var(--color-outline-peach)] rounded-xl py-3.5 text-[12px] font-bold text-[var(--color-primary)] hover:bg-[#E0E8FF] transition-colors">
+            <Link to="/contact" className="flex items-center justify-center gap-2 bg-[var(--color-signal)] border-[1.5px] border-[var(--color-outline-peach)] rounded-xl py-3.5 text-[12px] font-bold text-[var(--color-primary)] hover:bg-[var(--color-lavender)] transition-colors">
               <span>+</span> إضافة مرحلة جديدة
             </Link>
           </div>

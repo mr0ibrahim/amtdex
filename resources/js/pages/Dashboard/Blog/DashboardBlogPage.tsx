@@ -1,12 +1,12 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { BlogAPI } from "@/lib/blogApi"
-import { API } from "@/lib/api"
 import { Button } from "@/components/ui/Button"
 import { Badge } from "@/components/ui/Badge"
 import { useToast } from "@/components/ui/Toast"
 import { getBlogUrl } from "@/lib/subdomain"
-import type { BlogPost, BlogCategory, BlogTag, BlogComment, BlogRedirect, BlogSettings } from "@/types/blog"
+import type { BlogCategory, BlogTag, BlogComment, BlogRedirect, BlogSettings } from "@/types/blog"
+import { PostsManager } from "./PostsManager"
 
 type BlogTab = "posts" | "categories" | "tags" | "comments" | "redirects" | "settings"
 
@@ -19,7 +19,6 @@ export function DashboardBlogPage({ onToast }: { onToast?: (m: string) => void }
     onToast?.(msg)
   }
 
-  // ── Queries ──
   const { data: statsRes } = useQuery({
     queryKey: ["admin-blog-stats"],
     queryFn: () => BlogAPI.getAdminStats(),
@@ -27,98 +26,87 @@ export function DashboardBlogPage({ onToast }: { onToast?: (m: string) => void }
 
   const stats = statsRes?.stats
 
+  const tabs: Array<{ id: BlogTab; label: string; count?: number | string }> = [
+    { id: "posts", label: "المقالات", count: stats?.total_posts },
+    { id: "categories", label: "التصنيفات", count: stats?.categories_count },
+    { id: "tags", label: "الوسوم", count: stats?.tags_count },
+    {
+      id: "comments",
+      label: "التعليقات",
+      count: stats?.pending_comments ? stats.pending_comments : undefined,
+    },
+    { id: "redirects", label: "تحويلات 301" },
+    { id: "settings", label: "إعدادات SEO" },
+  ]
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {toast.el}
 
-      {/* Header & Stats Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--color-border)] pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-[var(--color-ink)]">إدارة المدونة والمقالات</h1>
-            <Badge className="bg-[var(--color-card-soft)] text-[var(--color-primary)] border-none text-[11px] font-bold">
-              SEO Engine
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-lg sm:text-xl font-extrabold text-[var(--color-ink)] tracking-tight">إدارة المدونة</h1>
+            <Badge className="bg-[var(--color-card-soft)] text-[var(--color-primary)] border-none text-[10px] font-bold">
+              مركز النشر
             </Badge>
           </div>
-          <p className="text-xs text-[var(--color-text-muted)] mt-1">
-            التحكم الكامل بالمقالات، التصنيفات، التعليقات، مؤشرات الـ SEO والتحويلات 301 على السب دومين.
+          <p className="text-xs text-[var(--color-text-muted)] mt-1 leading-relaxed max-w-[560px]">
+            أنشئ المقالات، راجعها، وانشرها بخطوات واضحة مع أدوات التصنيفات والتعليقات وتحسين الظهور.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <a
             href={getBlogUrl("/")}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border border-[var(--color-border)] hover:bg-[var(--color-lavender)] text-[var(--color-ink)] transition-colors"
+            className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold border border-[var(--color-border)] hover:bg-[var(--color-lavender)] text-[var(--color-ink)]"
           >
-            <span>زيارة المدونة</span>
-            <svg className="w-3.5 h-3.5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
+            زيارة المدونة
           </a>
+          <button
+            type="button"
+            onClick={() => setActiveTab("posts")}
+            className="inline-flex items-center justify-center px-3 py-2.5 rounded-xl text-xs font-bold bg-[var(--color-ink)] text-white"
+          >
+            إدارة ونشر المقالات
+          </button>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white border border-[var(--color-border)] rounded-2xl p-4">
-          <span className="text-[11px] text-[var(--color-text-faint)] block">إجمالي المقالات</span>
-          <span className="text-2xl font-bold text-[var(--color-ink)] font-mono block mt-1">
-            {stats?.total_posts ?? 6}
-          </span>
-          <span className="text-[10px] text-emerald-600 font-semibold mt-1 block">
-            {stats?.published_posts ?? 6} منشور
-          </span>
-        </div>
-
-        <div className="bg-white border border-[var(--color-border)] rounded-2xl p-4">
-          <span className="text-[11px] text-[var(--color-text-faint)] block">المشاهدات الكلية</span>
-          <span className="text-2xl font-bold text-[var(--color-ink)] font-mono block mt-1">
-            {stats?.total_views?.toLocaleString("ar-EG") ?? "4,320"}
-          </span>
-          <span className="text-[10px] text-[var(--color-text-muted)] mt-1 block">تحديث حي</span>
-        </div>
-
-        <div className="bg-white border border-[var(--color-border)] rounded-2xl p-4">
-          <span className="text-[11px] text-[var(--color-text-faint)] block">تعليقات بانتظار المراجعة</span>
-          <span className="text-2xl font-bold text-amber-600 font-mono block mt-1">
-            {stats?.pending_comments ?? 0}
-          </span>
-          <span className="text-[10px] text-[var(--color-text-muted)] mt-1 block">تتطلب الموافقة</span>
-        </div>
-
-        <div className="bg-white border border-[var(--color-border)] rounded-2xl p-4">
-          <span className="text-[11px] text-[var(--color-text-faint)] block">التصنيفات والوسوم</span>
-          <span className="text-2xl font-bold text-[var(--color-primary)] font-mono block mt-1">
-            {(stats?.categories_count ?? 4) + " / " + (stats?.tags_count ?? 6)}
-          </span>
-          <span className="text-[10px] text-[var(--color-text-muted)] mt-1 block">تصنيف / وسم</span>
-        </div>
-      </div>
-
-      {/* Tabs Navigation Bar */}
-      <div className="flex items-center gap-1.5 border-b border-[var(--color-border)] pb-2 overflow-x-auto scrollbar-none">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
         {[
-          { id: "posts", label: "المقالات", count: stats?.total_posts },
-          { id: "categories", label: "التصنيفات", count: stats?.categories_count },
-          { id: "tags", label: "الوسوم", count: stats?.tags_count },
-          { id: "comments", label: "التعليقات", count: stats?.pending_comments ? `(${stats.pending_comments})` : undefined },
-          { id: "redirects", label: "تحويلات 301" },
-          { id: "settings", label: "إعدادات المدونة والـ SEO" },
-        ].map((t) => (
+          { label: "إجمالي المقالات", value: stats?.total_posts ?? 0, sub: `${stats?.published_posts ?? 0} منشور` },
+          { label: "المشاهدات", value: (stats?.total_views ?? 0).toLocaleString("ar-EG"), sub: "تحديث حي" },
+          { label: "تعليقات معلّقة", value: stats?.pending_comments ?? 0, sub: "تتطلب مراجعة" },
+          {
+            label: "تصنيفات / وسوم",
+            value: `${stats?.categories_count ?? 0} / ${stats?.tags_count ?? 0}`,
+            sub: "هيكل المحتوى",
+          },
+        ].map((card) => (
+          <div key={card.label} className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-subtle)] p-3.5 sm:p-4">
+            <span className="text-[10px] sm:text-[11px] text-[var(--color-text-faint)] block">{card.label}</span>
+            <span className="text-xl sm:text-2xl font-extrabold text-[var(--color-ink)] font-mono block mt-1">{card.value}</span>
+            <span className="text-[10px] text-[var(--color-text-muted)] mt-1 block">{card.sub}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="dash-tabs" role="tablist" aria-label="أقسام إدارة المدونة">
+        {tabs.map((t) => (
           <button
             key={t.id}
-            onClick={() => setActiveTab(t.id as BlogTab)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${
-              activeTab === t.id
-                ? "bg-[var(--color-ink)] text-white shadow-xs"
-                : "text-[var(--color-text-muted)] hover:bg-[var(--color-lavender)] hover:text-[var(--color-ink)]"
-            }`}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === t.id}
+            onClick={() => setActiveTab(t.id)}
+            className={`dash-tab${activeTab === t.id ? " is-active" : ""}`}
           >
             {t.label}
             {t.count !== undefined && (
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${activeTab === t.id ? "bg-white/20 text-white" : "bg-black/5"}`}>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === t.id ? "bg-white/20" : "bg-black/5"}`}>
                 {t.count}
               </span>
             )}
@@ -126,8 +114,7 @@ export function DashboardBlogPage({ onToast }: { onToast?: (m: string) => void }
         ))}
       </div>
 
-      {/* Active Tab View */}
-      {activeTab === "posts" && <PostsTab onNotify={notify} />}
+      {activeTab === "posts" && <PostsManager onNotify={notify} />}
       {activeTab === "categories" && <CategoriesTab onNotify={notify} />}
       {activeTab === "tags" && <TagsTab onNotify={notify} />}
       {activeTab === "comments" && <CommentsTab onNotify={notify} />}
@@ -137,678 +124,6 @@ export function DashboardBlogPage({ onToast }: { onToast?: (m: string) => void }
   )
 }
 
-// ─────────────────────────────────────────────────────────
-// 1) POSTS TAB
-// ─────────────────────────────────────────────────────────
-function PostsTab({ onNotify }: { onNotify: (m: string) => void }) {
-  const queryClient = useQueryClient()
-  const [search, setSearch] = useState("")
-  const [status, setStatus] = useState("all")
-  const [editingPost, setEditingPost] = useState<Partial<BlogPost> | null>(null)
-  const [isEditorOpen, setIsEditorOpen] = useState(false)
-
-  const { data: postsRes, isLoading } = useQuery({
-    queryKey: ["admin-posts", { search, status }],
-    queryFn: () =>
-      BlogAPI.getAdminPosts({
-        search: search || undefined,
-        status: status !== "all" ? status : undefined,
-      }),
-  })
-
-  const posts = postsRes?.data ?? []
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: number) => BlogAPI.deleteAdminPost(id),
-    onSuccess: () => {
-      onNotify("تم حذف المقال بنجاح.")
-      queryClient.invalidateQueries({ queryKey: ["admin-posts"] })
-    },
-  })
-
-  const handleNewPost = () => {
-    setEditingPost({
-      title: "",
-      slug: "",
-      summary: "",
-      content: "<h2>مقدمة</h2>\n<p>اكتب هنا محتوى مقالك...</p>",
-      status: "draft",
-      allow_comments: true,
-      robots_index: true,
-      robots_follow: true,
-      og_type: "article",
-      twitter_card: "summary_large_image",
-      schema_type: "BlogPosting",
-      faq_schema: [],
-    })
-    setIsEditorOpen(true)
-  }
-
-  const handleEdit = (p: BlogPost) => {
-    setEditingPost(p)
-    setIsEditorOpen(true)
-  }
-
-  return (
-    <div className="space-y-4">
-      {/* Action Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="بحث في المقالات..."
-            className="px-3.5 py-2 rounded-xl border border-[var(--color-border)] text-xs w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-          />
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-[var(--color-border)] text-xs bg-white focus:outline-none"
-          >
-            <option value="all">كافة الحالات</option>
-            <option value="published">منشور</option>
-            <option value="draft">مسودة</option>
-            <option value="scheduled">مجدول</option>
-            <option value="archived">مؤرشف</option>
-          </select>
-        </div>
-
-        <Button
-          onClick={handleNewPost}
-          size="sm"
-          className="w-full sm:w-auto bg-[var(--color-ink)] hover:bg-[var(--color-primary)] text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center justify-center gap-1.5"
-        >
-          <span>+ كتابة مقال جديد</span>
-        </Button>
-      </div>
-
-      {/* Posts Table */}
-      {isLoading ? (
-        <div className="py-12 text-center text-xs text-[var(--color-text-faint)]">جارٍ تحميل المقالات...</div>
-      ) : posts.length === 0 ? (
-        <div className="py-12 text-center bg-[var(--color-bg-subtle,#FAF8F6)] rounded-2xl border border-[var(--color-border)] text-xs text-[var(--color-text-muted)]">
-          لا توجد مقالات مطابقة للبحث أو الفلتر.
-        </div>
-      ) : (
-        <div className="overflow-x-auto border border-[var(--color-border)] rounded-2xl">
-          <table className="w-full text-right text-xs">
-            <thead className="bg-[var(--color-card-soft)] border-b border-[var(--color-border)] text-[var(--color-ink)] font-bold">
-              <tr>
-                <th className="py-3 px-4">المقال</th>
-                <th className="py-3 px-4">التصنيف</th>
-                <th className="py-3 px-4">الحالة</th>
-                <th className="py-3 px-4">المشاهدات</th>
-                <th className="py-3 px-4">تاريخ النشر</th>
-                <th className="py-3 px-4 text-center">الإجراءات</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--color-border)] bg-white">
-              {posts.map((p: BlogPost) => (
-                <tr key={p.id} className="hover:bg-[var(--color-card-soft)]/40 transition-colors">
-                  <td className="py-3 px-4 max-w-xs">
-                    <div className="font-bold text-[var(--color-ink)] truncate">{p.title}</div>
-                    <div className="text-[11px] text-[var(--color-text-faint)] truncate font-mono">
-                      /posts/{p.slug}
-                    </div>
-                  </td>
-                  <td className="py-3 px-4">
-                    {p.category ? (
-                      <span className="px-2 py-0.5 rounded-full bg-[var(--color-lavender)] text-[var(--color-primary)] font-semibold text-[10px]">
-                        {p.category.name}
-                      </span>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                        p.status === "published"
-                          ? "bg-emerald-100 text-emerald-800"
-                          : p.status === "draft"
-                          ? "bg-amber-100 text-amber-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {p.status === "published" ? "منشور" : p.status === "draft" ? "مسودة" : p.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 font-mono">{p.views_count.toLocaleString("ar-EG")}</td>
-                  <td className="py-3 px-4 text-[var(--color-text-muted)]">
-                    {p.published_at ? new Date(p.published_at).toLocaleDateString("ar-SA") : "—"}
-                  </td>
-                  <td className="py-3 px-4 text-center">
-                    <div className="flex items-center justify-center gap-1.5">
-                      <a
-                        href={getBlogUrl(`/posts/${p.slug}`)}
-                        target="_blank"
-                        rel="noreferrer"
-                        title="معاينة"
-                        className="p-1 rounded-lg hover:bg-gray-100 text-[var(--color-text-muted)]"
-                      >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      </a>
-                      <button
-                        onClick={() => handleEdit(p)}
-                        title="تعديل المقال"
-                        className="p-1 rounded-lg hover:bg-gray-100 text-[var(--color-primary)] font-bold"
-                      >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (confirm(`هل أنت متأكد من حذف مقال "${p.title}"؟`)) {
-                            deleteMutation.mutate(p.id)
-                          }
-                        }}
-                        title="حذف"
-                        className="p-1 rounded-lg hover:bg-red-50 text-red-600"
-                      >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Editor Modal */}
-      {isEditorOpen && editingPost && (
-        <ArticleEditorModal
-          initialData={editingPost}
-          onClose={() => {
-            setIsEditorOpen(false)
-            setEditingPost(null)
-          }}
-          onSaved={() => {
-            setIsEditorOpen(false)
-            setEditingPost(null)
-            onNotify("تم حفظ المقال بنجاح.")
-            queryClient.invalidateQueries({ queryKey: ["admin-posts"] })
-          }}
-        />
-      )}
-    </div>
-  )
-}
-
-// ─────────────────────────────────────────────────────────
-// 2) ARTICLE EDITOR MODAL WITH SERP PREVIEW & SEO CHECKLIST
-// ─────────────────────────────────────────────────────────
-function ArticleEditorModal({
-  initialData,
-  onClose,
-  onSaved,
-}: {
-  initialData: Partial<BlogPost>
-  onClose: () => void
-  onSaved: () => void
-}) {
-  const [form, setForm] = useState<Partial<BlogPost>>(initialData)
-  const [faqList, setFaqList] = useState<{ question: string; answer: string }[]>(
-    initialData.faq_schema ?? []
-  )
-  const [uploadingCover, setUploadingCover] = useState(false)
-  const [uploadingInline, setUploadingInline] = useState(false)
-
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setUploadingCover(true)
-    try {
-      const res = await API.media.upload(file)
-      const url = res?.url || (res as any)?.data?.url
-      if (url) {
-        setForm((prev) => ({
-          ...prev,
-          cover_image: url,
-          cover_image_alt: prev.cover_image_alt || file.name.split(".")[0],
-        }))
-      }
-    } catch (err: any) {
-      alert(err?.message || "فشل رفع صورة الغلاف")
-    } finally {
-      setUploadingCover(false)
-    }
-  }
-
-  const handleInlineImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setUploadingInline(true)
-    try {
-      const res = await API.media.upload(file)
-      const url = res?.url || (res as any)?.data?.url
-      if (url) {
-        const alt = file.name.split(".")[0]
-        const snippet = `\n<figure class="my-6 text-center">\n  <img src="${url}" alt="${alt}" class="rounded-2xl max-w-full h-auto mx-auto border shadow-sm" loading="lazy" />\n  <figcaption class="text-xs text-gray-500 mt-2">${alt}</figcaption>\n</figure>\n`
-        setForm((prev) => ({ ...prev, content: (prev.content ?? "") + snippet }))
-      }
-    } catch (err: any) {
-      alert(err?.message || "فشل رفع الصورة")
-    } finally {
-      setUploadingInline(false)
-    }
-  }
-
-  const { data: categoriesRes } = useQuery({
-    queryKey: ["admin-categories"],
-    queryFn: () => BlogAPI.getAdminCategories(),
-  })
-  const categories = categoriesRes?.data ?? []
-
-  const saveMutation = useMutation({
-    mutationFn: (payload: Partial<BlogPost>) => {
-      const dataToSave = { ...payload, faq_schema: faqList }
-      if (dataToSave.id) {
-        return BlogAPI.updateAdminPost(dataToSave.id, dataToSave)
-      }
-      return BlogAPI.createAdminPost(dataToSave)
-    },
-    onSuccess: () => {
-      onSaved()
-    },
-  })
-
-  // SEO Scores & Checklist
-  const focusKey = form.focus_keyword?.trim().toLowerCase() ?? ""
-  const titleHasKey = focusKey ? form.title?.toLowerCase().includes(focusKey) : false
-  const slugHasKey = focusKey ? form.slug?.toLowerCase().includes(focusKey) : false
-  const summaryHasKey = focusKey ? form.summary?.toLowerCase().includes(focusKey) : false
-  const titleLength = form.meta_title ? form.meta_title.length : form.title?.length ?? 0
-  const descLength = form.meta_description ? form.meta_description.length : form.summary?.length ?? 0
-
-  const handleAddFaq = () => {
-    setFaqList([...faqList, { question: "", answer: "" }])
-  }
-
-  const handleUpdateFaq = (idx: number, field: "question" | "answer", val: string) => {
-    const next = [...faqList]
-    next[idx][field] = val
-    setFaqList(next)
-  }
-
-  const handleRemoveFaq = (idx: number) => {
-    setFaqList(faqList.filter((_, i) => i !== idx))
-  }
-
-  const autoGenerateSlug = () => {
-    if (!form.title) return
-    const s = form.title
-      .toLowerCase()
-      .trim()
-      .replace(/[\s\W-]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-    setForm({ ...form, slug: s })
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl border border-[var(--color-border)] overflow-hidden">
-        {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between bg-[var(--color-card-soft)]">
-          <h2 className="text-base font-bold text-[var(--color-ink)]">
-            {form.id ? `تعديل مقال: ${form.title}` : "إنشاء مقال تقني جديد"}
-          </h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white text-[var(--color-ink)] flex items-center justify-center font-bold text-sm hover:bg-gray-100"
-          >
-            ✕
-          </button>
-        </div>
-
-        {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs">
-          {/* Main Info */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="sm:col-span-2">
-              <label className="block font-bold text-[var(--color-ink)] mb-1">
-                عنوان المقال <span className="text-red-500">*</span>
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  required
-                  value={form.title ?? ""}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="مثال: هندسة النظم السحابية المقاومة للأعطال"
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-xs focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
-                />
-                <Button
-                  type="button"
-                  onClick={autoGenerateSlug}
-                  size="sm"
-                  variant="outline"
-                  className="rounded-xl text-[11px] whitespace-nowrap"
-                >
-                  توليد الرابط (Slug)
-                </Button>
-              </div>
-            </div>
-
-            <div>
-              <label className="block font-bold text-[var(--color-ink)] mb-1">
-                الرابط الدائم (Slug) <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={form.slug ?? ""}
-                onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                placeholder="cloud-architecture-guide"
-                className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-xs font-mono focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block font-bold text-[var(--color-ink)] mb-1">التصنيف</label>
-              <select
-                value={form.category_id ?? ""}
-                onChange={(e) => setForm({ ...form, category_id: e.target.value ? parseInt(e.target.value, 10) : null })}
-                className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-xs bg-white focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
-              >
-                <option value="">بدون تصنيف</option>
-                {categories.map((c: BlogCategory) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block font-bold text-[var(--color-ink)] mb-1">حالة النشر</label>
-              <select
-                value={form.status ?? "draft"}
-                onChange={(e) => setForm({ ...form, status: e.target.value as any })}
-                className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-xs bg-white focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
-              >
-                <option value="draft">مسودة (Draft)</option>
-                <option value="published">منشور للعامة (Published)</option>
-                <option value="scheduled">مجدول (Scheduled)</option>
-                <option value="archived">مؤرشف (Archived)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block font-bold text-[var(--color-ink)] mb-1">صورة الغلاف الرئيسية</label>
-              <div className="flex gap-2 items-center">
-                <input
-                  type="url"
-                  value={form.cover_image ?? ""}
-                  onChange={(e) => setForm({ ...form, cover_image: e.target.value })}
-                  placeholder="https://amtdex.com/images/screens/... أو اضغط رفع صورة"
-                  className="flex-1 px-3 py-2 rounded-xl border border-[var(--color-border)] text-xs focus:ring-2 focus:ring-[var(--color-primary)] outline-none font-mono"
-                />
-                <label className="shrink-0 inline-flex items-center justify-center bg-[var(--color-lavender)] text-[var(--color-primary)] text-xs font-bold px-3 py-2 rounded-xl cursor-pointer hover:bg-[var(--color-primary)] hover:text-white transition-colors">
-                  {uploadingCover ? "جار الرفع..." : "رفع غلاف 📤"}
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    className="hidden"
-                    disabled={uploadingCover}
-                    onChange={handleCoverUpload}
-                  />
-                </label>
-              </div>
-              <input
-                type="text"
-                value={form.cover_image_alt ?? ""}
-                onChange={(e) => setForm({ ...form, cover_image_alt: e.target.value })}
-                placeholder="النص البديل لصورة الغلاف (Alt Text) لمحركات البحث..."
-                className="w-full px-3 py-1.5 mt-1.5 rounded-lg border border-[var(--color-border)] text-[11px] outline-none"
-              />
-              {form.cover_image && (
-                <div className="mt-2 flex items-center gap-3 p-2 bg-gray-50 rounded-xl border border-gray-200">
-                  <img
-                    src={form.cover_image}
-                    alt="معاينة الغلاف"
-                    className="h-10 w-16 object-cover rounded-lg border"
-                  />
-                  <span className="text-[11px] text-gray-500 truncate flex-1">
-                    معاينة صورة الغلاف الحالية
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setForm({ ...form, cover_image: "" })}
-                    className="text-[11px] text-red-600 font-bold hover:underline"
-                  >
-                    إزالة
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Excerpt */}
-          <div>
-            <label className="block font-bold text-[var(--color-ink)] mb-1">
-              ملخص المقال (Excerpt)
-            </label>
-            <textarea
-              rows={2}
-              value={form.summary ?? ""}
-              onChange={(e) => setForm({ ...form, summary: e.target.value })}
-              placeholder="فقرة تعريفية سريعة تظهر في بطاقات المدونة ونتائج البحث..."
-              className="w-full px-4 py-2 rounded-xl border border-[var(--color-border)] text-xs focus:ring-2 focus:ring-[var(--color-primary)] outline-none resize-none"
-            />
-          </div>
-
-          {/* Content Body Editor */}
-          <div>
-            <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
-              <label className="block font-bold text-[var(--color-ink)]">
-                محتوى المقال (HTML / Markdown) <span className="text-red-500">*</span>
-              </label>
-              <div className="flex gap-1.5 items-center flex-wrap">
-                <label className="px-2.5 py-1 rounded bg-[var(--color-lavender)] hover:bg-[var(--color-primary)] hover:text-white text-[10px] font-bold cursor-pointer transition-colors flex items-center gap-1">
-                  {uploadingInline ? "جار الرفع..." : "🖼️ إدراج صورة في المقال"}
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    className="hidden"
-                    disabled={uploadingInline}
-                    onChange={handleInlineImageUpload}
-                  />
-                </label>
-                {[
-                  { tag: "<h2>عنوان فرعي</h2>\n", label: "H2" },
-                  { tag: "<h3>عنوان ثانوي</h3>\n", label: "H3" },
-                  { tag: "<blockquote>اقتباس ملهم</blockquote>\n", label: "Quote" },
-                  { tag: "<pre><code>// كود برمجي\n</code></pre>\n", label: "Code" },
-                ].map((btn) => (
-                  <button
-                    key={btn.label}
-                    type="button"
-                    onClick={() => setForm({ ...form, content: (form.content ?? "") + "\n" + btn.tag })}
-                    className="px-2 py-0.5 rounded bg-gray-100 hover:bg-gray-200 text-[10px] font-mono"
-                  >
-                    +{btn.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <textarea
-              rows={12}
-              required
-              value={form.content ?? ""}
-              onChange={(e) => setForm({ ...form, content: e.target.value })}
-              placeholder="اكتب المحتوى بتنسيق HTML أو نص منسق..."
-              className="w-full px-4 py-3 rounded-2xl border border-[var(--color-border)] text-xs font-mono leading-relaxed focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
-            />
-          </div>
-
-          {/* SEO & SERP PREVIEW BOX */}
-          <div className="bg-[var(--color-bg-subtle,#FAF8F6)] rounded-2xl p-4 border border-[var(--color-border)] space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-[var(--color-ink)] flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-emerald-500" />
-                معاينة نتيجة جوجل الحية (Live SERP Preview)
-              </span>
-              <span className="text-[10px] text-[var(--color-text-faint)]">Google Desktop & Mobile</span>
-            </div>
-
-            {/* Simulated Google Search Result */}
-            <div className="bg-white p-4 rounded-xl border border-gray-200 max-w-xl space-y-1">
-              <div className="text-[11px] text-gray-600 flex items-center gap-1 font-sans">
-                <span className="w-4 h-4 rounded-full bg-[var(--color-ink)] text-white text-[9px] flex items-center justify-center font-bold">A</span>
-                <span className="font-medium">amtdex.com</span>
-                <span>› posts › {form.slug || "example-post"}</span>
-              </div>
-              <h4 className="text-[15px] text-[#1a0dab] font-normal hover:underline cursor-pointer truncate">
-                {form.meta_title || form.title || "عنوان المقال كما يظهر في محركات البحث"}
-              </h4>
-              <p className="text-[12px] text-[#4d5156] line-clamp-2 leading-relaxed">
-                {form.meta_description || form.summary || "الوصف المختصر للمقال الذي سيقرأه الزائر في صفحة نتائج بحث جوجل لجذبه للنقر..."}
-              </p>
-            </div>
-
-            {/* Keyword & Meta inputs */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <div>
-                <label className="block text-[11px] font-bold text-[var(--color-ink)] mb-1">
-                  الكلمة المفتاحية المستهدفة (Focus Keyword)
-                </label>
-                <input
-                  type="text"
-                  value={form.focus_keyword ?? ""}
-                  onChange={(e) => setForm({ ...form, focus_keyword: e.target.value })}
-                  placeholder="مثال: واجهات RTL"
-                  className="w-full px-3 py-2 rounded-xl border border-[var(--color-border)] text-xs focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-[var(--color-ink)] mb-1">
-                  عنوان الـ SEO المخصص (Meta Title)
-                  <span className={`mr-2 font-normal ${titleLength > 60 ? "text-red-500" : "text-emerald-600"}`}>
-                    ({titleLength} / 60 حرف)
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  value={form.meta_title ?? ""}
-                  onChange={(e) => setForm({ ...form, meta_title: e.target.value })}
-                  placeholder="إذا تُرك فارغاً يُستخدم عنوان المقال"
-                  className="w-full px-3 py-2 rounded-xl border border-[var(--color-border)] text-xs focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-[11px] font-bold text-[var(--color-ink)] mb-1">
-                  وصف الـ SEO المخصص (Meta Description)
-                  <span className={`mr-2 font-normal ${descLength > 160 ? "text-red-500" : "text-emerald-600"}`}>
-                    ({descLength} / 160 حرف)
-                  </span>
-                </label>
-                <textarea
-                  rows={2}
-                  value={form.meta_description ?? ""}
-                  onChange={(e) => setForm({ ...form, meta_description: e.target.value })}
-                  placeholder="إذا تُرك فارغاً يُستخدم ملخص المقال"
-                  className="w-full px-3 py-2 rounded-xl border border-[var(--color-border)] text-xs focus:ring-2 focus:ring-[var(--color-primary)] outline-none resize-none"
-                />
-              </div>
-            </div>
-
-            {/* SEO Checklist */}
-            {focusKey && (
-              <div className="pt-2 border-t border-[var(--color-border)] flex flex-wrap gap-3 text-[11px]">
-                <span className={titleHasKey ? "text-emerald-600 font-bold" : "text-red-500"}>
-                  {titleHasKey ? "✓" : "✗"} الكلمة في العنوان
-                </span>
-                <span className={slugHasKey ? "text-emerald-600 font-bold" : "text-red-500"}>
-                  {slugHasKey ? "✓" : "✗"} الكلمة في الرابط (Slug)
-                </span>
-                <span className={summaryHasKey ? "text-emerald-600 font-bold" : "text-red-500"}>
-                  {summaryHasKey ? "✓" : "✗"} الكلمة في الملخص
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* FAQ SCHEMA BUILDER */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-[var(--color-ink)]">
-                الأسئلة الشائعة للمقال (FAQ Schema Rich Results)
-              </span>
-              <button
-                type="button"
-                onClick={handleAddFaq}
-                className="text-[11px] font-bold text-[var(--color-primary)] hover:underline"
-              >
-                + إضافة سؤال وإجابة
-              </button>
-            </div>
-
-            {faqList.map((faq, i) => (
-              <div key={i} className="p-3 bg-[var(--color-bg-subtle,#FAF8F6)] rounded-xl border border-[var(--color-border)] space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-[11px] text-[var(--color-ink)]">سؤال #{i + 1}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveFaq(i)}
-                    className="text-red-500 text-[10px] hover:underline"
-                  >
-                    حذف
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  value={faq.question}
-                  onChange={(e) => handleUpdateFaq(i, "question", e.target.value)}
-                  placeholder="نص السؤال..."
-                  className="w-full px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-xs outline-none"
-                />
-                <textarea
-                  rows={2}
-                  value={faq.answer}
-                  onChange={(e) => handleUpdateFaq(i, "answer", e.target.value)}
-                  placeholder="نص الإجابة الشاملة..."
-                  className="w-full px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-xs outline-none resize-none"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Modal Footer */}
-        <div className="px-6 py-4 border-t border-[var(--color-border)] bg-[var(--color-card-soft)] flex items-center justify-between">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClose}
-            className="rounded-xl text-xs"
-          >
-            إلغاء
-          </Button>
-
-          <Button
-            type="button"
-            disabled={saveMutation.isPending}
-            onClick={() => saveMutation.mutate(form)}
-            className="bg-[var(--color-ink)] hover:bg-[var(--color-primary)] text-white text-xs font-bold px-6 py-2.5 rounded-xl"
-          >
-            {saveMutation.isPending ? "جارٍ الحفظ..." : "حفظ ونشر المقال"}
-          </Button>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 // ─────────────────────────────────────────────────────────
 // 3) CATEGORIES TAB
@@ -909,18 +224,18 @@ function CategoriesTab({ onNotify }: { onNotify: (m: string) => void }) {
           categories.map((c: BlogCategory) => (
             <div
               key={c.id}
-              className="p-4 bg-white border border-[var(--color-border)] rounded-2xl flex items-center justify-between"
+              className="p-4 bg-white border border-[var(--color-border)] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3"
             >
-              <div>
+              <div className="min-w-0">
                 <h4 className="font-bold text-xs text-[var(--color-ink)]">{c.name}</h4>
-                <p className="text-[11px] text-[var(--color-text-faint)] font-mono">/categories/{c.slug}</p>
+                <p className="text-[11px] text-[var(--color-text-faint)] font-mono break-all">/categories/{c.slug}</p>
                 {c.description && <p className="text-[11px] text-[var(--color-text-muted)] mt-1">{c.description}</p>}
               </div>
               <button
                 onClick={() => {
                   if (confirm(`حذف تصنيف "${c.name}"؟`)) deleteMutation.mutate(c.id)
                 }}
-                className="text-red-500 hover:text-red-700 text-xs font-bold"
+                className="text-rose-600 border border-rose-200 rounded-xl px-3 py-2 text-xs font-bold w-full sm:w-auto"
               >
                 حذف
               </button>
@@ -973,7 +288,7 @@ function TagsTab({ onNotify }: { onNotify: (m: string) => void }) {
           e.preventDefault()
           if (tagName.trim()) saveMutation.mutate(tagName.trim())
         }}
-        className="flex gap-2 max-w-md"
+        className="flex flex-col sm:flex-row gap-2 max-w-md"
       >
         <input
           type="text"
@@ -981,13 +296,13 @@ function TagsTab({ onNotify }: { onNotify: (m: string) => void }) {
           value={tagName}
           onChange={(e) => setTagName(e.target.value)}
           placeholder="أدخل اسم وسم جديد (مثال: React, Docker)..."
-          className="flex-1 px-4 py-2 rounded-xl border border-[var(--color-border)] text-xs outline-none"
+          className="flex-1 px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-xs outline-none"
         />
         <Button
           type="submit"
           disabled={saveMutation.isPending}
           size="sm"
-          className="bg-[var(--color-ink)] text-white text-xs font-bold rounded-xl"
+          className="bg-[var(--color-ink)] text-white text-xs font-bold rounded-xl w-full sm:w-auto"
         >
           إضافة وسم
         </Button>
@@ -1054,14 +369,12 @@ function CommentsTab({ onNotify }: { onNotify: (m: string) => void }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
+      <div className="dash-tabs">
         {["all", "pending", "approved", "spam"].map((s) => (
           <button
             key={s}
             onClick={() => setFilterStatus(s)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold ${
-              filterStatus === s ? "bg-[var(--color-ink)] text-white" : "bg-white border text-[var(--color-text-muted)]"
-            }`}
+            className={`dash-tab${filterStatus === s ? " is-active" : ""}`}
           >
             {s === "all" ? "الكل" : s === "pending" ? "المعلقة" : s === "approved" ? "المعتمدة" : "مزعجة (Spam)"}
           </button>
@@ -1071,7 +384,7 @@ function CommentsTab({ onNotify }: { onNotify: (m: string) => void }) {
       {isLoading ? (
         <div className="py-6 text-center text-xs text-[var(--color-text-faint)]">جارٍ التحميل...</div>
       ) : comments.length === 0 ? (
-        <div className="py-8 text-center bg-[var(--color-bg-subtle,#FAF8F6)] rounded-2xl border text-xs text-[var(--color-text-muted)]">
+        <div className="py-8 text-center bg-[var(--color-bg-subtle)] rounded-2xl border text-xs text-[var(--color-text-muted)]">
           لا توجد تعليقات في هذه القائمة.
         </div>
       ) : (
@@ -1210,7 +523,7 @@ function RedirectsTab({ onNotify }: { onNotify: (m: string) => void }) {
         {isLoading ? (
           <div className="py-6 text-center text-xs text-[var(--color-text-faint)]">جارٍ التحميل...</div>
         ) : redirects.length === 0 ? (
-          <div className="py-8 text-center bg-[var(--color-bg-subtle,#FAF8F6)] rounded-2xl border text-xs text-[var(--color-text-muted)]">
+          <div className="py-8 text-center bg-[var(--color-bg-subtle)] rounded-2xl border text-xs text-[var(--color-text-muted)]">
             لا توجد تحويلات مخصصة مسجلة حالياً.
           </div>
         ) : (
