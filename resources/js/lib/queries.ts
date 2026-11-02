@@ -238,6 +238,16 @@ export function useSeoToolsQuery() {
   })
 }
 
+export function useSeoReindexMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => API.seo.reindex(),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["seo-tools"] })
+    },
+  })
+}
+
 export function useUpsertSeoMutation() {
   const qc = useQueryClient()
   return useMutation({

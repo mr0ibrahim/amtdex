@@ -397,7 +397,35 @@ export const API = {
           host: string
           key_location: string | null
         }
+        last_reindex?: {
+          ok?: boolean
+          enabled?: boolean
+          url_count?: number
+          submitted?: number
+          failed_batches?: number
+          hosts?: string[]
+          sitemap_pings?: Record<string, boolean>
+          message?: string
+          last_reindex_at?: string | null
+        } | null
+        url_count?: number
       }>("/seo/tools", "GET")
+    },
+    reindex() {
+      return apiClient<{
+        ok: boolean
+        data: {
+          ok: boolean
+          enabled: boolean
+          url_count: number
+          submitted: number
+          failed_batches: number
+          hosts: string[]
+          sitemap_pings: Record<string, boolean>
+          message: string
+          last_reindex_at: string | null
+        }
+      }>("/seo/reindex", "POST")
     },
     upsert(data: { path: string; title: string; description: string; noindex?: boolean; og_image?: string }) {
       return apiClient<{ ok: boolean }>("/seo", "POST", data)

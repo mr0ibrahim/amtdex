@@ -1,5 +1,12 @@
 import { useState } from "react"
-import { useDeleteSeoMutation, useSeoQuery, useSeoToolsQuery, useUploadMediaMutation, useUpsertSeoMutation } from "@/lib/queries"
+import {
+  useDeleteSeoMutation,
+  useSeoQuery,
+  useSeoReindexMutation,
+  useSeoToolsQuery,
+  useUploadMediaMutation,
+  useUpsertSeoMutation,
+} from "@/lib/queries"
 import { getSeo } from "@/lib/seoStore"
 import type { SeoEntry } from "@/lib/seoStore"
 
@@ -20,13 +27,48 @@ export function SeoPage() {
   const upsertMutation = useUpsertSeoMutation()
   const deleteMutation = useDeleteSeoMutation()
   const uploadMutation = useUploadMediaMutation()
+  const reindexMutation = useSeoReindexMutation()
 
   const [editing, setEditing] = useState<SeoEntry | null>(null)
-  const [showTools, setShowTools] = useState(false)
+  const [showTools, setShowTools] = useState(true)
   const [uploading, setUploading] = useState(false)
+  const [reindexResult, setReindexResult] = useState<string | null>(null)
 
   const links = tools?.links ?? FALLBACK_LINKS
   const indexNow = tools?.indexnow
+  const lastReindex = tools?.last_reindex
+  const urlCount = tools?.url_count ?? lastReindex?.url_count
+
+  const runFullReindex = () => {
+    if (reindexMutation.isPending) return
+    if (
+      !window.confirm(
+        "سيتم إرسال كل روابط الموقع والمدونة لمحركات البحث عبر IndexNow مع تنبيه خرائط الموقع. المتابعة؟",
+      )
+    ) {
+      return
+    }
+    setShowTools(true)
+    setReindexResult(null)
+    reindexMutation.mutate(undefined, {
+      onSuccess: (res) => {
+        const data = res?.data
+        const pingBits = data?.sitemap_pings
+          ? Object.entries(data.sitemap_pings)
+              .map(([k, v]) => `${k}:${v ? "ok" : "fail"}`)
+              .join(" · ")
+          : ""
+        setReindexResult(
+          `${data?.message || "اكتملت الأرشفة."}${data ? ` (${data.submitted}/${data.url_count})` : ""}${
+            pingBits ? ` — pings: ${pingBits}` : ""
+          }`,
+        )
+      },
+      onError: (err: any) => {
+        setReindexResult(err?.message || "تعذر تنفيذ الأرشفة الكاملة.")
+      },
+    })
+  }
 
   const handleOgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -76,6 +118,14 @@ export function SeoPage() {
           </button>
           <button
             type="button"
+            disabled={reindexMutation.isPending}
+            onClick={runFullReindex}
+            className="text-[11px] font-bold bg-[var(--color-primary)] text-white px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-60 col-span-2 sm:col-span-1"
+          >
+            {reindexMutation.isPending ? "جارٍ الأرشفة..." : "أرشفة كاملة للموقع"}
+          </button>
+          <button
+            type="button"
             onClick={() => setEditing({ path: "", title: "", description: "", og_image: "" })}
             className="text-[11px] font-bold bg-[var(--color-ink)] text-white px-4 py-2.5 rounded-xl hover:bg-black transition-colors"
           >
@@ -84,9 +134,44 @@ export function SeoPage() {
         </div>
       </div>
 
+      {(reindexResult || lastReindex?.last_reindex_at) && (
+        <div
+          className={`rounded-2xl border px-4 py-3 text-[12px] ${
+            reindexMutation.isError || (reindexResult && reindexResult.includes("تعذر"))
+              ? "border-rose-200 bg-rose-50 text-rose-800"
+              : "border-emerald-200 bg-emerald-50 text-emerald-900"
+          }`}
+        >
+          {reindexResult && <p className="font-semibold">{reindexResult}</p>}
+          {lastReindex?.last_reindex_at && (
+            <p className="mt-1 text-[11px] opacity-80">
+              آخر أرشفة كاملة: {new Date(lastReindex.last_reindex_at).toLocaleString("ar")}
+              {typeof urlCount === "number" ? ` · ${urlCount} رابطاً مفهرساً` : ""}
+            </p>
+          )}
+        </div>
+      )}
+
       {showTools && (
         <div className="space-y-3">
           <div className="bg-white border border-[var(--color-border)] rounded-2xl p-4 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-card-soft)] px-3 py-3">
+              <div>
+                <div className="text-[12px] font-extrabold text-[var(--color-ink)]">تحديث وأرشفة تلقائية</div>
+                <p className="text-[11px] text-[var(--color-text-muted)] mt-1 leading-relaxed">
+                  يرسل كل صفحات الموقع والمقالات والتصنيفات والوسوم إلى IndexNow، وينبّه Google/Bing بخريطة الموقع
+                  الحية. النشر الفردي للمقالات يُرسل الرابط تلقائياً أيضاً.
+                </p>
+              </div>
+              <button
+                type="button"
+                disabled={reindexMutation.isPending}
+                onClick={runFullReindex}
+                className="shrink-0 text-[11px] font-bold bg-[var(--color-ink)] text-white px-4 py-2.5 rounded-xl hover:bg-black disabled:opacity-60"
+              >
+                {reindexMutation.isPending ? "جارٍ الإرسال..." : "تشغيل الأرشفة الآن"}
+              </button>
+            </div>
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-[13px] font-extrabold text-[var(--color-ink)]">الملفات الحية على الخادم</h2>
@@ -142,8 +227,8 @@ export function SeoPage() {
               </span>
             </div>
             <p className="text-[11px] text-white/75 leading-relaxed">
-              عند نشر مقال يُرسل الرابط تلقائياً لمحركات البحث الداعمة لـ IndexNow (مثل Bing). يتطلب مفتاحاً في إعدادات
-              الخادم.
+              عند نشر مقال يُرسل الرابط تلقائياً. زر «أرشفة كاملة» يعيد إرسال كل روابط الموقع دفعة واحدة. يتطلب مفتاح
+              INDEXNOW_KEY على الخادم.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
               <div className="rounded-xl bg-white/5 px-3 py-2">

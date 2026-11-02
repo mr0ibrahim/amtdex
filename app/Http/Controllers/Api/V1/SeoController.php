@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\SeoMetadata;
 use App\Services\Blog\BlogJsonLdBuilder;
+use App\Services\Blog\BlogSitemapBuilder;
 use App\Services\Blog\IndexNowService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -65,7 +66,29 @@ class SeoController extends Controller
                     ? 'https://'.$indexNowHost.'/'.$indexNowKey.'.txt'
                     : null,
             ],
+            'last_reindex' => IndexNowService::lastReindex(),
+            'url_count' => count(BlogSitemapBuilder::allIndexableUrls()),
         ]);
+    }
+
+    /**
+     * Submit every public site URL to IndexNow and ping search-engine sitemaps.
+     */
+    public function reindex(Request $request): JsonResponse
+    {
+        $result = IndexNowService::reindexSite();
+
+        AuditLog::record(
+            'أرشفة كاملة للموقع عبر IndexNow: '.($result['message'] ?? ''),
+            $request->user()?->email
+        );
+
+        return response()->json([
+            'ok' => (bool) ($result['ok'] ?? false),
+            'data' => $result,
+        ], ($result['enabled'] ?? false) && ! ($result['ok'] ?? false) && ($result['submitted'] ?? 0) === 0
+            ? 502
+            : 200);
     }
 
     /**
