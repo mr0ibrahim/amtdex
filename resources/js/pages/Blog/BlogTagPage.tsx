@@ -75,7 +75,7 @@ export function BlogTagPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-subtle,#FAF8F6)] text-[var(--color-ink,#16064F)]">
+    <div className="min-h-screen bg-[var(--color-bg-subtle)] text-[var(--color-ink)]">
       <Seo
         title={`${tagTitle} | مدونة Amtdex`}
         description={tagDesc}
@@ -84,38 +84,38 @@ export function BlogTagPage() {
       />
 
       {/* Header Banner */}
-      <section className="bg-white border-b border-[var(--color-border,#E2E0DF)] py-12 px-4 sm:px-6">
+      <section className="bg-white border-b border-[var(--color-border)] py-12 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto space-y-4">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[var(--color-text-muted,#605856)]">
-            <Link to={isBlogSubdomain() ? "/" : getBlogUrl("/")} className="hover:text-[var(--color-primary,#281071)] transition-colors">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
+            <Link to={isBlogSubdomain() ? "/" : getBlogUrl("/")} className="hover:text-[var(--color-primary)] transition-colors">
               المدونة
             </Link>
             <span>/</span>
-            <span className="text-[var(--color-ink,#16064F)] font-semibold">الوسوم</span>
+            <span className="text-[var(--color-ink)] font-semibold">الوسوم</span>
             <span>/</span>
-            <span className="text-[var(--color-primary,#281071)] font-semibold">#{tagName}</span>
+            <span className="text-[var(--color-primary)] font-semibold">#{tagName}</span>
           </nav>
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-card-soft,#F4EAF7)] text-[var(--color-primary,#281071)] text-xs font-bold mb-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-card-soft)] text-[var(--color-primary)] text-xs font-bold mb-3">
                 <span>#</span>
                 وسم مقالات
               </div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-[var(--color-ink,#16064F)] font-heading">
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-[var(--color-ink)] font-heading">
                 #{tagName}
               </h1>
-              <p className="text-sm sm:text-base text-[var(--color-text-muted,#605856)] max-w-2xl mt-2 leading-relaxed">
+              <p className="text-sm sm:text-base text-[var(--color-text-muted)] max-w-2xl mt-2 leading-relaxed">
                 استكشف كافة المقالات والأفكار البرمجية المصنفة تحت هذا الوسم.
               </p>
             </div>
 
             {meta && (
-              <div className="bg-[var(--color-bg-subtle,#FAF8F6)] px-4 py-3 rounded-2xl border border-[var(--color-border,#E2E0DF)] text-center shrink-0">
-                <span className="text-2xl font-extrabold text-[var(--color-ink,#16064F)] block font-mono">
+              <div className="bg-[var(--color-bg-subtle)] px-4 py-3 rounded-2xl border border-[var(--color-border)] text-center shrink-0">
+                <span className="text-2xl font-extrabold text-[var(--color-ink)] block font-mono">
                   {meta.total}
                 </span>
-                <span className="text-xs text-[var(--color-text-muted,#605856)]">مقال مرتبط</span>
+                <span className="text-xs text-[var(--color-text-muted)]">مقال مرتبط</span>
               </div>
             )}
           </div>
@@ -127,17 +127,17 @@ export function BlogTagPage() {
         {postsLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-80 bg-white rounded-3xl border border-[var(--color-border,#E2E0DF)] p-5 space-y-4">
-                <div className="h-44 bg-[var(--color-border,#E2E0DF)] rounded-2xl" />
-                <div className="h-5 bg-[var(--color-border,#E2E0DF)] rounded w-3/4" />
-                <div className="h-4 bg-[var(--color-border,#E2E0DF)] rounded w-1/2" />
+              <div key={i} className="h-80 bg-white rounded-3xl border border-[var(--color-border)] p-5 space-y-4">
+                <div className="h-44 bg-[var(--color-border)] rounded-2xl" />
+                <div className="h-5 bg-[var(--color-border)] rounded w-3/4" />
+                <div className="h-4 bg-[var(--color-border)] rounded w-1/2" />
               </div>
             ))}
           </div>
         ) : posts.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border border-[var(--color-border,#E2E0DF)] max-w-lg mx-auto space-y-4">
+          <div className="bg-white rounded-3xl p-12 text-center border border-[var(--color-border)] max-w-lg mx-auto space-y-4">
             <span className="text-4xl">🏷️</span>
-            <h2 className="text-lg font-bold text-[var(--color-ink,#16064F)]">لا توجد مقالات مرتبطة بهذا الوسم</h2>
+            <h2 className="text-lg font-bold text-[var(--color-ink)]">لا توجد مقالات مرتبطة بهذا الوسم</h2>
             <Link to={isBlogSubdomain() ? "/" : getBlogUrl("/")}>
               <Button className="mt-2 text-xs rounded-xl">
                 العودة لكافة المقالات
@@ -150,7 +150,7 @@ export function BlogTagPage() {
               {posts.map((post: BlogPost) => (
                 <Card
                   key={post.id}
-                  className="group overflow-hidden rounded-3xl border border-[var(--color-border,#E2E0DF)] bg-white hover:shadow-md transition-all flex flex-col justify-between"
+                  className="group overflow-hidden rounded-3xl border border-[var(--color-border)] bg-white hover:shadow-md transition-all flex flex-col justify-between"
                 >
                   <Link
                     to={isBlogSubdomain() ? `/posts/${post.slug}` : getBlogUrl(`/posts/${post.slug}`)}
@@ -164,7 +164,7 @@ export function BlogTagPage() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-[var(--color-card-soft,#F4EAF7)] text-[var(--color-primary,#281071)] font-bold text-xl">
+                      <div className="w-full h-full flex items-center justify-center bg-[var(--color-card-soft)] text-[var(--color-primary)] font-bold text-xl">
                         Amtdex
                       </div>
                     )}
@@ -173,27 +173,27 @@ export function BlogTagPage() {
                   <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                     <div>
                       {post.category && (
-                        <span className="text-xs font-bold text-[var(--color-primary,#281071)] mb-1 block">
+                        <span className="text-xs font-bold text-[var(--color-primary)] mb-1 block">
                           {post.category.name}
                         </span>
                       )}
-                      <h3 className="text-base font-bold text-[var(--color-ink,#16064F)] line-clamp-2 group-hover:text-[var(--color-primary,#281071)] transition-colors leading-snug">
+                      <h3 className="text-base font-bold text-[var(--color-ink)] line-clamp-2 group-hover:text-[var(--color-primary)] transition-colors leading-snug">
                         <Link to={isBlogSubdomain() ? `/posts/${post.slug}` : getBlogUrl(`/posts/${post.slug}`)}>
                           {post.title}
                         </Link>
                       </h3>
                       {post.summary && (
-                        <p className="text-xs text-[var(--color-text-muted,#605856)] line-clamp-2 mt-2 leading-relaxed">
+                        <p className="text-xs text-[var(--color-text-muted)] line-clamp-2 mt-2 leading-relaxed">
                           {post.summary}
                         </p>
                       )}
                     </div>
 
-                    <div className="pt-4 border-t border-[var(--color-border,#E2E0DF)] flex items-center justify-between text-xs">
-                      <span className="font-semibold text-[var(--color-ink,#16064F)] group-hover:translate-x-[-4px] transition-transform flex items-center gap-1">
+                    <div className="pt-4 border-t border-[var(--color-border)] flex items-center justify-between text-xs">
+                      <span className="font-semibold text-[var(--color-ink)] group-hover:-translate-x-1 rtl:group-hover:translate-x-1 transition-transform flex items-center gap-1">
                         قراءة المقال ←
                       </span>
-                      <span className="text-[11px] text-[var(--color-text-muted,#605856)]">
+                      <span className="text-[11px] text-[var(--color-text-muted)]">
                         {post.reading_time} د قراءة
                       </span>
                     </div>

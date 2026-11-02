@@ -62,8 +62,7 @@ function SettingsForm({
       <button
         type="submit"
         disabled={isPending}
-        className="text-white text-[12px] font-bold px-6 py-2.5 rounded-full hover:opacity-90 transition-opacity"
-        style={{ background: "var(--gradient-primary)" }}
+        className="bg-gradient-primary text-white text-[12px] font-bold px-6 py-2.5 rounded-full hover:opacity-90 transition-opacity"
       >
         {isPending ? "جار الحفظ..." : "حفظ التغييرات"}
       </button>
@@ -104,8 +103,11 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-[18px] font-bold text-[var(--color-ink)]">الإعدادات العامة</h1>
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-lg sm:text-[18px] font-extrabold text-[var(--color-ink)]">الإعدادات العامة</h1>
+        <p className="text-[12px] text-[var(--color-text-muted)] mt-1">بيانات الموقع والنسخ الاحتياطي للإعدادات.</p>
+      </div>
 
       {isLoading ? (
         <div className="p-8 text-center text-[12px] text-[var(--color-text-faint)]">

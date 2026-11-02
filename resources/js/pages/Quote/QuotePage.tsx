@@ -1,4 +1,5 @@
 import { Icon } from "@/components/ui/Icon"
+import { Input, Textarea } from "@/components/ui/Input"
 import { useState, useEffect } from "react"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { API } from "@/lib/api"
@@ -81,7 +82,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
   }
 
   return (
-    <div className="mx-auto max-w-[840px] px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div className="page-container page-container--narrow py-8 sm:py-12">
       <Link to="/" className="text-[12px] font-medium text-[var(--color-primary)] hover:underline inline-flex items-center gap-1">
         ← العودة للرئيسية
       </Link>
@@ -225,94 +226,38 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
             </p>
 
             <div className="grid sm:grid-cols-2 gap-4 pt-2">
-              <div>
-                <label htmlFor="q-name" className="text-[12.5px] font-bold text-[var(--color-ink)]">
-                  الاسم الكامل <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  id="q-name"
-                  name="name"
-                  required
-                  placeholder="محمد أحمد"
-                  aria-invalid={!!quoteErrors.name}
-                  className={`mt-1.5 w-full bg-[var(--color-card-soft)]/30 border rounded-xl px-4 py-3 text-[13px] outline-none transition-colors ${
-                    quoteErrors.name ? "border-rose-400 bg-rose-50/20" : "border-[var(--color-border)] focus:border-[var(--color-primary)]"
-                  }`}
-                />
-                {quoteErrors.name && (
-                  <p role="alert" className="mt-1.5 text-[11px] font-semibold text-rose-500">
-                    {quoteErrors.name}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="q-email" className="text-[12.5px] font-bold text-[var(--color-ink)]">
-                  البريد الإلكتروني <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  id="q-email"
-                  name="email"
-                  type="email"
-                  required
-                  placeholder="name@company.com"
-                  dir="ltr"
-                  aria-invalid={!!quoteErrors.email}
-                  className={`mt-1.5 w-full bg-[var(--color-card-soft)]/30 border rounded-xl px-4 py-3 text-[13px] outline-none transition-colors ${
-                    quoteErrors.email ? "border-rose-400 bg-rose-50/20" : "border-[var(--color-border)] focus:border-[var(--color-primary)]"
-                  }`}
-                />
-                {quoteErrors.email && (
-                  <p role="alert" className="mt-1.5 text-[11px] font-semibold text-rose-500">
-                    {quoteErrors.email}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="q-phone" className="text-[12.5px] font-bold text-[var(--color-ink)]">
-                رقم الجوال / الواتساب <span className="text-rose-500">*</span>
-              </label>
-              <input
-                id="q-phone"
-                name="phone"
+              <Input id="q-name" name="name" label="الاسم الكامل" required placeholder="محمد أحمد" error={quoteErrors.name} />
+              <Input
+                id="q-email"
+                name="email"
+                type="email"
+                label="البريد الإلكتروني"
                 required
-                placeholder="+966 50 123 4567"
+                placeholder="name@company.com"
                 dir="ltr"
-                aria-invalid={!!quoteErrors.phone}
-                className={`mt-1.5 w-full bg-[var(--color-card-soft)]/30 border rounded-xl px-4 py-3 text-[13px] outline-none transition-colors ${
-                  quoteErrors.phone ? "border-rose-400 bg-rose-50/20" : "border-[var(--color-border)] focus:border-[var(--color-primary)]"
-                }`}
+                error={quoteErrors.email}
               />
-              {quoteErrors.phone && (
-                <p role="alert" className="mt-1.5 text-[11px] font-semibold text-rose-500">
-                  {quoteErrors.phone}
-                </p>
-              )}
             </div>
 
-            <div>
-              <label htmlFor="q-details" className="text-[12.5px] font-bold text-[var(--color-ink)]">
-                تفاصيل ونبذة عن فكرة المشروع <span className="text-rose-500">*</span>
-              </label>
-              <textarea
-                id="q-details"
-                name="details"
-                required
-                rows={4}
-                placeholder="اشرح لنا طبيعة المشروع، الميزات المطلوبة، وأي روابط أو منصات ملهمة..."
-                aria-invalid={!!quoteErrors.details}
-                className={`mt-1.5 w-full bg-[var(--color-card-soft)]/30 border rounded-xl px-4 py-3 text-[13px] outline-none transition-colors resize-none ${
-                  quoteErrors.details ? "border-rose-400 bg-rose-50/20" : "border-[var(--color-border)] focus:border-[var(--color-primary)]"
-                }`}
-              />
-              {quoteErrors.details && (
-                <p role="alert" className="mt-1.5 text-[11px] font-semibold text-rose-500">
-                  {quoteErrors.details}
-                </p>
-              )}
-            </div>
+            <Input
+              id="q-phone"
+              name="phone"
+              label="رقم الجوال / الواتساب"
+              required
+              placeholder="+966 50 123 4567"
+              dir="ltr"
+              error={quoteErrors.phone}
+            />
+
+            <Textarea
+              id="q-details"
+              name="details"
+              label="تفاصيل ونبذة عن فكرة المشروع"
+              required
+              rows={4}
+              placeholder="اشرح لنا طبيعة المشروع، الميزات المطلوبة، وأي روابط أو منصات ملهمة..."
+              error={quoteErrors.details}
+            />
 
             <input type="hidden" name="service" value={data.service} />
             <input type="hidden" name="budget" value={data.budget} />

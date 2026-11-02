@@ -72,7 +72,7 @@ export function PricingPage({ onToast: _onToast }: { onToast: (m: string) => voi
   const hasRecurringPlans = plans.some((plan: any) => Boolean(plan.period))
 
   return (
-    <div className="mx-auto max-w-[1440px] px-6 sm:px-10 py-16 bg-white">
+    <div className="page-container page-container--wide py-12 sm:py-16 bg-[var(--color-surface)]">
       {/* Header & Title */}
       <div className="text-center max-w-[680px] mx-auto">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-card-soft)] text-[11px] font-bold tracking-[0.6px] text-[var(--color-primary)]">
@@ -127,8 +127,8 @@ export function PricingPage({ onToast: _onToast }: { onToast: (m: string) => voi
                 key={p.name}
                 className={`rounded-[28px] border p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 relative ${
                   p.popular
-                    ? "bg-[var(--color-ink)] text-white border-[var(--color-primary-light)] border-2 shadow-[var(--shadow-card-lg)] ring-1 ring-[var(--color-primary-light)]/20 scale-[1.02]"
-                    : "bg-white border-[var(--color-border)] shadow-[var(--shadow-card)] hover:border-[var(--color-violet-mid)]/40 hover:shadow-lg"
+                    ? "bg-[var(--color-ink)] text-white border-[var(--color-primary-light)] border-2 shadow-[var(--shadow-card-lg)] ring-1 ring-[var(--color-primary-light)]/20 lg:scale-[1.02]"
+                    : "bg-[var(--color-surface)] border-[var(--color-border)] shadow-[var(--shadow-card)] hover:border-[var(--color-violet-mid)]/40 hover:shadow-[var(--shadow-card-lg)]"
                 }`}
               >
                 <div>

@@ -1,77 +1,220 @@
-import { NavLink, useNavigate } from "react-router-dom"
+import { useEffect, useMemo, useState } from "react"
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
+import { Icon, type IconName } from "@/components/ui/Icon"
 import { getSession, logout } from "@/lib/auth"
 
-const NAV: Array<{ to: string; label: string; icon: string }> = [
-  { to: "/dashboard", label: "نظرة عامة", icon: "◈" },
-  { to: "/dashboard/blog", label: "المدونة", icon: "✍" },
-  { to: "/dashboard/content", label: "المحتوى", icon: "⬢" },
-  { to: "/dashboard/leads", label: "الطلبات", icon: "⬔" },
-  { to: "/dashboard/seo", label: "SEO", icon: "⬣" },
-  { to: "/dashboard/media", label: "الوسائط", icon: "⬘" },
-  { to: "/dashboard/settings", label: "الإعدادات", icon: "⬙" },
-  { to: "/dashboard/users", label: "المستخدمون", icon: "👤" },
-  { to: "/dashboard/audit", label: "السجل", icon: "◎" },
+type NavItem = { to: string; label: string; icon: IconName; end?: boolean }
+type NavGroup = { label: string; items: NavItem[] }
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    label: "مساحة العمل",
+    items: [
+      { to: "/dashboard", label: "الرئيسية", icon: "home", end: true },
+      { to: "/dashboard/blog", label: "المدونة", icon: "pen" },
+      { to: "/dashboard/content", label: "المحتوى", icon: "layers" },
+      { to: "/dashboard/leads", label: "الطلبات", icon: "mail" },
+      { to: "/dashboard/media", label: "الوسائط", icon: "image" },
+    ],
+  },
+  {
+    label: "النمو والتشغيل",
+    items: [
+      { to: "/dashboard/seo", label: "تحسين الظهور", icon: "globe" },
+      { to: "/dashboard/users", label: "المستخدمون", icon: "users" },
+      { to: "/dashboard/audit", label: "سجل النشاط", icon: "history" },
+      { to: "/dashboard/settings", label: "الإعدادات", icon: "settings" },
+    ],
+  },
 ]
 
-export function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const nav = useNavigate()
+function SidebarContent({
+  filter,
+  onNavigate,
+  showSearch = true,
+  searchValue = "",
+  onSearch,
+}: {
+  filter: string
+  onNavigate?: () => void
+  showSearch?: boolean
+  searchValue?: string
+  onSearch?: (value: string) => void
+}) {
   const session = getSession()
+  const nav = useNavigate()
+  const groups = useMemo(() => {
+    const q = filter.trim()
+    if (!q) return NAV_GROUPS
+    return NAV_GROUPS.map((g) => ({
+      ...g,
+      items: g.items.filter((i) => i.label.includes(q)),
+    })).filter((g) => g.items.length > 0)
+  }, [filter])
 
   const handleLogout = () => {
     logout()
     nav("/login", { replace: true })
   }
 
-  return (
-    <div className="min-h-screen bg-[var(--color-card-soft)]">
-      {/* Dashboard top bar — مستقل تماماً عن Header التسويقي */}
-      <header className="sticky top-0 z-30 bg-white border-b border-[var(--color-border)]">
-        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 h-[56px] flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="size-8 rounded-xl bg-[var(--color-ink)] text-white grid place-items-center text-[12px] font-bold">A</span>
-            <span className="font-extrabold text-[14px] tracking-[-0.5px] text-[var(--color-ink)]">AMTDEX — لوحة التحكم</span>
-            <span className="hidden sm:inline text-[10px] bg-[var(--color-lavender)] text-[var(--color-primary)] font-bold px-2 py-1 rounded-full">DASHBOARD</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:block text-right">
-              <div className="text-[12px] font-bold text-[var(--color-ink)] leading-none truncate">{session?.user.name ?? "—"}</div>
-              <div className="text-[10px] text-[var(--color-text-faint)] truncate">{session?.user.email ?? ""} • {session?.user.role ?? ""}</div>
-            </div>
-            <button onClick={handleLogout} className="text-[12px] font-medium border border-[var(--color-border)] px-4 py-2 rounded-full hover:bg-[var(--color-ink)] hover:text-white transition-colors">
-              خروج
-            </button>
-          </div>
-        </div>
-      </header>
+  const initial = (session?.user.name ?? "A").trim().slice(0, 1) || "A"
 
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 py-6 grid lg:grid-cols-[240px_1fr] gap-6 items-start">
-        <aside className="bg-white border border-[var(--color-border)] rounded-[20px] p-3 lg:sticky lg:top-[72px]">
-          <div className="sm:hidden flex items-center gap-2 px-2 py-2 border-b border-[var(--color-border)] mb-3 pb-3">
-            <div className="min-w-0">
-              <div className="text-[12px] font-bold leading-none text-[var(--color-ink)] truncate">{session?.user.name ?? "لوحة Amtdex"}</div>
-              <div className="text-[10px] text-[var(--color-text-faint)] truncate">{session?.user.email ?? "—"} • {session?.user.role ?? "viewer"}</div>
-            </div>
-          </div>
-          <nav className="mt-4 grid gap-1" aria-label="لوحة التحكم">
-            {NAV.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === "/dashboard"}
-                className={({ isActive }) =>
-                  `text-right flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-colors ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)] text-[var(--color-text-muted)]"}`
-                }
-              >
-                <span className="text-[12px] w-5 text-center">{item.icon}</span>
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-        </aside>
-        <div className="min-w-0 bg-white border border-[var(--color-border)] rounded-[20px] p-4 sm:p-6">
-          {children}
+  return (
+    <>
+      <div className="dash-sidebar-brand">
+        <span className="dash-sidebar-brand-mark font-display">A</span>
+        <div className="min-w-0">
+          <div className="dash-sidebar-brand-title">AMTDEX</div>
+          <div className="dash-sidebar-brand-sub">مركز التحكم التشغيلي</div>
         </div>
       </div>
+
+      {showSearch && (
+        <label className="dash-sidebar-search">
+          <Icon name="search" size={15} />
+          <input
+            value={searchValue}
+            onChange={(e) => onSearch?.(e.target.value)}
+            placeholder="بحث سريع في القائمة..."
+            aria-label="بحث في القائمة"
+          />
+        </label>
+      )}
+
+      <nav className="grid gap-3" aria-label="تنقل لوحة التحكم">
+        {groups.map((group) => (
+          <div key={group.label} className="dash-nav-group">
+            <div className="dash-nav-label">{group.label}</div>
+            <div className="grid gap-1">
+              {group.items.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  onClick={onNavigate}
+                  className={({ isActive }) => `dash-nav-link${isActive ? " is-active" : ""}`}
+                >
+                  <span className="dash-nav-ico">
+                    <Icon name={item.icon} size={15} />
+                  </span>
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+        ))}
+      </nav>
+
+      <div className="dash-sidebar-foot">
+        <div className="dash-user-card">
+          <span className="dash-user-avatar">{initial}</span>
+          <div className="min-w-0 flex-1">
+            <div className="text-[12px] font-bold truncate">{session?.user.name ?? "مستخدم Amtdex"}</div>
+            <div className="text-[10px] text-white/50 truncate">{session?.user.role ?? "viewer"}</div>
+          </div>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="text-[11px] font-bold px-3 py-1.5 rounded-full border border-white/15 hover:bg-white hover:text-[var(--color-ink)] transition-colors"
+          >
+            خروج
+          </button>
+        </div>
+        <div className="dash-status">
+          <span className="dash-status-dot" aria-hidden />
+          محرك النظام متصل — جاهز للعمل
+        </div>
+        <Link
+          to="/"
+          onClick={onNavigate}
+          className="text-[11px] text-center text-white/55 hover:text-white transition-colors"
+        >
+          ← العودة للموقع
+        </Link>
+      </div>
+    </>
+  )
+}
+
+export function DashboardLayout({ children }: { children?: React.ReactNode }) {
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [navFilter, setNavFilter] = useState("")
+  const session = getSession()
+  const location = useLocation()
+  const isOverview = location.pathname === "/dashboard" || location.pathname === "/dashboard/overview"
+  const content = children ?? <Outlet />
+
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (!mobileOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [mobileOpen])
+
+  return (
+    <div className="dash-shell">
+      <div className="dash-frame">
+        <aside className="dash-sidebar hidden lg:flex">
+          <SidebarContent filter={navFilter} showSearch searchValue={navFilter} onSearch={setNavFilter} />
+        </aside>
+
+        <div className="dash-main">
+          <div className="dash-topbar lg:hidden">
+            <button
+              type="button"
+              className="dash-mobile-toggle"
+              aria-label="فتح القائمة"
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen(true)}
+            >
+              <Icon name="menu" size={18} />
+            </button>
+            <div className="min-w-0">
+              <div className="text-[13px] font-extrabold text-[var(--color-ink)] font-display tracking-tight">AMTDEX</div>
+              <div className="text-[10px] text-[var(--color-text-faint)] truncate">{session?.user.name ?? "لوحة التحكم"}</div>
+            </div>
+            <Link
+              to="/"
+              className="text-[11px] font-bold px-3 py-2 rounded-full border border-[var(--color-border)] bg-white text-[var(--color-ink)]"
+            >
+              الموقع
+            </Link>
+          </div>
+
+          {isOverview ? content : <div className="dash-panel min-h-[70vh]">{content}</div>}
+        </div>
+      </div>
+
+      {mobileOpen && (
+        <div className="dash-mobile-drawer lg:hidden" role="dialog" aria-modal="true" aria-label="قائمة لوحة التحكم">
+          <button type="button" className="absolute inset-0 cursor-default" aria-label="إغلاق" onClick={() => setMobileOpen(false)} />
+          <div className="dash-mobile-drawer-panel dash-sidebar relative z-10">
+            <div className="flex items-center justify-between px-2 pb-2">
+              <span className="text-[12px] font-bold text-white/70">القائمة</span>
+              <button
+                type="button"
+                onClick={() => setMobileOpen(false)}
+                className="size-9 grid place-items-center rounded-full border border-white/15"
+                aria-label="إغلاق القائمة"
+              >
+                <Icon name="close" size={16} />
+              </button>
+            </div>
+            <SidebarContent
+              filter={navFilter}
+              onNavigate={() => setMobileOpen(false)}
+              searchValue={navFilter}
+              onSearch={setNavFilter}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

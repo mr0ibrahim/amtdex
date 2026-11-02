@@ -7,7 +7,7 @@ export function StatsBand() {
   ]
 
   return (
-    <section className="mx-auto max-w-[1280px] xl:max-w-[1440px] px-4 sm:px-6 lg:px-10 py-6 sm:py-8" style={{ background: "var(--gradient-primary)" }}>
+    <section className="page-container page-container--wide py-6 sm:py-8 bg-gradient-primary">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 divide-y divide-white/10 lg:divide-y-0 lg:divide-x lg:divide-x-reverse">
         {stats.map((s) => (
           <div key={s.label} className="px-4 sm:px-6 py-5 sm:py-4 even:border-r lg:even:border-r-0 border-white/10 flex flex-col items-center lg:items-start text-center lg:text-right">
