@@ -10,6 +10,7 @@ use App\Models\BlogRedirect;
 use App\Models\BlogSetting;
 use App\Models\BlogTag;
 use App\Services\Blog\BlogJsonLdBuilder;
+use App\Services\Blog\BlogSitemapBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -356,69 +357,16 @@ class PublicBlogController extends Controller
     }
 
     /**
-     * Generate dynamic sitemap.xml index and entries.
+     * Generate dynamic sitemap.xml (legacy single urlset — kept for API clients).
      */
     public function sitemap(): Response
     {
-        $settings = BlogSetting::getAll();
-        $subdomain = $settings['blog_subdomain'] ?? 'blog.amtdex.com';
-        $baseUrl = "https://{$subdomain}";
-
-        $posts = BlogPost::published()->select('slug', 'cover_image', 'updated_at', 'published_at')->get();
-        $categories = BlogCategory::visible()->select('slug', 'updated_at')->get();
-        $tags = BlogTag::select('slug', 'updated_at')->get();
-
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">';
-
-        // Home
-        $xml .= '<url>';
-        $xml .= "<loc>{$baseUrl}/</loc>";
-        $xml .= '<changefreq>daily</changefreq>';
-        $xml .= '<priority>1.0</priority>';
-        $xml .= '</url>';
-
-        // Posts
-        foreach ($posts as $post) {
-            $xml .= '<url>';
-            $xml .= "<loc>{$baseUrl}/posts/{$post->slug}</loc>";
-            $xml .= '<lastmod>' . ($post->updated_at ?? $post->published_at)->toAtomString() . '</lastmod>';
-            $xml .= '<changefreq>weekly</changefreq>';
-            $xml .= '<priority>0.8</priority>';
-            if ($post->cover_image) {
-                $xml .= '<image:image>';
-                $xml .= '<image:loc>' . htmlspecialchars($post->cover_image) . '</image:loc>';
-                $xml .= '</image:image>';
-            }
-            $xml .= '</url>';
-        }
-
-        // Categories
-        foreach ($categories as $cat) {
-            $xml .= '<url>';
-            $xml .= "<loc>{$baseUrl}/categories/{$cat->slug}</loc>";
-            $xml .= '<lastmod>' . ($cat->updated_at ? $cat->updated_at->toAtomString() : now()->toAtomString()) . '</lastmod>';
-            $xml .= '<changefreq>weekly</changefreq>';
-            $xml .= '<priority>0.6</priority>';
-            $xml .= '</url>';
-        }
-
-        // Tags
-        foreach ($tags as $tag) {
-            $xml .= '<url>';
-            $xml .= "<loc>{$baseUrl}/tags/{$tag->slug}</loc>";
-            $xml .= '<lastmod>' . ($tag->updated_at ? $tag->updated_at->toAtomString() : now()->toAtomString()) . '</lastmod>';
-            $xml .= '<changefreq>monthly</changefreq>';
-            $xml .= '<priority>0.4</priority>';
-            $xml .= '</url>';
-        }
-
-        $xml .= '</urlset>';
-
         if (ob_get_length()) {
-            ob_clean();
+            @ob_clean();
         }
 
-        return response(trim($xml), 200, ['Content-Type' => 'application/xml; charset=utf-8']);
+        return response(trim(BlogSitemapBuilder::legacyBlogUrlset()), 200, [
+            'Content-Type' => 'application/xml; charset=UTF-8',
+        ]);
     }
 }
