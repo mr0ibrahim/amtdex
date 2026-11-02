@@ -156,8 +156,18 @@ class PublicBlogController extends Controller
     /**
      * Get single category with posts.
      */
-    public function category(string $slug): JsonResponse
+    public function category(Request $request, string $slug): JsonResponse
     {
+        $redirect = BlogRedirect::trackAndRedirect("/categories/{$slug}");
+        if ($redirect) {
+            // SPA-friendly payload (HTTP 200); BlogRedirect keeps status_code=301 for real edge redirects later.
+            return response()->json([
+                'redirect' => true,
+                'status_code' => $redirect->status_code ?: 301,
+                'target' => $redirect->target_path,
+            ]);
+        }
+
         $category = BlogCategory::where('slug', $slug)
             ->visible()
             ->with(['children' => fn ($q) => $q->visible()->withCount('publishedPosts')])
@@ -168,11 +178,12 @@ class PublicBlogController extends Controller
             return response()->json(['message' => 'التصنيف غير موجود.'], 404);
         }
 
+        $perPage = max(1, min(24, (int) $request->input('per_page', 9)));
         $posts = BlogPost::published()
             ->where('category_id', $category->id)
             ->with(['author:id,name,avatar', 'category:id,name,slug', 'tags:id,name,slug'])
             ->latest('published_at')
-            ->paginate(9);
+            ->paginate($perPage);
 
         return response()->json([
             'category' => $category,
@@ -180,8 +191,10 @@ class PublicBlogController extends Controller
             'meta' => [
                 'current_page' => $posts->currentPage(),
                 'last_page' => $posts->lastPage(),
+                'per_page' => $posts->perPage(),
                 'total' => $posts->total(),
             ],
+            'json_ld' => BlogJsonLdBuilder::forCategory($category, $posts->items()),
         ]);
     }
 
@@ -200,19 +213,29 @@ class PublicBlogController extends Controller
     /**
      * Get single tag with posts.
      */
-    public function tag(string $slug): JsonResponse
+    public function tag(Request $request, string $slug): JsonResponse
     {
+        $redirect = BlogRedirect::trackAndRedirect("/tags/{$slug}");
+        if ($redirect) {
+            return response()->json([
+                'redirect' => true,
+                'status_code' => $redirect->status_code ?: 301,
+                'target' => $redirect->target_path,
+            ]);
+        }
+
         $tag = BlogTag::where('slug', $slug)->withCount('publishedPosts')->first();
 
         if (!$tag) {
             return response()->json(['message' => 'الوسم غير موجود.'], 404);
         }
 
+        $perPage = max(1, min(24, (int) $request->input('per_page', 9)));
         $posts = BlogPost::published()
             ->whereHas('tags', fn ($q) => $q->where('slug', $slug))
             ->with(['author:id,name,avatar', 'category:id,name,slug'])
             ->latest('published_at')
-            ->paginate(9);
+            ->paginate($perPage);
 
         return response()->json([
             'tag' => $tag,
@@ -220,8 +243,10 @@ class PublicBlogController extends Controller
             'meta' => [
                 'current_page' => $posts->currentPage(),
                 'last_page' => $posts->lastPage(),
+                'per_page' => $posts->perPage(),
                 'total' => $posts->total(),
             ],
+            'json_ld' => BlogJsonLdBuilder::forTag($tag, $posts->items()),
         ]);
     }
 
