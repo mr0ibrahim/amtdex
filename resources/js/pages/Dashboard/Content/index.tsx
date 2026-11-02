@@ -46,12 +46,12 @@ function Section({
   children: React.ReactNode
 }) {
   return (
-    <div className="bg-white border border-[var(--color-border)] rounded-2xl p-5 space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="bg-white border border-[var(--color-border)] rounded-2xl p-4 sm:p-5 space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <h2 className="text-[14px] font-bold text-[var(--color-ink)]">{title}</h2>
         <button
           onClick={onAdd}
-          className="text-[11px] font-bold bg-[var(--color-ink)] text-white px-3.5 py-1.5 rounded-full hover:bg-black transition-colors"
+          className="text-[11px] font-bold bg-[var(--color-ink)] text-white px-3.5 py-2 rounded-xl hover:bg-black transition-colors w-full sm:w-auto"
         >
           {addLabel}
         </button>
@@ -293,91 +293,38 @@ export function ContentPage() {
     })
   }
 
+  const contentTabs: Array<{ id: ContentTab; label: string }> = [
+    { id: "projects", label: `معرض المشاريع (${projects.length})` },
+    { id: "services", label: `الخدمات (${services.length})` },
+    { id: "pricing", label: "باقات الأسعار" },
+    { id: "testimonials", label: "آراء العملاء" },
+    { id: "faqs", label: "الأسئلة الشائعة" },
+    { id: "team", label: "فريق العمل" },
+    { id: "clients", label: "الشركاء والعملاء" },
+  ]
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-[18px] font-bold text-[var(--color-ink)]">إدارة المحتوى</h1>
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-lg sm:text-[18px] font-extrabold text-[var(--color-ink)]">إدارة المحتوى</h1>
+        <p className="text-[12px] text-[var(--color-text-muted)] mt-1">
+          المشاريع، الخدمات، الباقات، والآراء من شاشة واحدة متجاوبة مع الجوال.
+        </p>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="flex items-center gap-1 overflow-x-auto border-b border-[var(--color-border)] pb-px">
-        <button
-          type="button"
-          onClick={() => setActiveTab("projects")}
-          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
-            activeTab === "projects"
-              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
-              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
-          }`}
-        >
-          معرض المشاريع ({projects.length})
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("services")}
-          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
-            activeTab === "services"
-              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
-              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
-          }`}
-        >
-          الخدمات ({services.length})
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("pricing")}
-          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
-            activeTab === "pricing"
-              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
-              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
-          }`}
-        >
-          باقات الأسعار
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("testimonials")}
-          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
-            activeTab === "testimonials"
-              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
-              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
-          }`}
-        >
-          آراء العملاء
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("faqs")}
-          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
-            activeTab === "faqs"
-              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
-              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
-          }`}
-        >
-          الأسئلة الشائعة
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("team")}
-          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
-            activeTab === "team"
-              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
-              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
-          }`}
-        >
-          فريق العمل
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("clients")}
-          className={`px-4 py-2 text-xs font-bold transition-all border-b-2 -mb-px whitespace-nowrap ${
-            activeTab === "clients"
-              ? "border-[var(--color-ink)] text-[var(--color-ink)]"
-              : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
-          }`}
-        >
-          الشركاء والعملاء
-        </button>
+      <div className="dash-tabs" role="tablist" aria-label="أقسام المحتوى">
+        {contentTabs.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === t.id}
+            onClick={() => setActiveTab(t.id)}
+            className={`dash-tab${activeTab === t.id ? " is-active" : ""}`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
       {/* Services Section */}
@@ -410,15 +357,15 @@ export function ContentPage() {
             {services.map((s) => (
               <div
                 key={s.slug}
-                className="flex items-center justify-between gap-3 border border-[var(--color-border)] rounded-xl px-4 py-3 bg-white hover:border-[var(--color-primary)]/40 transition-colors"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-[var(--color-border)] rounded-xl px-3.5 sm:px-4 py-3 bg-white hover:border-[var(--color-primary)]/40 transition-colors"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="size-8 rounded-lg bg-[var(--color-lavender)] text-[var(--color-primary)] flex items-center justify-center shrink-0">
                     <Icon name={s.icon as IconName} size={18} />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-[13px] font-bold text-[var(--color-ink)] flex items-center gap-2">
-                      <span className="truncate">{s.title}</span>
+                    <div className="text-[13px] font-bold text-[var(--color-ink)] flex flex-wrap items-center gap-2">
+                      <span className="truncate max-w-full">{s.title}</span>
                       <span className="text-[10px] text-[var(--color-text-faint)] font-mono">/{s.slug}</span>
                       {s.is_published === false && (
                         <span className="text-[9px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-bold">
@@ -426,12 +373,12 @@ export function ContentPage() {
                         </span>
                       )}
                     </div>
-                    <div className="text-[11px] text-[var(--color-text-muted)] truncate">
+                    <div className="text-[11px] text-[var(--color-text-muted)] line-clamp-2 sm:truncate">
                       {s.desc}
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2 shrink-0">
+                <div className="grid grid-cols-2 sm:flex gap-2 shrink-0">
                   <button
                     onClick={() => {
                       setServiceError(null)
@@ -444,7 +391,7 @@ export function ContentPage() {
                         is_published: s.is_published ?? true,
                       })
                     }}
-                    className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-1.5 rounded-full hover:bg-[var(--color-lavender)] transition-colors"
+                    className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-2 sm:py-1.5 rounded-xl sm:rounded-full hover:bg-[var(--color-lavender)] transition-colors"
                   >
                     تعديل
                   </button>
@@ -454,7 +401,7 @@ export function ContentPage() {
                         deleteServiceMutation.mutate(s.slug)
                       }
                     }}
-                    className="text-[11px] font-bold border border-red-200 text-red-600 px-3 py-1.5 rounded-full hover:bg-red-50 transition-colors"
+                    className="text-[11px] font-bold border border-red-200 text-red-600 px-3 py-2 sm:py-1.5 rounded-xl sm:rounded-full hover:bg-red-50 transition-colors"
                   >
                     حذف
                   </button>
@@ -515,7 +462,7 @@ export function ContentPage() {
             {projects.map((p) => (
               <div
                 key={p.slug}
-                className="flex items-center justify-between gap-3 border border-[var(--color-border)] rounded-xl px-4 py-3 bg-white hover:border-[var(--color-primary)]/40 transition-colors"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-[var(--color-border)] rounded-xl px-3.5 sm:px-4 py-3 bg-white hover:border-[var(--color-primary)]/40 transition-colors"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   {p.cover_image ? (
@@ -533,8 +480,8 @@ export function ContentPage() {
                     </div>
                   )}
                   <div className="min-w-0">
-                    <div className="text-[13px] font-bold text-[var(--color-ink)] flex items-center gap-2">
-                      <span className="truncate">{p.title}</span>
+                    <div className="text-[13px] font-bold text-[var(--color-ink)] flex flex-wrap items-center gap-2">
+                      <span className="truncate max-w-full">{p.title}</span>
                       <span className="text-[10px] text-[var(--color-text-faint)] font-mono">/{p.slug}</span>
                       {p.is_published === false && (
                         <span className="text-[9px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-bold">
@@ -542,13 +489,13 @@ export function ContentPage() {
                         </span>
                       )}
                     </div>
-                    <div className="text-[11px] text-[var(--color-text-muted)] truncate">
+                    <div className="text-[11px] text-[var(--color-text-muted)] line-clamp-2 sm:truncate">
                       العميل: <strong className="text-[var(--color-ink)]">{p.client}</strong> • {p.cat} • {p.year}
                       {p.summary ? ` — ${p.summary}` : ""}
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2 shrink-0">
+                <div className="grid grid-cols-2 sm:flex gap-2 shrink-0">
                   <button
                     onClick={() => {
                       setProjectError(null)
@@ -578,7 +525,7 @@ export function ContentPage() {
                         is_published: p.is_published ?? true,
                       })
                     }}
-                    className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-1.5 rounded-full hover:bg-[var(--color-lavender)] transition-colors"
+                    className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-2 sm:py-1.5 rounded-xl sm:rounded-full hover:bg-[var(--color-lavender)] transition-colors"
                   >
                     تعديل
                   </button>
@@ -588,7 +535,7 @@ export function ContentPage() {
                         deleteProjectMutation.mutate(p.slug)
                       }
                     }}
-                    className="text-[11px] font-bold border border-red-200 text-red-600 px-3 py-1.5 rounded-full hover:bg-red-50 transition-colors"
+                    className="text-[11px] font-bold border border-red-200 text-red-600 px-3 py-2 sm:py-1.5 rounded-xl sm:rounded-full hover:bg-red-50 transition-colors"
                   >
                     حذف
                   </button>

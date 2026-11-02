@@ -145,6 +145,10 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const content = children ?? <Outlet />
 
   useEffect(() => {
+    setMobileOpen(false)
+  }, [location.pathname])
+
+  useEffect(() => {
     if (!mobileOpen) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMobileOpen(false)
