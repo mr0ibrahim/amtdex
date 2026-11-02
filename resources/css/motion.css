@@ -35,3 +35,13 @@
   .screen-gallery-image { transition: none; }
   .screen-gallery-card:hover .screen-gallery-image { transform: none; }
 }
+
+/* Shared UI motion (moved out of layout <style> tags) */
+@keyframes toastIn {
+  from { transform: translateY(10px) scale(0.98); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}

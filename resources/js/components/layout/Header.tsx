@@ -118,11 +118,11 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
         <span className="hidden lg:inline">Amtdex — نبني حلولك البرمجية من الفكرة للإطلاق</span>
       </div>
       <header className="sticky top-0 z-40 backdrop-blur-[14px] bg-[var(--color-bg)]/95 border-b border-[var(--color-border)]">
-        <nav className="mx-auto max-w-[1280px] xl:max-w-[1440px] px-4 sm:px-6 lg:px-10 h-16 sm:h-[75.5px] flex items-center justify-between gap-4 sm:gap-6" aria-label="التنقل">
+        <nav className="page-container page-container--wide h-16 sm:h-[76px] flex items-center justify-between gap-4 sm:gap-6" aria-label="التنقل">
           <div className="flex items-center gap-7 h-full">
             <SiteLink to="/" className="flex items-center gap-2.5 shrink-0 group">
               <span className="size-2.5 rounded-full bg-[var(--color-primary)] shrink-0" aria-hidden />
-              <span className="font-extrabold text-[18px] tracking-[-0.5px] text-[var(--color-ink)]" style={{ fontFamily: "var(--font-display)" }}>
+              <span className="font-display font-extrabold text-[18px] tracking-[-0.5px] text-[var(--color-ink)]">
                 AMTDEX
               </span>
             </SiteLink>
@@ -159,7 +159,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
             <SiteLink to="/contact" className="text-[13.5px] font-semibold text-[var(--color-ink)] hover:opacity-70 transition-opacity">
               تواصل معنا
             </SiteLink>
-            <SiteLink to="/quote" className="inline-flex items-center gap-2 text-white text-[13.5px] font-bold px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity" style={{ background: "var(--gradient-primary)" }}>
+            <SiteLink to="/quote" className="inline-flex items-center gap-2 text-white text-[13.5px] font-bold px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity bg-gradient-primary">
               اطلب عرض سعر <span aria-hidden>←</span>
             </SiteLink>
           </div>

@@ -22,5 +22,47 @@ body {
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 999px; }
 
-/* Laravel-ready markers: every form has name attrs, every API call is a fetch stub */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* ── Layout primitives (هوية الحاويات الحالية) ── */
+.page-container {
+  width: 100%;
+  margin-inline: auto;
+  max-width: var(--container-marketing);
+  padding-inline: var(--page-pad-x);
+}
+@media (min-width: 640px) {
+  .page-container { padding-inline: var(--page-pad-x-sm); }
+}
+@media (min-width: 1024px) {
+  .page-container { padding-inline: 32px; }
+}
+.page-container--wide {
+  max-width: var(--container-wide);
+}
+@media (min-width: 1024px) {
+  .page-container--wide { padding-inline: var(--page-pad-x-lg); }
+}
+.page-container--narrow {
+  max-width: var(--container-narrow);
+}
+.page-section {
+  padding-block: 32px;
+}
+@media (min-width: 640px) {
+  .page-section { padding-block: 48px; }
+}
+
+/* ── Gradient utilities (بدلاً من style={{ background }}) ── */
+.bg-gradient-primary { background-image: var(--gradient-primary); }
+.bg-gradient-hero { background-image: var(--gradient-hero); }
+.bg-gradient-gold { background-image: var(--gradient-gold); }
+.bg-gradient-card { background-image: var(--gradient-card); }
+.bg-gradient-cta { background-image: var(--gradient-cta); }
+
+.font-display { font-family: var(--font-display); }
+
+/* Skip link uses logical inset for RTL */
+.skip-link:focus {
+  inset-inline-end: 12px;
+}

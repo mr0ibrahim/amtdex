@@ -227,7 +227,7 @@ function PostsTab({ onNotify }: { onNotify: (m: string) => void }) {
       {isLoading ? (
         <div className="py-12 text-center text-xs text-[var(--color-text-faint)]">جارٍ تحميل المقالات...</div>
       ) : posts.length === 0 ? (
-        <div className="py-12 text-center bg-[var(--color-bg-subtle,#FAF8F6)] rounded-2xl border border-[var(--color-border)] text-xs text-[var(--color-text-muted)]">
+        <div className="py-12 text-center bg-[var(--color-bg-subtle)] rounded-2xl border border-[var(--color-border)] text-xs text-[var(--color-text-muted)]">
           لا توجد مقالات مطابقة للبحث أو الفلتر.
         </div>
       ) : (
@@ -651,7 +651,7 @@ function ArticleEditorModal({
           </div>
 
           {/* SEO & SERP PREVIEW BOX */}
-          <div className="bg-[var(--color-bg-subtle,#FAF8F6)] rounded-2xl p-4 border border-[var(--color-border)] space-y-4">
+          <div className="bg-[var(--color-bg-subtle)] rounded-2xl p-4 border border-[var(--color-border)] space-y-4">
             <div className="flex items-center justify-between">
               <span className="font-bold text-[var(--color-ink)] flex items-center gap-1.5">
                 <span className="size-2 rounded-full bg-emerald-500" />
@@ -755,7 +755,7 @@ function ArticleEditorModal({
             </div>
 
             {faqList.map((faq, i) => (
-              <div key={i} className="p-3 bg-[var(--color-bg-subtle,#FAF8F6)] rounded-xl border border-[var(--color-border)] space-y-2">
+              <div key={i} className="p-3 bg-[var(--color-bg-subtle)] rounded-xl border border-[var(--color-border)] space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-[11px] text-[var(--color-ink)]">سؤال #{i + 1}</span>
                   <button
@@ -1071,7 +1071,7 @@ function CommentsTab({ onNotify }: { onNotify: (m: string) => void }) {
       {isLoading ? (
         <div className="py-6 text-center text-xs text-[var(--color-text-faint)]">جارٍ التحميل...</div>
       ) : comments.length === 0 ? (
-        <div className="py-8 text-center bg-[var(--color-bg-subtle,#FAF8F6)] rounded-2xl border text-xs text-[var(--color-text-muted)]">
+        <div className="py-8 text-center bg-[var(--color-bg-subtle)] rounded-2xl border text-xs text-[var(--color-text-muted)]">
           لا توجد تعليقات في هذه القائمة.
         </div>
       ) : (
@@ -1210,7 +1210,7 @@ function RedirectsTab({ onNotify }: { onNotify: (m: string) => void }) {
         {isLoading ? (
           <div className="py-6 text-center text-xs text-[var(--color-text-faint)]">جارٍ التحميل...</div>
         ) : redirects.length === 0 ? (
-          <div className="py-8 text-center bg-[var(--color-bg-subtle,#FAF8F6)] rounded-2xl border text-xs text-[var(--color-text-muted)]">
+          <div className="py-8 text-center bg-[var(--color-bg-subtle)] rounded-2xl border text-xs text-[var(--color-text-muted)]">
             لا توجد تحويلات مخصصة مسجلة حالياً.
           </div>
         ) : (

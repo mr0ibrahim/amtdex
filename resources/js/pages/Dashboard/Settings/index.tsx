@@ -62,8 +62,7 @@ function SettingsForm({
       <button
         type="submit"
         disabled={isPending}
-        className="text-white text-[12px] font-bold px-6 py-2.5 rounded-full hover:opacity-90 transition-opacity"
-        style={{ background: "var(--gradient-primary)" }}
+        className="bg-gradient-primary text-white text-[12px] font-bold px-6 py-2.5 rounded-full hover:opacity-90 transition-opacity"
       >
         {isPending ? "جار الحفظ..." : "حفظ التغييرات"}
       </button>
