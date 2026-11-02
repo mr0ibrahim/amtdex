@@ -133,12 +133,17 @@ function CategoriesTab({ onNotify }: { onNotify: (m: string) => void }) {
   const [name, setName] = useState("")
   const [slug, setSlug] = useState("")
   const [desc, setDesc] = useState("")
+  const [search, setSearch] = useState("")
 
   const { data: categoriesRes, isLoading } = useQuery({
     queryKey: ["admin-categories"],
     queryFn: () => BlogAPI.getAdminCategories(),
   })
-  const categories = categoriesRes?.data ?? []
+  const categories = (categoriesRes?.data ?? []).filter((c) => {
+    const q = search.trim().toLowerCase()
+    if (!q) return true
+    return c.name.toLowerCase().includes(q) || c.slug.toLowerCase().includes(q)
+  })
 
   const saveMutation = useMutation({
     mutationFn: (payload: Partial<BlogCategory>) => BlogAPI.saveCategory(payload),
@@ -216,6 +221,13 @@ function CategoriesTab({ onNotify }: { onNotify: (m: string) => void }) {
 
       {/* List */}
       <div className="md:col-span-2 space-y-2">
+        <input
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="بحث في التصنيفات..."
+          className="w-full px-3 py-2.5 rounded-xl border border-[var(--color-border)] text-xs outline-none mb-1"
+        />
         {isLoading ? (
           <div className="text-xs text-[var(--color-text-faint)] py-6 text-center">جارٍ التحميل...</div>
         ) : categories.length === 0 ? (
