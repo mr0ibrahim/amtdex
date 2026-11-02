@@ -101,6 +101,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/clients/{id}', [ContentController::class, 'destroyClient'])->middleware('role:admin');
 
         // SEO Metadata Management
+        Route::get('/seo/tools', [SeoController::class, 'tools'])->middleware('role:admin,editor');
         Route::post('/seo', [SeoController::class, 'upsert'])->middleware('role:admin,editor');
         Route::delete('/seo', [SeoController::class, 'destroy'])->middleware('role:admin');
 

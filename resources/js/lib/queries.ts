@@ -230,6 +230,14 @@ export function useSeoQuery() {
   })
 }
 
+export function useSeoToolsQuery() {
+  return useQuery({
+    queryKey: ["seo-tools"],
+    queryFn: () => API.seo.tools(),
+    staleTime: 60_000,
+  })
+}
+
 export function useUpsertSeoMutation() {
   const qc = useQueryClient()
   return useMutation({

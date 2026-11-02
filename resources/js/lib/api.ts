@@ -378,7 +378,28 @@ export const API = {
     list() {
       return apiClient<{ data: Array<{ path: string; title: string; description: string; noindex?: boolean }> }>("/seo", "GET")
     },
-    upsert(data: { path: string; title: string; description: string; noindex?: boolean }) {
+    tools() {
+      return apiClient<{
+        site_base: string
+        blog_base: string
+        links: {
+          robots: string
+          sitemap_index: string
+          sitemap_pages: string
+          sitemap_blog_posts: string
+          sitemap_blog_categories: string
+          sitemap_blog_tags: string
+          sitemap_blog_legacy: string
+        }
+        indexnow: {
+          enabled: boolean
+          configured: boolean
+          host: string
+          key_location: string | null
+        }
+      }>("/seo/tools", "GET")
+    },
+    upsert(data: { path: string; title: string; description: string; noindex?: boolean; og_image?: string }) {
       return apiClient<{ ok: boolean }>("/seo", "POST", data)
     },
     delete(path: string) {
