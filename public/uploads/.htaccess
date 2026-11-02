@@ -1,0 +1,7 @@
+# Block execution of scripts dropped into the uploads folder.
+# Image requests are unaffected. Wrapped so a host without this module ignores it.
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.(?i:php|phtml|phar)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
