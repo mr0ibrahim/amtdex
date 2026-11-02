@@ -7,6 +7,7 @@ export interface AmtdexRuntimeConfig {
   isBlogSubdomain?: boolean
   host?: string
   scheme?: string
+  googleSiteVerification?: string
 }
 
 declare global {

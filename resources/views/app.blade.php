@@ -8,6 +8,23 @@
 
     <title>{{ config('app.name', 'Amtdex') }} — حلول برمجية تصنع الفرق</title>
     <meta name="description" content="Amtdex — شركة حلول برمجية متكاملة: مواقع، تطبيقات، أنظمة ERP، ذكاء اصطناعي وأمن سيبراني. نصمم ونبني ونطلق.">
+    @php
+        $googleSiteVerification = trim((string) config('services.google.site_verification', ''));
+        if ($googleSiteVerification === '') {
+            try {
+                $fromSettings = \App\Models\BlogSetting::get('google_search_console', '');
+                $googleSiteVerification = is_string($fromSettings) ? trim($fromSettings) : '';
+            } catch (\Throwable) {
+                $googleSiteVerification = '';
+            }
+        }
+        if (str_starts_with($googleSiteVerification, 'google-site-verification=')) {
+            $googleSiteVerification = trim(substr($googleSiteVerification, strlen('google-site-verification=')));
+        }
+    @endphp
+    @if($googleSiteVerification !== '')
+        <meta name="google-site-verification" content="{{ $googleSiteVerification }}">
+    @endif
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,7 +40,8 @@
             blogSubdomain: @json(env('BLOG_SUBDOMAIN', 'blog.amtdex.com')),
             isBlogSubdomain: @json(str_starts_with(request()->getHost(), 'blog.')),
             host: @json(request()->getHost()),
-            scheme: @json(request()->getScheme())
+            scheme: @json(request()->getScheme()),
+            googleSiteVerification: @json($googleSiteVerification !== '' ? $googleSiteVerification : null)
         };
     </script>
 

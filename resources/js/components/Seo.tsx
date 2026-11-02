@@ -90,6 +90,10 @@ export function Seo({
     }
   }
 
+  const googleVerification =
+    (typeof window !== "undefined" && window.__AMTDEX_CONFIG__?.googleSiteVerification) ||
+    undefined
+
   return (
     <Helmet>
       {/* Title & Core Metadata */}
@@ -97,6 +101,7 @@ export function Seo({
       <meta name="description" content={desc} />
       <link rel="canonical" href={url} />
       <meta name="robots" content={robots} />
+      {googleVerification && <meta name="google-site-verification" content={googleVerification} />}
 
       {/* LCP Image Preload */}
       {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchPriority="high" />}
