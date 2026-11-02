@@ -6,6 +6,9 @@ use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\BlogSetting;
 use App\Models\BlogTag;
+use App\Models\Project;
+use App\Models\SeoMetadata;
+use App\Models\Service;
 use Illuminate\Support\Carbon;
 
 class BlogSitemapBuilder
@@ -123,10 +126,84 @@ TXT;
             ['loc' => "{$base}/pricing", 'priority' => '0.8', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => "{$base}/about", 'priority' => '0.7', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => "{$base}/contact", 'priority' => '0.7', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => "{$base}/quote", 'priority' => '0.7', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => "{$blog}/", 'priority' => '0.9', 'changefreq' => 'daily', 'lastmod' => $now],
         ];
 
         return self::urlset($urls);
+    }
+
+    /**
+     * Every public absolute URL that should be announced to search engines.
+     *
+     * @return list<string>
+     */
+    public static function allIndexableUrls(): array
+    {
+        $urls = self::marketingPageUrls();
+
+        $blog = self::blogBaseUrl();
+        foreach (BlogPost::published()->orderBy('id')->pluck('slug') as $slug) {
+            $urls[] = "{$blog}/posts/{$slug}";
+        }
+        foreach (BlogCategory::visible()->orderBy('id')->pluck('slug') as $slug) {
+            $urls[] = "{$blog}/categories/{$slug}";
+        }
+        foreach (BlogTag::query()->orderBy('id')->pluck('slug') as $slug) {
+            $urls[] = "{$blog}/tags/{$slug}";
+        }
+
+        try {
+            foreach (Service::query()->where('is_published', true)->orderBy('id')->pluck('slug') as $slug) {
+                if ($slug) {
+                    $urls[] = self::siteBaseUrl().'/services/'.$slug;
+                }
+            }
+            foreach (Project::query()->where('is_published', true)->orderBy('id')->pluck('slug') as $slug) {
+                if ($slug) {
+                    $urls[] = self::siteBaseUrl().'/portfolio/'.$slug;
+                }
+            }
+        } catch (\Throwable) {
+            // Tables may be missing in partial test envs.
+        }
+
+        try {
+            foreach (SeoMetadata::query()->where('noindex', false)->pluck('path') as $path) {
+                $path = '/'.ltrim((string) $path, '/');
+                if ($path === '/' || $path === '') {
+                    continue;
+                }
+                $urls[] = self::siteBaseUrl().rtrim($path, '/');
+            }
+        } catch (\Throwable) {
+            // ignore
+        }
+
+        $urls = array_values(array_unique(array_filter($urls, fn ($u) => is_string($u) && $u !== '')));
+        sort($urls);
+
+        return $urls;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function marketingPageUrls(): array
+    {
+        $base = self::siteBaseUrl();
+        $blog = self::blogBaseUrl();
+
+        return [
+            "{$base}/",
+            "{$base}/services",
+            "{$base}/portfolio",
+            "{$base}/pricing",
+            "{$base}/about",
+            "{$base}/contact",
+            "{$base}/quote",
+            "{$blog}/",
+        ];
     }
 
     public static function postsXml(int $chunk = 1): string
