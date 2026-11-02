@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1\Blog;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\Blog\StoreBlogPostRequest;
+use App\Http\Requests\Api\V1\Blog\UpdateBlogPostRequest;
 use App\Models\AuditLog;
 use App\Models\BlogCategory;
 use App\Models\BlogComment;
@@ -12,9 +14,11 @@ use App\Models\BlogRevision;
 use App\Models\BlogSetting;
 use App\Models\BlogTag;
 use App\Models\User;
+use App\Services\Blog\PostPublishSeoGuard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class AdminBlogController extends Controller
 {
@@ -89,43 +93,12 @@ class AdminBlogController extends Controller
     /**
      * Store new blog post.
      */
-    public function storePost(Request $request): JsonResponse
+    public function storePost(StoreBlogPostRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:blog_posts,slug',
-            'category_id' => 'nullable|exists:blog_categories,id',
-            'author_id' => 'nullable|exists:users,id',
-            'summary' => 'nullable|string|max:1000',
-            'content' => 'required|string',
-            'cover_image' => 'nullable|string|max:500',
-            'cover_image_alt' => 'nullable|string|max:255',
-            'status' => 'required|in:draft,published,scheduled,archived',
-            'published_at' => 'nullable|date',
-            'is_featured' => 'boolean',
-            'allow_comments' => 'boolean',
-            'tags' => 'nullable|array',
-            'tags.*' => 'integer|exists:blog_tags,id',
-            // SEO
-            'focus_keyword' => 'nullable|string|max:100',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:500',
-            'canonical_url' => 'nullable|string|max:500',
-            'robots_index' => 'boolean',
-            'robots_follow' => 'boolean',
-            'og_title' => 'nullable|string|max:255',
-            'og_description' => 'nullable|string|max:500',
-            'og_image' => 'nullable|string|max:500',
-            'og_type' => 'nullable|string|max:50',
-            'twitter_card' => 'nullable|string|max:50',
-            'twitter_title' => 'nullable|string|max:255',
-            'twitter_description' => 'nullable|string|max:500',
-            'twitter_image' => 'nullable|string|max:500',
-            'schema_type' => 'nullable|string|max:50',
-            'faq_schema' => 'nullable|array',
-        ]);
+        $validated = $request->validated();
 
-        $slug = $validated['slug'] ? Str::slug($validated['slug']) : Str::slug($validated['title']);
+        $slugSource = $validated['slug'] ?? null;
+        $slug = $slugSource ? Str::slug($slugSource) : Str::slug($validated['title']);
         if (empty($slug)) {
             $slug = 'post-' . time();
         }
@@ -138,6 +111,14 @@ class AdminBlogController extends Controller
             $counter++;
         }
         $validated['slug'] = $slug;
+
+        if (($validated['status'] ?? null) === 'published') {
+            $seoErrors = PostPublishSeoGuard::validate($validated);
+            if ($seoErrors !== []) {
+                throw ValidationException::withMessages($seoErrors);
+            }
+            $validated = array_merge($validated, PostPublishSeoGuard::enrich($validated));
+        }
 
         $authorId = $validated['author_id'] ?? $request->user()->id;
         $validated['author_id'] = $authorId;
@@ -178,59 +159,43 @@ class AdminBlogController extends Controller
     /**
      * Update existing blog post.
      */
-    public function updatePost(Request $request, int $id): JsonResponse
+    public function updatePost(UpdateBlogPostRequest $request, int $id): JsonResponse
     {
         $post = BlogPost::findOrFail($id);
+        $validated = $request->validated();
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:blog_posts,slug,' . $post->id,
-            'category_id' => 'nullable|exists:blog_categories,id',
-            'author_id' => 'nullable|exists:users,id',
-            'summary' => 'nullable|string|max:1000',
-            'content' => 'required|string',
-            'cover_image' => 'nullable|string|max:500',
-            'cover_image_alt' => 'nullable|string|max:255',
-            'status' => 'required|in:draft,published,scheduled,archived',
-            'published_at' => 'nullable|date',
-            'is_featured' => 'boolean',
-            'allow_comments' => 'boolean',
-            'tags' => 'nullable|array',
-            'tags.*' => 'integer|exists:blog_tags,id',
-            // SEO
-            'focus_keyword' => 'nullable|string|max:100',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:500',
-            'canonical_url' => 'nullable|string|max:500',
-            'robots_index' => 'boolean',
-            'robots_follow' => 'boolean',
-            'og_title' => 'nullable|string|max:255',
-            'og_description' => 'nullable|string|max:500',
-            'og_image' => 'nullable|string|max:500',
-            'og_type' => 'nullable|string|max:50',
-            'twitter_card' => 'nullable|string|max:50',
-            'twitter_title' => 'nullable|string|max:255',
-            'twitter_description' => 'nullable|string|max:500',
-            'twitter_image' => 'nullable|string|max:500',
-            'schema_type' => 'nullable|string|max:50',
-            'faq_schema' => 'nullable|array',
-        ]);
+        if (array_key_exists('slug', $validated)) {
+            $oldSlug = $post->slug;
+            $newSlug = $validated['slug'] ? Str::slug($validated['slug']) : $post->slug;
 
-        $oldSlug = $post->slug;
-        $newSlug = $validated['slug'] ? Str::slug($validated['slug']) : $post->slug;
-
-        // If slug changed, create an automatic 301 redirect
-        if ($oldSlug !== $newSlug && !empty($newSlug)) {
-            BlogRedirect::updateOrCreate(
-                ['source_path' => "/posts/{$oldSlug}"],
-                ['target_path' => "/posts/{$newSlug}", 'status_code' => 301]
-            );
-            $validated['slug'] = $newSlug;
+            // If slug changed, create an automatic 301 redirect
+            if ($oldSlug !== $newSlug && !empty($newSlug)) {
+                BlogRedirect::updateOrCreate(
+                    ['source_path' => "/posts/{$oldSlug}"],
+                    ['target_path' => "/posts/{$newSlug}", 'status_code' => 301]
+                );
+                $validated['slug'] = $newSlug;
+            } elseif (!empty($newSlug)) {
+                $validated['slug'] = $newSlug;
+            } else {
+                unset($validated['slug']);
+            }
         }
 
-        $validated['reading_time_minutes'] = BlogPost::calculateReadingTime($validated['content']);
+        $nextStatus = $validated['status'] ?? $post->status;
+        if ($nextStatus === 'published') {
+            $seoErrors = PostPublishSeoGuard::validate($validated, $post);
+            if ($seoErrors !== []) {
+                throw ValidationException::withMessages($seoErrors);
+            }
+            $validated = array_merge($validated, PostPublishSeoGuard::enrich($validated, $post));
+        }
 
-        if ($validated['status'] === 'published' && empty($post->published_at) && empty($validated['published_at'])) {
+        if (array_key_exists('content', $validated)) {
+            $validated['reading_time_minutes'] = BlogPost::calculateReadingTime($validated['content']);
+        }
+
+        if ($nextStatus === 'published' && empty($post->published_at) && empty($validated['published_at'])) {
             $validated['published_at'] = now();
         }
 
@@ -243,15 +208,17 @@ class AdminBlogController extends Controller
             $post->tags()->sync($tagIds);
         }
 
-        // Save a revision
-        BlogRevision::create([
-            'post_id' => $post->id,
-            'user_id' => $request->user()->id,
-            'title' => $post->title,
-            'summary' => $post->summary,
-            'content' => $post->content,
-            'created_at' => now(),
-        ]);
+        // Save a revision when content-bearing fields change
+        if (array_key_exists('title', $validated) || array_key_exists('summary', $validated) || array_key_exists('content', $validated)) {
+            BlogRevision::create([
+                'post_id' => $post->id,
+                'user_id' => $request->user()->id,
+                'title' => $post->title,
+                'summary' => $post->summary,
+                'content' => $post->content,
+                'created_at' => now(),
+            ]);
+        }
 
         AuditLog::create([
             'user' => $request->user()->email,
@@ -297,7 +264,36 @@ class AdminBlogController extends Controller
 
         switch ($action) {
             case 'publish':
-                BlogPost::whereIn('id', $ids)->update(['status' => 'published', 'published_at' => now()]);
+                $posts = BlogPost::whereIn('id', $ids)->get();
+                $failures = [];
+                foreach ($posts as $post) {
+                    $seoErrors = PostPublishSeoGuard::validate([], $post);
+                    if ($seoErrors !== []) {
+                        $failures[] = [
+                            'id' => $post->id,
+                            'title' => $post->title,
+                            'errors' => $seoErrors,
+                        ];
+                    }
+                }
+
+                if ($failures !== []) {
+                    return response()->json([
+                        'message' => 'تعذر النشر الجماعي: بعض المقالات تفتقد متطلبات SEO.',
+                        'errors' => [
+                            'seo' => ['راجع حقول العنوان والوصف والصورة والـ canonical لكل مقال فاشل.'],
+                        ],
+                        'failed_posts' => $failures,
+                    ], 422);
+                }
+
+                foreach ($posts as $post) {
+                    $enriched = PostPublishSeoGuard::enrich([], $post);
+                    $post->update(array_merge($enriched, [
+                        'status' => 'published',
+                        'published_at' => $post->published_at ?? now(),
+                    ]));
+                }
                 break;
             case 'draft':
                 BlogPost::whereIn('id', $ids)->update(['status' => 'draft']);
