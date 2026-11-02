@@ -59,10 +59,54 @@ Disallow: /403
 Disallow: /api/
 Disallow: /sanctum/
 
+# Primary combined urlset (submit this exact URL in Search Console)
 Sitemap: {$sitemap}
-Sitemap: {$blogSitemap}
 
 TXT;
+    }
+
+    /**
+     * Single urlset with every public URL — preferred for Search Console because
+     * some hosts block Googlebot on nested /sitemaps/* PHP routes (403 HTML).
+     */
+    public static function combinedUrlsetXml(): string
+    {
+        $now = now()->toAtomString();
+        $urls = [];
+        foreach (self::allIndexableUrls() as $loc) {
+            $priority = '0.7';
+            $changefreq = 'weekly';
+            if (preg_match('#://[^/]+/?$#', $loc) || str_ends_with($loc, '/')) {
+                $priority = '1.0';
+                $changefreq = str_contains($loc, 'blog.') ? 'daily' : 'weekly';
+            } elseif (str_contains($loc, '/posts/')) {
+                $priority = '0.8';
+            } elseif (str_contains($loc, '/services')) {
+                $priority = '0.9';
+            }
+
+            $urls[] = [
+                'loc' => $loc,
+                'lastmod' => $now,
+                'changefreq' => $changefreq,
+                'priority' => $priority,
+            ];
+        }
+
+        return self::urlset($urls);
+    }
+
+    /**
+     * Write the combined sitemap to public/sitemap.xml so the web server can
+     * serve pure XML without hitting PHP (avoids bot-protection HTML 403s).
+     */
+    public static function writePublicSitemap(?string $path = null): string
+    {
+        $path ??= public_path('sitemap.xml');
+        $xml = self::combinedUrlsetXml();
+        file_put_contents($path, $xml."\n");
+
+        return $path;
     }
 
     public static function indexXml(): string

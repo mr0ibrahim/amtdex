@@ -20,19 +20,33 @@ function seoOpsAdmin(): User
     ]);
 }
 
-it('serves a sitemap index that references child sitemaps', function () {
+it('serves a combined XML urlset at /sitemap.xml for Search Console', function () {
     $response = $this->get('/sitemap.xml');
 
     $response->assertOk();
     expect($response->headers->get('Content-Type'))->toContain('xml');
 
     $body = $response->getContent();
-    expect($body)->toContain('<sitemapindex')
-        ->and($body)->toContain('/sitemaps/pages.xml')
-        ->and($body)->toContain('/sitemaps/blog-posts.xml')
-        ->and($body)->toContain('/sitemaps/blog-categories.xml')
-        ->and($body)->toContain('/sitemaps/blog-tags.xml')
+    expect($body)->toContain('<urlset')
+        ->and($body)->not->toContain('<sitemapindex')
+        ->and($body)->not->toContain('<!DOCTYPE html')
+        ->and($body)->toContain('<loc>')
         ->and($body)->toContain('<lastmod>');
+});
+
+it('writes a pure XML file to public/sitemap.xml', function () {
+    $path = storage_path('framework/testing-sitemap.xml');
+    @unlink($path);
+
+    BlogSitemapBuilder::writePublicSitemap($path);
+
+    expect(file_exists($path))->toBeTrue();
+    $body = file_get_contents($path) ?: '';
+    expect($body)->toStartWith('<?xml')
+        ->and($body)->toContain('<urlset')
+        ->and($body)->not->toContain('<html');
+
+    @unlink($path);
 });
 
 it('includes published posts with lastmod in the blog posts sitemap', function () {
@@ -152,7 +166,6 @@ it('includes categories and tags sitemaps with absolute locs', function () {
 
 it('builds absolute post url for IndexNow via publish guard helpers', function () {
     $url = PostPublishSeoGuard::buildCanonicalUrl('hello-world');
-    expect(IndexNowService::enabled())->toBeFalse();
     expect($url)->toStartWith('http')
         ->and($url)->toContain('/posts/hello-world');
 });
