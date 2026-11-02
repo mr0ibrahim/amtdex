@@ -227,9 +227,12 @@ export function SeoPage() {
               </span>
             </div>
             <p className="text-[11px] text-white/75 leading-relaxed">
-              عند نشر مقال يُرسل الرابط تلقائياً. زر «أرشفة كاملة» يعيد إرسال كل روابط الموقع دفعة واحدة. يتطلب مفتاح
-              INDEXNOW_KEY على الخادم.
+              عند نشر مقال يُرسل الرابط تلقائياً. زر «أرشفة كاملة» يعيد إرسال كل روابط الموقع دفعة واحدة. إن لم يكن
+              المفتاح مضبوطاً يُنشأ تلقائياً ويُحفظ في إعدادات الموقع عند فتح هذه الصفحة.
             </p>
+            {indexNow?.generated && (
+              <p className="text-[11px] text-emerald-200">تم توليد مفتاح IndexNow تلقائياً لهذا الموقع.</p>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
               <div className="rounded-xl bg-white/5 px-3 py-2">
                 <div className="text-white/60">المضيف</div>

@@ -394,6 +394,7 @@ export const API = {
         indexnow: {
           enabled: boolean
           configured: boolean
+          generated?: boolean
           host: string
           key_location: string | null
         }

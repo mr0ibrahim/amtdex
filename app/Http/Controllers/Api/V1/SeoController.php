@@ -42,9 +42,11 @@ class SeoController extends Controller
     {
         $siteBase = rtrim((string) config('app.url', BlogJsonLdBuilder::DEFAULT_SITE_URL), '/');
         $blogBase = BlogJsonLdBuilder::blogBaseUrl();
+        // Auto-provision IndexNow key on first authenticated tools load when missing.
+        $ensured = IndexNowService::ensureConfigured();
+        $indexNowKey = $ensured['key'];
+        $indexNowHost = $ensured['host'];
         $indexNowEnabled = IndexNowService::enabled();
-        $indexNowKey = IndexNowService::key();
-        $indexNowHost = IndexNowService::host();
 
         return response()->json([
             'site_base' => $siteBase,
@@ -61,6 +63,7 @@ class SeoController extends Controller
             'indexnow' => [
                 'enabled' => $indexNowEnabled,
                 'configured' => $indexNowKey !== '',
+                'generated' => (bool) ($ensured['generated'] ?? false),
                 'host' => $indexNowHost,
                 'key_location' => $indexNowKey !== ''
                     ? 'https://'.$indexNowHost.'/'.$indexNowKey.'.txt'

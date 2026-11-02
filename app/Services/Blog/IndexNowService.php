@@ -13,14 +13,26 @@ class IndexNowService
 
     public static function enabled(): bool
     {
-        $key = (string) config('services.indexnow.key', '');
-
-        return $key !== '' && (bool) config('services.indexnow.enabled', true);
+        return self::key() !== '' && (bool) config('services.indexnow.enabled', true);
     }
 
     public static function key(): string
     {
-        return (string) config('services.indexnow.key', '');
+        $fromEnv = trim((string) config('services.indexnow.key', ''));
+        if ($fromEnv !== '') {
+            return $fromEnv;
+        }
+
+        try {
+            $stored = BlogSetting::get('indexnow_key', '');
+            if (is_string($stored) && trim($stored) !== '') {
+                return trim($stored);
+            }
+        } catch (\Throwable) {
+            // DB may be unavailable during early boot/tests.
+        }
+
+        return '';
     }
 
     public static function host(): string
@@ -30,9 +42,51 @@ class IndexNowService
             return $configured;
         }
 
+        try {
+            $storedHost = BlogSetting::get('indexnow_host', '');
+            if (is_string($storedHost) && trim($storedHost) !== '') {
+                return trim($storedHost);
+            }
+        } catch (\Throwable) {
+            // ignore
+        }
+
         $blogHost = parse_url(BlogJsonLdBuilder::blogBaseUrl(), PHP_URL_HOST);
 
         return is_string($blogHost) && $blogHost !== '' ? $blogHost : 'blog.amtdex.com';
+    }
+
+    /**
+     * Ensure an IndexNow ownership key exists (env or DB). Generates one when missing.
+     *
+     * @return array{key: string, host: string, generated: bool, key_location: string}
+     */
+    public static function ensureConfigured(?string $preferredKey = null): array
+    {
+        $host = self::host();
+        $existing = self::key();
+        if ($existing !== '') {
+            return [
+                'key' => $existing,
+                'host' => $host,
+                'generated' => false,
+                'key_location' => 'https://'.$host.'/'.$existing.'.txt',
+            ];
+        }
+
+        $key = $preferredKey !== null && preg_match('/^[A-Za-z0-9_-]{8,128}$/', $preferredKey)
+            ? $preferredKey
+            : bin2hex(random_bytes(16));
+
+        BlogSetting::set('indexnow_key', $key);
+        BlogSetting::set('indexnow_host', $host);
+
+        return [
+            'key' => $key,
+            'host' => $host,
+            'generated' => true,
+            'key_location' => 'https://'.$host.'/'.$key.'.txt',
+        ];
     }
 
     /**
