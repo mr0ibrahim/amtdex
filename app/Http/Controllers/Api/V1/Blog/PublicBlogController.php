@@ -9,6 +9,7 @@ use App\Models\BlogPost;
 use App\Models\BlogRedirect;
 use App\Models\BlogSetting;
 use App\Models\BlogTag;
+use App\Services\Blog\BlogJsonLdBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -131,6 +132,7 @@ class PublicBlogController extends Controller
                 'next' => $next,
                 'prev' => $prev,
             ],
+            'json_ld' => BlogJsonLdBuilder::forPost($post),
         ]);
     }
 
@@ -271,7 +273,12 @@ class PublicBlogController extends Controller
      */
     public function settings(): JsonResponse
     {
-        return response()->json(['settings' => BlogSetting::getAll()]);
+        $settings = BlogSetting::getAll();
+
+        return response()->json([
+            'settings' => $settings,
+            'json_ld' => BlogJsonLdBuilder::forBlogHome($settings),
+        ]);
     }
 
     /**
