@@ -1,23 +1,32 @@
 import { useState } from "react"
-import { useSeoQuery, useUpsertSeoMutation, useDeleteSeoMutation, useUploadMediaMutation } from "@/lib/queries"
-import { generateRobots, generateSitemap, getSeo } from "@/lib/seoStore"
+import { useDeleteSeoMutation, useSeoQuery, useSeoToolsQuery, useUploadMediaMutation, useUpsertSeoMutation } from "@/lib/queries"
+import { getSeo } from "@/lib/seoStore"
 import type { SeoEntry } from "@/lib/seoStore"
+
+const FALLBACK_LINKS = {
+  robots: "https://amtdex.com/robots.txt",
+  sitemap_index: "https://amtdex.com/sitemap.xml",
+  sitemap_pages: "https://amtdex.com/sitemaps/pages.xml",
+  sitemap_blog_posts: "https://amtdex.com/sitemaps/blog-posts.xml",
+  sitemap_blog_categories: "https://amtdex.com/sitemaps/blog-categories.xml",
+  sitemap_blog_tags: "https://amtdex.com/sitemaps/blog-tags.xml",
+  sitemap_blog_legacy: "https://amtdex.com/sitemap-blog.xml",
+}
 
 export function SeoPage() {
   const { data: rawEntries = [], isLoading, error, refetch } = useSeoQuery()
-  const entries = (rawEntries && rawEntries.length > 0) ? rawEntries : getSeo()
+  const { data: tools, isLoading: toolsLoading, isError: toolsError, refetch: refetchTools } = useSeoToolsQuery()
+  const entries = rawEntries && rawEntries.length > 0 ? rawEntries : getSeo()
   const upsertMutation = useUpsertSeoMutation()
   const deleteMutation = useDeleteSeoMutation()
   const uploadMutation = useUploadMediaMutation()
 
   const [editing, setEditing] = useState<SeoEntry | null>(null)
-  const [showSitemap, setShowSitemap] = useState(false)
+  const [showTools, setShowTools] = useState(false)
   const [uploading, setUploading] = useState(false)
 
-  const copy = async (txt: string) => {
-    await navigator.clipboard.writeText(txt)
-    alert("تم النسخ بنجاح ✓")
-  }
+  const links = tools?.links ?? FALLBACK_LINKS
+  const indexNow = tools?.indexnow
 
   const handleOgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -39,21 +48,34 @@ export function SeoPage() {
     })
   }
 
+  const toolRows: { label: string; href: string; hint: string }[] = [
+    { label: "robots.txt", href: links.robots, hint: "قواعد الزحف الحية من الخادم" },
+    { label: "sitemap.xml", href: links.sitemap_index, hint: "فهرس خرائط الموقع" },
+    { label: "صفحات الموقع", href: links.sitemap_pages, hint: "الصفحات التسويقية" },
+    { label: "مقالات المدونة", href: links.sitemap_blog_posts, hint: "المنشورات المفهرسة" },
+    { label: "تصنيفات المدونة", href: links.sitemap_blog_categories, hint: "أرشيف التصنيفات" },
+    { label: "وسوم المدونة", href: links.sitemap_blog_tags, hint: "أرشيف الوسوم" },
+  ]
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-lg sm:text-[18px] font-extrabold text-[var(--color-ink)]">إدارة محركات البحث (SEO)</h1>
-          <p className="text-[12px] text-[var(--color-text-muted)] mt-1">عناوين الصفحات، الوصف، وصور المشاركة لكل مسار.</p>
+          <p className="text-[12px] text-[var(--color-text-muted)] mt-1">
+            عناوين الصفحات التسويقية ووصفها وصور المشاركة. Schema المقالات يُدار من محرر المدونة.
+          </p>
         </div>
         <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
           <button
-            onClick={() => setShowSitemap((v) => !v)}
+            type="button"
+            onClick={() => setShowTools((v) => !v)}
             className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-2.5 rounded-xl hover:bg-[var(--color-lavender)] transition-colors"
           >
-            sitemap / robots
+            أدوات الفهرسة
           </button>
           <button
+            type="button"
             onClick={() => setEditing({ path: "", title: "", description: "", og_image: "" })}
             className="text-[11px] font-bold bg-[var(--color-ink)] text-white px-4 py-2.5 rounded-xl hover:bg-black transition-colors"
           >
@@ -62,25 +84,96 @@ export function SeoPage() {
         </div>
       </div>
 
-      {showSitemap && (
+      {showTools && (
         <div className="space-y-3">
-          <div className="bg-[var(--color-ink)] text-white rounded-2xl p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold">sitemap.xml</span>
-              <button onClick={() => copy(generateSitemap())} className="text-[11px] font-bold bg-white text-black px-3 py-1 rounded-full hover:bg-white/90">
-                نسخ
-              </button>
+          <div className="bg-white border border-[var(--color-border)] rounded-2xl p-4 space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-[13px] font-extrabold text-[var(--color-ink)]">الملفات الحية على الخادم</h2>
+                <p className="text-[11px] text-[var(--color-text-muted)] mt-1">
+                  هذه روابط حقيقية يخدمها Laravel — ليست نصوصاً منسوخة محلياً.
+                </p>
+              </div>
+              {(toolsError || toolsLoading) && (
+                <button
+                  type="button"
+                  onClick={() => refetchTools()}
+                  className="text-[11px] font-bold underline text-[var(--color-primary)] shrink-0"
+                >
+                  تحديث
+                </button>
+              )}
             </div>
-            <pre className="mt-2 text-[10px] leading-4 whitespace-pre-wrap break-all font-mono">{generateSitemap()}</pre>
+
+            {toolsLoading && !tools ? (
+              <p className="text-[11px] text-[var(--color-text-faint)]">جارٍ تحميل حالة الأدوات...</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {toolRows.map((row) => (
+                  <a
+                    key={row.href}
+                    href={row.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-xl border border-[var(--color-border)] px-3 py-2.5 hover:bg-[var(--color-lavender)] transition-colors"
+                  >
+                    <div className="text-[12px] font-bold text-[var(--color-ink)]">{row.label}</div>
+                    <div className="text-[10px] text-[var(--color-text-muted)] mt-0.5">{row.hint}</div>
+                    <div dir="ltr" className="text-[10px] font-mono text-[var(--color-primary)] mt-1 break-all">
+                      {row.href}
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="bg-white border border-[var(--color-border)] rounded-2xl p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold">robots.txt</span>
-              <button onClick={() => copy(generateRobots())} className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-1 rounded-full hover:bg-[var(--color-lavender)]">
-                نسخ
-              </button>
+
+          <div className="bg-[var(--color-ink)] text-white rounded-2xl p-4 space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-[13px] font-extrabold">IndexNow</h2>
+              <span
+                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  indexNow?.enabled
+                    ? "bg-emerald-400/20 text-emerald-200"
+                    : "bg-white/10 text-white/70"
+                }`}
+              >
+                {indexNow?.enabled ? "مفعّل" : "غير مفعّل / غير مضبوط"}
+              </span>
             </div>
-            <pre className="mt-2 text-[11px] leading-5 whitespace-pre-wrap font-mono">{generateRobots()}</pre>
+            <p className="text-[11px] text-white/75 leading-relaxed">
+              عند نشر مقال يُرسل الرابط تلقائياً لمحركات البحث الداعمة لـ IndexNow (مثل Bing). يتطلب مفتاحاً في إعدادات
+              الخادم.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+              <div className="rounded-xl bg-white/5 px-3 py-2">
+                <div className="text-white/60">المضيف</div>
+                <div dir="ltr" className="font-mono mt-0.5">
+                  {indexNow?.host || "—"}
+                </div>
+              </div>
+              <div className="rounded-xl bg-white/5 px-3 py-2">
+                <div className="text-white/60">ملف ملكية المفتاح</div>
+                {indexNow?.key_location ? (
+                  <a
+                    href={indexNow.key_location}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    dir="ltr"
+                    className="font-mono mt-0.5 block break-all text-emerald-200 underline"
+                  >
+                    {indexNow.key_location}
+                  </a>
+                ) : (
+                  <div className="mt-0.5 text-white/50">غير مضبوط (INDEXNOW_KEY)</div>
+                )}
+              </div>
+            </div>
+            {tools?.blog_base && (
+              <p dir="ltr" className="text-[10px] font-mono text-white/50">
+                blog base: {tools.blog_base}
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -88,7 +181,7 @@ export function SeoPage() {
       {error && (
         <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-4 text-[12px] flex items-center justify-between">
           <span>يتم عرض إعدادات SEO من التخزين المحلي الاحتياطي لتعذر الاتصال المباشر.</span>
-          <button onClick={() => refetch()} className="font-bold underline hover:text-amber-900">
+          <button type="button" onClick={() => refetch()} className="font-bold underline hover:text-amber-900">
             إعادة المحاولة
           </button>
         </div>
@@ -175,33 +268,24 @@ export function SeoPage() {
                         </td>
                         <td className="px-4 py-3">
                           {og ? (
-                            <img
-                              src={og}
-                              alt=""
-                              className="size-8 rounded-lg object-cover border border-black/10"
-                            />
+                            <img src={og} alt="" className="size-8 rounded-lg object-cover border border-black/10" />
                           ) : (
                             <span className="text-[10px] text-gray-400">لا توجد</span>
                           )}
                         </td>
                         <td className="px-4 py-3 font-bold text-[var(--color-ink)]">{e.title}</td>
-                        <td className="px-4 py-3 text-[var(--color-text-muted)] line-clamp-1 max-w-[280px]">
-                          {e.description}
-                        </td>
+                        <td className="px-4 py-3 text-[var(--color-text-muted)] line-clamp-1 max-w-[280px]">{e.description}</td>
                         <td className="px-4 py-3">
                           <div className="flex gap-1.5 justify-end">
                             <button
-                              onClick={() =>
-                                setEditing({
-                                  ...e,
-                                  og_image: og || "",
-                                })
-                              }
+                              type="button"
+                              onClick={() => setEditing({ ...e, og_image: og || "" })}
                               className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-1 rounded-full hover:bg-[var(--color-lavender)] transition-colors"
                             >
                               تعديل
                             </button>
                             <button
+                              type="button"
                               onClick={() => {
                                 if (window.confirm(`حذف إعدادات SEO للمسار ${e.path}؟`)) {
                                   deleteMutation.mutate(e.path)
@@ -223,7 +307,6 @@ export function SeoPage() {
         )}
       </div>
 
-      {/* SEO Edit Modal */}
       {editing && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-end sm:place-items-center p-0 sm:p-4">
           <div className="bg-white rounded-t-3xl sm:rounded-2xl max-w-[540px] w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-[var(--color-border)] max-h-[92vh] overflow-y-auto">
@@ -232,6 +315,7 @@ export function SeoPage() {
                 {editing.path ? "تعديل إعدادات SEO للمسار" : "إضافة مسار جديد لمحركات البحث"}
               </h3>
               <button
+                type="button"
                 onClick={() => setEditing(null)}
                 className="text-gray-400 hover:text-gray-700 text-xl font-bold"
               >
@@ -276,7 +360,6 @@ export function SeoPage() {
               />
             </div>
 
-            {/* OG Image */}
             <div>
               <label className="block text-[11px] font-bold text-[var(--color-ink)] mb-1">
                 صورة المشاركة الاجتماعية (Open Graph Image)
@@ -286,13 +369,11 @@ export function SeoPage() {
                   placeholder="https://... أو اضغط رفع صورة"
                   value={editing.og_image || editing.ogImage || ""}
                   dir="ltr"
-                  onChange={(e) =>
-                    setEditing({ ...editing, og_image: e.target.value, ogImage: e.target.value })
-                  }
+                  onChange={(e) => setEditing({ ...editing, og_image: e.target.value, ogImage: e.target.value })}
                   className="flex-1 border border-[var(--color-border)] rounded-xl px-3 py-2 text-[11px] font-mono outline-none focus:border-[var(--color-primary)]"
                 />
                 <label className="shrink-0 inline-flex items-center justify-center bg-[var(--color-lavender)] text-[var(--color-primary)] text-[11px] font-bold px-3 py-2 rounded-xl cursor-pointer hover:bg-[var(--color-primary)] hover:text-white transition-colors">
-                  {uploading ? "جار الرفع..." : "رفع صورة 📤"}
+                  {uploading ? "جار الرفع..." : "رفع صورة"}
                   <input
                     type="file"
                     accept="image/jpeg,image/png,image/webp"

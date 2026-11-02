@@ -8,6 +8,7 @@ import { CoverUpload } from "./CoverUpload"
 import { EditorSection, FieldHint, FieldLabel } from "./FieldHint"
 import { PublishReadiness, SeoDescriptionMeter, SeoTitleMeter, type ReadinessItem } from "./SeoMeters"
 import { RichTextEditor } from "./RichTextEditor"
+import { SchemaPreviewPanel } from "./SchemaPreviewPanel"
 import { sanitizeBlogHtml } from "./sanitizeHtml"
 import { TagPicker } from "./TagPicker"
 
@@ -509,6 +510,17 @@ export function ArticleEditorModal({
                   </div>
                 </div>
               </EditorSection>
+
+              <SchemaPreviewPanel
+                schemaType={form.schema_type || "BlogPosting"}
+                onSchemaTypeChange={(value) => patch({ schema_type: value })}
+                input={{
+                  form,
+                  faqList,
+                  category: categories.find((c) => c.id === form.category_id) ?? form.category ?? null,
+                  tags: form.tags,
+                }}
+              />
             </div>
           )}
 

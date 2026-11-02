@@ -43,11 +43,14 @@ export function deleteSeo(path: string) { save(load().filter((x) => x.path !== p
 export function useSeo(): SeoEntry[] { return useSyncExternalStore(subscribe, load, () => SEED) }
 export function resetSeo() { localStorage.removeItem(KEY); listeners.forEach((cb) => cb()) }
 
-export function generateSitemap(base = "https://amtdex.ye"): string {
+/** @deprecated Prefer live /sitemap.xml from the server. Kept for local settings export only. */
+export function generateSitemap(base = "https://amtdex.com"): string {
   const entries = load().filter((e) => !e.noindex)
   const urls = entries.map((e) => `  <url><loc>${base}${e.path}</loc><changefreq>weekly</changefreq></url>`).join("\n")
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`
 }
-export function generateRobots(): string {
-  return `User-agent: *\nAllow: /\nDisallow: /dashboard\nDisallow: /login\nSitemap: https://amtdex.ye/sitemap.xml`
+
+/** @deprecated Prefer live /robots.txt from the server. Kept for local settings export only. */
+export function generateRobots(base = "https://amtdex.com"): string {
+  return `User-agent: *\nAllow: /\nDisallow: /dashboard\nDisallow: /login\nSitemap: ${base}/sitemap.xml`
 }
