@@ -1,0 +1,279 @@
+<?php
+
+namespace App\Services\Blog;
+
+use App\Models\BlogPost;
+use App\Models\BlogSetting;
+
+/**
+ * Builds schema.org JSON-LD graphs from the same Laravel content models
+ * that power the public blog API — so crawlers and the UI stay in sync.
+ */
+class BlogJsonLdBuilder
+{
+    public const DEFAULT_ORG_NAME = 'Amtdex';
+
+    public const DEFAULT_ORG_LOGO = 'https://amtdex.com/logo.png';
+
+    public const DEFAULT_SITE_URL = 'https://amtdex.com';
+
+    /**
+     * Absolute blog base URL (scheme + subdomain), no trailing slash.
+     */
+    public static function blogBaseUrl(): string
+    {
+        $subdomain = BlogSetting::get('blog_subdomain', env('BLOG_SUBDOMAIN', 'blog.amtdex.com'));
+        $appUrl = (string) config('app.url', self::DEFAULT_SITE_URL);
+        $scheme = parse_url($appUrl, PHP_URL_SCHEME) ?: 'https';
+
+        return rtrim("{$scheme}://{$subdomain}", '/');
+    }
+
+    /**
+     * Organization + WebSite (with SearchAction) for the blog home.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function forBlogHome(?array $settings = null): array
+    {
+        $settings ??= BlogSetting::getAll();
+        $blogUrl = self::blogBaseUrl().'/';
+        $title = (string) ($settings['blog_title'] ?? 'المدونة التقنية — Amtdex');
+        $description = (string) ($settings['blog_description'] ?? 'أفكار عملية وتجارب حية في هندسة البرمجيات.');
+
+        return [
+            self::organization(),
+            [
+                '@context' => 'https://schema.org',
+                '@type' => 'WebSite',
+                'name' => $title,
+                'description' => $description,
+                'url' => $blogUrl,
+                'publisher' => [
+                    '@type' => 'Organization',
+                    'name' => self::DEFAULT_ORG_NAME,
+                    'url' => self::DEFAULT_SITE_URL,
+                    'logo' => [
+                        '@type' => 'ImageObject',
+                        'url' => self::DEFAULT_ORG_LOGO,
+                    ],
+                ],
+                'inLanguage' => 'ar',
+                'potentialAction' => [
+                    '@type' => 'SearchAction',
+                    'target' => [
+                        '@type' => 'EntryPoint',
+                        'urlTemplate' => $blogUrl.'?q={search_term_string}',
+                    ],
+                    'query-input' => 'required name=search_term_string',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * BlogPosting + BreadcrumbList (+ FAQPage when faq_schema exists).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function forPost(BlogPost $post): array
+    {
+        $post->loadMissing(['author:id,name,avatar,bio,social_links', 'category:id,name,slug', 'tags:id,name,slug']);
+
+        $canonical = trim((string) ($post->canonical_url ?? ''));
+        if ($canonical === '' || ! PostPublishSeoGuard::isAbsoluteUrl($canonical)) {
+            $canonical = PostPublishSeoGuard::buildCanonicalUrl($post->slug);
+        }
+
+        $headline = trim((string) ($post->meta_title ?: $post->title));
+        $description = trim((string) ($post->meta_description ?: $post->summary ?: $post->title));
+        $image = trim((string) ($post->og_image ?: $post->cover_image ?: ''));
+        if ($image === '') {
+            $image = (string) (BlogSetting::get('default_og_image', 'https://amtdex.com/images/screens/projects.webp'));
+        }
+
+        $datePublished = optional($post->published_at)->toAtomString()
+            ?? optional($post->created_at)->toAtomString()
+            ?? now()->toAtomString();
+        $dateModified = optional($post->updated_at)->toAtomString() ?? $datePublished;
+
+        $authorName = $post->author?->name ?: 'فريق Amtdex التقني';
+        $authorUrl = data_get($post->author?->social_links, 'twitter')
+            ?: data_get($post->author?->social_links, 'linkedin')
+            ?: self::DEFAULT_SITE_URL;
+
+        $schemaType = $post->schema_type ?: 'BlogPosting';
+        if (! in_array($schemaType, ['BlogPosting', 'Article', 'NewsArticle', 'TechArticle'], true)) {
+            $schemaType = 'BlogPosting';
+        }
+
+        $article = [
+            '@context' => 'https://schema.org',
+            '@type' => $schemaType,
+            'headline' => $headline,
+            'description' => $description,
+            'image' => [$image],
+            'datePublished' => $datePublished,
+            'dateModified' => $dateModified,
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => $canonical,
+            ],
+            'author' => [
+                '@type' => 'Person',
+                'name' => $authorName,
+                'url' => $authorUrl,
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => self::DEFAULT_ORG_NAME,
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => self::DEFAULT_ORG_LOGO,
+                ],
+            ],
+            'url' => $canonical,
+            'inLanguage' => 'ar',
+        ];
+
+        if ($post->category) {
+            $article['articleSection'] = $post->category->name;
+        }
+
+        if ($post->tags && $post->tags->isNotEmpty()) {
+            $article['keywords'] = $post->tags->pluck('name')->implode(', ');
+        }
+
+        $graph = [
+            $article,
+            self::breadcrumbsForPost($post, $canonical),
+            self::organization(),
+        ];
+
+        $faq = self::faqPage($post);
+        if ($faq !== null) {
+            $graph[] = $faq;
+        }
+
+        return $graph;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function organization(): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => self::DEFAULT_ORG_NAME,
+            'url' => self::DEFAULT_SITE_URL,
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => self::DEFAULT_ORG_LOGO,
+            ],
+            'sameAs' => [
+                'https://twitter.com/amtdex',
+                'https://www.linkedin.com/company/amtdex',
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function breadcrumbsForPost(BlogPost $post, string $canonical): array
+    {
+        $items = [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'المدونة',
+                'item' => self::blogBaseUrl().'/',
+            ],
+        ];
+
+        if ($post->category) {
+            $items[] = [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => $post->category->name,
+                'item' => self::blogBaseUrl().'/categories/'.$post->category->slug,
+            ];
+            $items[] = [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => $post->title,
+                'item' => $canonical,
+            ];
+        } else {
+            $items[] = [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => $post->title,
+                'item' => $canonical,
+            ];
+        }
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => $items,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public static function faqPage(BlogPost $post): ?array
+    {
+        $faq = $post->faq_schema;
+        if (! is_array($faq) || $faq === []) {
+            return null;
+        }
+
+        $entities = [];
+        foreach ($faq as $item) {
+            $question = trim((string) ($item['question'] ?? ''));
+            $answer = trim((string) ($item['answer'] ?? ''));
+            if ($question === '' || $answer === '') {
+                continue;
+            }
+            $entities[] = [
+                '@type' => 'Question',
+                'name' => $question,
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => $answer,
+                ],
+            ];
+        }
+
+        if ($entities === []) {
+            return null;
+        }
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => $entities,
+        ];
+    }
+
+    /**
+     * Find the first node of a given @type in a graph.
+     *
+     * @param  list<array<string, mixed>>  $graph
+     * @return array<string, mixed>|null
+     */
+    public static function findByType(array $graph, string $type): ?array
+    {
+        foreach ($graph as $node) {
+            if (($node['@type'] ?? null) === $type) {
+                return $node;
+            }
+        }
+
+        return null;
+    }
+}

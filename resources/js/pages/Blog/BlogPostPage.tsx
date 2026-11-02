@@ -237,89 +237,32 @@ export function BlogPostPage() {
     )
   }
 
-  // Schema.org Article / BlogPosting
-  const articleSchema: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.summary || post.meta_description,
-    image: post.cover_image ? [post.cover_image] : undefined,
-    datePublished: post.published_at,
-    dateModified: post.updated_at || post.published_at,
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": post.canonical_url || currentUrl,
-    },
-    author: {
-      "@type": "Person",
-      name: post.author?.name || "فريق Amtdex التقني",
-      url: post.author?.social_links?.twitter || currentUrl,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "Amtdex",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://amtdex.com/logo.png",
+  // Prefer server-generated JSON-LD (Laravel) so schema matches published content.
+  const serverJsonLd = postResponse?.json_ld
+  const fallbackJsonLd: Record<string, unknown>[] = [
+    {
+      "@context": "https://schema.org",
+      "@type": post.schema_type || "BlogPosting",
+      headline: post.meta_title || post.title,
+      description: post.meta_description || post.summary || post.title,
+      image: (post.og_image || post.cover_image) ? [post.og_image || post.cover_image] : undefined,
+      datePublished: post.published_at,
+      dateModified: post.updated_at || post.published_at,
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": post.canonical_url || currentUrl,
+      },
+      author: {
+        "@type": "Person",
+        name: post.author?.name || "فريق Amtdex التقني",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "Amtdex",
+        logo: { "@type": "ImageObject", url: "https://amtdex.com/logo.png" },
       },
     },
-    articleSection: post.category?.name,
-    keywords: post.tags?.map((t: { name: string }) => t.name).join(", "),
-  }
-
-  // FAQ Schema if provided
-  const faqSchema: Record<string, unknown> | undefined =
-    post.faq_schema && post.faq_schema.length > 0
-      ? {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: post.faq_schema.map((item: { question: string; answer: string }) => ({
-            "@type": "Question",
-            name: item.question,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: item.answer,
-            },
-          })),
-        }
-      : undefined
-
-  // Breadcrumbs Schema
-  const breadcrumbSchema: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "الرئيسية",
-        item: getBlogUrl("/"),
-      },
-      ...(post.category
-        ? [
-            {
-              "@type": "ListItem",
-              position: 2,
-              name: post.category.name,
-              item: getBlogUrl(`/categories/${post.category.slug}`),
-            },
-            {
-              "@type": "ListItem",
-              position: 3,
-              name: post.title,
-              item: currentUrl,
-            },
-          ]
-        : [
-            {
-              "@type": "ListItem",
-              position: 2,
-              name: post.title,
-              item: currentUrl,
-            },
-          ]),
-    ],
-  }
+  ]
 
   const postCanonical = post.canonical_url || getBlogUrl(`/posts/${post.slug}`)
 
@@ -337,7 +280,7 @@ export function BlogPostPage() {
         authorName={post.author?.name}
         section={post.category?.name}
         tags={post.tags?.map((t: { name: string }) => t.name)}
-        jsonLd={[articleSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])]}
+        jsonLd={serverJsonLd?.length ? serverJsonLd : fallbackJsonLd}
         preloadImage={post.cover_image || undefined}
         noindex={Boolean(post.noindex)}
       />

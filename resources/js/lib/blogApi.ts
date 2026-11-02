@@ -20,11 +20,14 @@ export interface PaginatedResult<T> {
   }
 }
 
+export type JsonLdNode = Record<string, unknown>
+
 export interface PostDetailResponse {
   post: BlogPost
   data?: BlogPost
   related: BlogPost[]
   navigation: { next?: BlogPost | null; prev?: BlogPost | null }
+  json_ld?: JsonLdNode[]
   redirect?: boolean
   target?: string
 }
@@ -56,6 +59,7 @@ export const BlogAPI = {
       post: BlogPost
       related: BlogPost[]
       navigation: { next?: BlogPost | null; prev?: BlogPost | null }
+      json_ld?: JsonLdNode[]
       redirect?: boolean
       target?: string
     }>(`/blog/posts/${slug}`, "GET")
@@ -111,7 +115,7 @@ export const BlogAPI = {
   },
 
   getSettings: async () => {
-    return apiClient<{ settings: BlogSettings }>("/blog/settings", "GET")
+    return apiClient<{ settings: BlogSettings; json_ld?: JsonLdNode[] }>("/blog/settings", "GET")
   },
 
   // ── Admin API ──
