@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { BlogAPI } from "@/lib/blogApi"
-import { API, ApiError } from "@/lib/api"
+import { ApiError } from "@/lib/api"
 import { Button } from "@/components/ui/Button"
 import { getBlogUrl } from "@/lib/subdomain"
-import type { BlogCategory, BlogPost } from "@/types/blog"
+import type { BlogPost } from "@/types/blog"
+import { ArticleEditorModal } from "./editor/ArticleEditorModal"
 
 function formatSeoPublishError(err: unknown): string {
   if (err instanceof ApiError && err.errors) {
@@ -73,16 +74,28 @@ export function PostsManager({ onNotify }: { onNotify: (m: string) => void }) {
       title: "",
       slug: "",
       summary: "",
-      content: "<h2>مقدمة</h2>\n<p>اكتب هنا محتوى مقالك...</p>",
+      content: "<h2>مقدمة</h2><p>اكتب هنا محتوى مقالك...</p>",
       status: "draft",
       allow_comments: true,
       robots_index: true,
       robots_follow: true,
+      is_featured: false,
       og_type: "article",
       twitter_card: "summary_large_image",
       schema_type: "BlogPosting",
       faq_schema: [],
+      tags: [],
     })
+    setIsEditorOpen(true)
+  }
+
+  const handleEditPost = async (post: BlogPost) => {
+    try {
+      const res = await BlogAPI.getAdminPost(post.id)
+      setEditingPost(res.post)
+    } catch {
+      setEditingPost(post)
+    }
     setIsEditorOpen(true)
   }
 
@@ -171,8 +184,7 @@ export function PostsManager({ onNotify }: { onNotify: (m: string) => void }) {
                   <button
                     type="button"
                     onClick={() => {
-                      setEditingPost(p)
-                      setIsEditorOpen(true)
+                      void handleEditPost(p)
                     }}
                     className="rounded-xl border border-[var(--color-border)] py-2 text-[11px] font-bold text-[var(--color-ink)]"
                   >
@@ -261,8 +273,7 @@ export function PostsManager({ onNotify }: { onNotify: (m: string) => void }) {
                         <button
                           type="button"
                           onClick={() => {
-                            setEditingPost(p)
-                            setIsEditorOpen(true)
+                            void handleEditPost(p)
                           }}
                           className="px-2.5 py-1 rounded-lg border border-[var(--color-border)] text-[11px] font-bold text-[var(--color-primary)]"
                         >
@@ -313,404 +324,6 @@ export function PostsManager({ onNotify }: { onNotify: (m: string) => void }) {
           }}
         />
       )}
-    </div>
-  )
-}
-
-function ArticleEditorModal({
-  initialData,
-  onClose,
-  onSaved,
-}: {
-  initialData: Partial<BlogPost>
-  onClose: () => void
-  onSaved: (msg: string) => void
-}) {
-  const [form, setForm] = useState<Partial<BlogPost>>(initialData)
-  const [faqList, setFaqList] = useState<{ question: string; answer: string }[]>(initialData.faq_schema ?? [])
-  const [uploadingCover, setUploadingCover] = useState(false)
-  const [uploadingInline, setUploadingInline] = useState(false)
-  const [section, setSection] = useState<"content" | "seo" | "advanced">("content")
-
-  const { data: categoriesRes } = useQuery({
-    queryKey: ["admin-categories"],
-    queryFn: () => BlogAPI.getAdminCategories(),
-  })
-  const categories = categoriesRes?.data ?? []
-
-  const [saveError, setSaveError] = useState<string | null>(null)
-
-  const saveMutation = useMutation({
-    mutationFn: (payload: Partial<BlogPost>) => {
-      const dataToSave = { ...payload, faq_schema: faqList }
-      if (dataToSave.id) return BlogAPI.updateAdminPost(dataToSave.id, dataToSave)
-      return BlogAPI.createAdminPost(dataToSave)
-    },
-    onSuccess: (_, vars) => {
-      setSaveError(null)
-      onSaved(vars.status === "published" ? "تم حفظ المقال ونشره بنجاح." : "تم حفظ المسودة بنجاح.")
-    },
-    onError: (err) => setSaveError(formatSeoPublishError(err)),
-  })
-
-  const focusKey = form.focus_keyword?.trim().toLowerCase() ?? ""
-  const titleHasKey = focusKey ? form.title?.toLowerCase().includes(focusKey) : false
-  const slugHasKey = focusKey ? form.slug?.toLowerCase().includes(focusKey) : false
-  const summaryHasKey = focusKey ? form.summary?.toLowerCase().includes(focusKey) : false
-  const titleLength = form.meta_title ? form.meta_title.length : form.title?.length ?? 0
-  const descLength = form.meta_description ? form.meta_description.length : form.summary?.length ?? 0
-
-  const autoGenerateSlug = () => {
-    if (!form.title) return
-    const s = form.title
-      .toLowerCase()
-      .trim()
-      .replace(/[\s\W-]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-    setForm({ ...form, slug: s })
-  }
-
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setUploadingCover(true)
-    try {
-      const res = await API.media.upload(file)
-      const url = res?.url || (res as any)?.data?.url
-      if (url) {
-        setForm((prev) => ({
-          ...prev,
-          cover_image: url,
-          cover_image_alt: prev.cover_image_alt || file.name.split(".")[0],
-        }))
-      }
-    } catch (err: any) {
-      alert(err?.message || "فشل رفع صورة الغلاف")
-    } finally {
-      setUploadingCover(false)
-    }
-  }
-
-  const handleInlineImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setUploadingInline(true)
-    try {
-      const res = await API.media.upload(file)
-      const url = res?.url || (res as any)?.data?.url
-      if (url) {
-        const alt = file.name.split(".")[0]
-        const snippet = `\n<figure class="my-6 text-center">\n  <img src="${url}" alt="${alt}" class="rounded-2xl max-w-full h-auto mx-auto border shadow-sm" loading="lazy" />\n  <figcaption class="text-xs text-gray-500 mt-2">${alt}</figcaption>\n</figure>\n`
-        setForm((prev) => ({ ...prev, content: (prev.content ?? "") + snippet }))
-      }
-    } catch (err: any) {
-      alert(err?.message || "فشل رفع الصورة")
-    } finally {
-      setUploadingInline(false)
-    }
-  }
-
-  const saveAs = (status: BlogPost["status"]) => {
-    if (!form.title?.trim() || !form.slug?.trim() || !form.content?.trim()) {
-      alert("العنوان والرابط والمحتوى مطلوبة قبل الحفظ.")
-      setSection("content")
-      return
-    }
-    saveMutation.mutate({ ...form, status })
-  }
-
-  return (
-    <div className="dash-editor-shell" role="dialog" aria-modal="true" aria-label="محرر المقال">
-      <div className="dash-editor-panel">
-        <div className="px-4 sm:px-6 py-3.5 border-b border-[var(--color-border)] bg-[var(--color-card-soft)] flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h2 className="text-sm sm:text-base font-bold text-[var(--color-ink)] truncate">
-              {form.id ? `تعديل: ${form.title || "مقال"}` : "إنشاء مقال جديد"}
-            </h2>
-            <p className="text-[11px] text-[var(--color-text-muted)] mt-0.5">اكتب المحتوى، راجع SEO، ثم احفظ كمسودة أو انشر مباشرة.</p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="size-9 shrink-0 rounded-full bg-white border border-[var(--color-border)] grid place-items-center text-sm font-bold"
-            aria-label="إغلاق المحرر"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div className="px-4 sm:px-6 pt-3">
-          <div className="dash-tabs">
-            {[
-              { id: "content", label: "1. المحتوى" },
-              { id: "seo", label: "2. الظهور والـ SEO" },
-              { id: "advanced", label: "3. متقدم" },
-            ].map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setSection(t.id as typeof section)}
-                className={`dash-tab${section === t.id ? " is-active" : ""}`}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1 text-xs">
-          {saveError && (
-            <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-[11px] text-rose-700 font-semibold">
-              {saveError}
-            </div>
-          )}
-          {section === "content" && (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="sm:col-span-2">
-                  <label className="block font-bold text-[var(--color-ink)] mb-1">
-                    عنوان المقال <span className="text-rose-500">*</span>
-                  </label>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <input
-                      type="text"
-                      required
-                      value={form.title ?? ""}
-                      onChange={(e) => setForm({ ...form, title: e.target.value })}
-                      placeholder="عنوان واضح وجذاب للمقال"
-                      className="flex-1 px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-xs focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
-                    />
-                    <Button type="button" onClick={autoGenerateSlug} size="sm" variant="outline" className="rounded-xl text-[11px] whitespace-nowrap">
-                      توليد الرابط
-                    </Button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block font-bold text-[var(--color-ink)] mb-1">
-                    الرابط الدائم <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={form.slug ?? ""}
-                    onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-xs font-mono focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-[var(--color-ink)] mb-1">التصنيف</label>
-                  <select
-                    value={form.category_id ?? ""}
-                    onChange={(e) => setForm({ ...form, category_id: e.target.value ? parseInt(e.target.value, 10) : null })}
-                    className="w-full px-4 py-2.5 rounded-xl border border-[var(--color-border)] text-xs bg-white outline-none"
-                  >
-                    <option value="">بدون تصنيف</option>
-                    {categories.map((c: BlogCategory) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block font-bold text-[var(--color-ink)] mb-1">صورة الغلاف</label>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <input
-                      type="url"
-                      value={form.cover_image ?? ""}
-                      onChange={(e) => setForm({ ...form, cover_image: e.target.value })}
-                      placeholder="رابط الصورة أو ارفع من جهازك"
-                      className="flex-1 px-3 py-2 rounded-xl border border-[var(--color-border)] text-xs font-mono outline-none"
-                    />
-                    <label className="inline-flex items-center justify-center bg-[var(--color-lavender)] text-[var(--color-primary)] text-xs font-bold px-3 py-2 rounded-xl cursor-pointer">
-                      {uploadingCover ? "جار الرفع..." : "رفع غلاف"}
-                      <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" disabled={uploadingCover} onChange={handleCoverUpload} />
-                    </label>
-                  </div>
-                  {form.cover_image && (
-                    <div className="mt-2 flex items-center gap-3 p-2 bg-[var(--color-bg-subtle)] rounded-xl border border-[var(--color-border)]">
-                      <img src={form.cover_image} alt="معاينة الغلاف" className="h-12 w-20 object-cover rounded-lg border" />
-                      <button type="button" onClick={() => setForm({ ...form, cover_image: "" })} className="text-[11px] text-rose-600 font-bold">
-                        إزالة
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-bold text-[var(--color-ink)] mb-1">ملخص المقال</label>
-                <textarea
-                  rows={2}
-                  value={form.summary ?? ""}
-                  onChange={(e) => setForm({ ...form, summary: e.target.value })}
-                  className="w-full px-4 py-2 rounded-xl border border-[var(--color-border)] text-xs outline-none resize-none"
-                />
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-1.5 flex-wrap gap-2">
-                  <label className="font-bold text-[var(--color-ink)]">
-                    المحتوى <span className="text-rose-500">*</span>
-                  </label>
-                  <label className="px-2.5 py-1 rounded-lg bg-[var(--color-lavender)] text-[10px] font-bold cursor-pointer">
-                    {uploadingInline ? "جار الرفع..." : "إدراج صورة"}
-                    <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" disabled={uploadingInline} onChange={handleInlineImageUpload} />
-                  </label>
-                </div>
-                <textarea
-                  rows={14}
-                  required
-                  value={form.content ?? ""}
-                  onChange={(e) => setForm({ ...form, content: e.target.value })}
-                  className="w-full px-4 py-3 rounded-2xl border border-[var(--color-border)] text-xs font-mono leading-relaxed outline-none min-h-[220px]"
-                />
-              </div>
-            </>
-          )}
-
-          {section === "seo" && (
-            <div className="space-y-4">
-              <div className="bg-[var(--color-bg-subtle)] rounded-2xl p-4 border border-[var(--color-border)] space-y-4">
-                <div className="font-bold text-[var(--color-ink)]">معاينة نتيجة البحث</div>
-                <div className="bg-white p-4 rounded-xl border border-gray-200 space-y-1">
-                  <div className="text-[11px] text-gray-600">amtdex.com › posts › {form.slug || "example-post"}</div>
-                  <h4 className="text-[15px] text-[#1a0dab] truncate">{form.meta_title || form.title || "عنوان المقال"}</h4>
-                  <p className="text-[12px] text-[#4d5156] line-clamp-2">
-                    {form.meta_description || form.summary || "الوصف المختصر الذي يظهر في نتائج البحث..."}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-bold mb-1">الكلمة المفتاحية</label>
-                    <input
-                      type="text"
-                      value={form.focus_keyword ?? ""}
-                      onChange={(e) => setForm({ ...form, focus_keyword: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl border border-[var(--color-border)] text-xs outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold mb-1">Meta Title ({titleLength}/60)</label>
-                    <input
-                      type="text"
-                      value={form.meta_title ?? ""}
-                      onChange={(e) => setForm({ ...form, meta_title: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl border border-[var(--color-border)] text-xs outline-none"
-                    />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-bold mb-1">Meta Description ({descLength}/160)</label>
-                    <textarea
-                      rows={2}
-                      value={form.meta_description ?? ""}
-                      onChange={(e) => setForm({ ...form, meta_description: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl border border-[var(--color-border)] text-xs outline-none resize-none"
-                    />
-                  </div>
-                </div>
-
-                {focusKey && (
-                  <div className="flex flex-wrap gap-3 text-[11px]">
-                    <span className={titleHasKey ? "text-emerald-600 font-bold" : "text-rose-500"}>{titleHasKey ? "✓" : "✗"} في العنوان</span>
-                    <span className={slugHasKey ? "text-emerald-600 font-bold" : "text-rose-500"}>{slugHasKey ? "✓" : "✗"} في الرابط</span>
-                    <span className={summaryHasKey ? "text-emerald-600 font-bold" : "text-rose-500"}>{summaryHasKey ? "✓" : "✗"} في الملخص</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {section === "advanced" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <label className="flex items-center gap-2 p-3 rounded-xl border border-[var(--color-border)]">
-                  <input
-                    type="checkbox"
-                    checked={!!form.allow_comments}
-                    onChange={(e) => setForm({ ...form, allow_comments: e.target.checked })}
-                  />
-                  <span className="font-bold text-[var(--color-ink)]">السماح بالتعليقات</span>
-                </label>
-                <label className="flex items-center gap-2 p-3 rounded-xl border border-[var(--color-border)]">
-                  <input type="checkbox" checked={!!form.robots_index} onChange={(e) => setForm({ ...form, robots_index: e.target.checked })} />
-                  <span className="font-bold text-[var(--color-ink)]">فهرسة محركات البحث</span>
-                </label>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-[var(--color-ink)]">أسئلة شائعة (FAQ Schema)</span>
-                  <button type="button" onClick={() => setFaqList([...faqList, { question: "", answer: "" }])} className="text-[11px] font-bold text-[var(--color-primary)]">
-                    + إضافة
-                  </button>
-                </div>
-                {faqList.map((faq, i) => (
-                  <div key={i} className="p-3 bg-[var(--color-bg-subtle)] rounded-xl border border-[var(--color-border)] space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-[11px]">سؤال #{i + 1}</span>
-                      <button type="button" onClick={() => setFaqList(faqList.filter((_, idx) => idx !== i))} className="text-rose-500 text-[10px]">
-                        حذف
-                      </button>
-                    </div>
-                    <input
-                      type="text"
-                      value={faq.question}
-                      onChange={(e) => {
-                        const next = [...faqList]
-                        next[i] = { ...next[i], question: e.target.value }
-                        setFaqList(next)
-                      }}
-                      className="w-full px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-xs outline-none"
-                      placeholder="السؤال"
-                    />
-                    <textarea
-                      rows={2}
-                      value={faq.answer}
-                      onChange={(e) => {
-                        const next = [...faqList]
-                        next[i] = { ...next[i], answer: e.target.value }
-                        setFaqList(next)
-                      }}
-                      className="w-full px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-xs outline-none resize-none"
-                      placeholder="الإجابة"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="dash-editor-foot">
-          <Button type="button" variant="outline" onClick={onClose} className="rounded-xl text-xs order-3 sm:order-1 w-full sm:w-auto">
-            إلغاء
-          </Button>
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto order-1 sm:order-2">
-            <Button
-              type="button"
-              variant="outline"
-              disabled={saveMutation.isPending}
-              onClick={() => saveAs("draft")}
-              className="rounded-xl text-xs w-full sm:w-auto"
-            >
-              حفظ كمسودة
-            </Button>
-            <Button
-              type="button"
-              disabled={saveMutation.isPending}
-              onClick={() => saveAs("published")}
-              className="bg-[var(--color-ink)] hover:bg-[var(--color-primary)] text-white text-xs font-bold px-5 py-2.5 rounded-xl w-full sm:w-auto"
-            >
-              {saveMutation.isPending ? "جارٍ الحفظ..." : "نشر المقال الآن"}
-            </Button>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
