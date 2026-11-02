@@ -1,35 +1,36 @@
-import { useTransition } from "react"
-import { useParams, Link, useSearchParams } from "react-router-dom"
+import { useEffect, useTransition } from "react"
+import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { BlogAPI } from "@/lib/blogApi"
 import { Seo } from "@/components/Seo"
 import { Card } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { getBlogUrl, isBlogSubdomain } from "@/lib/subdomain"
-import type { BlogPost, BlogTag } from "@/types/blog"
+import type { BlogPost } from "@/types/blog"
 
 export function BlogTagPage() {
   const { slug } = useParams<{ slug: string }>()
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const page = parseInt(searchParams.get("page") ?? "1", 10)
   const [, startTransition] = useTransition()
 
-  // Fetch posts by tag
-  const { data: postsRes, isLoading: postsLoading } = useQuery({
-    queryKey: ["blog-tag-posts", slug, page],
-    queryFn: () => BlogAPI.getPosts({ tag: slug, page, per_page: 9 }),
+  const { data: tagRes, isLoading: postsLoading, isError } = useQuery({
+    queryKey: ["blog-tag", slug, page],
+    queryFn: () => BlogAPI.getTag(slug!, page),
     enabled: Boolean(slug),
   })
 
-  const { data: tagsRes } = useQuery({
-    queryKey: ["blog-tags"],
-    queryFn: () => BlogAPI.getTags(),
-  })
+  useEffect(() => {
+    if (!tagRes?.redirect || !tagRes.target) return
+    const targetSlug = tagRes.target.replace(/^\/?tags\//, "").replace(/\/$/, "")
+    if (!targetSlug || targetSlug === slug) return
+    navigate(isBlogSubdomain() ? `/tags/${targetSlug}` : getBlogUrl(`/tags/${targetSlug}`), { replace: true })
+  }, [tagRes, navigate, slug])
 
-  const tags = tagsRes?.data ?? []
-  const currentTag = tags.find((t: BlogTag) => t.slug === slug)
-  const posts = postsRes?.data ?? []
-  const meta = postsRes?.meta
+  const currentTag = tagRes?.tag
+  const posts = tagRes?.posts ?? []
+  const meta = tagRes?.meta
 
   const handlePageChange = (newPage: number) => {
     startTransition(() => {
@@ -41,38 +42,13 @@ export function BlogTagPage() {
   }
 
   const tagName = currentTag?.name || slug || "وسم"
-  const tagTitle = `مقالات وسم #${tagName}`
-  const tagDesc = `تصفح كافة المقالات والدروس التقنية المرتبطة بوسم #${tagName} على مدونة Amtdex.`
-  const canonicalUrl = getBlogUrl(`/tags/${slug}`)
-
-  // Breadcrumb schema
-  const schema: Record<string, unknown>[] = [
-    {
-      "@context": "https://schema.org",
-      "@type": "CollectionPage",
-      name: tagTitle,
-      description: tagDesc,
-      url: canonicalUrl,
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "المدونة",
-          item: getBlogUrl("/"),
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: `#${tagName}`,
-          item: canonicalUrl,
-        },
-      ],
-    },
-  ]
+  const tagTitle = currentTag?.meta_title || `مقالات وسم #${tagName}`
+  const tagDesc =
+    currentTag?.meta_description ||
+    currentTag?.description ||
+    `تصفح كافة المقالات والدروس التقنية المرتبطة بوسم #${tagName} على مدونة Amtdex.`
+  const canonicalUrl = getBlogUrl(`/tags/${currentTag?.slug || slug}`)
+  const schema = tagRes?.json_ld
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-subtle)] text-[var(--color-ink)]">
@@ -81,9 +57,9 @@ export function BlogTagPage() {
         description={tagDesc}
         canonical={canonicalUrl}
         jsonLd={schema}
+        noindex={Boolean(currentTag?.noindex)}
       />
 
-      {/* Header Banner */}
       <section className="bg-white border-b border-[var(--color-border)] py-12 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto space-y-4">
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
@@ -99,22 +75,17 @@ export function BlogTagPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-card-soft)] text-[var(--color-primary)] text-xs font-bold mb-3">
-                <span>#</span>
                 وسم مقالات
               </div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-[var(--color-ink)] font-heading">
-                #{tagName}
-              </h1>
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-[var(--color-ink)] font-heading">#{tagName}</h1>
               <p className="text-sm sm:text-base text-[var(--color-text-muted)] max-w-2xl mt-2 leading-relaxed">
-                استكشف كافة المقالات والأفكار البرمجية المصنفة تحت هذا الوسم.
+                {currentTag?.description || "استكشف كافة المقالات والأفكار البرمجية المصنفة تحت هذا الوسم."}
               </p>
             </div>
 
             {meta && (
               <div className="bg-[var(--color-bg-subtle)] px-4 py-3 rounded-2xl border border-[var(--color-border)] text-center shrink-0">
-                <span className="text-2xl font-extrabold text-[var(--color-ink)] block font-mono">
-                  {meta.total}
-                </span>
+                <span className="text-2xl font-extrabold text-[var(--color-ink)] block font-mono">{meta.total}</span>
                 <span className="text-xs text-[var(--color-text-muted)]">مقال مرتبط</span>
               </div>
             )}
@@ -122,26 +93,25 @@ export function BlogTagPage() {
         </div>
       </section>
 
-      {/* Posts Grid */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
         {postsLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-80 bg-white rounded-3xl border border-[var(--color-border)] p-5 space-y-4">
-                <div className="h-44 bg-[var(--color-border)] rounded-2xl" />
-                <div className="h-5 bg-[var(--color-border)] rounded w-3/4" />
-                <div className="h-4 bg-[var(--color-border)] rounded w-1/2" />
-              </div>
+              <div key={i} className="h-80 bg-white rounded-3xl border border-[var(--color-border)]" />
             ))}
+          </div>
+        ) : isError ? (
+          <div className="bg-white rounded-3xl p-12 text-center border border-[var(--color-border)] max-w-lg mx-auto space-y-4">
+            <h2 className="text-lg font-bold text-[var(--color-ink)]">تعذر تحميل الوسم</h2>
+            <Link to={isBlogSubdomain() ? "/" : getBlogUrl("/")}>
+              <Button className="mt-2 text-xs rounded-xl">العودة للمدونة</Button>
+            </Link>
           </div>
         ) : posts.length === 0 ? (
           <div className="bg-white rounded-3xl p-12 text-center border border-[var(--color-border)] max-w-lg mx-auto space-y-4">
-            <span className="text-4xl">🏷️</span>
-            <h2 className="text-lg font-bold text-[var(--color-ink)]">لا توجد مقالات مرتبطة بهذا الوسم</h2>
+            <h2 className="text-lg font-bold text-[var(--color-ink)]">لا توجد مقالات بهذا الوسم حالياً</h2>
             <Link to={isBlogSubdomain() ? "/" : getBlogUrl("/")}>
-              <Button className="mt-2 text-xs rounded-xl">
-                العودة لكافة المقالات
-              </Button>
+              <Button className="mt-2 text-xs rounded-xl">العودة لكافة المقالات</Button>
             </Link>
           </div>
         ) : (
@@ -150,68 +120,44 @@ export function BlogTagPage() {
               {posts.map((post: BlogPost) => (
                 <Card
                   key={post.id}
-                  className="group overflow-hidden rounded-3xl border border-[var(--color-border)] bg-white hover:shadow-md transition-all flex flex-col justify-between"
+                  className="group overflow-hidden rounded-3xl border border-[var(--color-border)] bg-white hover:shadow-md transition-all flex flex-col"
                 >
                   <Link
                     to={isBlogSubdomain() ? `/posts/${post.slug}` : getBlogUrl(`/posts/${post.slug}`)}
-                    className="block aspect-video overflow-hidden bg-gray-100 relative"
+                    className="block aspect-video overflow-hidden bg-gray-100"
                   >
                     {post.cover_image ? (
                       <img
                         src={post.cover_image}
                         alt={post.cover_image_alt || post.title}
                         loading="lazy"
+                        width={640}
+                        height={360}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-[var(--color-card-soft)] text-[var(--color-primary)] font-bold text-xl">
+                      <div className="w-full h-full flex items-center justify-center bg-[var(--color-card-soft)] text-[var(--color-primary)] font-bold">
                         Amtdex
                       </div>
                     )}
                   </Link>
-
-                  <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                    <div>
-                      {post.category && (
-                        <span className="text-xs font-bold text-[var(--color-primary)] mb-1 block">
-                          {post.category.name}
-                        </span>
-                      )}
-                      <h3 className="text-base font-bold text-[var(--color-ink)] line-clamp-2 group-hover:text-[var(--color-primary)] transition-colors leading-snug">
-                        <Link to={isBlogSubdomain() ? `/posts/${post.slug}` : getBlogUrl(`/posts/${post.slug}`)}>
-                          {post.title}
-                        </Link>
-                      </h3>
-                      {post.summary && (
-                        <p className="text-xs text-[var(--color-text-muted)] line-clamp-2 mt-2 leading-relaxed">
-                          {post.summary}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="pt-4 border-t border-[var(--color-border)] flex items-center justify-between text-xs">
-                      <span className="font-semibold text-[var(--color-ink)] group-hover:-translate-x-1 rtl:group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                        قراءة المقال ←
-                      </span>
-                      <span className="text-[11px] text-[var(--color-text-muted)]">
-                        {post.reading_time} د قراءة
-                      </span>
-                    </div>
+                  <div className="p-5 space-y-2">
+                    <h3 className="text-base font-bold text-[var(--color-ink)] line-clamp-2">
+                      <Link to={isBlogSubdomain() ? `/posts/${post.slug}` : getBlogUrl(`/posts/${post.slug}`)}>
+                        {post.title}
+                      </Link>
+                    </h3>
+                    {post.summary && (
+                      <p className="text-xs text-[var(--color-text-muted)] line-clamp-2">{post.summary}</p>
+                    )}
                   </div>
                 </Card>
               ))}
             </div>
 
-            {/* Pagination */}
             {meta && meta.last_page > 1 && (
-              <div className="flex items-center justify-center gap-2 pt-6">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page <= 1}
-                  onClick={() => handlePageChange(page - 1)}
-                  className="rounded-xl text-xs"
-                >
+              <div className="flex items-center justify-center gap-2 pt-6 flex-wrap">
+                <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => handlePageChange(page - 1)} className="rounded-xl text-xs">
                   السابق
                 </Button>
                 {Array.from({ length: meta.last_page }).map((_, idx) => {

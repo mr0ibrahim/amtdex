@@ -15,6 +15,7 @@ use App\Models\BlogSetting;
 use App\Models\BlogTag;
 use App\Models\User;
 use App\Services\Blog\PostPublishSeoGuard;
+use App\Services\Blog\TaxonomySlugService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -328,7 +329,7 @@ class AdminBlogController extends Controller
         $validated = $request->validate([
             'parent_id' => 'nullable|exists:blog_categories,id',
             'name' => 'required|string|max:100',
-            'slug' => 'nullable|string|max:100|unique:blog_categories,slug',
+            'slug' => 'nullable|string|max:100',
             'description' => 'nullable|string|max:500',
             'image' => 'nullable|string|max:500',
             'sort_order' => 'integer',
@@ -339,8 +340,16 @@ class AdminBlogController extends Controller
             'noindex' => 'boolean',
         ]);
 
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+        $validated['slug'] = TaxonomySlugService::uniqueCategorySlug(
+            $validated['slug'] ?? $validated['name']
+        );
+
+        if (empty($validated['canonical_url']) || ! PostPublishSeoGuard::isAbsoluteUrl((string) $validated['canonical_url'])) {
+            $validated['canonical_url'] = TaxonomySlugService::categoryCanonical($validated['slug']);
+        }
+
+        if (empty($validated['meta_title'])) {
+            $validated['meta_title'] = $validated['name'];
         }
 
         $category = BlogCategory::create($validated);
@@ -353,7 +362,7 @@ class AdminBlogController extends Controller
         $validated = $request->validate([
             'parent_id' => 'nullable|exists:blog_categories,id|not_in:' . $id,
             'name' => 'required|string|max:100',
-            'slug' => 'nullable|string|max:100|unique:blog_categories,slug,' . $id,
+            'slug' => 'nullable|string|max:100',
             'description' => 'nullable|string|max:500',
             'image' => 'nullable|string|max:500',
             'sort_order' => 'integer',
@@ -364,13 +373,43 @@ class AdminBlogController extends Controller
             'noindex' => 'boolean',
         ]);
 
+        $oldSlug = $category->slug;
+        $newSlug = TaxonomySlugService::uniqueCategorySlug(
+            $validated['slug'] ?? $validated['name'],
+            $category->id
+        );
+        $validated['slug'] = $newSlug;
+
+        TaxonomySlugService::redirectOnSlugChange('categories', $oldSlug, $newSlug);
+
+        if (empty($validated['canonical_url']) || ! PostPublishSeoGuard::isAbsoluteUrl((string) $validated['canonical_url'])) {
+            $validated['canonical_url'] = TaxonomySlugService::categoryCanonical($newSlug);
+        }
+
+        if (empty($validated['meta_title'])) {
+            $validated['meta_title'] = $validated['name'];
+        }
+
         $category->update($validated);
-        return response()->json(['ok' => true, 'category' => $category]);
+        return response()->json(['ok' => true, 'category' => $category->fresh()]);
     }
 
     public function destroyCategory(int $id): JsonResponse
     {
         $category = BlogCategory::findOrFail($id);
+
+        if ($category->posts()->exists()) {
+            throw ValidationException::withMessages([
+                'category' => ['لا يمكن حذف التصنيف لأنه مرتبط بمقالات. انقل المقالات أولاً أو اجعله غير ظاهر.'],
+            ]);
+        }
+
+        if ($category->children()->exists()) {
+            throw ValidationException::withMessages([
+                'category' => ['لا يمكن حذف التصنيف لأنه يحتوي تصنيفات فرعية.'],
+            ]);
+        }
+
         $category->delete();
         return response()->json(['ok' => true, 'message' => 'تم حذف التصنيف بنجاح.']);
     }
@@ -388,15 +427,19 @@ class AdminBlogController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:60',
-            'slug' => 'nullable|string|max:60|unique:blog_tags,slug',
+            'slug' => 'nullable|string|max:60',
             'description' => 'nullable|string|max:300',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'noindex' => 'boolean',
         ]);
 
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+        $validated['slug'] = TaxonomySlugService::uniqueTagSlug(
+            $validated['slug'] ?? $validated['name']
+        );
+
+        if (empty($validated['meta_title'])) {
+            $validated['meta_title'] = $validated['name'];
         }
 
         $tag = BlogTag::create($validated);
@@ -408,20 +451,40 @@ class AdminBlogController extends Controller
         $tag = BlogTag::findOrFail($id);
         $validated = $request->validate([
             'name' => 'required|string|max:60',
-            'slug' => 'nullable|string|max:60|unique:blog_tags,slug,' . $id,
+            'slug' => 'nullable|string|max:60',
             'description' => 'nullable|string|max:300',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'noindex' => 'boolean',
         ]);
 
+        $oldSlug = $tag->slug;
+        $newSlug = TaxonomySlugService::uniqueTagSlug(
+            $validated['slug'] ?? $validated['name'],
+            $tag->id
+        );
+        $validated['slug'] = $newSlug;
+
+        TaxonomySlugService::redirectOnSlugChange('tags', $oldSlug, $newSlug);
+
+        if (empty($validated['meta_title'])) {
+            $validated['meta_title'] = $validated['name'];
+        }
+
         $tag->update($validated);
-        return response()->json(['ok' => true, 'tag' => $tag]);
+        return response()->json(['ok' => true, 'tag' => $tag->fresh()]);
     }
 
     public function destroyTag(int $id): JsonResponse
     {
         $tag = BlogTag::findOrFail($id);
+
+        if ($tag->posts()->exists()) {
+            throw ValidationException::withMessages([
+                'tag' => ['لا يمكن حذف الوسم لأنه مرتبط بمقالات. أزل الربط أولاً.'],
+            ]);
+        }
+
         $tag->delete();
         return response()->json(['ok' => true, 'message' => 'تم حذف الوسم بنجاح.']);
     }

@@ -82,7 +82,11 @@ export const BlogAPI = {
     return apiClient<{
       category: BlogCategory
       posts: BlogPost[]
-      meta: { current_page: number; last_page: number; total: number }
+      meta: { current_page: number; last_page: number; per_page?: number; total: number }
+      json_ld?: JsonLdNode[]
+      redirect?: boolean
+      target?: string
+      status_code?: number
     }>(`/blog/categories/${slug}?page=${page}`, "GET")
   },
 
@@ -94,7 +98,11 @@ export const BlogAPI = {
     return apiClient<{
       tag: BlogTag
       posts: BlogPost[]
-      meta: { current_page: number; last_page: number; total: number }
+      meta: { current_page: number; last_page: number; per_page?: number; total: number }
+      json_ld?: JsonLdNode[]
+      redirect?: boolean
+      target?: string
+      status_code?: number
     }>(`/blog/tags/${slug}?page=${page}`, "GET")
   },
 
