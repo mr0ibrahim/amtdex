@@ -3,6 +3,7 @@
 @import "./motion.css";
 @import "./brand-motion.css";
 @import "./cards.css";
+@import "./dashboard.css";
 
 @theme {
   --font-arabic: "IBM Plex Sans Arabic", system-ui, sans-serif;
