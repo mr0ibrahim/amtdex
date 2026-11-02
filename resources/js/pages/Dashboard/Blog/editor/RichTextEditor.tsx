@@ -181,7 +181,11 @@ export function RichTextEditor({ value, onChange, disabled }: Props) {
   useEffect(() => {
     uploadImageRef.current = async (file: File) => {
       if (!editor) return
-      if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type)) {
+      const ext = file.name.split(".").pop()?.toLowerCase() ?? ""
+      const typeOk =
+        ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"].includes(file.type) ||
+        (!file.type && ["jpg", "jpeg", "png", "webp", "gif"].includes(ext))
+      if (!typeOk) {
         setMsg("يُسمح بصور JPEG / PNG / WebP / GIF فقط.")
         return
       }
@@ -424,8 +428,7 @@ export function RichTextEditor({ value, onChange, disabled }: Props) {
       <input
         ref={imageInputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
-        capture="environment"
+        accept="image/*"
         className="hidden"
         onChange={(e) => {
           const f = e.target.files?.[0]

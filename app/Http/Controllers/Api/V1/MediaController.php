@@ -43,20 +43,28 @@ class MediaController extends Controller
                 'required',
                 'file',
                 'max:10240', // 10MB max
-                'mimes:jpeg,jpg,png,webp,svg,pdf',
+                'mimes:jpeg,jpg,png,webp,gif,svg,pdf',
             ],
         ], [
             'file.required' => 'يرجى اختيار ملف لرفعه.',
             'file.max' => 'حجم الملف يتجاوز الحد المسموح (10 ميجابايت).',
-            'file.mimes' => 'نوع الملف غير مدعوم. الأنواع المدعومة: JPG, PNG, WebP, SVG, PDF.',
+            'file.mimes' => 'نوع الملف غير مدعوم. الأنواع المدعومة: JPG, PNG, WebP, GIF, SVG, PDF.',
         ]);
 
         $file = $request->file('file');
         $originalName = $file->getClientOriginalName();
-        $extension = strtolower($file->getClientOriginalExtension());
+        $mime = strtolower((string) ($file->getMimeType() ?? ''));
+        $extension = $this->extensionForMime($mime);
+
+        if ($extension === null) {
+            return response()->json([
+                'message' => 'نوع الملف غير مدعوم. الأنواع المدعومة: JPG, PNG, WebP, GIF, SVG, PDF.',
+                'errors' => ['file' => ['نوع الملف غير مدعوم.']],
+            ], 422);
+        }
 
         // Web security hardening: Prevent Stored XSS via malicious SVG files
-        if (in_array($extension, ['svg', 'svgz'], true) || str_contains(strtolower($file->getMimeType() ?? ''), 'svg')) {
+        if ($extension === 'svg' || str_contains($mime, 'svg')) {
             $content = file_get_contents($file->getRealPath());
             if ($content !== false) {
                 if (
@@ -74,11 +82,25 @@ class MediaController extends Controller
             }
         }
 
-        $safeName = Str::random(24) . '.' . $extension;
+        $directory = public_path('uploads/media');
+        if (! is_dir($directory) && ! mkdir($directory, 0755, true) && ! is_dir($directory)) {
+            return response()->json([
+                'message' => 'تعذر إنشاء مجلد الرفع. تأكد أن public/uploads قابل للكتابة.',
+            ], 500);
+        }
 
-        // Store into public disk
-        $path = $file->storeAs('media', $safeName, 'public');
-        $url = Storage::url($path);
+        $safeName = Str::random(24).'.'.$extension;
+
+        // Store inside the web root so the file is served at /uploads/media/{name}
+        // without depending on `php artisan storage:link` (unreliable on Hostinger).
+        $path = $file->storeAs('media', $safeName, 'uploads');
+        if ($path === false) {
+            return response()->json([
+                'message' => 'تعذر حفظ الصورة. تأكد من صلاحيات الكتابة على مجلد public/uploads.',
+            ], 500);
+        }
+
+        $url = Storage::disk('uploads')->url($path);
 
         $media = Media::create([
             'user_id' => $request->user()?->id,
@@ -86,8 +108,8 @@ class MediaController extends Controller
             'path' => $path,
             'url' => $url,
             'size' => $file->getSize(),
-            'mime' => $file->getMimeType() ?? 'application/octet-stream',
-            'disk' => 'public',
+            'mime' => $mime !== '' ? $mime : 'application/octet-stream',
+            'disk' => 'uploads',
             'alt_text' => $request->input('alt_text'),
         ]);
 
@@ -107,8 +129,9 @@ class MediaController extends Controller
     {
         $media = Media::findOrFail($id);
 
-        if (Storage::disk('public')->exists($media->path)) {
-            Storage::disk('public')->delete($media->path);
+        $disk = $media->disk ?: 'public';
+        if (Storage::disk($disk)->exists($media->path)) {
+            Storage::disk($disk)->delete($media->path);
         }
 
         $name = $media->name;
@@ -120,5 +143,21 @@ class MediaController extends Controller
             'ok' => true,
         ]);
     }
-}
 
+    /**
+     * Map a detected MIME type to a safe stored extension.
+     * Client-supplied extensions are ignored so a renamed payload cannot land as .php.
+     */
+    private function extensionForMime(string $mime): ?string
+    {
+        return match ($mime) {
+            'image/jpeg', 'image/jpg', 'image/pjpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/webp' => 'webp',
+            'image/gif' => 'gif',
+            'image/svg+xml', 'image/svg' => 'svg',
+            'application/pdf' => 'pdf',
+            default => null,
+        };
+    }
+}

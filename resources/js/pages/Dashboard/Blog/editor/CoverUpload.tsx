@@ -1,9 +1,10 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { API } from "@/lib/api"
 import { FieldHint, FieldLabel } from "./FieldHint"
 
 const MAX_BYTES = 5 * 1024 * 1024
-const ACCEPT = "image/jpeg,image/png,image/webp"
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"]
+const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif"]
 
 type Props = {
   url?: string | null
@@ -17,10 +18,19 @@ export function CoverUpload({ url, alt, onChange, onClear }: Props) {
   const [dragging, setDragging] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [localPreview, setLocalPreview] = useState<string | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (localPreview?.startsWith("blob:")) URL.revokeObjectURL(localPreview)
+    }
+  }, [localPreview])
 
   const validate = (file: File): string | null => {
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-      return "يُسمح بصور JPEG أو PNG أو WebP فقط."
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? ""
+    const typeOk = ALLOWED_TYPES.includes(file.type) || (!file.type && ALLOWED_EXT.includes(ext))
+    if (!typeOk) {
+      return "يُسمح بصور JPEG أو PNG أو WebP أو GIF فقط."
     }
     if (file.size > MAX_BYTES) return "الحجم الأقصى 5MB."
     return null
@@ -33,6 +43,11 @@ export function CoverUpload({ url, alt, onChange, onClear }: Props) {
       return
     }
     setError(null)
+    const blobUrl = URL.createObjectURL(file)
+    setLocalPreview((prev) => {
+      if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev)
+      return blobUrl
+    })
     setUploading(true)
     try {
       const res = await API.media.upload(file)
@@ -47,6 +62,16 @@ export function CoverUpload({ url, alt, onChange, onClear }: Props) {
     } finally {
       setUploading(false)
     }
+  }
+
+  const displayUrl = uploading && localPreview ? localPreview : url || localPreview
+
+  const clear = () => {
+    setLocalPreview((prev) => {
+      if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev)
+      return null
+    })
+    onClear()
   }
 
   return (
@@ -70,11 +95,13 @@ export function CoverUpload({ url, alt, onChange, onClear }: Props) {
             : "border-[var(--color-border)] bg-[var(--color-bg-subtle)]"
         }`}
       >
-        {url ? (
+        {displayUrl ? (
           <div className="flex flex-col sm:flex-row gap-3 items-start">
-            <img src={url} alt={alt || "معاينة الغلاف"} className="h-28 w-full sm:w-44 object-cover rounded-xl border" />
+            <img src={displayUrl} alt={alt || "معاينة الغلاف"} className="h-28 w-full sm:w-44 object-cover rounded-xl border" />
             <div className="flex-1 space-y-2 w-full">
-              <p className="text-[11px] text-[var(--color-text-muted)] break-all font-mono">{url}</p>
+              <p className="text-[11px] text-[var(--color-text-muted)] break-all font-mono">
+                {url || (uploading ? "جارٍ رفع الصورة…" : "")}
+              </p>
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -84,7 +111,7 @@ export function CoverUpload({ url, alt, onChange, onClear }: Props) {
                 >
                   {uploading ? "جارٍ الرفع..." : "استبدال الصورة"}
                 </button>
-                <button type="button" onClick={onClear} className="px-3 py-2 rounded-xl border border-rose-200 text-rose-600 text-xs font-bold">
+                <button type="button" onClick={clear} className="px-3 py-2 rounded-xl border border-rose-200 text-rose-600 text-xs font-bold">
                   حذف
                 </button>
               </div>
@@ -106,8 +133,7 @@ export function CoverUpload({ url, alt, onChange, onClear }: Props) {
         <input
           ref={inputRef}
           type="file"
-          accept={ACCEPT}
-          capture="environment"
+          accept="image/*"
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0]
@@ -116,7 +142,7 @@ export function CoverUpload({ url, alt, onChange, onClear }: Props) {
           }}
         />
       </div>
-      <FieldHint>الأبعاد الموصى بها 1200×630 — JPEG/PNG/WebP — بحد أقصى 5MB. على الجوال يمكن استخدام الكاميرا.</FieldHint>
+      <FieldHint>الأبعاد الموصى بها 1200×630 — JPEG/PNG/WebP/GIF — بحد أقصى 5MB. على الجوال يفتح اختيار الصور من المعرض.</FieldHint>
       <div>
         <FieldLabel htmlFor="cover-alt">النص البديل للغلاف (Alt)</FieldLabel>
         <input
