@@ -250,6 +250,12 @@ class IndexNowService
             }
         }
 
+        try {
+            BlogSitemapBuilder::writePublicSitemap();
+        } catch (\Throwable $e) {
+            Log::warning('Failed to refresh public/sitemap.xml during reindex: '.$e->getMessage());
+        }
+
         $pings = self::pingSitemaps();
         $ok = $failedBatches === 0 && $submitted > 0;
         $result = [

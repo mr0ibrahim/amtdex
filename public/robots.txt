@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /dashboard
+Disallow: /login
+Disallow: /403
+Disallow: /api/
+Disallow: /sanctum/
+
+# Primary combined urlset (submit this exact URL in Search Console)
+Sitemap: https://amtdex.com/sitemap.xml

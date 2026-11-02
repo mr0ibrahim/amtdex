@@ -19,7 +19,9 @@ class BlogSeoController extends Controller
 
     public function sitemapIndex(): Response
     {
-        return $this->xml(BlogSitemapBuilder::indexXml());
+        // Combined urlset (not a sitemapindex) so Google never follows child
+        // /sitemaps/* URLs that some WAFs answer with HTML 403 pages.
+        return $this->xml(BlogSitemapBuilder::combinedUrlsetXml());
     }
 
     public function sitemapPages(): Response
