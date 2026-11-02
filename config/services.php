@@ -41,4 +41,8 @@ return [
         'host' => env('INDEXNOW_HOST', ''),
     ],
 
+    'google' => [
+        'site_verification' => env('GOOGLE_SITE_VERIFICATION', ''),
+    ],
+
 ];
