@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Services\Blog\BlogHtmlSanitizer;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -66,6 +68,19 @@ class BlogPost extends Model
         return (int) ($this->reading_time_minutes ?: 3);
     }
 
+    /**
+     * Stored and displayed article HTML is passed through the same allowlist.
+     *
+     * @return Attribute<string, string>
+     */
+    protected function content(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value): string => BlogHtmlSanitizer::sanitize($value),
+            set: fn (?string $value): string => BlogHtmlSanitizer::sanitize($value),
+        );
+    }
+
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
@@ -115,15 +130,15 @@ class BlogPost extends Model
 
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
-        if (!$term) {
+        if (! $term) {
             return $query;
         }
 
         return $query->where(function ($q) use ($term) {
             $q->where('title', 'like', "%{$term}%")
-              ->orWhere('summary', 'like', "%{$term}%")
-              ->orWhere('content', 'like', "%{$term}%")
-              ->orWhere('focus_keyword', 'like', "%{$term}%");
+                ->orWhere('summary', 'like', "%{$term}%")
+                ->orWhere('content', 'like', "%{$term}%")
+                ->orWhere('focus_keyword', 'like', "%{$term}%");
         });
     }
 
@@ -131,6 +146,7 @@ class BlogPost extends Model
     {
         $clean = strip_tags($content);
         $wordCount = count(preg_split('/\s+/u', trim($clean), -1, PREG_SPLIT_NO_EMPTY) ?: []);
+
         return max(1, (int) ceil($wordCount / 180));
     }
 }

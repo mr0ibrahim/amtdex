@@ -69,17 +69,18 @@ export function BlogPostPage() {
 
     // Match <h2> and <h3> tags
     const htmlWithIds = raw.replace(
-      /<h([23])([^>]*)>(.*?)<\/h\1>/gi,
+      /<h([23])([^>]*)>([\s\S]*?)<\/h\1>/gi,
       (_match: string, level: string, attrs: string, text: string) => {
         counter++
         const cleanText = text.replace(/<[^>]+>/g, "").trim()
-        const id = `heading-${counter}-${cleanText.toLowerCase().replace(/[^a-z0-9\u0600-\u06FF]+/g, "-")}`
+        const id = `heading-${counter}-${cleanText.toLowerCase().replace(/[^a-z0-9\u0600-\u06FF]+/g, "-").replace(/^-|-$/g, "")}`
         items.push({
           id,
           text: cleanText,
           level: parseInt(level, 10),
         })
-        return `<h${level}${attrs} id="${id}" class="scroll-mt-28">${text}</h${level}>`
+        const cleanedAttrs = (attrs || "").replace(/\s(?:id|class)\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+        return `<h${level}${cleanedAttrs} id="${id}" class="scroll-mt-28">${text}</h${level}>`
       }
     )
 
@@ -492,23 +493,7 @@ export function BlogPostPage() {
             )}
 
             {/* Rendered Article HTML Body */}
-            <div
-              className="prose prose-lg max-w-none text-[var(--color-ink)] leading-relaxed space-y-6 
-              [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-[var(--color-ink)] [&>h2]:mt-10 [&>h2]:mb-4 [&>h2]:font-heading [&>h2]:border-b [&>h2]:border-[var(--color-border)] [&>h2]:pb-2
-              [&>h3]:text-xl [&>h3]:font-bold [&>h3]:text-[var(--color-primary)] [&>h3]:mt-8 [&>h3]:mb-3 [&>h3]:font-heading
-              [&>p]:text-[var(--color-ink)] [&>p]:text-base [&>p]:sm:text-lg [&>p]:leading-[1.8] [&>p]:font-normal
-              [&>ul]:list-disc [&>ul]:pr-6 [&>ul]:space-y-2 [&>ul]:text-base
-              [&>ol]:list-decimal [&>ol]:pr-6 [&>ol]:space-y-2 [&>ol]:text-base
-              [&>blockquote]:border-r-4 [&>blockquote]:border-[var(--color-gold)] [&>blockquote]:bg-[var(--color-card-soft)]/60 [&>blockquote]:p-4 [&>blockquote]:rounded-r-xl [&>blockquote]:my-6 [&>blockquote]:italic
-              [&>pre]:bg-[var(--color-ink)] [&>pre]:text-white [&>pre]:p-4 [&>pre]:rounded-2xl [&>pre]:overflow-x-auto [&>pre]:my-6 [&>pre]:text-sm [&>pre]:font-mono
-              [&>code]:bg-[var(--color-lavender)]/60 [&>code]:text-[var(--color-primary)] [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded-md [&>code]:text-sm [&>code]:font-mono
-              [&>img]:rounded-2xl [&>img]:shadow-sm [&>img]:my-6 [&>img]:w-full [&>img]:border [&>img]:border-[var(--color-border)]
-              [&>table]:w-full [&>table]:border-collapse [&>table]:my-6 [&>table]:text-sm
-              [&>table_th]:border [&>table_th]:border-[var(--color-border)] [&>table_th]:bg-[var(--color-card-soft)] [&>table_th]:p-3 [&>table_th]:text-right
-              [&>table_td]:border [&>table_td]:border-[var(--color-border)] [&>table_td]:p-3
-              [&>a]:text-[var(--color-primary)] [&>a]:underline [&>a]:font-medium hover:[&>a]:text-[var(--color-gold)]"
-              dangerouslySetInnerHTML={{ __html: processedHtml }}
-            />
+            <div className="blog-prose" dangerouslySetInnerHTML={{ __html: processedHtml }} />
 
             {/* Tags Section */}
             {post.tags && post.tags.length > 0 && (

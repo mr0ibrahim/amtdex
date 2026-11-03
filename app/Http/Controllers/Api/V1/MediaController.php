@@ -43,12 +43,12 @@ class MediaController extends Controller
                 'required',
                 'file',
                 'max:10240', // 10MB max
-                'mimes:jpeg,jpg,png,webp,gif,svg,pdf',
+                'mimes:jpeg,jpg,png,webp,gif,svg,pdf,mp3,wav,ogg,m4a,webm',
             ],
         ], [
             'file.required' => 'يرجى اختيار ملف لرفعه.',
             'file.max' => 'حجم الملف يتجاوز الحد المسموح (10 ميجابايت).',
-            'file.mimes' => 'نوع الملف غير مدعوم. الأنواع المدعومة: JPG, PNG, WebP, GIF, SVG, PDF.',
+            'file.mimes' => 'نوع الملف غير مدعوم. الأنواع المدعومة: JPG, PNG, WebP, GIF, SVG, PDF, MP3, WAV, OGG, M4A, WebM.',
         ]);
 
         $file = $request->file('file');
@@ -58,7 +58,7 @@ class MediaController extends Controller
 
         if ($extension === null) {
             return response()->json([
-                'message' => 'نوع الملف غير مدعوم. الأنواع المدعومة: JPG, PNG, WebP, GIF, SVG, PDF.',
+                'message' => 'نوع الملف غير مدعوم. الأنواع المدعومة: JPG, PNG, WebP, GIF, SVG, PDF, MP3, WAV, OGG, M4A, WebM.',
                 'errors' => ['file' => ['نوع الملف غير مدعوم.']],
             ], 422);
         }
@@ -157,6 +157,11 @@ class MediaController extends Controller
             'image/gif' => 'gif',
             'image/svg+xml', 'image/svg' => 'svg',
             'application/pdf' => 'pdf',
+            'audio/mpeg', 'audio/mp3' => 'mp3',
+            'audio/wav', 'audio/x-wav', 'audio/wave' => 'wav',
+            'audio/ogg', 'application/ogg' => 'ogg',
+            'audio/mp4', 'audio/x-m4a', 'audio/m4a' => 'm4a',
+            'audio/webm', 'video/webm' => 'webm',
             default => null,
         };
     }
