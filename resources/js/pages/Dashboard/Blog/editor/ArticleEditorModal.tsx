@@ -9,6 +9,7 @@ import { EditorSection, FieldHint, FieldLabel } from "./FieldHint"
 import { PublishReadiness, SeoDescriptionMeter, SeoTitleMeter, type ReadinessItem } from "./SeoMeters"
 import { RichTextEditor } from "./RichTextEditor"
 import { SchemaPreviewPanel } from "./SchemaPreviewPanel"
+import { sanitizeStylesheet } from "@/lib/blogCss"
 import { sanitizeBlogHtml } from "./sanitizeHtml"
 import { TagPicker } from "./TagPicker"
 
@@ -161,6 +162,7 @@ export function ArticleEditorModal({
     return {
       ...rest,
       content: sanitizeBlogHtml(form.content || ""),
+      custom_css: sanitizeStylesheet(form.custom_css || "") || null,
       status,
       published_at: publishedAt,
       faq_schema: faqList.filter((f) => f.question.trim() && f.answer.trim()),
@@ -439,10 +441,13 @@ export function ArticleEditorModal({
                 </div>
               </EditorSection>
 
-              <EditorSection title="المحتوى" description="محرر غني مع دعم كامل للعربية (RTL).">
+              <EditorSection title="المحتوى" description="محرر غني مع دعم كامل للعربية (RTL) وتنسيق CSS المستورد.">
                 <RichTextEditor
                   value={form.content ?? ""}
+                  css={form.custom_css ?? ""}
+                  postId={form.id ?? null}
                   onChange={(html) => patch({ content: html })}
+                  onCssChange={(next) => patch({ custom_css: next })}
                   disabled={saveMutation.isPending}
                 />
               </EditorSection>

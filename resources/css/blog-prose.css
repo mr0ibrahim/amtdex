@@ -1,4 +1,15 @@
 /* Article typography shared by the public post and the dashboard editor. */
+.blog-post-content {
+  position: relative;
+  isolation: isolate;
+  max-width: 100%;
+  /* Keep position:fixed (and viewport-sized overlays) inside the article. */
+  transform: translateZ(0);
+  overflow-x: auto;
+  overflow-y: clip;
+  overflow-clip-margin: 20px;
+}
+
 .blog-prose {
   color: var(--color-ink);
   font-size: 1.05rem;

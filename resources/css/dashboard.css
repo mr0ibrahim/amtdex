@@ -746,6 +746,34 @@
   color: #0f172a;
   border-color: #f8fafc;
 }
+.rte-css {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  background: #111827;
+  border-bottom: 1px solid #1f2937;
+}
+.rte-css-help {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.rte-css textarea {
+  width: 100%;
+  min-height: 160px;
+  border: 0;
+  border-radius: 10px;
+  background: #020617;
+  color: #e2e8f0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  padding: 12px;
+  direction: ltr;
+  text-align: left;
+  resize: vertical;
+}
 .rte-status {
   border-top: 1px solid #e5e7eb;
   background: #f8fafc;

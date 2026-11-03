@@ -1,7 +1,22 @@
 import { NodeViewWrapper, type ReactNodeViewProps } from "@tiptap/react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, type CSSProperties } from "react"
+import { sanitizeClassList, sanitizeInlineStyle } from "@/lib/blogCss"
 import { normalizeAlign, normalizeWidth, type ImageAlign } from "../imageLayout"
 import { isAllowedImage, uploadMediaFile } from "../mediaUpload"
+
+function figureStyle(width: string, extra: string): CSSProperties {
+  const style: CSSProperties & Record<string, string> = { width }
+  for (const part of extra.split(";")) {
+    const idx = part.indexOf(":")
+    if (idx === -1) continue
+    const prop = part.slice(0, idx).trim()
+    const value = part.slice(idx + 1).trim()
+    if (!prop || !value || prop === "width") continue
+    const camel = prop.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase())
+    style[camel] = value
+  }
+  return style
+}
 
 const PRESETS = ["25%", "50%", "75%", "100%"] as const
 const ALIGNS: Array<{ id: ImageAlign; label: string }> = [
@@ -16,6 +31,11 @@ export function BlogImageView({ node, updateAttributes, selected, deleteNode }: 
   const src = String(node.attrs.src || "")
   const alt = String(node.attrs.alt || "")
   const caption = String(node.attrs.caption || "")
+  const extraStyle = sanitizeInlineStyle(String(node.attrs.style || ""))
+  const extraClass = sanitizeClassList(String(node.attrs.class || ""))
+    .split(/\s+/)
+    .filter((token) => token && token !== "blog-figure" && token !== "blog-img" && !token.startsWith("align-"))
+    .join(" ")
   const [hold, setHold] = useState(false)
   const [altDraft, setAltDraft] = useState(alt)
   const [captionDraft, setCaptionDraft] = useState(caption)
@@ -86,8 +106,8 @@ export function BlogImageView({ node, updateAttributes, selected, deleteNode }: 
   return (
     <NodeViewWrapper
       as="figure"
-      className={`blog-figure blog-image-block align-${align}${showPanel ? " is-selected" : ""}`}
-      style={{ width }}
+      className={`blog-figure blog-image-block align-${align}${extraClass ? ` ${extraClass}` : ""}${showPanel ? " is-selected" : ""}`}
+      style={figureStyle(width, extraStyle)}
       onFocus={() => setHold(true)}
       onBlur={(event: React.FocusEvent<HTMLElement>) => {
         const next = event.relatedTarget

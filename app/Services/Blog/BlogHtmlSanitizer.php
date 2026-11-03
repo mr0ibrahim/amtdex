@@ -18,6 +18,7 @@ class BlogHtmlSanitizer
         'ul', 'ol', 'li', 'blockquote', 'pre', 'code',
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'img', 'figure', 'figcaption', 'hr', 'span', 'div',
+        'section', 'article', 'aside', 'header', 'footer', 'main', 'nav',
         'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'colgroup', 'col',
         'iframe', 'video', 'audio', 'source', 'mark',
     ];
@@ -28,11 +29,30 @@ class BlogHtmlSanitizer
         'select', 'option', 'link', 'meta', 'base', 'svg', 'math', 'noscript', 'iframe',
     ];
 
-    /** @var list<string> */
-    private const STYLE_PROPS = [
-        'color', 'background-color', 'text-align', 'text-decoration',
-        'width', 'height', 'font-weight', 'font-style', 'font-size', 'vertical-align',
-    ];
+    /**
+     * Pull `<style>` blocks out of imported HTML. The returned CSS is sanitized
+     * but not scoped. External stylesheets are not inlined.
+     *
+     * @return array{0: string, 1: string}
+     */
+    public static function extractStyleSheets(?string $html): array
+    {
+        $css = [];
+        $without = preg_replace_callback(
+            '#<style\b[^>]*>(.*?)</style>#is',
+            function (array $match) use (&$css): string {
+                $css[] = html_entity_decode($match[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+                return '';
+            },
+            (string) $html
+        );
+
+        return [
+            trim(is_string($without) ? $without : (string) $html),
+            BlogCssSanitizer::sanitize(implode("\n", $css)),
+        ];
+    }
 
     public static function sanitize(?string $html): string
     {
@@ -192,20 +212,18 @@ class BlogHtmlSanitizer
      */
     private static function allowedAttributes(string $tag): array
     {
-        $common = ['class', 'title', 'dir'];
+        $common = ['class', 'id', 'title', 'dir', 'style'];
 
         return match ($tag) {
-            'a' => ['href', 'target', 'rel', 'title', 'download'],
-            'img' => ['src', 'alt', 'title', 'class', 'width', 'height', 'loading', 'style'],
-            'figure' => ['class', 'style'],
-            'div' => ['class', 'style', 'dir', 'data-youtube-video'],
-            'span', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'mark' => [...$common, 'style'],
-            'td', 'th' => ['colspan', 'rowspan', 'colwidth', 'style', 'class', 'dir'],
-            'col' => ['style', 'width'],
-            'iframe' => ['src', 'title', 'width', 'height', 'allow', 'allowfullscreen', 'frameborder', 'referrerpolicy', 'class'],
-            'audio', 'video' => ['src', 'controls', 'class'],
+            'a' => ['href', 'target', 'rel', 'title', 'download', 'class', 'id', 'style'],
+            'img' => ['src', 'alt', 'title', 'class', 'id', 'width', 'height', 'loading', 'style'],
+            'figure' => ['class', 'id', 'style'],
+            'div', 'section', 'article', 'aside', 'header', 'footer', 'main', 'nav' => ['class', 'id', 'style', 'dir', 'title', 'data-youtube-video'],
+            'td', 'th' => ['colspan', 'rowspan', 'colwidth', 'style', 'class', 'id', 'dir'],
+            'col' => ['style', 'width', 'class'],
+            'iframe' => ['src', 'title', 'width', 'height', 'allow', 'allowfullscreen', 'frameborder', 'referrerpolicy', 'class', 'style'],
+            'audio', 'video' => ['src', 'controls', 'class', 'style', 'id'],
             'source' => ['src', 'type'],
-            'ul', 'ol' => ['class', 'dir'],
             default => $common,
         };
     }
@@ -215,8 +233,9 @@ class BlogHtmlSanitizer
         $value = trim($value);
 
         return match ($name) {
-            'class' => self::cleanClass($value),
-            'style' => self::cleanStyle($value),
+            'class' => BlogCssSanitizer::sanitizeClass($value) ?: null,
+            'id' => self::nullableId($value),
+            'style' => BlogCssSanitizer::sanitizeInline($value) ?: null,
             'dir' => in_array(strtolower($value), ['ltr', 'rtl', 'auto'], true) ? strtolower($value) : null,
             'href' => self::isSafeHref($value) ? $value : null,
             'src' => self::cleanSrc($tag, $value),
@@ -238,43 +257,11 @@ class BlogHtmlSanitizer
         };
     }
 
-    private static function cleanClass(string $value): ?string
+    private static function nullableId(string $value): ?string
     {
-        $kept = [];
-        foreach (preg_split('/\s+/', $value) ?: [] as $token) {
-            if (preg_match('/^(blog-figure|blog-img|blog-content-banner|blog-editor-image|blog-editor-video|align-left|align-center|align-right|language-[a-z0-9_+-]+)$/', $token)) {
-                $kept[] = $token;
-            }
-        }
+        $id = BlogCssSanitizer::sanitizeId($value);
 
-        return $kept === [] ? null : implode(' ', $kept);
-    }
-
-    private static function cleanStyle(string $style): ?string
-    {
-        $kept = [];
-        foreach (explode(';', $style) as $part) {
-            if (! str_contains($part, ':')) {
-                continue;
-            }
-            [$prop, $value] = array_map('trim', explode(':', $part, 2));
-            $prop = strtolower($prop);
-            if (! in_array($prop, self::STYLE_PROPS, true)) {
-                continue;
-            }
-            if (preg_match('/expression|javascript|vbscript|url\s*\(|@import|behavior|-moz-binding/i', $value)) {
-                continue;
-            }
-            if (! preg_match('/^[#a-z0-9(),.%\s\'"\/+-]+$/i', $value)) {
-                continue;
-            }
-            if ($prop === 'text-align' && ! preg_match('/^(left|right|center|justify|start|end)$/i', $value)) {
-                continue;
-            }
-            $kept[] = $prop.': '.$value;
-        }
-
-        return $kept === [] ? null : implode('; ', $kept);
+        return $id === '' ? null : $id;
     }
 
     private static function cleanSrc(string $tag, string $value): ?string

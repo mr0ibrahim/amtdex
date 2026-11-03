@@ -1,6 +1,16 @@
 import { Extension } from "@tiptap/core"
 
-const BLOCKS = ["paragraph", "heading", "blockquote", "bulletList", "orderedList", "listItem"]
+const BLOCKS = [
+  "paragraph",
+  "heading",
+  "blockquote",
+  "bulletList",
+  "orderedList",
+  "listItem",
+  "htmlBlock",
+  "tableCell",
+  "tableHeader",
+]
 
 /**
  * Stores an explicit dir on blocks. The editor command itself comes from TipTap core;

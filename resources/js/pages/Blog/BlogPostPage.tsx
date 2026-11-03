@@ -7,14 +7,11 @@ import { Badge } from "@/components/ui/Badge"
 import { Button } from "@/components/ui/Button"
 import { Card } from "@/components/ui/Card"
 import { useToast } from "@/components/ui/Toast"
+import { PostCss } from "@/components/blog/PostCss"
+import { addHeadingAnchors } from "@/lib/blogContent"
+import { postContentClassName } from "@/lib/blogCss"
 import { getBlogUrl, isBlogSubdomain } from "@/lib/subdomain"
 import type { BlogPost, BlogComment } from "@/types/blog"
-
-interface HeadingItem {
-  id: string
-  text: string
-  level: number
-}
 
 export function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -62,29 +59,8 @@ export function BlogPostPage() {
   // Extract headings from HTML content and generate IDs
   const { headings, processedHtml } = useMemo(() => {
     if (!post?.content) return { headings: [], processedHtml: "" }
-
-    const raw = post.content
-    const items: HeadingItem[] = []
-    let counter = 0
-
-    // Match <h2> and <h3> tags
-    const htmlWithIds = raw.replace(
-      /<h([23])([^>]*)>([\s\S]*?)<\/h\1>/gi,
-      (_match: string, level: string, attrs: string, text: string) => {
-        counter++
-        const cleanText = text.replace(/<[^>]+>/g, "").trim()
-        const id = `heading-${counter}-${cleanText.toLowerCase().replace(/[^a-z0-9\u0600-\u06FF]+/g, "-").replace(/^-|-$/g, "")}`
-        items.push({
-          id,
-          text: cleanText,
-          level: parseInt(level, 10),
-        })
-        const cleanedAttrs = (attrs || "").replace(/\s(?:id|class)\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "")
-        return `<h${level}${cleanedAttrs} id="${id}" class="scroll-mt-28">${text}</h${level}>`
-      }
-    )
-
-    return { headings: items, processedHtml: htmlWithIds }
+    const anchored = addHeadingAnchors(post.content)
+    return { headings: anchored.headings, processedHtml: anchored.html }
   }, [post?.content])
 
   // Track active heading for TOC
@@ -493,7 +469,8 @@ export function BlogPostPage() {
             )}
 
             {/* Rendered Article HTML Body */}
-            <div className="blog-prose" dangerouslySetInnerHTML={{ __html: processedHtml }} />
+            <PostCss css={post.custom_css} postId={post.id} />
+            <div className={postContentClassName(post.id)} dangerouslySetInnerHTML={{ __html: processedHtml }} />
 
             {/* Tags Section */}
             {post.tags && post.tags.length > 0 && (

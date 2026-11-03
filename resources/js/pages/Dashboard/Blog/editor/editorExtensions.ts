@@ -11,12 +11,55 @@ import { TextStyle } from "@tiptap/extension-text-style"
 import Underline from "@tiptap/extension-underline"
 import Youtube from "@tiptap/extension-youtube"
 import StarterKit from "@tiptap/starter-kit"
+import { sanitizeClassList, sanitizeInlineStyle } from "@/lib/blogCss"
 import { isSafeLinkHref } from "./sanitizeHtml"
 import { AudioBlock } from "./extensions/AudioBlock"
 import { BlogImage } from "./extensions/BlogImage"
 import { ContentBanner } from "./extensions/ContentBanner"
+import { HtmlBlock } from "./extensions/HtmlBlock"
+import { Presentation } from "./extensions/Presentation"
 import { Subscript, Superscript } from "./extensions/SubSuper"
 import { ArticleDirection } from "./extensions/TextDirection"
+
+const StyledText = TextStyle.extend({
+  parseHTML() {
+    return [
+      {
+        tag: "span",
+        consuming: false,
+        getAttrs: (element) => {
+          if (!(element instanceof HTMLElement)) return false
+          if (!element.hasAttribute("style") && !element.hasAttribute("class") && !element.hasAttribute("id")) return false
+          return {}
+        },
+      },
+    ]
+  },
+})
+
+const BlogLink = Link.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      class: {
+        default: null,
+        parseHTML: (element) => sanitizeClassList(element.getAttribute("class") || "") || null,
+        renderHTML: (attributes) => {
+          const value = sanitizeClassList(String(attributes.class || ""))
+          return value ? { class: value } : {}
+        },
+      },
+      style: {
+        default: null,
+        parseHTML: (element) => sanitizeInlineStyle(element.getAttribute("style") || "") || null,
+        renderHTML: (attributes) => {
+          const value = sanitizeInlineStyle(String(attributes.style || ""))
+          return value ? { style: value } : {}
+        },
+      },
+    }
+  },
+})
 
 export function createBlogEditorExtensions() {
   return [
@@ -26,18 +69,20 @@ export function createBlogEditorExtensions() {
       underline: false,
     }),
     Underline,
-    TextStyle,
+    StyledText,
+    Presentation,
     Color,
     Highlight.configure({ multicolor: true }),
     Subscript,
     Superscript,
     TextAlign.configure({
-      types: ["heading", "paragraph"],
+      types: ["heading", "paragraph", "htmlBlock"],
       alignments: ["right", "center", "left", "justify"],
       defaultAlignment: null,
     }),
     ArticleDirection,
-    Link.configure({
+    HtmlBlock,
+    BlogLink.configure({
       openOnClick: false,
       autolink: true,
       linkOnPaste: true,

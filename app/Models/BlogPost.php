@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Blog\BlogCssSanitizer;
 use App\Services\Blog\BlogHtmlSanitizer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -22,6 +23,7 @@ class BlogPost extends Model
         'slug',
         'summary',
         'content',
+        'custom_css',
         'cover_image',
         'cover_image_alt',
         'status',
@@ -78,6 +80,27 @@ class BlogPost extends Model
         return Attribute::make(
             get: fn (?string $value): string => BlogHtmlSanitizer::sanitize($value),
             set: fn (?string $value): string => BlogHtmlSanitizer::sanitize($value),
+        );
+    }
+
+    /**
+     * Per-post stylesheet. Sanitized on read and write; scoped only when rendered.
+     *
+     * @return Attribute<?string, ?string>
+     */
+    protected function customCss(): Attribute
+    {
+        return Attribute::make(
+            get: function (?string $value): ?string {
+                $clean = BlogCssSanitizer::sanitize($value);
+
+                return $clean === '' ? null : $clean;
+            },
+            set: function (?string $value): ?string {
+                $clean = BlogCssSanitizer::sanitize($value);
+
+                return $clean === '' ? null : $clean;
+            },
         );
     }
 

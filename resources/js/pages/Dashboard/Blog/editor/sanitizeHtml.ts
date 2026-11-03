@@ -1,4 +1,7 @@
 import DOMPurify from "isomorphic-dompurify"
+import { sanitizeClassList, sanitizeElementId, sanitizeInlineStyle } from "@/lib/blogCss"
+
+export { sanitizeInlineStyle } from "@/lib/blogCss"
 
 const ALLOWED_TAGS = [
   "p",
@@ -44,6 +47,13 @@ const ALLOWED_TAGS = [
   "audio",
   "source",
   "mark",
+  "section",
+  "article",
+  "aside",
+  "header",
+  "footer",
+  "main",
+  "nav",
 ]
 
 const ALLOWED_ATTR = [
@@ -69,24 +79,9 @@ const ALLOWED_ATTR = [
   "type",
   "download",
   "dir",
+  "id",
   "data-youtube-video",
 ]
-
-const STYLE_PROPS = new Set([
-  "color",
-  "background-color",
-  "text-align",
-  "text-decoration",
-  "width",
-  "height",
-  "font-weight",
-  "font-style",
-  "font-size",
-  "vertical-align",
-])
-
-const SAFE_CLASS =
-  /^(?:blog-figure|blog-img|blog-content-banner|blog-editor-image|blog-editor-video|align-(?:left|center|right)|language-[a-z0-9_+-]+)$/
 
 export function isYouTubeEmbed(url: string): boolean {
   return /^https:\/\/(?:www\.)?(?:youtube\.com|youtube-nocookie\.com)\/embed\/[A-Za-z0-9_-]{6,64}(?:[?#].*)?$/i.test(
@@ -126,28 +121,6 @@ export function isSafeMediaSrc(url: string, allowBlob = true): boolean {
   return !/^[a-z][a-z0-9+.-]*:/i.test(value)
 }
 
-export function sanitizeInlineStyle(style: string): string {
-  const kept: string[] = []
-  for (const part of style.split(";")) {
-    const idx = part.indexOf(":")
-    if (idx === -1) continue
-    const prop = part.slice(0, idx).trim().toLowerCase()
-    const value = part.slice(idx + 1).trim()
-    if (!STYLE_PROPS.has(prop)) continue
-    if (/expression|javascript|vbscript|url\s*\(|@import|behavior|-moz-binding/i.test(value)) continue
-    if (!/^[#a-z0-9(),.%\s'"/+-]+$/i.test(value)) continue
-    if (prop === "text-align" && !/^(left|right|center|justify|start|end)$/i.test(value)) continue
-    kept.push(`${prop}: ${value}`)
-  }
-  return kept.join("; ")
-}
-
-function keepClassList(value: string): string {
-  return value
-    .split(/\s+/)
-    .filter((token) => SAFE_CLASS.test(token))
-    .join(" ")
-}
 
 let hooksInstalled = false
 
@@ -157,11 +130,15 @@ function installHooks() {
 
   DOMPurify.addHook("uponSanitizeAttribute", (node, data) => {
     if (data.attrName === "class") {
-      data.attrValue = keepClassList(data.attrValue)
+      data.attrValue = sanitizeClassList(data.attrValue)
       if (!data.attrValue) data.keepAttr = false
     }
     if (data.attrName === "style") {
       data.attrValue = sanitizeInlineStyle(data.attrValue)
+      if (!data.attrValue) data.keepAttr = false
+    }
+    if (data.attrName === "id") {
+      data.attrValue = sanitizeElementId(data.attrValue)
       if (!data.attrValue) data.keepAttr = false
     }
     if (data.attrName === "href") {
