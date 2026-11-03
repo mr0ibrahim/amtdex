@@ -14,6 +14,7 @@ use App\Models\BlogRevision;
 use App\Models\BlogSetting;
 use App\Models\BlogTag;
 use App\Models\User;
+use App\Services\Blog\BlogHtmlSanitizer;
 use App\Services\Blog\IndexNowService;
 use App\Services\Blog\PostPublishSeoGuard;
 use App\Services\Blog\TaxonomySlugService;
@@ -97,12 +98,12 @@ class AdminBlogController extends Controller
      */
     public function storePost(StoreBlogPostRequest $request): JsonResponse
     {
-        $validated = $request->validated();
+        $validated = $this->sanitizePostContent($request->validated());
 
         $slugSource = $validated['slug'] ?? null;
         $slug = $slugSource ? Str::slug($slugSource) : Str::slug($validated['title']);
         if (empty($slug)) {
-            $slug = 'post-' . time();
+            $slug = 'post-'.time();
         }
 
         // Ensure unique slug
@@ -135,7 +136,7 @@ class AdminBlogController extends Controller
 
         $post = BlogPost::create($validated);
 
-        if (!empty($tagIds)) {
+        if (! empty($tagIds)) {
             $post->tags()->sync($tagIds);
         }
 
@@ -168,20 +169,20 @@ class AdminBlogController extends Controller
     public function updatePost(UpdateBlogPostRequest $request, int $id): JsonResponse
     {
         $post = BlogPost::findOrFail($id);
-        $validated = $request->validated();
+        $validated = $this->sanitizePostContent($request->validated());
 
         if (array_key_exists('slug', $validated)) {
             $oldSlug = $post->slug;
             $newSlug = $validated['slug'] ? Str::slug($validated['slug']) : $post->slug;
 
             // If slug changed, create an automatic 301 redirect
-            if ($oldSlug !== $newSlug && !empty($newSlug)) {
+            if ($oldSlug !== $newSlug && ! empty($newSlug)) {
                 BlogRedirect::updateOrCreate(
                     ['source_path' => "/posts/{$oldSlug}"],
                     ['target_path' => "/posts/{$newSlug}", 'status_code' => 301]
                 );
                 $validated['slug'] = $newSlug;
-            } elseif (!empty($newSlug)) {
+            } elseif (! empty($newSlug)) {
                 $validated['slug'] = $newSlug;
             } else {
                 unset($validated['slug']);
@@ -340,6 +341,7 @@ class AdminBlogController extends Controller
     public function categories(): JsonResponse
     {
         $cats = BlogCategory::withCount('posts')->orderBy('sort_order')->get();
+
         return response()->json(['data' => $cats]);
     }
 
@@ -372,6 +374,7 @@ class AdminBlogController extends Controller
         }
 
         $category = BlogCategory::create($validated);
+
         return response()->json(['ok' => true, 'category' => $category], 201);
     }
 
@@ -379,7 +382,7 @@ class AdminBlogController extends Controller
     {
         $category = BlogCategory::findOrFail($id);
         $validated = $request->validate([
-            'parent_id' => 'nullable|exists:blog_categories,id|not_in:' . $id,
+            'parent_id' => 'nullable|exists:blog_categories,id|not_in:'.$id,
             'name' => 'required|string|max:100',
             'slug' => 'nullable|string|max:100',
             'description' => 'nullable|string|max:500',
@@ -410,6 +413,7 @@ class AdminBlogController extends Controller
         }
 
         $category->update($validated);
+
         return response()->json(['ok' => true, 'category' => $category->fresh()]);
     }
 
@@ -430,6 +434,7 @@ class AdminBlogController extends Controller
         }
 
         $category->delete();
+
         return response()->json(['ok' => true, 'message' => 'تم حذف التصنيف بنجاح.']);
     }
 
@@ -439,6 +444,7 @@ class AdminBlogController extends Controller
     public function tags(): JsonResponse
     {
         $tags = BlogTag::withCount('posts')->orderBy('name')->get();
+
         return response()->json(['data' => $tags]);
     }
 
@@ -462,6 +468,7 @@ class AdminBlogController extends Controller
         }
 
         $tag = BlogTag::create($validated);
+
         return response()->json(['ok' => true, 'tag' => $tag], 201);
     }
 
@@ -491,6 +498,7 @@ class AdminBlogController extends Controller
         }
 
         $tag->update($validated);
+
         return response()->json(['ok' => true, 'tag' => $tag->fresh()]);
     }
 
@@ -505,6 +513,7 @@ class AdminBlogController extends Controller
         }
 
         $tag->delete();
+
         return response()->json(['ok' => true, 'message' => 'تم حذف الوسم بنجاح.']);
     }
 
@@ -521,6 +530,7 @@ class AdminBlogController extends Controller
         }
 
         $comments = $query->paginate(20);
+
         return response()->json([
             'data' => $comments->items(),
             'meta' => [
@@ -545,6 +555,7 @@ class AdminBlogController extends Controller
         ]);
 
         $comment->update(['status' => $validated['status']]);
+
         return response()->json(['ok' => true, 'comment' => $comment]);
     }
 
@@ -552,6 +563,7 @@ class AdminBlogController extends Controller
     {
         $comment = BlogComment::findOrFail($id);
         $comment->delete();
+
         return response()->json(['ok' => true, 'message' => 'تم حذف التعليق بنجاح.']);
     }
 
@@ -561,6 +573,7 @@ class AdminBlogController extends Controller
     public function redirects(): JsonResponse
     {
         $redirects = BlogRedirect::latest()->get();
+
         return response()->json(['data' => $redirects]);
     }
 
@@ -573,6 +586,7 @@ class AdminBlogController extends Controller
         ]);
 
         $redirect = BlogRedirect::create($validated);
+
         return response()->json(['ok' => true, 'redirect' => $redirect], 201);
     }
 
@@ -580,6 +594,7 @@ class AdminBlogController extends Controller
     {
         $redirect = BlogRedirect::findOrFail($id);
         $redirect->delete();
+
         return response()->json(['ok' => true, 'message' => 'تم حذف التحويل بنجاح.']);
     }
 
@@ -620,5 +635,18 @@ class AdminBlogController extends Controller
             'top_posts' => BlogPost::published()->orderBy('views_count', 'desc')->limit(5)->get(['id', 'title', 'slug', 'views_count', 'published_at']),
             'recent_comments' => BlogComment::with('post:id,title,slug')->latest()->limit(5)->get(),
         ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     * @return array<string, mixed>
+     */
+    private function sanitizePostContent(array $validated): array
+    {
+        if (isset($validated['content']) && is_string($validated['content'])) {
+            $validated['content'] = BlogHtmlSanitizer::sanitize($validated['content']);
+        }
+
+        return $validated;
     }
 }

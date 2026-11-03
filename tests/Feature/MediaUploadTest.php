@@ -64,4 +64,26 @@ class MediaUploadTest extends TestCase
         $this->assertFileDoesNotExist($absolute);
         $this->assertDatabaseMissing('media', ['id' => $media->id]);
     }
+
+    public function test_audio_attachment_is_stored_with_a_safe_extension(): void
+    {
+        $admin = User::create([
+            'name' => 'أحمد الغامدي',
+            'email' => 'audio-admin@amtdex.ye',
+            'password' => Hash::make('Amtdex2026!'),
+            'role' => 'admin',
+        ]);
+
+        $upload = UploadedFile::fake()->create('voice.mp3', 40, 'audio/mpeg');
+
+        $response = $this->actingAs($admin, 'sanctum')->post('/api/v1/media', [
+            'file' => $upload,
+        ]);
+
+        $response->assertCreated();
+        $url = $response->json('url');
+        $this->assertIsString($url);
+        $this->assertMatchesRegularExpression('#^/uploads/media/[A-Za-z0-9]{24}\.mp3$#', $url);
+        $this->assertFileExists(public_path(ltrim($url, '/')));
+    }
 }
