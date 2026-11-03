@@ -1,14 +1,19 @@
 import { type Editor } from "@tiptap/react"
 import { EditorContent, useEditor } from "@tiptap/react"
 import { useEffect, useRef, useState } from "react"
+import { PostCss } from "@/components/blog/PostCss"
+import { mergeCss } from "@/lib/blogCss"
 import { createBlogEditorExtensions } from "./editorExtensions"
-import { decodeEscapedHtml, looksLikeHtml, normalizeImportedHtml } from "./htmlImport"
+import { decodeEscapedHtml, importHtmlDocument, looksLikeHtml, normalizeImportedHtml } from "./htmlImport"
 import { isAllowedImage, uploadMediaFile } from "./mediaUpload"
 import { isSafeLinkHref, sanitizeEditorHtml } from "./sanitizeHtml"
 
 type Props = {
   value: string
+  css?: string
+  postId?: number | null
   onChange: (html: string) => void
+  onCssChange?: (css: string) => void
   disabled?: boolean
 }
 
@@ -81,22 +86,35 @@ function replaceImageSrc(editor: Editor, from: string, to: string) {
   if (changed) view.dispatch(tr)
 }
 
-export function RichTextEditor({ value, onChange, disabled }: Props) {
+export function RichTextEditor({ value, css = "", postId = null, onChange, onCssChange, disabled }: Props) {
   const [busy, setBusy] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
   const [sourceOpen, setSourceOpen] = useState(false)
   const [sourceDraft, setSourceDraft] = useState("")
+  const [cssOpen, setCssOpen] = useState(false)
+  const [cssDraft, setCssDraft] = useState(css)
   const imageInputRef = useRef<HTMLInputElement>(null)
   const audioInputRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const syncingFromProps = useRef(false)
   const onChangeRef = useRef(onChange)
+  const onCssChangeRef = useRef(onCssChange)
+  const cssRef = useRef(css)
   const editorRef = useRef<Editor | null>(null)
   const uploadImageRef = useRef<(file: File) => Promise<void>>(async () => {})
 
   useEffect(() => {
     onChangeRef.current = onChange
   }, [onChange])
+
+  useEffect(() => {
+    onCssChangeRef.current = onCssChange
+  }, [onCssChange])
+
+  useEffect(() => {
+    cssRef.current = css
+    setCssDraft(css)
+  }, [css])
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -105,7 +123,7 @@ export function RichTextEditor({ value, onChange, disabled }: Props) {
     editable: !disabled,
     editorProps: {
       attributes: {
-        class: "blog-rich-editor blog-prose",
+        class: `blog-rich-editor blog-prose blog-post-content${postId && postId > 0 ? ` post-content-${postId}` : ""}`,
         dir: "rtl",
         lang: "ar",
       },
@@ -136,13 +154,26 @@ export function RichTextEditor({ value, onChange, disabled }: Props) {
         }
         const html = event.clipboardData?.getData("text/html") || ""
         const text = event.clipboardData?.getData("text/plain") || ""
-        if (!html && ed) {
-          const decoded = decodeEscapedHtml(text)
-          if (looksLikeHtml(decoded)) {
-            event.preventDefault()
-            ed.chain().focus().insertContent(normalizeImportedHtml(decoded)).run()
-            return true
+        const source = html || (!html && looksLikeHtml(decodeEscapedHtml(text)) ? decodeEscapedHtml(text) : "")
+        if (source && ed && (/<style[\s>]/i.test(source) || /rel\s*=\s*["']?stylesheet/i.test(source))) {
+          event.preventDefault()
+          const imported = importHtmlDocument(source)
+          if (imported.html) ed.chain().focus().insertContent(imported.html).run()
+          if (imported.css) {
+            const next = mergeCss(cssRef.current, imported.css)
+            cssRef.current = next
+            onCssChangeRef.current?.(next)
           }
+          if (imported.ignoredStylesheets.length) {
+            setMsg("تم تجاهل ملفات CSS الخارجية. انسخ قواعدها إلى حقل CSS المخصص.")
+            setCssOpen(true)
+          }
+          return true
+        }
+        if (!html && ed && source) {
+          event.preventDefault()
+          ed.chain().focus().insertContent(normalizeImportedHtml(source)).run()
+          return true
         }
         return false
       },
@@ -197,6 +228,16 @@ export function RichTextEditor({ value, onChange, disabled }: Props) {
     if (!editor) return
     editor.setEditable(!disabled)
   }, [disabled, editor])
+
+  useEffect(() => {
+    if (!editor) return
+    const dom = editor.view.dom
+    dom.classList.add("blog-rich-editor", "blog-prose", "blog-post-content")
+    Array.from(dom.classList).forEach((token) => {
+      if (token.startsWith("post-content-")) dom.classList.remove(token)
+    })
+    if (postId && postId > 0) dom.classList.add(`post-content-${postId}`)
+  }, [editor, postId])
 
   if (!editor) {
     return (
@@ -279,15 +320,31 @@ export function RichTextEditor({ value, onChange, disabled }: Props) {
   }
 
   const applySource = (mode: "replace" | "insert") => {
-    const clean = normalizeImportedHtml(sourceDraft)
+    const imported = importHtmlDocument(sourceDraft)
     if (mode === "replace") {
-      editor.commands.setContent(clean || "<p></p>")
-    } else {
-      editor.chain().focus().insertContent(clean).run()
+      editor.commands.setContent(imported.html || "<p></p>")
+    } else if (imported.html) {
+      editor.chain().focus().insertContent(imported.html).run()
+    }
+    if (imported.css) {
+      const next = mode === "replace" ? mergeCss("", imported.css) : mergeCss(cssRef.current, imported.css)
+      cssRef.current = next
+      setCssDraft(next)
+      onCssChangeRef.current?.(next)
+      setCssOpen(true)
     }
     setSourceOpen(false)
     onChangeRef.current(editor.getHTML())
-    setMsg("تم تحويل HTML إلى محتوى منسق داخل المقال.")
+    const ignored = imported.ignoredStylesheets.length
+      ? " تم تجاهل ملفات CSS الخارجية — انسخ قواعدها إلى الحقل أدناه."
+      : ""
+    setMsg(`تم تحويل HTML مع الإبقاء على التنسيق داخل المقال.${ignored}`)
+  }
+
+  const commitCss = (next: string) => {
+    cssRef.current = next
+    setCssDraft(next)
+    onCssChangeRef.current?.(next)
   }
 
   const openSource = () => {
@@ -454,6 +511,9 @@ export function RichTextEditor({ value, onChange, disabled }: Props) {
           <ToolBtn title="مصدر HTML" onClick={openSource}>
             HTML
           </ToolBtn>
+          <ToolBtn title="CSS مخصص للمقال" active={cssOpen} onClick={() => setCssOpen((open) => !open)}>
+            CSS
+          </ToolBtn>
 
           <Sep />
 
@@ -469,7 +529,7 @@ export function RichTextEditor({ value, onChange, disabled }: Props) {
       {sourceOpen ? (
         <div className="rte-source">
           <p className="rte-source-help">
-            الصق HTML من وورد أو مستندات جوجل أو صفحة ويب، أو اكتب الوسوم مباشرة. التحويل يبني مقالاً منسقاً ويزيل الأكواد غير الآمنة.
+            الصق HTML من وورد أو مستندات جوجل أو صفحة ويب. التنسيق داخل style="" يبقى على العناصر، وكتل &lt;style&gt; تُنقل إلى CSS المخصص. ملفات CSS الخارجية (link) لا تُحمَّل.
           </p>
           <textarea
             aria-label="مصدر HTML"
@@ -490,9 +550,26 @@ export function RichTextEditor({ value, onChange, disabled }: Props) {
           </div>
         </div>
       ) : (
-        <div className="rte-canvas">
-          <EditorContent editor={editor} />
-        </div>
+        <>
+          {cssOpen && (
+            <div className="rte-css">
+              <p className="rte-css-help">
+                CSS خاص بهذا المقال فقط. القواعد تُطبَّق داخل إطار المقال ولا تغيّر بقية الموقع. الصق هنا ما كان داخل &lt;style&gt;، أو اكتب قواعدك. لا يُقبل @import ولا روابط ملفات خارجية.
+              </p>
+              <textarea
+                aria-label="CSS مخصص للمقال"
+                value={cssDraft}
+                spellCheck={false}
+                onChange={(event) => commitCss(event.target.value)}
+                placeholder={".hero {\n  background: #16064f;\n  color: #fff;\n  padding: 16px;\n}"}
+              />
+            </div>
+          )}
+          <div className="rte-canvas">
+            <PostCss css={cssDraft} postId={postId} />
+            <EditorContent editor={editor} />
+          </div>
+        </>
       )}
 
       {(busy || msg) && (

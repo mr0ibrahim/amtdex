@@ -14,6 +14,7 @@ use App\Models\BlogRevision;
 use App\Models\BlogSetting;
 use App\Models\BlogTag;
 use App\Models\User;
+use App\Services\Blog\BlogCssSanitizer;
 use App\Services\Blog\BlogHtmlSanitizer;
 use App\Services\Blog\IndexNowService;
 use App\Services\Blog\PostPublishSeoGuard;
@@ -643,8 +644,15 @@ class AdminBlogController extends Controller
      */
     private function sanitizePostContent(array $validated): array
     {
+        $fromContent = '';
         if (isset($validated['content']) && is_string($validated['content'])) {
-            $validated['content'] = BlogHtmlSanitizer::sanitize($validated['content']);
+            [$html, $fromContent] = BlogHtmlSanitizer::extractStyleSheets($validated['content']);
+            $validated['content'] = BlogHtmlSanitizer::sanitize($html);
+        }
+
+        if (array_key_exists('custom_css', $validated) || $fromContent !== '') {
+            $explicit = is_string($validated['custom_css'] ?? null) ? $validated['custom_css'] : '';
+            $validated['custom_css'] = BlogCssSanitizer::sanitize(trim($explicit."\n".$fromContent));
         }
 
         return $validated;

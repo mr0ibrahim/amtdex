@@ -77,6 +77,7 @@ export interface BlogPost {
   slug: string
   summary?: string | null
   content: string
+  custom_css?: string | null
   cover_image?: string | null
   cover_image_alt?: string | null
   status: BlogPostStatus

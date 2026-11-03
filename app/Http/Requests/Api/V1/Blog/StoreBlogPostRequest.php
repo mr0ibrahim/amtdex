@@ -23,6 +23,7 @@ class StoreBlogPostRequest extends FormRequest
             'author_id' => ['nullable', 'exists:users,id'],
             'summary' => ['nullable', 'string', 'max:1000'],
             'content' => ['required', 'string'],
+            'custom_css' => ['nullable', 'string', 'max:100000'],
             'cover_image' => ['nullable', 'string', 'max:500'],
             'cover_image_alt' => ['nullable', 'string', 'max:255'],
             'status' => ['required', 'in:draft,published,scheduled,archived'],

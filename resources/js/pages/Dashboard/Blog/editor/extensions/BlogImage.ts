@@ -1,5 +1,6 @@
 import Image from "@tiptap/extension-image"
 import { ReactNodeViewRenderer } from "@tiptap/react"
+import { sanitizeClassList, sanitizeInlineStyle } from "@/lib/blogCss"
 import { imageElement, normalizeAlign, normalizeWidth, readAlignFromElement, readCaption, readWidthFromElement } from "../imageLayout"
 import { isSafeMediaSrc } from "../sanitizeHtml"
 import { BlogImageView } from "./BlogImageView"
@@ -75,6 +76,14 @@ export const BlogImage = Image.extend({
   renderHTML({ node }) {
     const align = normalizeAlign(node.attrs.align)
     const width = normalizeWidth(node.attrs.width)
+    const extraClass = sanitizeClassList(String(node.attrs.class || ""))
+      .split(/\s+/)
+      .filter((token) => token && token !== "blog-figure" && token !== "blog-img" && !/^align-(?:left|center|right)$/.test(token))
+    const extraStyle = sanitizeInlineStyle(String(node.attrs.style || ""))
+      .split(";")
+      .map((part) => part.trim())
+      .filter((part) => part && !/^width\s*:/i.test(part))
+      .join("; ")
     const imgAttrs: Record<string, string> = {
       src: String(node.attrs.src || ""),
       alt: String(node.attrs.alt || ""),
@@ -84,7 +93,10 @@ export const BlogImage = Image.extend({
     if (node.attrs.title) imgAttrs.title = String(node.attrs.title)
     const figure: Array<string | Record<string, string> | (string | Record<string, string>)[]> = [
       "figure",
-      { class: `blog-figure align-${align}`, style: `width: ${width}` },
+      {
+        class: [`blog-figure`, `align-${align}`, ...extraClass].join(" "),
+        style: [`width: ${width}`, extraStyle].filter(Boolean).join("; "),
+      },
       ["img", imgAttrs],
     ]
     const caption = String(node.attrs.caption || "").trim()

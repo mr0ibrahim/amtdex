@@ -1,3 +1,4 @@
+import { sanitizeClassList, sanitizeInlineStyle, sanitizeStylesheet } from "@/lib/blogCss"
 import { sanitizeBlogHtml } from "./sanitizeHtml"
 
 const BLOCK_TAGS = new Set([
@@ -28,6 +29,7 @@ const BLOCK_TAGS = new Set([
   "audio",
   "video",
   "iframe",
+  "img",
 ])
 
 type StyleFlags = {
@@ -156,36 +158,17 @@ function transformElement(el: HTMLElement) {
     if (flags.underline) wrapChildren(el, "u")
     if (flags.italic) wrapChildren(el, "em")
     if (flags.bold) wrapChildren(el, "strong")
-    const kept: string[] = []
-    if (flags.color && !/url\s*\(/i.test(flags.color)) kept.push(`color: ${flags.color}`)
-    if (flags.background && !/url\s*\(/i.test(flags.background)) kept.push(`background-color: ${flags.background}`)
-    if (kept.length) el.setAttribute("style", kept.join("; "))
-    else unwrap(el)
+    const cleaned = sanitizeInlineStyle(style)
+    const cls = sanitizeClassList(el.getAttribute("class") || "")
+    if (cleaned) el.setAttribute("style", cleaned)
+    else el.removeAttribute("style")
+    if (cls) el.setAttribute("class", cls)
+    else el.removeAttribute("class")
+    if (!cleaned && !cls && !el.getAttribute("id")) unwrap(el)
     return
   }
 
-  if (tag === "div") {
-    const cls = el.getAttribute("class") || ""
-    if (cls.split(/\s+/).includes("blog-content-banner")) return
-    const align = readFlags(style).align
-    if (hasBlockChild(el)) {
-      if (align) {
-        for (const child of Array.from(el.children)) {
-          if (!(child instanceof HTMLElement) || !BLOCK_TAGS.has(child.tagName.toLowerCase())) continue
-          if (!/(?:^|;)\s*text-align\s*:/i.test(child.getAttribute("style") || "")) {
-            const prev = child.getAttribute("style")
-            child.setAttribute("style", `${prev ? `${prev}; ` : ""}text-align: ${align}`)
-          }
-        }
-      }
-      unwrap(el)
-      return
-    }
-    const paragraph = el.ownerDocument.createElement("p")
-    if (align) paragraph.setAttribute("style", `text-align: ${align}`)
-    while (el.firstChild) paragraph.appendChild(el.firstChild)
-    el.replaceWith(paragraph)
-  }
+  if (tag === "div" && (el.getAttribute("class") || "").split(/\s+/).includes("blog-content-banner")) return
 }
 
 function walk(el: HTMLElement) {
@@ -220,12 +203,72 @@ function groupWordLists(root: HTMLElement) {
   }
 }
 
+const STRUCTURAL = new Set([
+  "div",
+  "section",
+  "article",
+  "aside",
+  "header",
+  "footer",
+  "main",
+  "nav",
+  "li",
+  "td",
+  "th",
+  "blockquote",
+])
+
+function isBlockElement(node: ChildNode): boolean {
+  return node instanceof HTMLElement && BLOCK_TAGS.has(node.tagName.toLowerCase())
+}
+
+/** TipTap block containers cannot hold raw text, so inline runs become paragraphs. */
+function wrapInlineChildren(el: HTMLElement) {
+  const children = Array.from(el.childNodes)
+  const hasInline = children.some((child) => {
+    if (isBlockElement(child)) return false
+    if (child.nodeType === Node.TEXT_NODE) return Boolean(child.textContent?.trim())
+    return child.nodeType === Node.ELEMENT_NODE
+  })
+  if (!hasInline) return
+
+  const doc = el.ownerDocument
+  const next: Node[] = []
+  let buffer: ChildNode[] = []
+  const flush = () => {
+    const meaningful = buffer.some((node) => node.nodeType !== Node.TEXT_NODE || Boolean(node.textContent?.trim()))
+    if (!meaningful) {
+      buffer = []
+      return
+    }
+    const paragraph = doc.createElement("p")
+    for (const node of buffer) paragraph.appendChild(node)
+    next.push(paragraph)
+    buffer = []
+  }
+  for (const child of children) {
+    if (isBlockElement(child)) {
+      flush()
+      next.push(child)
+    } else buffer.push(child)
+  }
+  flush()
+  el.replaceChildren(...next)
+}
+
+function wrapInlineRuns(root: HTMLElement) {
+  const nodes = Array.from(root.querySelectorAll("div, section, article, aside, header, footer, main, nav, li, td, th, blockquote"))
+  for (const el of [...nodes].reverse()) {
+    if (el instanceof HTMLElement && STRUCTURAL.has(el.tagName.toLowerCase())) wrapInlineChildren(el)
+  }
+  wrapInlineChildren(root)
+}
+
 function stripDangerousWrappers(html: string): string {
   return html
     .replace(/<!--\[if[\s\S]*?<!\[endif\]-->/gi, "")
     .replace(/<!\[if[\s\S]*?endif\]>/gi, "")
     .replace(/<xml[\s\S]*?<\/xml>/gi, "")
-    .replace(/<style[\s\S]*?<\/style>/gi, "")
     .replace(/<script[\s\S]*?<\/script>/gi, "")
     .replace(/<\/?(?:o|w|m):[^>]*>/gi, "")
 }
@@ -241,18 +284,48 @@ export function decodeEscapedHtml(text: string): string {
   return holder.value
 }
 
+export type ImportedHtml = {
+  html: string
+  css: string
+  ignoredStylesheets: string[]
+}
+
 /**
  * Turn pasted or typed HTML (Word, Google Docs, a web page, or raw tags)
- * into semantic markup the article editor can format.
+ * into markup the article editor can keep, including inline CSS.
+ * `<style>` blocks are returned separately. `<link rel="stylesheet">` is ignored.
  */
-export function normalizeImportedHtml(html: string): string {
+export function importHtmlDocument(html: string): ImportedHtml {
   const prepared = stripDangerousWrappers(html || "")
-  if (!prepared.trim()) return ""
+  if (!prepared.trim()) return { html: "", css: "", ignoredStylesheets: [] }
   const doc = new DOMParser().parseFromString(prepared, "text/html")
-  doc.querySelectorAll("script, style, meta, link, title, noscript, object, embed").forEach((node) => node.remove())
+  const cssParts: string[] = []
+  doc.querySelectorAll("style").forEach((node) => {
+    cssParts.push(node.textContent || "")
+    node.remove()
+  })
+  const ignoredStylesheets: string[] = []
+  doc.querySelectorAll("link").forEach((node) => {
+    const rel = (node.getAttribute("rel") || "").toLowerCase()
+    if (rel.split(/\s+/).includes("stylesheet")) {
+      const href = (node.getAttribute("href") || "").trim()
+      if (href) ignoredStylesheets.push(href)
+    }
+    node.remove()
+  })
+  doc.querySelectorAll("script, meta, title, noscript, object, embed, base").forEach((node) => node.remove())
+  groupWordLists(doc.body)
   for (const child of Array.from(doc.body.children)) {
     if (child instanceof HTMLElement) walk(child)
   }
-  groupWordLists(doc.body)
-  return sanitizeBlogHtml(doc.body.innerHTML)
+  wrapInlineRuns(doc.body)
+  return {
+    html: sanitizeBlogHtml(doc.body.innerHTML),
+    css: sanitizeStylesheet(cssParts.join("\n")),
+    ignoredStylesheets,
+  }
+}
+
+export function normalizeImportedHtml(html: string): string {
+  return importHtmlDocument(html).html
 }

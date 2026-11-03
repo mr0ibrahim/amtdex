@@ -1,4 +1,4 @@
-import { Node } from "@tiptap/core"
+import { mergeAttributes, Node } from "@tiptap/core"
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
@@ -34,8 +34,8 @@ export const AudioBlock = Node.create({
     ]
   },
 
-  renderHTML({ node }) {
-    return ["audio", { controls: "true", src: String(node.attrs.src || "") }]
+  renderHTML({ node, HTMLAttributes }) {
+    return ["audio", mergeAttributes(HTMLAttributes, { controls: "true", src: String(node.attrs.src || "") })]
   },
 
   addCommands() {
