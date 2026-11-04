@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Services\Blog\BlogCssSanitizer;
 use App\Services\Blog\BlogHtmlSanitizer;
+use App\Services\Blog\SeoKeywords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,6 +34,7 @@ class BlogPost extends Model
         'is_featured',
         'allow_comments',
         'focus_keyword',
+        'seo_keywords',
         'meta_title',
         'meta_description',
         'canonical_url',
@@ -88,6 +90,25 @@ class BlogPost extends Model
      *
      * @return Attribute<?string, ?string>
      */
+    /**
+     * SEO keyword list. Stored as JSON; always read back as a clean string list.
+     *
+     * @return Attribute<list<string>, mixed>
+     */
+    protected function seoKeywords(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value): array => SeoKeywords::normalize($value),
+            set: function (mixed $value): ?string {
+                $keywords = SeoKeywords::normalize($value);
+
+                return $keywords === []
+                    ? null
+                    : json_encode($keywords, JSON_UNESCAPED_UNICODE);
+            },
+        );
+    }
+
     protected function customCss(): Attribute
     {
         return Attribute::make(

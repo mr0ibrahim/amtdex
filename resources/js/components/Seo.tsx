@@ -18,6 +18,7 @@ export interface SeoProps {
   authorName?: string
   section?: string
   tags?: string[]
+  keywords?: string[]
   twitterCard?: "summary" | "summary_large_image"
   twitterTitle?: string
   twitterDescription?: string
@@ -44,6 +45,7 @@ export function Seo({
   authorName,
   section,
   tags,
+  keywords,
   twitterCard = "summary_large_image",
   twitterTitle,
   twitterDescription,
@@ -56,6 +58,10 @@ export function Seo({
   const url = canonical ?? (typeof window !== "undefined" ? window.location.href : DEFAULT_SITE)
   const desc = description ?? "Amtdex — شركة حلول برمجية متكاملة: مواقع، تطبيقات، أنظمة ERP، ذكاء اصطناعي وأمن سيبراني."
   const image = ogImage ?? DEFAULT_OG
+  const keywordContent = (keywords ?? [])
+    .map((keyword) => keyword.trim())
+    .filter(Boolean)
+    .join(", ")
 
   // Build robots content
   const robots = noindex
@@ -99,6 +105,7 @@ export function Seo({
       {/* Title & Core Metadata */}
       <title>{title.includes("Amtdex") ? title : `${title} | Amtdex`}</title>
       <meta name="description" content={desc} />
+      {keywordContent ? <meta name="keywords" content={keywordContent} /> : null}
       <link rel="canonical" href={url} />
       <meta name="robots" content={robots} />
       {googleVerification && <meta name="google-site-verification" content={googleVerification} />}

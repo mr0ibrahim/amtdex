@@ -88,6 +88,7 @@ export interface BlogPost {
   is_featured: boolean
   allow_comments: boolean
   focus_keyword?: string | null
+  seo_keywords?: string[] | null
   meta_title?: string | null
   meta_description?: string | null
   canonical_url?: string | null

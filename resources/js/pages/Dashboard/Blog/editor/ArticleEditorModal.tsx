@@ -4,8 +4,11 @@ import { BlogAPI } from "@/lib/blogApi"
 import { ApiError } from "@/lib/api"
 import { Button } from "@/components/ui/Button"
 import type { BlogCategory, BlogPost, BlogPostStatus } from "@/types/blog"
+import { editorKeywords } from "@/lib/seoKeywords"
 import { CoverUpload } from "./CoverUpload"
 import { EditorSection, FieldHint, FieldLabel } from "./FieldHint"
+import { KeywordInput } from "./KeywordInput"
+import { OgImageField } from "./OgImageField"
 import { PublishReadiness, SeoDescriptionMeter, SeoTitleMeter, type ReadinessItem } from "./SeoMeters"
 import { RichTextEditor } from "./RichTextEditor"
 import { SchemaPreviewPanel } from "./SchemaPreviewPanel"
@@ -42,7 +45,10 @@ export function ArticleEditorModal({
   onSaved: (msg: string) => void
 }) {
   const queryClient = useQueryClient()
-  const [form, setForm] = useState<Partial<BlogPost>>(initialData)
+  const [form, setForm] = useState<Partial<BlogPost>>(() => ({
+    ...initialData,
+    seo_keywords: editorKeywords(initialData),
+  }))
   const [tagIds, setTagIds] = useState<number[]>(initialData.tags?.map((t) => t.id) ?? [])
   const [faqList, setFaqList] = useState<{ question: string; answer: string }[]>(initialData.faq_schema ?? [])
   const [section, setSection] = useState<Section>("content")
@@ -104,7 +110,7 @@ export function ArticleEditorModal({
     },
   })
 
-  const focusKey = form.focus_keyword?.trim().toLowerCase() ?? ""
+  const focusKey = (form.seo_keywords?.[0] || form.focus_keyword || "").trim().toLowerCase()
   const titleHasKey = focusKey ? (form.title ?? "").toLowerCase().includes(focusKey) : false
   const slugHasKey = focusKey ? (form.slug ?? "").toLowerCase().includes(focusKey) : false
   const summaryHasKey = focusKey ? (form.summary ?? "").toLowerCase().includes(focusKey) : false
@@ -169,7 +175,9 @@ export function ArticleEditorModal({
       tags: tagIds,
       meta_title: form.meta_title || form.title || "",
       meta_description: form.meta_description || form.summary || "",
-      og_image: form.og_image || form.cover_image || "",
+      seo_keywords: form.seo_keywords ?? [],
+      focus_keyword: form.seo_keywords?.[0] ?? "",
+      og_image: (form.og_image ?? "").trim() || null,
       cover_image_alt: form.cover_image_alt || form.title || "",
     }
   }
@@ -470,13 +478,11 @@ export function ArticleEditorModal({
 
               <EditorSection title="حقول الظهور">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <FieldLabel>الكلمة المفتاحية</FieldLabel>
-                    <input
-                      type="text"
-                      value={form.focus_keyword ?? ""}
-                      onChange={(e) => patch({ focus_keyword: e.target.value })}
-                      className="w-full px-3 py-2.5 rounded-xl border border-[var(--color-border)] text-xs outline-none"
+                  <div className="sm:col-span-2">
+                    <KeywordInput
+                      keywords={form.seo_keywords ?? []}
+                      disabled={saveMutation.isPending}
+                      onChange={(next) => patch({ seo_keywords: next, focus_keyword: next[0] ?? "" })}
                     />
                     {focusKey && (
                       <div className="flex flex-wrap gap-3 text-[11px] mt-2">
@@ -486,7 +492,7 @@ export function ArticleEditorModal({
                       </div>
                     )}
                   </div>
-                  <div>
+                  <div className="sm:col-span-2">
                     <FieldLabel>Canonical URL</FieldLabel>
                     <input
                       type="url"
@@ -504,13 +510,11 @@ export function ArticleEditorModal({
                     <SeoDescriptionMeter value={form.meta_description ?? ""} onChange={(v) => patch({ meta_description: v })} />
                   </div>
                   <div className="sm:col-span-2">
-                    <FieldLabel>صورة Open Graph</FieldLabel>
-                    <input
-                      type="url"
-                      value={form.og_image ?? ""}
-                      onChange={(e) => patch({ og_image: e.target.value })}
-                      placeholder="افتراضياً تُستخدم صورة الغلاف"
-                      className="w-full px-3 py-2.5 rounded-xl border border-[var(--color-border)] text-xs font-mono outline-none"
+                    <OgImageField
+                      url={form.og_image}
+                      disabled={saveMutation.isPending}
+                      onChange={(next) => patch({ og_image: next })}
+                      onClear={() => patch({ og_image: "" })}
                     />
                   </div>
                 </div>

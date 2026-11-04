@@ -1,4 +1,6 @@
 import type { BlogCategory, BlogPost, BlogTag } from "@/types/blog"
+import { publicKeywords } from "@/lib/seoKeywords"
+import { resolveMediaUrl } from "./mediaUpload"
 
 export const SCHEMA_TYPE_OPTIONS = [
   { value: "BlogPosting", label: "BlogPosting — مقال مدونة" },
@@ -50,7 +52,7 @@ export function buildPostSchemaPreview(input: SchemaPreviewInput): Record<string
 
   const headline = (form.meta_title || form.title || "عنوان المقال").trim()
   const description = (form.meta_description || form.summary || form.title || "").trim()
-  const image = (form.og_image || form.cover_image || DEFAULT_OG).trim()
+  const image = resolveMediaUrl((form.og_image || form.cover_image || DEFAULT_OG).trim())
   const datePublished = toIso(form.published_at || form.created_at)
   const dateModified = toIso(form.updated_at || form.published_at || form.created_at)
   const authorName = form.author?.name || "فريق Amtdex التقني"
@@ -92,9 +94,13 @@ export function buildPostSchemaPreview(input: SchemaPreviewInput): Record<string
     article.articleSection = input.category.name
   }
 
-  const tagNames = (input.tags ?? form.tags ?? []).map((t) => t.name).filter(Boolean)
-  if (tagNames.length) {
-    article.keywords = tagNames.join(", ")
+  const keywordNames = publicKeywords({
+    seo_keywords: form.seo_keywords,
+    focus_keyword: form.focus_keyword,
+    tags: input.tags ?? form.tags,
+  })
+  if (keywordNames.length) {
+    article.keywords = keywordNames.join(", ")
   }
 
   const breadcrumbItems: Record<string, unknown>[] = [
