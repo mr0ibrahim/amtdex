@@ -53,7 +53,7 @@ class PostPublishSeoGuard
 
     /**
      * @param  array<string, mixed>  $incoming
-     * @return array<string, array<int, string>>  Laravel-style validation messages
+     * @return array<string, array<int, string>> Laravel-style validation messages
      */
     public static function validate(array $incoming, ?BlogPost $existing = null): array
     {
@@ -101,7 +101,7 @@ class PostPublishSeoGuard
      * Fill missing SEO fields from fallbacks / generated canonical before save.
      *
      * @param  array<string, mixed>  $incoming
-     * @return array<string, mixed>  Fields to merge into the save payload
+     * @return array<string, mixed> Fields to merge into the save payload
      */
     public static function enrich(array $incoming, ?BlogPost $existing = null): array
     {
@@ -203,5 +203,34 @@ class PostPublishSeoGuard
     public static function isAbsoluteUrl(string $url): bool
     {
         return (bool) preg_match('#^https?://#i', $url);
+    }
+
+    /**
+     * Absolute URL for og:image / twitter:image. Relative media paths stay
+     * stored as-is and are expanded only when rendered.
+     */
+    public static function absolutePublicUrl(string $url): string
+    {
+        $url = trim($url);
+        if ($url === '') {
+            return '';
+        }
+
+        if (self::isAbsoluteUrl($url)) {
+            return $url;
+        }
+
+        $base = rtrim((string) config('app.url', 'https://amtdex.com'), '/');
+        if ($base === '') {
+            $base = 'https://amtdex.com';
+        }
+
+        if (str_starts_with($url, '//')) {
+            $scheme = parse_url($base, PHP_URL_SCHEME) ?: 'https';
+
+            return $scheme.':'.$url;
+        }
+
+        return str_starts_with($url, '/') ? $base.$url : $base.'/'.ltrim($url, '/');
     }
 }

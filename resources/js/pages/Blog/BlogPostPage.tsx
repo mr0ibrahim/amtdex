@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/Toast"
 import { PostCss } from "@/components/blog/PostCss"
 import { addHeadingAnchors } from "@/lib/blogContent"
 import { postContentClassName } from "@/lib/blogCss"
+import { publicKeywords, shareImageUrl } from "@/lib/seoKeywords"
 import { getBlogUrl, isBlogSubdomain } from "@/lib/subdomain"
 import type { BlogPost, BlogComment } from "@/types/blog"
 
@@ -216,13 +217,15 @@ export function BlogPostPage() {
 
   // Prefer server-generated JSON-LD (Laravel) so schema matches published content.
   const serverJsonLd = postResponse?.json_ld
+  const shareImage = shareImageUrl(post.og_image, post.cover_image)
+  const metaKeywords = publicKeywords(post)
   const fallbackJsonLd: Record<string, unknown>[] = [
     {
       "@context": "https://schema.org",
       "@type": post.schema_type || "BlogPosting",
       headline: post.meta_title || post.title,
       description: post.meta_description || post.summary || post.title,
-      image: (post.og_image || post.cover_image) ? [post.og_image || post.cover_image] : undefined,
+      image: shareImage ? [shareImage] : undefined,
       datePublished: post.published_at,
       dateModified: post.updated_at || post.published_at,
       mainEntityOfPage: {
@@ -250,12 +253,14 @@ export function BlogPostPage() {
         title={`${post.meta_title || post.title} | مدونة Amtdex`}
         description={post.meta_description || post.summary || post.title}
         canonical={postCanonical}
-        ogImage={post.og_image || post.cover_image || undefined}
+        ogImage={shareImage}
+        twitterImage={shareImage}
         ogType="article"
         publishedTime={post.published_at || undefined}
         modifiedTime={post.updated_at || undefined}
         authorName={post.author?.name}
         section={post.category?.name}
+        keywords={metaKeywords}
         tags={post.tags?.map((t: { name: string }) => t.name)}
         jsonLd={serverJsonLd?.length ? serverJsonLd : fallbackJsonLd}
         preloadImage={post.cover_image || undefined}

@@ -7,6 +7,8 @@ use Illuminate\Validation\Rule;
 
 class UpdateBlogPostRequest extends FormRequest
 {
+    use NormalizesSeoKeywords;
+
     public function authorize(): bool
     {
         return true;
@@ -41,7 +43,9 @@ class UpdateBlogPostRequest extends FormRequest
             'allow_comments' => ['boolean'],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['integer', 'exists:blog_tags,id'],
-            'focus_keyword' => ['nullable', 'string', 'max:100'],
+            'focus_keyword' => ['nullable', 'string', 'max:255'],
+            'seo_keywords' => ['nullable', 'array', 'max:40'],
+            'seo_keywords.*' => ['string', 'max:120'],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'canonical_url' => ['nullable', 'string', 'max:500'],
@@ -49,12 +53,12 @@ class UpdateBlogPostRequest extends FormRequest
             'robots_follow' => ['boolean'],
             'og_title' => ['nullable', 'string', 'max:255'],
             'og_description' => ['nullable', 'string', 'max:500'],
-            'og_image' => ['nullable', 'string', 'max:500'],
+            'og_image' => ['nullable', 'string', 'max:2048'],
             'og_type' => ['nullable', 'string', 'max:50'],
             'twitter_card' => ['nullable', 'string', 'max:50'],
             'twitter_title' => ['nullable', 'string', 'max:255'],
             'twitter_description' => ['nullable', 'string', 'max:500'],
-            'twitter_image' => ['nullable', 'string', 'max:500'],
+            'twitter_image' => ['nullable', 'string', 'max:2048'],
             'schema_type' => ['nullable', 'string', 'max:50'],
             'faq_schema' => ['nullable', 'array'],
         ];

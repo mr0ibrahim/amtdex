@@ -32,6 +32,30 @@ class BlogJsonLdBuilder
     }
 
     /**
+     * SEO keywords, then the legacy focus keyword, then tag names.
+     *
+     * @return list<string>
+     */
+    public static function keywordList(BlogPost $post): array
+    {
+        $keywords = SeoKeywords::normalize($post->seo_keywords);
+        if ($keywords !== []) {
+            return $keywords;
+        }
+
+        $keywords = SeoKeywords::normalize($post->focus_keyword);
+        if ($keywords !== []) {
+            return $keywords;
+        }
+
+        if ($post->tags && $post->tags->isNotEmpty()) {
+            return SeoKeywords::normalize($post->tags->pluck('name')->all());
+        }
+
+        return [];
+    }
+
+    /**
      * Organization + WebSite (with SearchAction) for the blog home.
      *
      * @return list<array<string, mixed>>
@@ -93,6 +117,7 @@ class BlogJsonLdBuilder
         if ($image === '') {
             $image = (string) (BlogSetting::get('default_og_image', 'https://amtdex.com/images/screens/projects.webp'));
         }
+        $image = PostPublishSeoGuard::absolutePublicUrl($image);
 
         $datePublished = optional($post->published_at)->toAtomString()
             ?? optional($post->created_at)->toAtomString()
@@ -142,8 +167,9 @@ class BlogJsonLdBuilder
             $article['articleSection'] = $post->category->name;
         }
 
-        if ($post->tags && $post->tags->isNotEmpty()) {
-            $article['keywords'] = $post->tags->pluck('name')->implode(', ');
+        $keywords = self::keywordList($post);
+        if ($keywords !== []) {
+            $article['keywords'] = implode(', ', $keywords);
         }
 
         $graph = [
