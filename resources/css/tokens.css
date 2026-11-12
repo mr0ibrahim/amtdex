@@ -3,61 +3,61 @@
    لا تستخدم hex مباشر — استخدم هذه المتغيرات. */
 
 :root {
-  color-scheme: dark;
-  /* ── Semantic surface: public dark ── */
-  --bg: #0B0816;
-  --surface: #120D22;
-  --text: #F4F1EA;
-  --text-muted: #D5CEE3;
-  --text-faint: #D5CEE3;
-  --border: #3A3450;
+  color-scheme: light;
+  /* ── Semantic surface: PR #15 paper, navy text, gold accent ── */
+  --bg: #F3F0E8;
+  --surface: #FBFAF6;
+  --text: #16064F;
+  --text-muted: #5C5670;
+  --text-faint: #5C5670;
+  --border: #DDD6C8;
   --accent: #FFBF08;
   --accent-text: #16064F;
-  --input-bg: #1A1433;
-  --input-text: #F7F4EE;
-  --placeholder: #E4DDF0;
-  --focus-ring: #FFBF08;
-  --danger: #FFB4B4;
-  --danger-bg: #3A1820;
-  --success: #8EE0B8;
-  --success-text: #073221;
+  --input-bg: #FBFAF6;
+  --input-text: #16064F;
+  --placeholder: #5C5670;
+  --focus-ring: #16064F;
+  --danger: #16064F;
+  --danger-bg: #E6E0D4;
+  --success: #16064F;
+  --success-text: #F6F3EC;
 
-  /* ── الهوية الأساسية (10 ألوان) ── */
-  --color-brand: #16064F;            /* الكحلي — الخلفيات والألواح */
-  --color-ink: #F4F1EA;              /* النص الفاتح على الحقل الداكن */
-  --color-primary: #281071;          /* البنفسجي الداكن — الأزرار والعناصر الأساسية */
-  --color-primary-light: #5425A4;    /* البنفسجي الملكي — التدرجات والأيقونات والتفاعل */
-  --color-violet-mid: #9775D1;        /* البنفسجي المتوسط — الزخارف والرسومات الثانوية */
-  --color-gold: #FFBF08;              /* الذهبي الأساسي — التمييز والعروض والعناصر البارزة */
-  --color-gold-dark: #E69A12;         /* الذهبي المتدرج — التدرجات الذهبية */
-  --color-lavender: #2A2444;
-  --color-card-soft: #1A1433;
-  --color-surface: #120D22;
-  --color-bg: #0B0816;
-  --color-bg-subtle: #0E0A1C;
+  /* ── PR #15 identity. Navy is the main colour. Gold is an accent only. ── */
+  --color-brand: #16064F;
+  --color-ink: #16064F;
+  --color-primary: #16064F;
+  --color-primary-light: #16064F;
+  --color-violet-mid: #E69A12;
+  --color-gold: #FFBF08;
+  --color-gold-dark: #E69A12;
+  --color-lavender: #E6E0D4;
+  --color-card-soft: #F6F3EC;
+  --color-surface: #FBFAF6;
+  --color-bg: #F3F0E8;
+  --color-bg-subtle: #EFEBE3;
 
   /* ── مشتقات ── */
-  --color-ink-soft: #281071;
-  --color-beige: #1A1433;
-  --color-border: #2C2640;
-  --color-border-strong: #F4F1EA;
-  --color-outline-peach: #2C2640;
+  --color-ink-soft: #16064F;
+  --color-beige: #F6F3EC;
+  --color-border: #DDD6C8;
+  --color-border-strong: #16064F;
+  --color-outline-peach: #DDD6C8;
   --color-text: var(--text);
   --color-text-muted: var(--text-muted);
   --color-text-faint: var(--text-faint);
   --color-success: #0E9F6E;
   --color-success-bg: #E6F4EA;
   --color-accent: #FFBF08;
-  --color-accent-purple: #5425A4;
-  --color-signal: #1A1433;
-  --color-cta-dark-border: #2A3347;   /* حدود عناصر الـ CTA الداكنة */
-  --color-live: #7DD3A0;              /* نقطة الحالة الحية */
+  --color-accent-purple: #16064F;
+  --color-signal: #F6F3EC;
+  --color-cta-dark-border: #2A3347;
+  --color-live: #7DD3A0;
 
-  /* ── ألوان مسطحة. التدرج البنفسجي كان يقرأ كقالب جاهز. ── */
-  --gradient-primary: linear-gradient(#F4F1EA, #F4F1EA);
+  /* ── Flat fills from the same hexes. ── */
+  --gradient-primary: linear-gradient(#16064F, #16064F);
   --gradient-gold: linear-gradient(#FFBF08, #FFBF08);
-  --gradient-hero: linear-gradient(#0B0816, #0B0816);
-  --gradient-card: linear-gradient(#120D22, #120D22);
+  --gradient-hero: linear-gradient(#F3F0E8, #F3F0E8);
+  --gradient-card: linear-gradient(#FBFAF6, #FBFAF6);
   --gradient-cta: linear-gradient(#16064F, #16064F);
 
   /* ── Spacing (4px / 8px scale) ── */

@@ -104,16 +104,16 @@ h1, h2, h3, .font-display {
   text-decoration: none;
   transition: transform 300ms ease-out, background-color 200ms ease, color 200ms ease;
 }
-.btn-ink { background: #f4f1ea; color: #16064f; }
-.bg-\[var\(--color-ink\)\] { background-color: #16064f !important; }
-.brand-motion .bg-white { background-color: #161222 !important; color: var(--text); }
-.bg-gradient-primary { color: #16064f; }
+.btn-ink { background: #16064F; color: #F6F3EC; }
+.bg-\[var\(--color-ink\)\] { background-color: #16064F !important; }
+.brand-motion .bg-white { background-color: #FBFAF6; color: var(--text); }
+.bg-gradient-primary { color: #F6F3EC; }
 .btn-line {
   background: transparent;
   color: var(--color-ink);
   border: 1px solid var(--color-ink);
 }
-.btn-line:hover { background: #f4f1ea; color: #16064f; }
+.btn-line:hover { background: #16064F; color: #F6F3EC; }
 .btn-gold { background: var(--color-gold); color: var(--accent-text); }
 
 .site-nav {

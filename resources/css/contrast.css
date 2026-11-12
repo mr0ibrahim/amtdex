@@ -1,25 +1,25 @@
-/* One token set per surface. Public stays dark. The dashboard overrides these. */
+/* One token set per surface. Both surfaces use the PR #15 paper palette. */
 
-html { color-scheme: dark; }
+html { color-scheme: light; }
 
 .dash-shell {
   color-scheme: light;
-  --bg: #F7F3FA;
-  --surface: #FFFFFF;
+  --bg: #F3F0E8;
+  --surface: #FBFAF6;
   --text: #16064F;
-  --text-muted: #3E3658;
-  --text-faint: #3E3658;
-  --border: #C9C0DC;
-  --accent: #281071;
-  --accent-text: #FFFFFF;
-  --input-bg: #FFFFFF;
+  --text-muted: #5C5670;
+  --text-faint: #5C5670;
+  --border: #DDD6C8;
+  --accent: #FFBF08;
+  --accent-text: #16064F;
+  --input-bg: #FBFAF6;
   --input-text: #16064F;
-  --placeholder: #3E3658;
-  --focus-ring: #5425A4;
-  --danger: #9F1239;
-  --danger-bg: #FDE8EC;
-  --success: #067647;
-  --success-text: #FFFFFF;
+  --placeholder: #5C5670;
+  --focus-ring: #16064F;
+  --danger: #16064F;
+  --danger-bg: #E6E0D4;
+  --success: #16064F;
+  --success-text: #F6F3EC;
   --color-text: var(--text);
   --color-text-muted: var(--text-muted);
   --color-text-faint: var(--text-faint);
@@ -73,15 +73,15 @@ html { color-scheme: dark; }
 .dash-shell .dash-sidebar-search input,
 .dash-shell .dash-sidebar-search input:focus,
 .dash-shell .dash-sidebar-search input:-webkit-autofill {
-  color: #F7F4EE !important;
+  color: #F6F3EC !important;
   background-color: transparent !important;
-  -webkit-text-fill-color: #F7F4EE !important;
+  -webkit-text-fill-color: #F6F3EC !important;
   box-shadow: none !important;
-  caret-color: #F7F4EE;
+  caret-color: #F6F3EC;
 }
 .dash-shell .dash-sidebar-search input::placeholder {
-  color: #E7E1F4 !important;
-  -webkit-text-fill-color: #E7E1F4;
+  color: #E6E0D4 !important;
+  -webkit-text-fill-color: #E6E0D4;
   opacity: 1 !important;
 }
 
@@ -92,46 +92,59 @@ html { color-scheme: dark; }
   -webkit-text-fill-color: #16064F;
 }
 .dash-search input::placeholder {
-  color: #3E3658;
+  color: #5C5670;
   opacity: 1;
 }
 
-.brand-motion .testimonial-heading span { color: #E7E1F4; }
 .brand-motion :is(
-  .text-\[var\(--color-primary\)\],
-  .text-\[var\(--color-primary-light\)\],
   .text-white\/40,
   .text-white\/50,
   .text-white\/55,
-  .text-white\/60
-) { color: #E7E1F4 !important; }
-.brand-motion .text-\[var\(--color-success\)\] { color: #8EE0B8 !important; }
-.brand-motion .bg-\[\#F26522\] { background: #9A3412 !important; color: #F7F4EE !important; }
+  .text-white\/60,
+  .text-white\/70,
+  .text-white\/80
+),
+.dash-shell :is(
+  .text-white\/40,
+  .text-white\/50,
+  .text-white\/55,
+  .text-white\/60,
+  .text-white\/70,
+  .text-white\/80
+) { color: #F6F3EC !important; }
+.brand-motion .text-\[var\(--color-success\)\],
+.dash-shell .text-\[var\(--color-success\)\] { color: #16064F !important; }
 
 .brand-motion .blog-prose :not(pre) > code,
-.surface-dark .blog-prose :not(pre) > code {
-  background: #2A2444;
-  color: #F7F4EE;
+.surface-dark .blog-prose :not(pre) > code,
+.dash-shell .blog-prose :not(pre) > code {
+  background: #E6E0D4;
+  color: #16064F;
 }
 .brand-motion .blog-prose pre,
 .dash-shell .blog-prose pre,
 .brand-motion .blog-prose pre code,
 .dash-shell .blog-prose pre code {
   background: #16064F;
-  color: #F7F4EE;
+  color: #F6F3EC;
 }
 
-.dash-shell .text-white\/50,
-.dash-shell .text-white\/55,
-.dash-shell .text-white\/60,
-.dash-shell .text-white\/70 {
-  color: rgb(247 244 238 / 92%);
-}
 
 .home-stack { display: flex; flex-direction: column; }
 .home-hidden-preview { outline: 1px dashed #FFBF08; }
 .search-hit { background: #FFBF08; color: #16064F; }
-.blog-clear-filters { color: #FFD0D8; }
+.blog-clear-filters { color: #16064F; }
+:is(.bg-\[var\(--color-ink\)\], .da-card.pop, .da-band, .da-hours, .da-price.pop) :is(
+  .text-\[var\(--color-text-muted\)\],
+  .text-\[var\(--color-text-faint\)\],
+  .da-lede
+) { color: #E6E0D4; }
+.brand-motion :is(
+  .text-\[var\(--color-text-muted\)\]\/50,
+  .text-\[var\(--color-text-muted\)\]\/60,
+  .text-\[var\(--color-text-faint\)\]\/50,
+  .text-\[var\(--color-text-faint\)\]\/60
+) { color: #5C5670; }
 .blog-search { display: flex; align-items: stretch; gap: 8px; max-width: 36rem; }
 .blog-search input { flex: 1 1 auto; min-width: 0; width: 100%; height: 44px; min-height: 44px; }
 .blog-search button { min-height: 44px; min-width: 44px; }

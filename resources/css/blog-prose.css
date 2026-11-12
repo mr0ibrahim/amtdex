@@ -55,8 +55,8 @@
 .blog-prose sub { font-size: 0.8em; vertical-align: sub; }
 .blog-prose sup { font-size: 0.8em; vertical-align: super; }
 .blog-prose mark {
-  background: #fef08a;
-  color: inherit;
+  background: #FFBF08;
+  color: #16064F;
   padding: 0 0.15em;
   border-radius: 0.2em;
 }
@@ -67,7 +67,7 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 }
-.blog-prose a:hover { color: var(--color-gold); }
+.blog-prose a:hover { color: #16064F; }
 
 .blog-prose ul,
 .blog-prose ol {
@@ -109,8 +109,8 @@
   overflow-x: auto;
   direction: ltr;
   text-align: left;
-  background: var(--color-ink);
-  color: #e2e8f0;
+  background: #16064F;
+  color: #F6F3EC;
   border-radius: 14px;
   font-family: var(--font-mono);
   font-size: 0.84rem;
@@ -206,8 +206,8 @@
 }
 
 .blog-prose .blog-content-banner {
-  background: linear-gradient(135deg, #15803d, #16a34a);
-  color: #fff;
+  background: #16064F;
+  color: #F6F3EC;
   border-radius: 18px;
   padding: 1.4rem 1.2rem;
   text-align: center;
@@ -215,7 +215,7 @@
 }
 .blog-prose .blog-content-banner p {
   margin: 0;
-  color: #fff;
+  color: #F6F3EC;
   font-size: 1.2rem;
   font-weight: 800;
   line-height: 1.6;

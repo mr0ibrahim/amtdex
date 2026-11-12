@@ -38,12 +38,12 @@ export function WorkflowSection() {
           </div>
           <div className="p-5 space-y-3">
             {[
-              { icon: "mail", bg: "var(--color-accent)", title: "تحليل المتطلبات", sub: "ورشة اكتشاف + وثيقة SRS", time: "الأسبوع 1" },
-              { icon: "code", bg: "var(--color-brand)", title: "تصميم وتطوير", sub: "Figma → Next.js / Laravel", time: "الأسابيع 2-6" },
-              { icon: "launch", bg: "var(--color-accent-purple)", title: "اختبار وإطلاق", sub: "QA + نشر سحابي + تدريب", time: "الأسبوع 7" },
+              { icon: "mail", bg: "var(--color-accent)", fg: "#16064F", title: "تحليل المتطلبات", sub: "ورشة اكتشاف + وثيقة SRS", time: "الأسبوع 1" },
+              { icon: "code", bg: "var(--color-brand)", fg: "#F6F3EC", title: "تصميم وتطوير", sub: "Figma → Next.js / Laravel", time: "الأسابيع 2-6" },
+              { icon: "launch", bg: "var(--color-brand)", fg: "#F6F3EC", title: "اختبار وإطلاق", sub: "QA + نشر سحابي + تدريب", time: "الأسبوع 7" },
             ].map((f, index) => (
               <div key={f.title} data-motion="rise" data-motion-delay={200 + index * 240} className="flex items-center gap-3.5 bg-[var(--color-surface)] border border-[var(--color-border)] p-4">
-                <span className="size-10 shrink-0 grid place-items-center text-white" style={{ background: f.bg }}>
+                <span className="size-10 shrink-0 grid place-items-center" style={{ background: f.bg, color: f.fg }}>
                   <Icon name={f.icon as IconName} size={21} />
                 </span>
                 <div className="flex-1 min-w-0">
