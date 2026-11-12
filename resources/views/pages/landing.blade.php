@@ -437,7 +437,7 @@
             <div data-pencil-name="Feat Desc" class="text-[12.5px]/[24px] box-border w-full text-[#9AA0AB] font-['IBM_Plex_Sans_Arabic',system-ui,sans-serif] font-normal text-left">
               بنية سحابية مرنة وآمنة على AWS / Azure مع نشر مستمر ومراقبة 24/7.
             </div>
-            <div data-pencil-name="Dark Meta" class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[12px_14px] justify-between items-center bg-[#161D2E] [outline:1px_solid_#2A3347] [outline-offset:-0.5px] rounded-[12px]">
+            <div data-pencil-name="Dark Meta" class="box-border w-full h-fit shrink-0 flex flex-row gap-0 p-[12px_14px] justify-between items-center bg-[#161D2E] [outline:1px_solid_#3D125F] [outline-offset:-0.5px] rounded-[12px]">
               <div data-pencil-name="Meta L" class="text-[10px]/[normal] box-border text-[#7DD3A0] font-['JetBrains_Mono',system-ui,sans-serif] font-semibold text-left [white-space:nowrap]">
                 SLA مضمون — 99.9% جاهزية
               </div>
@@ -1332,7 +1332,7 @@
         </div>
       </div>
       <div data-pencil-name="Final CTA" class="box-border w-full h-fit shrink-0 flex flex-col gap-[16px] p-[64px_40px_48px_40px] justify-start items-center [background-image:radial-gradient(ellipse_70%_45%_at_50%_0%,_#0F1B3A_0%,_#070B1A_100%)] bg-no-repeat bg-[length:100%_100%] relative [z-index:12]">
-        <div data-pencil-name="CTA Pill" class="box-border w-fit h-fit shrink-0 flex flex-row gap-[8px] p-[8px_14px] justify-start items-center bg-[#1E2535] [outline:1px_solid_#2A3347] [outline-offset:-0.5px] rounded-[999px] relative [z-index:0]">
+        <div data-pencil-name="CTA Pill" class="box-border w-fit h-fit shrink-0 flex flex-row gap-[8px] p-[8px_14px] justify-start items-center bg-[#1E2535] [outline:1px_solid_#3D125F] [outline-offset:-0.5px] rounded-[999px] relative [z-index:0]">
           <div data-pencil-name="Pill Dot" class="box-border w-[6px] shrink-0 h-[6px] bg-[#7DD3A0] rounded-[50%]"></div>
           <div data-pencil-name="Pill Text" class="text-[11px]/[normal] box-border text-[#9AA0AB] font-['IBM_Plex_Sans_Arabic',system-ui,sans-serif] font-semibold text-center [white-space:nowrap]">
             انضم إلى 300+ عميل يبنون مستقبلهم مع AMTDEX
@@ -1356,7 +1356,7 @@
               <path d="M6.90088 2.35156q-0.18115 0.02734-0.32129 0.16748-0.11279 0.11279-0.14697 0.28028-0.03418 0.16748 0.02051 0.32129 0.02734 0.08545 0.25976 0.3247 0.23242 0.23584 1.36377 1.37061 1.58252 1.58252 1.58252 1.59619 0 0.01367-3.45557 0.01367l-3.44531 0-0.08545 0.04102q-0.22217 0.11279-0.30078 0.33838-0.0752 0.22217 0.00684 0.43408 0.05811 0.0957 0.14013 0.18115 0.08545 0.08203 0.16748 0.11963 0.08545 0.03418 0.53321 0.03418l3.01123 0q3.42822 0 3.42822 0.01367 0 0.01367-1.58252 1.59619-1.13135 1.13477-1.36377 1.37402-0.23242 0.23584-0.25976 0.3213-0.05469 0.15381-0.02051 0.32128 0.03418 0.16748 0.14697 0.28028 0.18115 0.18115 0.42041 0.18115l0.04102 0q0.11279 0 0.19824-0.05469 0.14014-0.09912 0.51611-0.46484l1.68164-1.67822q2.1123-2.10205 2.15332-2.18409 0.07178-0.12646 0.07178-0.28027 0-0.15381-0.07178-0.28027-0.04102-0.08203-2.1499-2.18067-2.10547-2.10205-2.17725-2.13623-0.06836-0.0376-0.23584-0.06494-0.04102 0-0.12646 0.01367z" fill="#FFFFFF"></path>
             </svg>
           </div>
-          <div data-pencil-name="CTA Ghost" class="box-border w-fit shrink-0 h-fit [filter:drop-shadow(0px_6px_8px_#FFFFFF0A)] flex flex-row gap-[8px] p-[16px_24px] justify-start items-center bg-[#00000000] [outline:1px_solid_#2A3347] [outline-offset:-0.5px] rounded-[999px]">
+          <div data-pencil-name="CTA Ghost" class="box-border w-fit shrink-0 h-fit [filter:drop-shadow(0px_6px_8px_#FFFFFF0A)] flex flex-row gap-[8px] p-[16px_24px] justify-start items-center bg-[#00000000] [outline:1px_solid_#3D125F] [outline-offset:-0.5px] rounded-[999px]">
             <div data-pencil-name="Ghost Label" class="text-[14px]/[normal] box-border text-[#FFFFFF] font-['IBM_Plex_Sans_Arabic',system-ui,sans-serif] font-semibold text-left [white-space:nowrap]">
               شاهد أعمالنا
             </div>

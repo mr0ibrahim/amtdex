@@ -54,7 +54,7 @@ export function LeadsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-[18px] font-extrabold text-[var(--color-ink)]">الطلبات والتواصل</h1>
-          <p className="text-[12px] text-[var(--color-text-muted)] mt-1">إدارة طلبات التواصل وعروض الأسعار والنشرة.</p>
+          <p className="text-[12px] text-[var(--color-text-muted)] mt-1">إدارة طلبات التواصل والمشاريع والنشرة.</p>
         </div>
         <button
           onClick={handleExport}
@@ -80,7 +80,7 @@ export function LeadsPage() {
           {([
             ["الكل", "الكل"],
             ["contact", "تواصل"],
-            ["quote", "عروض الأسعار"],
+            ["quote", "طلبات المشاريع"],
             ["newsletter", "النشرة"],
           ] as const).map(([id, label]) => (
             <button key={id} onClick={() => setSource(id)} className={`dash-tab${source === id ? " is-active" : ""}`}>

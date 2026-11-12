@@ -10,19 +10,18 @@ import type { Role } from "@/lib/auth"
 import { AuthLayout, MarketingLayout } from "@/components/layout/MarketingLayout"
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary"
 import { ForbiddenPage, ProtectedRoute } from "@/components/layout/ProtectedRoute"
-import { DashboardLayout } from "@/components/layout/DashboardLayout"
+const DashboardLayout = lazy(() => import("@/components/layout/DashboardLayout").then((m) => ({ default: m.DashboardLayout })))
 import { Seo } from "@/components/Seo"
 import { useToast } from "@/components/ui/Toast"
 import { isBlogSubdomain, isDashboardHost, getMainUrl } from "@/lib/subdomain"
+import { HomePage } from "@/pages/Home/HomePage"
+import { ServicesPage } from "@/pages/Services/ServicesPage"
+import { AboutPage } from "@/pages/About/AboutPage"
+import { ContactPage } from "@/pages/Contact/ContactPage"
 
-const HomePage = lazy(() => import("@/pages/Home/HomePage").then((m) => ({ default: m.HomePage })))
-const ServicesPage = lazy(() => import("@/pages/Services/ServicesPage").then((m) => ({ default: m.ServicesPage })))
 const ServiceDetailPage = lazy(() => import("@/pages/Services/ServiceDetailPage").then((m) => ({ default: m.ServiceDetailPage })))
 const PortfolioPage = lazy(() => import("@/pages/Portfolio/PortfolioPage").then((m) => ({ default: m.PortfolioPage })))
 const PortfolioDetailPage = lazy(() => import("@/pages/Portfolio/PortfolioDetailPage").then((m) => ({ default: m.PortfolioDetailPage })))
-const PricingPage = lazy(() => import("@/pages/Pricing/PricingPage").then((m) => ({ default: m.PricingPage })))
-const AboutPage = lazy(() => import("@/pages/About/AboutPage").then((m) => ({ default: m.AboutPage })))
-const ContactPage = lazy(() => import("@/pages/Contact/ContactPage").then((m) => ({ default: m.ContactPage })))
 const QuotePage = lazy(() => import("@/pages/Quote/QuotePage").then((m) => ({ default: m.QuotePage })))
 const LoginPage = lazy(() => import("@/pages/Auth/LoginPage").then((m) => ({ default: m.LoginPage })))
 const DashboardPageOld = lazy(() => import("@/pages/Dashboard/DashboardPage").then((m) => ({ default: m.DashboardPage })))
@@ -154,10 +153,10 @@ export default function App() {
                   <Route path="/services/:slug" element={<PublicPage path="/services"><ServiceDetailPage /></PublicPage>} />
                   <Route path="/portfolio" element={<PublicPage path="/portfolio"><Seo title="اعمالنا" /><PortfolioPage /></PublicPage>} />
                   <Route path="/portfolio/:slug" element={<PublicPage path="/portfolio"><PortfolioDetailPage /></PublicPage>} />
-                  <Route path="/pricing" element={<PublicPage path="/pricing"><Seo title="الاسعار" /><PricingPage onToast={show} /></PublicPage>} />
+                  <Route path="/pricing" element={<NotFoundPage />} />
                   <Route path="/about" element={<PublicPage path="/about"><Seo title="من نحن" /><AboutPage /></PublicPage>} />
                   <Route path="/contact" element={<PublicPage path="/contact"><Seo title="تواصل معنا" /><ContactPage onToast={show} /></PublicPage>} />
-                  <Route path="/quote" element={<PublicPage path="/quote"><Seo title="اطلب عرض سعر" /><QuotePage onToast={show} /></PublicPage>} />
+                  <Route path="/quote" element={<PublicPage path="/quote"><Seo title="ابدأ مشروعك" /><QuotePage onToast={show} /></PublicPage>} />
                   <Route path="/blog" element={<PublicPage path="/blog"><BlogHomePage /></PublicPage>} />
                   <Route path="/blog/posts/:slug" element={<PublicPage path="/blog"><BlogPostPage /></PublicPage>} />
                   <Route path="/blog/categories/:slug" element={<PublicPage path="/blog"><BlogCategoryPage /></PublicPage>} />

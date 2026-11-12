@@ -58,7 +58,7 @@ export function Modal({
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-[#16064F]/50 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in"
+        className="fixed inset-0 bg-[#461667]/50 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in"
       />
 
       {/* Dialog Card */}

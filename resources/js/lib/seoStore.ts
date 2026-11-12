@@ -18,7 +18,7 @@ const SEED: SeoEntry[] = [
   { path: "/services", title: "ماذا نقدم؟ — AMTDEX SOFT", description: "مواقع، تطبيقات، متاجر، أنظمة إدارة، تسويق، هوية بصرية، وحماية المواقع والأنظمة." },
   { path: "/about", title: "من نحن — امتدكس سوفت", description: "نطوّر الحلول الرقمية ونحوّل الأفكار والمشكلات إلى أنظمة وبرمجيات قابلة للعمل والنمو." },
   { path: "/contact", title: "تواصل معنا — AMTDEX SOFT", description: "اليمن - إب. Info@amtdex.com. +967 784 440 429." },
-  { path: "/quote", title: "اطلب عرض سعر — AMTDEX SOFT", description: "أخبرنا عن فكرتك ونعود إليك." },
+  { path: "/quote", title: "ابدأ مشروعك — AMTDEX SOFT", description: "أخبرنا عن فكرتك ونعود إليك." },
 ]
 
 function load(): SeoEntry[] {

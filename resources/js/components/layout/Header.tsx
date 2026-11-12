@@ -239,9 +239,9 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
               </SiteLink>
             )}
             {quoteListed && (
-              <SiteLink to="/quote" className="btn btn-ink brand-cta site-header-cta">
-                <span className="hidden sm:inline">اطلب عرض سعر</span>
-                <span className="sm:hidden">عرض سعر</span>
+              <SiteLink to="/contact" className="btn btn-ink brand-cta site-header-cta">
+                <span className="hidden sm:inline">ابدأ مشروعك</span>
+                <span className="sm:hidden">ابدأ</span>
               </SiteLink>
             )}
             <button

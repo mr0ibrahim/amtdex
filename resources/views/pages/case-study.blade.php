@@ -20,7 +20,7 @@
         @include('partials.site-header')
         <div data-pencil-name="Hero" class="box-border w-full h-fit shrink-0 flex flex-row gap-[32px] p-[40px] justify-start items-start bg-[#070B1A]">
           <div data-pencil-name="Hero Left" class="box-border w-[640px] shrink-0 h-fit flex flex-col gap-[14px] justify-start items-start">
-            <div data-pencil-name="Badge" class="box-border w-fit h-fit shrink-0 flex flex-row gap-[8px] p-[6px_12px] justify-start items-center bg-[#1E2535] [outline:1px_solid_#2A3347] [outline-offset:-0.5px] rounded-[999px]">
+            <div data-pencil-name="Badge" class="box-border w-fit h-fit shrink-0 flex flex-row gap-[8px] p-[6px_12px] justify-start items-center bg-[#1E2535] [outline:1px_solid_#3D125F] [outline-offset:-0.5px] rounded-[999px]">
               <div data-pencil-name="BDot" class="box-border w-[6px] shrink-0 h-[6px] bg-[#7DD3A0] rounded-[50%]"></div>
               <div data-pencil-name="BText" class="text-[11px]/[normal] box-border text-[#9AA0AB] font-['IBM_Plex_Sans_Arabic',system-ui,sans-serif] font-semibold text-left [white-space:nowrap]">
                 دراسة حالة — المتاجر
@@ -36,7 +36,7 @@
               ساعة أسبوعياً.
             </div>
             <div data-pencil-name="Meta" class="box-border w-full h-fit shrink-0 flex flex-row gap-[12px] p-[14px_0px_0px_0px] justify-start items-start">
-              <div data-pencil-name="M العميل" class="box-border [flex:1_1_0] h-fit flex flex-col gap-[4px] p-[12px] justify-start items-start bg-[#161D2E] [outline:1px_solid_#2A3347] [outline-offset:-0.5px] rounded-[12px]">
+              <div data-pencil-name="M العميل" class="box-border [flex:1_1_0] h-fit flex flex-col gap-[4px] p-[12px] justify-start items-start bg-[#161D2E] [outline:1px_solid_#3D125F] [outline-offset:-0.5px] rounded-[12px]">
                 <div data-pencil-name="ML" class="text-[10px]/[normal] box-border text-[#9AA0AB] font-['IBM_Plex_Sans_Arabic',system-ui,sans-serif] font-normal text-left [white-space:nowrap]">
                   العميل
                 </div>
@@ -44,7 +44,7 @@
                   نُخبة للتجزئة
                 </div>
               </div>
-              <div data-pencil-name="M المدة" class="box-border [flex:1_1_0] h-fit flex flex-col gap-[4px] p-[12px] justify-start items-start bg-[#161D2E] [outline:1px_solid_#2A3347] [outline-offset:-0.5px] rounded-[12px]">
+              <div data-pencil-name="M المدة" class="box-border [flex:1_1_0] h-fit flex flex-col gap-[4px] p-[12px] justify-start items-start bg-[#161D2E] [outline:1px_solid_#3D125F] [outline-offset:-0.5px] rounded-[12px]">
                 <div data-pencil-name="ML" class="text-[10px]/[normal] box-border text-[#9AA0AB] font-['IBM_Plex_Sans_Arabic',system-ui,sans-serif] font-normal text-left [white-space:nowrap]">
                   المدة
                 </div>
@@ -52,7 +52,7 @@
                   10 أسابيع
                 </div>
               </div>
-              <div data-pencil-name="M التقنيات" class="box-border [flex:1_1_0] h-fit flex flex-col gap-[4px] p-[12px] justify-start items-start bg-[#161D2E] [outline:1px_solid_#2A3347] [outline-offset:-0.5px] rounded-[12px]">
+              <div data-pencil-name="M التقنيات" class="box-border [flex:1_1_0] h-fit flex flex-col gap-[4px] p-[12px] justify-start items-start bg-[#161D2E] [outline:1px_solid_#3D125F] [outline-offset:-0.5px] rounded-[12px]">
                 <div data-pencil-name="ML" class="text-[10px]/[normal] box-border text-[#9AA0AB] font-['IBM_Plex_Sans_Arabic',system-ui,sans-serif] font-normal text-left [white-space:nowrap]">
                   التقنيات
                 </div>
@@ -62,7 +62,7 @@
               </div>
             </div>
           </div>
-          <div data-pencil-name="Hero Right" class="box-border [flex:1_1_0] h-[320px] flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#2A3347] [outline-offset:-0.5px] rounded-[16px] overflow-hidden">
+          <div data-pencil-name="Hero Right" class="box-border [flex:1_1_0] h-[320px] flex flex-col gap-0 justify-start items-start bg-[#FFFFFF] [outline:1px_solid_#3D125F] [outline-offset:-0.5px] rounded-[16px] overflow-hidden">
             <div data-pencil-name="Top" class="[box-sizing:content-box] w-[688px] h-[35.5px] shrink-0 flex flex-row gap-[6px] p-[0px_14px] justify-start items-center bg-[#F8F7F5] [border-width:0px_0px_1px_0px] [border-style:solid] [border-color:#E8E5DF] [margin:0px_0px_-0.5px_0px]">
               <div data-pencil-name="dc" class="box-border w-[8px] shrink-0 h-[8px] bg-[#FF5F56] rounded-[50%]"></div>
               <div data-pencil-name="dc" class="box-border w-[8px] shrink-0 h-[8px] bg-[#FFBD2E] rounded-[50%]"></div>

@@ -17,14 +17,14 @@ const MODULE_GROUPS: Array<{ title: string; items: ModuleCard[] }> = [
     title: "المحتوى والنشر",
     items: [
       { to: "/dashboard/blog", title: "المدونة", desc: "مقالات، تصنيفات، ووسوم", icon: "pen" },
-      { to: "/dashboard/content", title: "محتوى الموقع", desc: "خدمات، أسعار، وفريق العمل", icon: "layers" },
+      { to: "/dashboard/content", title: "محتوى الموقع", desc: "خدمات ومحتوى الصفحات", icon: "layers" },
       { to: "/dashboard/media", title: "مكتبة الوسائط", desc: "صور وملفات جاهزة للنشر", icon: "image" },
     ],
   },
   {
     title: "المبيعات والنمو",
     items: [
-      { to: "/dashboard/leads", title: "الطلبات والعروض", desc: "تواصل، عروض أسعار، ونشرات", icon: "mail" },
+      { to: "/dashboard/leads", title: "الطلبات", desc: "تواصل ومشاريع ونشرات", icon: "mail" },
       { to: "/dashboard/seo", title: "تحسين الظهور", desc: "عناوين ووصف وبيانات SEO", icon: "globe" },
       { to: "/dashboard/users", title: "المستخدمون", desc: "صلاحيات فريق العمل", icon: "users" },
     ],
@@ -40,7 +40,7 @@ const MODULE_GROUPS: Array<{ title: string; items: ModuleCard[] }> = [
 ]
 
 const RECENT = [
-  { title: "مراجعة طلب عرض سعر جديد", meta: "قبل 12 دقيقة", to: "/dashboard/leads", icon: "mail" as IconName },
+  { title: "مراجعة طلب تواصل جديد", meta: "وصل حديثاً", to: "/dashboard/leads", icon: "mail" as IconName },
   { title: "تحديث مقال المدونة", meta: "قبل ساعة", to: "/dashboard/blog", icon: "pen" as IconName },
   { title: "ضبط بيانات SEO للخدمات", meta: "اليوم", to: "/dashboard/seo", icon: "globe" as IconName },
 ]
@@ -108,7 +108,7 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
                 <ul className="grid gap-2">
                   {moduleHits.map((hit) => (
                     <li key={hit.to + hit.title}>
-                      <Link to={hit.to} className="block rounded-xl bg-[#F6F3EC] px-3 py-2 text-[13px] font-bold text-[var(--color-ink)]">
+                      <Link to={hit.to} className="block rounded-xl bg-[#F8F2FB] px-3 py-2 text-[13px] font-bold text-[var(--color-ink)]">
                         {hit.title}
                         <span className="block text-[11px] font-medium text-[var(--color-text-muted)]">{hit.desc}</span>
                       </Link>
@@ -170,7 +170,7 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
                 icon: "mail" as IconName,
               },
               {
-                k: "عروض الأسعار",
+                k: "طلبات المشاريع",
                 v: stats?.quotes.value ?? 9,
                 sub: stats?.quotes.sub ?? "بانتظار الرد",
                 icon: "invoice" as IconName,

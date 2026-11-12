@@ -49,7 +49,7 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
         <div>
           <div className="da-hero-copy">
             <p data-motion="rise" className="da-kicker">{hero.kicker}</p>
-            <h1 data-motion="rise" data-motion-delay="140" className="mt-4 text-[34px] sm:text-[68px] leading-[1.15] font-semibold text-[var(--color-ink)]">
+            <h1 className="mt-4 text-[34px] sm:text-[68px] leading-[1.15] font-semibold text-[var(--color-ink)]">
               {hero.title.split("\n").map((line, index) => <span key={line}>{index > 0 && <br />}{line}</span>)}
             </h1>
             <p data-motion="rise" data-motion-delay="280" className="mt-4 text-[16px] leading-8 text-[var(--color-text-muted)] max-w-[34rem]">
@@ -64,7 +64,7 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
             </p>
           </div>
 
-          <div data-motion="rise" data-motion-delay="200" className="da-app">
+          <div className="da-app">
             <div className="h-12 flex items-center justify-between px-4 border-b border-[var(--color-border)]">
               <span className="text-[12px] font-semibold">لوحة التحكم</span>
               <span data-motion="signal" data-motion-delay="700" className="inline-flex items-center gap-2 text-[11px] font-semibold">
@@ -73,54 +73,22 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
             </div>
             <div className="grid sm:grid-cols-[160px_1fr]">
               <div className="hidden sm:flex flex-col gap-1 p-4 border-l border-[var(--color-border)] bg-[var(--color-bg)]">
-                <div className="text-[10px] font-semibold text-[var(--color-text-faint)]">المشاريع</div>
-                <div className="mt-2 bg-[var(--color-ink)] text-white px-3 py-2 text-[12px] font-semibold">لوحة المبيعات</div>
-                <div className="px-3 py-2 text-[12px] text-[var(--color-text-muted)]">تحليل العملاء</div>
-                <div className="px-3 py-2 text-[12px] text-[var(--color-text-muted)]">حملات التسويق</div>
-                <div className="mt-auto border border-[var(--color-border)] p-3 text-[11px] leading-5">
-                  <div className="font-semibold text-[var(--color-ink)]">الخطة الاحترافية</div>
-                  <div className="text-[var(--color-text-muted)] mt-1">احصل على تحليلات متقدمة بلا حدود</div>
-                </div>
+                <div className="text-[10px] font-semibold text-[var(--color-text-faint)]">ماذا نقدم</div>
+                {["المواقع", "تطبيقات الجوال", "المتاجر", "أنظمة الإدارة", "الهوية البصرية"].map((item, index) => (
+                  <div key={item} className={index === 0 ? "mt-2 bg-[var(--color-brand)] text-white px-3 py-2 text-[12px] font-semibold" : "px-3 py-2 text-[12px] text-[var(--color-text-muted)]"}>{item}</div>
+                ))}
               </div>
-              <div className="p-4 sm:p-5 flex flex-col gap-4">
-                <div className="da-metrics">
-                  {[
-                    ["الإيرادات", "﷼ 284,500", "+12.4%"],
-                    ["العملاء", "1,842", "+8.1%"],
-                    ["المهام", "96%", "مكتملة"],
-                  ].map(([label, value, note], index) => (
-                    <div key={label} data-motion="signal" data-motion-delay={400 + index * 110} className="bg-[var(--color-surface)] p-3">
-                      <div className="text-[11px] text-[var(--color-text-muted)]">{label}</div>
-                      <div className="mt-2 text-[16px] sm:text-[18px] font-semibold">{value}</div>
-                      <div className="mt-1 text-[11px] text-[var(--color-success)]">{note}</div>
-                    </div>
-                  ))}
-                </div>
-                <div>
-                  <div className="flex items-center justify-between text-[12px]">
-                    <span className="font-semibold">نمو المبيعات — آخر 6 أشهر</span>
-                    <span className="text-[var(--color-text-muted)]">الإيرادات</span>
-                  </div>
-                  <div className="mt-4 flex items-end gap-2 h-[96px]">
-                    {[
-                      { h: 40, label: "ينا" },
-                      { h: 68, label: "فبر" },
-                      { h: 52, label: "مار" },
-                      { h: 88, label: "أبر" },
-                      { h: 72, label: "ماي" },
-                      { h: 88, label: "يون", active: true },
-                    ].map((b, index) => (
-                      <div key={b.label} className="flex-1 flex flex-col items-center gap-1.5">
-                        <div data-motion="bar" data-motion-delay={650 + index * 100} className={`w-full ${b.active ? "bg-[var(--color-ink)]" : "bg-[var(--color-ink)]/15"}`} style={{ height: b.h }} />
-                        <span className="text-[10px] text-[var(--color-text-faint)]">{b.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <p className="text-[12px] border-t border-[var(--color-border)] pt-3">
-                  النظام يعمل الآن
-                  <span className="block text-[var(--color-ink)] mt-1">مباشر وجاهز للاستخدام</span>
-                </p>
+              <div className="p-4 sm:p-5 flex flex-col gap-3">
+                <div className="text-[12px] font-semibold">من الفكرة إلى الإنجاز</div>
+                {[
+                  "نفهم فكرتك واحتياجات مشروعك.",
+                  "نخطط للحل التقني المناسب لك.",
+                  "نصمم ونبرمج مشروعك باحترافية.",
+                  "نختبر الحل ونتأكد من جاهزيته.",
+                  "نساعدك على إطلاق مشروعك وتطويره.",
+                ].map((step) => (
+                  <p key={step} className="text-[13px] leading-6 border-b border-[var(--color-border)] pb-2">{step}</p>
+                ))}
               </div>
             </div>
           </div>
@@ -174,7 +142,7 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
               {news.lede}
             </p>
             <div data-motion="rise" data-motion-delay="260" className="mt-6 flex flex-wrap gap-3">
-              <Link to="/quote" className="btn btn-ink brand-cta">اطلب عرض سعر</Link>
+              <Link to="/contact" className="btn btn-ink brand-cta">تواصل معنا</Link>
               <Link to="/contact" className="btn btn-line brand-cta">تحدث معنا</Link>
             </div>
           </div>

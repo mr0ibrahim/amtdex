@@ -1,3 +1,4 @@
+import "../../../css/dashboard.css"
 import { useEffect, useMemo, useState } from "react"
 import { useDebouncedValue } from "@/routing/search"
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
@@ -129,7 +130,7 @@ function SidebarContent({
           <button
             type="button"
             onClick={handleLogout}
-            className="text-[11px] font-bold min-h-11 px-3 rounded-full border border-[var(--color-border)] hover:bg-[#16064F] hover:text-[#F6F3EC] transition-colors"
+            className="text-[11px] font-bold min-h-11 px-3 rounded-full border border-[var(--color-border)] hover:bg-[#461667] hover:text-[#F8F2FB] transition-colors"
           >
             خروج
           </button>

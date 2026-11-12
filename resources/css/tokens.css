@@ -4,61 +4,58 @@
 
 :root {
   color-scheme: light;
-  /* ── Semantic surface: PR #15 paper, navy text, gold accent ── */
-  --bg: #F3F0E8;
-  --surface: #FBFAF6;
-  --text: #16064F;
-  --text-muted: #5C5670;
-  --text-faint: #5C5670;
-  --border: #DDD6C8;
-  --accent: #FFBF08;
-  --accent-text: #16064F;
-  --input-bg: #FBFAF6;
-  --input-text: #16064F;
-  --placeholder: #5C5670;
-  --focus-ring: #16064F;
-  --danger: #16064F;
-  --danger-bg: #E6E0D4;
-  --success: #16064F;
-  --success-text: #F6F3EC;
+  /* Brand from the Amtdex mark: royal purple, violet ribbon, gold. Gold is an accent fill, not body text on light surfaces. */
+  --bg: #F6EEFA;
+  --surface: #FBF7FD;
+  --text: #31144D;
+  --text-muted: #5A3D72;
+  --text-faint: #5A3D72;
+  --border: #DCC8EA;
+  --accent: #F5A81C;
+  --accent-text: #31144D;
+  --input-bg: #FBF7FD;
+  --input-text: #31144D;
+  --placeholder: #5A3D72;
+  --focus-ring: #461667;
+  --danger: #8B1E4A;
+  --danger-bg: #F8E4EC;
+  --success: #0E9F6E;
+  --success-text: #FBF7FD;
 
-  /* ── PR #15 identity. Navy is the main colour. Gold is an accent only. ── */
-  --color-brand: #16064F;
-  --color-ink: #16064F;
-  --color-primary: #16064F;
-  --color-primary-light: #16064F;
-  --color-violet-mid: #E69A12;
-  --color-gold: #FFBF08;
-  --color-gold-dark: #E69A12;
-  --color-lavender: #E6E0D4;
-  --color-card-soft: #F6F3EC;
-  --color-surface: #FBFAF6;
-  --color-bg: #F3F0E8;
-  --color-bg-subtle: #EFEBE3;
+  --color-brand: #461667;
+  --color-ink: #31144D;
+  --color-primary: #461667;
+  --color-primary-light: #8B3FD9;
+  --color-violet-mid: #8B3FD9;
+  --color-gold: #F5A81C;
+  --color-gold-dark: #C98412;
+  --color-lavender: #EEE2F5;
+  --color-card-soft: #F8F2FB;
+  --color-surface: #FBF7FD;
+  --color-bg: #F6EEFA;
+  --color-bg-subtle: #EEE2F5;
 
-  /* ── مشتقات ── */
-  --color-ink-soft: #16064F;
-  --color-beige: #F6F3EC;
-  --color-border: #DDD6C8;
-  --color-border-strong: #16064F;
-  --color-outline-peach: #DDD6C8;
+  --color-ink-soft: #3D125F;
+  --color-beige: #F8F2FB;
+  --color-border: #DCC8EA;
+  --color-border-strong: #461667;
+  --color-outline-peach: #DCC8EA;
   --color-text: var(--text);
   --color-text-muted: var(--text-muted);
   --color-text-faint: var(--text-faint);
   --color-success: #0E9F6E;
-  --color-success-bg: #E6F4EA;
-  --color-accent: #FFBF08;
-  --color-accent-purple: #16064F;
-  --color-signal: #F6F3EC;
-  --color-cta-dark-border: #2A3347;
+  --color-success-bg: #E5F6EF;
+  --color-accent: #F5A81C;
+  --color-accent-purple: #8B3FD9;
+  --color-signal: #F8F2FB;
+  --color-cta-dark-border: #3D125F;
   --color-live: #7DD3A0;
 
-  /* ── Flat fills from the same hexes. ── */
-  --gradient-primary: linear-gradient(#16064F, #16064F);
-  --gradient-gold: linear-gradient(#FFBF08, #FFBF08);
-  --gradient-hero: linear-gradient(#F3F0E8, #F3F0E8);
-  --gradient-card: linear-gradient(#FBFAF6, #FBFAF6);
-  --gradient-cta: linear-gradient(#16064F, #16064F);
+  --gradient-primary: linear-gradient(#461667, #461667);
+  --gradient-gold: linear-gradient(#F5A81C, #F5A81C);
+  --gradient-hero: linear-gradient(#F6EEFA, #F6EEFA);
+  --gradient-card: linear-gradient(#FBF7FD, #FBF7FD);
+  --gradient-cta: linear-gradient(#461667, #461667);
 
   /* ── Spacing (4px / 8px scale) ── */
   --space-1: 4px;
@@ -115,15 +112,15 @@
   --shadow-sm: none;
   --shadow-card: none;
   --shadow-card-lg: none;
-  --shadow-elevated: 0 16px 40px rgba(22, 6, 79, 0.08);
-  --shadow-toast: 0 12px 40px rgba(22, 6, 79, 0.18);
-  --shadow-modal: 0 24px 80px rgba(22, 6, 79, 0.12);
+  --shadow-elevated: 0 16px 40px rgba(49, 20, 77, 0.08);
+  --shadow-toast: 0 12px 40px rgba(49, 20, 77, 0.18);
+  --shadow-modal: 0 24px 80px rgba(49, 20, 77, 0.12);
   --shadow-cta: none;
   --shadow-primary: none;
 
   /* ── Focus ── */
-  --ring: 0 0 0 3px rgba(84, 37, 164, 0.20);
-  --ring-gold: 0 0 0 3px rgba(255, 191, 8, 0.25);
+  --ring: 0 0 0 3px rgba(70, 22, 103, 0.28);
+  --ring-gold: 0 0 0 3px rgba(245, 168, 28, 0.35);
 
   /* ── Service / testimonial component tokens (ممركزة من cards.css) ── */
   --service-card-pad: 28px;

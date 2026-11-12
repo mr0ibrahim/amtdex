@@ -14,9 +14,8 @@ export const CMS_DEFAULTS: CmsDocument = {
     { path: "/portfolio", label: "أعمالنا", published: false, seoTitle: "أعمالنا", seoDescription: "لم تُنشر أعمال بعد." },
     { path: "/blog", label: "المدونة", published: true, seoTitle: "المدونة — AMTDEX SOFT", seoDescription: "ملاحظات وأفكار من امتدكس سوفت." },
     { path: "/about", label: "من نحن", published: true, seoTitle: "من نحن — امتدكس سوفت", seoDescription: "نطوّر الحلول الرقمية ونحوّل الأفكار والمشكلات إلى أنظمة وبرمجيات قابلة للعمل والنمو." },
-    { path: "/pricing", label: "الأسعار", published: false, seoTitle: "الأسعار", seoDescription: "لا أسعار منشورة. تواصل معنا لعرض يناسب مشروعك." },
     { path: "/contact", label: "تواصل", published: true, seoTitle: "تواصل معنا — AMTDEX SOFT", seoDescription: "اليمن - إب. Info@amtdex.com. +967 784 440 429." },
-    { path: "/quote", label: "اطلب عرض سعر", published: true, seoTitle: "اطلب عرض سعر — AMTDEX SOFT", seoDescription: "أخبرنا عن فكرتك ونعود إليك." },
+    { path: "/quote", label: "ابدأ مشروعك", published: true, seoTitle: "ابدأ مشروعك — AMTDEX SOFT", seoDescription: "أخبرنا عن فكرتك ونعود إليك." },
   ],
   nav: [
     { id: "services", label: "الخدمات", to: "/services", visible: true },
@@ -24,9 +23,8 @@ export const CMS_DEFAULTS: CmsDocument = {
     { id: "blog", label: "المدونة", to: "/blog", visible: true },
     { id: "tech", label: "التقنيات", to: "/services", visible: false },
     { id: "about", label: "من نحن", to: "/about", visible: true },
-    { id: "pricing", label: "الأسعار", to: "/pricing", visible: false },
     { id: "contact", label: "تواصل معنا", to: "/contact", visible: true },
-    { id: "quote", label: "اطلب عرض سعر", to: "/quote", visible: true },
+    { id: "quote", label: "ابدأ مشروعك", to: "/contact", visible: true },
   ],
   homeSections: [
     { id: "hero", label: "الافتتاح", visible: true, fields: { kicker: "امتدكس سوفت — هندسة الفكرة قبل برمجتها.", title: "هندسة الفكرة\nقبل برمجتها.", lede: "حيث تلتقي الأفكار بالتقنية، وتتحول الطموحات إلى مشاريع قابلة للتحقيق.", cta: "تواصل معنا", cta2: "ماذا نقدم؟", proof: "من الفكرة إلى التنفيذ" } },

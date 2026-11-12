@@ -66,7 +66,7 @@ describe("routing", () => {
 
   it("طلب عرض سعر /quote", async () => {
     renderAt("/quote")
-    expect(await screen.findByRole("heading", { name: /اطلب عرض سعر/ })).toBeInTheDocument()
+    expect(await screen.findByRole("heading", { name: /ابدأ مشروعك/ })).toBeInTheDocument()
   })
 
   it("لوحة التحكم على نطاق منفصل تعيد 404 بلا رابط دخول", async () => {

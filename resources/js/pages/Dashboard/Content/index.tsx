@@ -11,13 +11,12 @@ import {
 import type { Service } from "@/types/service"
 import type { Project } from "@/types/project"
 import { Icon, type IconName } from "@/components/ui/Icon"
-import { PricingTab } from "./PricingTab"
 import { TestimonialsTab } from "./TestimonialsTab"
 import { FaqsTab } from "./FaqsTab"
 import { TeamTab } from "./TeamTab"
 import { ClientsTab } from "./ClientsTab"
 
-type ContentTab = "projects" | "services" | "pricing" | "testimonials" | "faqs" | "team" | "clients"
+type ContentTab = "projects" | "services" | "testimonials" | "faqs" | "team" | "clients"
 
 const SERVICE_ICONS: Array<{ id: IconName; label: string }> = [
   { id: "web", label: "مواقع ويب (Web)" },
@@ -296,7 +295,6 @@ export function ContentPage() {
   const contentTabs: Array<{ id: ContentTab; label: string }> = [
     { id: "projects", label: `معرض المشاريع (${projects.length})` },
     { id: "services", label: `الخدمات (${services.length})` },
-    { id: "pricing", label: "باقات الأسعار" },
     { id: "testimonials", label: "آراء العملاء" },
     { id: "faqs", label: "الأسئلة الشائعة" },
     { id: "team", label: "فريق العمل" },
@@ -548,7 +546,6 @@ export function ContentPage() {
       )}
 
       {/* Dynamic Content Tabs */}
-      {activeTab === "pricing" && <PricingTab />}
       {activeTab === "testimonials" && <TestimonialsTab />}
       {activeTab === "faqs" && <FaqsTab />}
       {activeTab === "team" && <TeamTab />}
