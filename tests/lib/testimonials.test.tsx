@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import { expect, it } from "vitest"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
@@ -12,12 +12,20 @@ const queryClient = new QueryClient({
   },
 })
 
-it("hides testimonials when the company has not published any", () => {
+it("lets readers navigate all existing testimonials and wraps in both directions", () => {
   render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter><Testimonials /></MemoryRouter>
     </QueryClientProvider>
   )
-  expect(screen.queryByText("سارة العتيبي")).not.toBeInTheDocument()
-  expect(screen.queryByRole("region", { name: "آراء العملاء" })).not.toBeInTheDocument()
+  expect(screen.getByText("سارة العتيبي")).toBeVisible()
+  fireEvent.click(screen.getByRole("button", { name: "الرأي التالي" }))
+  expect(screen.getByText("عمر الحربي")).toBeVisible()
+  fireEvent.click(screen.getByRole("button", { name: "عرض رأي نورة القحطاني" }))
+  expect(screen.getByText("نورة القحطاني")).toBeVisible()
+  expect(screen.getByRole("button", { name: "عرض رأي نورة القحطاني" })).toHaveAttribute("aria-pressed", "true")
+  fireEvent.click(screen.getByRole("button", { name: "الرأي التالي" }))
+  expect(screen.getByText("سارة العتيبي")).toBeVisible()
+  fireEvent.click(screen.getByRole("button", { name: "الرأي السابق" }))
+  expect(screen.getByText("نورة القحطاني")).toBeVisible()
 })

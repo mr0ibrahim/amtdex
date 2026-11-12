@@ -5,16 +5,13 @@ import { getBlogUrl, getMainUrl, isBlogSubdomain } from "@/lib/subdomain"
 import { pageIsListed, useCms, useCopy } from "@/cms/useCms"
 
 export function Footer({ onToast }: { onToast: (m: string) => void }) {
-  void onToast
   const onBlog = isBlogSubdomain()
   const { pages } = useCms()
   const blurb = useCopy("footer.blurb", "نحن شركة برمجيات وتقنية معلومات، نطوّر الحلول الرقمية ونحوّل الأفكار والمشكلات إلى أنظمة وبرمجيات قابلة للعمل والنمو.")
   const city = useCopy("footer.city", "اليمن - إب")
   const shown = (path: string) => pageIsListed(pages, path, false)
   const { data: apiServices } = useServicesQuery()
-  const real = new Set(SEED_SERVICES.map((service) => service.slug))
-  const fromApi = (apiServices ?? []).filter((service) => real.has(service.slug))
-  const services = fromApi.length > 0 ? fromApi : SEED_SERVICES
+  const services = (apiServices && apiServices.length > 0) ? apiServices : SEED_SERVICES
 
   const columns = [
     {
@@ -25,22 +22,28 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
       title: "الشركة",
       links: [
         { label: "من نحن", to: "/about" },
+        { label: "الأعمال", to: "/portfolio" },
         { label: "تواصل", to: "/contact" },
       ].filter((link) => shown(link.to)),
     },
     {
       title: "الموارد",
       links: [
-        { label: "المدونة", href: onBlog ? "/" : getBlogUrl("/") },
-      ],
+        { label: "المدونة التقنية", href: onBlog ? "/" : getBlogUrl("/") },
+        { label: "الأسئلة الشائعة", to: "/about#faq" },
+        { label: "سياسة الخصوصية", to: "/contact" },
+        { label: "الشروط", to: "/contact" },
+        { label: "API Docs", to: "/services" },
+        { label: "الحالة", to: "/" },
+      ].filter((link) => shown(link.to ?? "/blog")),
     },
     {
       title: "تواصل سريع",
       links: [
-        { label: "ابدأ مشروعك", to: "/contact" },
-        { label: "واتساب", href: "https://wa.me/967784440429" },
-        { label: "إنستغرام", href: "https://www.instagram.com/amtdex/" },
-      ].filter((link) => !link.to || shown(link.to)),
+        { label: "ابدأ مشروعك", to: "/quote" },
+        { label: "واتساب", to: "/contact" },
+        { label: "حجز استشارة", to: "/contact" },
+      ].filter((link) => shown(link.to)),
     },
   ]
 
@@ -64,11 +67,33 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
             <p className="mt-4 text-[13px] leading-7 text-[var(--color-text-muted)] max-w-[260px]">
               {blurb}
             </p>
-            <div className="mt-4 text-[11px] text-[var(--color-text-faint)] leading-6">
+            <div className="mt-5 flex gap-4">
+              {["X", "in"].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => onToast(s)}
+                  aria-label={s}
+                  className="text-[12px] font-semibold tracking-wide text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
+                >
+                  {s}
+                </button>
+              ))}
+              <a
+                href="https://www.instagram.com/amtdex/"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Instagram"
+                className="text-[12px] font-semibold tracking-wide text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
+              >
+                ig
+              </a>
+            </div>
+            <div className="mt-4 text-[11px] text-[var(--color-text-faint)] leading-5">
               <div>{city}</div>
-              <a href="mailto:Info@amtdex.com" dir="ltr" className="block text-left">Info@amtdex.com</a>
-              <a href="tel:+967784440429" dir="ltr" className="block text-left">+967 784 440 429</a>
-              <a href="tel:+967784440428" dir="ltr" className="block text-left">+967 784 440 428</a>
+              <div dir="ltr" className="text-left">
+                Info@amtdex.com • +967 784 440 429 • +967 784 440 428
+              </div>
             </div>
           </div>
 
@@ -111,7 +136,7 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
           ))}
         </div>
         <div className="mt-10 pt-6 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[var(--color-text-faint)]">
-          <span>© 2026 امتدكس سوفت — AMTDEX SOFT. جميع الحقوق محفوظة.</span>
+          <span>© 2026 AMTDEX SOFT — جميع الحقوق محفوظة. اليمن - إب.</span>
         </div>
       </div>
     </footer>

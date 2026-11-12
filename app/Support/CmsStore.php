@@ -98,11 +98,11 @@ class CmsStore
 
     private static function keep(mixed $stored, mixed $fallback): mixed
     {
-        if (is_string($stored) && in_array($stored, self::RETIRED, true)) {
+        if ($stored === null || $stored === '' || (is_string($stored) && in_array($stored, self::RETIRED, true))) {
             return $fallback;
         }
 
-        return $stored ?? $fallback;
+        return $stored;
     }
 
     public static function merge(array $stored): array
@@ -115,7 +115,11 @@ class CmsStore
             foreach (['label', 'seoTitle', 'seoDescription'] as $key) {
                 $merged[$key] = self::keep($merged[$key] ?? null, $page[$key]);
             }
-            if (in_array($page['path'], ['/portfolio', '/pricing'], true) && in_array($override['seoDescription'] ?? '', self::RETIRED, true)) {
+            if ($page['path'] === '/portfolio' && ($override['seoDescription'] ?? '') === 'لم تُنشر أعمال بعد.') {
+                $merged['published'] = true;
+                $merged['seoDescription'] = $page['seoDescription'];
+            }
+            if ($page['path'] === '/pricing') {
                 $merged['published'] = false;
             }
             if (! $page['published'] && ($override['seoDescription'] ?? null) === null) {
@@ -129,12 +133,12 @@ class CmsStore
         $storedNav = collect($stored['nav'] ?? [])->keyBy('id');
         $nav = collect($defaults['nav'])->map(function ($item) use ($storedNav, $publishedByPath) {
             $merged = array_merge($item, $storedNav->get($item['id'], []));
+            $merged['label'] = self::keep($merged['label'] ?? null, $item['label']);
             $page = $publishedByPath->get($item['to']);
             if ($page && ! $page['published']) {
                 $merged['visible'] = false;
-            }
-            if ($item['id'] === 'tech' && ($storedNav->get('tech')['label'] ?? 'التقنيات') === 'التقنيات') {
-                $merged['visible'] = false;
+            } elseif (! empty($item['visible']) && (! $page || $page['published'])) {
+                $merged['visible'] = true;
             }
 
             return $merged;

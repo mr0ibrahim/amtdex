@@ -31,7 +31,7 @@ describe("routing", () => {
 
   it("الخدمات /services تعرض العنوان", async () => {
     renderAt("/services")
-    expect(await screen.findByText(/تصميم وبرمجة وحلول رقمية/)).toBeInTheDocument()
+    expect(await screen.findByText(/ماذا نقدم؟/)).toBeInTheDocument()
   })
 
   it("تفاصيل خدمة /services/web تعرض العنوان", async () => {
@@ -39,14 +39,14 @@ describe("routing", () => {
     expect(await screen.findByRole("heading", { name: "تصميم وبرمجة المواقع الإلكترونية" })).toBeInTheDocument()
   })
 
-  it("الأعمال /portfolio غير منشورة", async () => {
+  it("الأعمال /portfolio تعرض المشاريع السابقة", async () => {
     renderAt("/portfolio")
-    expect(await screen.findByText(/404/)).toBeInTheDocument()
+    expect(await screen.findByText(/نصنع منتجات/)).toBeInTheDocument()
   })
 
-  it("تفاصيل مشروع مخترع غير منشورة", async () => {
+  it("تفاصيل مشروع /portfolio/noon-replatform", async () => {
     renderAt("/portfolio/noon-replatform")
-    expect(await screen.findByText(/404/)).toBeInTheDocument()
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(/نون/)
   })
 
   it("الأسعار /pricing غير منشورة", async () => {
@@ -61,7 +61,7 @@ describe("routing", () => {
 
   it("تواصل /contact تعرض النموذج", async () => {
     renderAt("/contact")
-    expect(await screen.findByText(/لنبدأ/)).toBeInTheDocument()
+    expect(await screen.findByText(/لنتحدث عن/)).toBeInTheDocument()
   })
 
   it("طلب عرض سعر /quote", async () => {
