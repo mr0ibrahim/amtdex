@@ -1,5 +1,4 @@
-import { Icon } from "@/components/ui/Icon"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { Link, NavLink, useLocation } from "react-router-dom"
 import { getBlogUrl, getMainUrl, isBlogSubdomain } from "@/lib/subdomain"
 import { prefetchRoute } from "@/routing/lifecycle"
@@ -68,16 +67,33 @@ function SiteLink({
 export function Header({ onToast }: { onToast: (m: string) => void }) {
   void onToast
   const [open, setOpen] = useState(false)
+  const [entered, setEntered] = useState(false)
+  const [condensed, setCondensed] = useState(false)
+  const [hidden, setHidden] = useState(false)
+  const [pill, setPill] = useState({ x: 0, w: 0, on: false })
   const loc = useLocation()
   const prevPath = useRef(loc.pathname)
   const menuRef = useRef<HTMLDivElement>(null)
   const toggleRef = useRef<HTMLButtonElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const openRef = useRef(open)
   const onBlog = isBlogSubdomain()
   const { nav, pages } = useCms()
   const menu = nav.filter((item) => item.visible && pageIsListed(pages, item.to, false))
+  const desktop = menu.filter((item) => !["contact", "quote", "pricing"].includes(item.id))
   const homeListed = pageIsListed(pages, "/", false)
   const contactListed = pageIsListed(pages, "/contact", false)
   const quoteListed = pageIsListed(pages, "/quote", false)
+
+  useEffect(() => {
+    openRef.current = open
+    if (open) setHidden(false)
+  }, [open])
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setEntered(true))
+    return () => cancelAnimationFrame(id)
+  }, [])
 
   useEffect(() => {
     if (prevPath.current !== loc.pathname) {
@@ -87,124 +103,180 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
   }, [loc.pathname])
 
   useEffect(() => {
-    if (!open) return
-    const h = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpen(false)
-        toggleRef.current?.focus()
-      }
+    let last = window.scrollY
+    let frame = 0
+    const onScroll = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        const y = window.scrollY
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        const nextCondensed = y > 16
+        let nextHidden = false
+        if (!reduce && !openRef.current && y > last + 6 && y > 80) nextHidden = true
+        if (y < last - 6 || y < 48) nextHidden = false
+        last = y
+        setCondensed((value) => (value === nextCondensed ? value : nextCondensed))
+        setHidden((value) => (value === nextHidden ? value : nextHidden))
+      })
     }
-    window.addEventListener("keydown", h)
-    return () => window.removeEventListener("keydown", h)
-  }, [open])
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener("scroll", onScroll)
+    }
+  }, [])
+
+  useLayoutEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+    const place = () => {
+      const active = track.querySelector<HTMLElement>(".is-active")
+      if (!active) {
+        setPill((value) => (value.on ? { ...value, on: false } : value))
+        return
+      }
+      const trackBox = track.getBoundingClientRect()
+      const linkBox = active.getBoundingClientRect()
+      setPill({ x: linkBox.left - trackBox.left, w: linkBox.width, on: true })
+    }
+    place()
+    window.addEventListener("resize", place)
+    return () => window.removeEventListener("resize", place)
+  }, [loc.pathname, desktop.map((item) => item.id).join("|")])
 
   useEffect(() => {
-    if (!open || !menuRef.current) return
+    if (!open) return
+    const previous = document.body.style.overflow
+    document.body.style.overflow = "hidden"
     const menu = menuRef.current
-    const focusable = menu.querySelectorAll<HTMLElement>("a, button:not([disabled])")
-    focusable[0]?.focus()
-    const trap = (e: KeyboardEvent) => {
-      if (e.key !== "Tab" || focusable.length === 0) return
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault()
+    const toggle = toggleRef.current
+    const items = () => {
+      const links = menu ? [...menu.querySelectorAll<HTMLElement>("a, button:not([disabled])")] : []
+      return toggle ? [...links, toggle] : links
+    }
+    items()[0]?.focus()
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false)
+        toggle?.focus()
+        return
+      }
+      if (event.key !== "Tab") return
+      const list = items()
+      if (list.length === 0) return
+      const first = list[0]
+      const last = list[list.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
         last.focus()
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
         first.focus()
       }
     }
-    menu.addEventListener("keydown", trap as unknown as EventListener)
-    return () => menu.removeEventListener("keydown", trap as unknown as EventListener)
+    document.addEventListener("keydown", onKey)
+    return () => {
+      document.body.style.overflow = previous
+      document.removeEventListener("keydown", onKey)
+    }
   }, [open])
+
+  const renderItem = (item: (typeof menu)[number], onClick?: () => void) => {
+    const className = ({ isActive }: { isActive: boolean }) => `site-nav${isActive ? " is-active" : ""}`
+    if (item.id === "blog" && !onBlog) {
+      return (
+        <a key={item.id} href={getBlogUrl("/")} className="site-nav" onClick={onClick}>
+          {item.label}
+        </a>
+      )
+    }
+    return (
+      <SiteNavLink
+        key={item.id}
+        to={item.id === "blog" ? "/" : item.to}
+        onClick={onClick}
+        onIntent={() => prefetchRoute(item.to)}
+        className={className}
+      >
+        {item.label}
+      </SiteNavLink>
+    )
+  }
 
   return (
     <>
-      <div className="hidden md:block border-b border-[var(--color-border)] text-[12px] text-[var(--color-text-muted)]">
-        <div className="page-container page-container--wide h-9 flex items-center justify-between gap-6">
+      <header className={`site-header${entered ? " is-in" : ""}${condensed ? " is-condensed" : ""}${hidden ? " is-hidden" : ""}`}>
+        <div className="site-header-stack">
+        <div className="site-header-utility">
           <span>جميع الأنظمة تعمل — 99.99% uptime</span>
           <span className="hidden lg:inline">Amtdex — نبني حلولك البرمجية من الفكرة للإطلاق</span>
         </div>
-      </div>
-      <header className="sticky top-0 z-40 bg-[var(--color-bg)] border-b border-[var(--color-border)]">
-        <nav className="page-container page-container--wide h-16 sm:h-[72px] flex items-center justify-between gap-4 sm:gap-6" aria-label="التنقل">
-          <div className="flex items-center gap-8 h-full">
-            <SiteLink to="/" className="flex items-center gap-2.5 shrink-0">
-              <span className="size-2 bg-[var(--color-gold)] shrink-0" aria-hidden />
-              <span className="font-display font-semibold text-[18px] text-[var(--color-ink)]">
-                AMTDEX
-              </span>
-            </SiteLink>
-            <div className="hidden lg:flex items-center gap-6 h-full">
-              {menu.filter((item) => !["contact", "quote", "pricing"].includes(item.id)).map((item) => (
-                item.id === "blog" && !onBlog ? (
-                  <a key={item.id} href={getBlogUrl("/")} className="site-nav">{item.label}</a>
-                ) : (
-                  <SiteNavLink key={item.id} to={item.id === "blog" ? "/" : item.to} onIntent={() => prefetchRoute(item.to)} className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
-                    {item.label}
-                  </SiteNavLink>
-                )
-              ))}
-            </div>
+        <div className="site-header-bar">
+          <span className="site-header-shimmer" aria-hidden />
+          <SiteLink to="/" className="site-brand">
+            <span className="site-brand-mark" aria-hidden />
+            <span className="site-brand-text">
+              <span className="site-brand-name">AMTDEX</span>
+              <span className="site-brand-sub">حلول برمجية</span>
+            </span>
+          </SiteLink>
+
+          <div className="site-nav-track" ref={trackRef}>
+            <span
+              className="site-nav-pill"
+              aria-hidden
+              style={{
+                transform: `translateX(${pill.x}px) scaleX(${pill.on ? pill.w : 0})`,
+                opacity: pill.on ? 1 : 0,
+              }}
+            />
+            {desktop.map((item) => renderItem(item))}
           </div>
 
-          <div className="hidden lg:flex items-center gap-2.5">
+          <div className="site-header-actions">
             {contactListed && (
-              <SiteLink to="/contact" onIntent={() => prefetchRoute("/contact")} className="site-nav">
+              <SiteLink to="/contact" onIntent={() => prefetchRoute("/contact")} className="site-nav site-nav-quiet">
                 تواصل معنا
               </SiteLink>
             )}
             {quoteListed && (
-              <SiteLink to="/quote" className="btn btn-ink brand-cta">
-                اطلب عرض سعر
-              </SiteLink>
-            )}
-          </div>
-
-          {/* Mobile toggle */}
-          <div className="flex lg:hidden items-center gap-2">
-            {quoteListed && (
-              <SiteLink to="/quote" className="btn btn-ink min-h-9 px-3 text-[12px]">
-                عرض سعر
+              <SiteLink to="/quote" className="btn btn-ink brand-cta site-header-cta">
+                <span className="hidden sm:inline">اطلب عرض سعر</span>
+                <span className="sm:hidden">عرض سعر</span>
               </SiteLink>
             )}
             <button
               ref={toggleRef}
-              onClick={() => setOpen((v) => !v)}
+              type="button"
+              onClick={() => setOpen((value) => !value)}
               aria-label={open ? "إغلاق" : "فتح القائمة"}
               aria-expanded={open}
               aria-controls="mobile-menu"
-              className="size-10 grid place-items-center border border-[var(--color-ink)] bg-[var(--color-bg)]"
+              className={`site-nav-burger${open ? " is-open" : ""}`}
             >
-              <Icon name={open ? "close" : "menu"} size={19} />
+              <span />
+              <span />
+              <span />
             </button>
           </div>
-        </nav>
-
-        {open && (
-          <div id="mobile-menu" ref={menuRef} className="da-menu lg:hidden" style={{ animation: "fadeIn 0.2s ease" }}>
-            <div className="flex items-center justify-between gap-3">
-              <span className="font-display font-semibold">AMTDEX</span>
-              <button type="button" onClick={() => setOpen(false)} aria-label="إغلاق" className="size-10 grid place-items-center border border-white/20">
-                <Icon name="close" size={18} />
-              </button>
-            </div>
-            {homeListed && (
-              <SiteNavLink to="/" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>الرئيسية</SiteNavLink>
-            )}
-            {menu.map((item) => (
-              item.id === "blog" && !onBlog ? (
-                <a key={item.id} href={getBlogUrl("/")} onClick={() => setOpen(false)}>{item.label}</a>
-              ) : (
-                <SiteNavLink key={item.id} to={item.id === "blog" ? "/" : item.to} onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>
-                  {item.label}
-                </SiteNavLink>
-              )
-            ))}
-          </div>
-        )}
+        </div>
+        </div>
       </header>
+      <div className="site-header-spacer" aria-hidden />
+
+      {open && (
+        <>
+          <button type="button" className="site-menu-dim" aria-label="إغلاق القائمة" onClick={() => setOpen(false)} />
+          <div id="mobile-menu" ref={menuRef} className="site-menu" role="dialog" aria-modal="true" aria-label="القائمة">
+            {homeListed && (
+              <SiteNavLink to="/" onClick={() => setOpen(false)} className={({ isActive }) => `site-nav${isActive ? " is-active" : ""}`}>
+                الرئيسية
+              </SiteNavLink>
+            )}
+            {menu.map((item) => renderItem(item, () => setOpen(false)))}
+          </div>
+        </>
+      )}
     </>
   )
 }
