@@ -1,0 +1,122 @@
+/* One token set per surface. Public stays dark. The dashboard overrides these. */
+
+html { color-scheme: dark; }
+
+.dash-shell {
+  color-scheme: light;
+  --bg: #F7F3FA;
+  --surface: #FFFFFF;
+  --text: #16064F;
+  --text-muted: #3E3658;
+  --text-faint: #3E3658;
+  --border: #C9C0DC;
+  --accent: #281071;
+  --accent-text: #FFFFFF;
+  --input-bg: #FFFFFF;
+  --input-text: #16064F;
+  --placeholder: #3E3658;
+  --focus-ring: #5425A4;
+  --danger: #9F1239;
+  --danger-bg: #FDE8EC;
+  --success: #067647;
+  --success-text: #FFFFFF;
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-faint: var(--text-faint);
+  --color-border: var(--border);
+}
+
+.brand-motion,
+.surface-dark {
+  color: var(--text);
+}
+
+:is(.brand-motion, .surface-dark, .dash-shell) :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]):not([type="range"]) {
+  color: var(--input-text);
+  caret-color: var(--input-text);
+  background-color: var(--input-bg);
+}
+
+:is(.brand-motion, .surface-dark, .dash-shell) :is(input, textarea)::placeholder {
+  color: var(--placeholder);
+  opacity: 1;
+}
+
+:is(.brand-motion, .surface-dark, .dash-shell) select option,
+:is(.brand-motion, .surface-dark, .dash-shell) select optgroup {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+}
+
+:is(.brand-motion, .surface-dark, .dash-shell) :is(input, textarea, select, button, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+:is(.brand-motion, .surface-dark, .dash-shell) :is(
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill
+) {
+  -webkit-text-fill-color: var(--input-text);
+  caret-color: var(--input-text);
+  box-shadow: 0 0 0 1000px var(--input-bg) inset;
+  transition: background-color 99999s ease-out;
+}
+
+.dash-shell .dash-sidebar-search input,
+.dash-shell .dash-sidebar-search input:focus {
+  color: #16064F;
+  background-color: #FFFFFF;
+  -webkit-text-fill-color: #16064F;
+}
+.dash-shell .dash-sidebar-search input::placeholder {
+  color: #3E3658;
+  -webkit-text-fill-color: #3E3658;
+  opacity: 1;
+}
+
+.dash-search input,
+.dash-search input:focus {
+  color: #16064F;
+  background: transparent;
+  -webkit-text-fill-color: #16064F;
+}
+.dash-search input::placeholder {
+  color: #3E3658;
+  opacity: 1;
+}
+
+.brand-motion .testimonial-heading span { color: #E7E1F4; }
+.brand-motion :is(
+  .text-\[var\(--color-primary\)\],
+  .text-\[var\(--color-primary-light\)\],
+  .text-white\/40,
+  .text-white\/50,
+  .text-white\/55,
+  .text-white\/60
+) { color: #E7E1F4 !important; }
+.brand-motion .text-\[var\(--color-success\)\] { color: #8EE0B8 !important; }
+.brand-motion .bg-\[\#F26522\] { background: #9A3412 !important; color: #F7F4EE !important; }
+
+.brand-motion .blog-prose :not(pre) > code,
+.surface-dark .blog-prose :not(pre) > code {
+  background: #2A2444;
+  color: #F7F4EE;
+}
+.brand-motion .blog-prose pre,
+.dash-shell .blog-prose pre,
+.brand-motion .blog-prose pre code,
+.dash-shell .blog-prose pre code {
+  background: #16064F;
+  color: #F7F4EE;
+}
+
+.dash-shell .text-white\/50,
+.dash-shell .text-white\/55,
+.dash-shell .text-white\/60,
+.dash-shell .text-white\/70 {
+  color: rgb(247 244 238 / 92%);
+}

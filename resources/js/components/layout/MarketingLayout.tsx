@@ -25,7 +25,7 @@ export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
 
 export function AuthLayout() {
   return (
-    <div className="min-h-screen bg-[var(--color-lavender)]/40 grid place-items-center px-4 py-10">
+    <div className="surface-dark min-h-screen bg-[var(--bg)] text-[var(--text)] grid place-items-center px-4 py-10">
       <Outlet />
     </div>
   )

@@ -37,22 +37,22 @@ export function LoginPage() {
 
   return (
     <div className="min-h-[70vh] grid place-items-center px-4 py-10 bg-[var(--color-lavender)]/40">
-      <form onSubmit={submit} noValidate className="w-full max-w-[420px] bg-white border border-[var(--color-border)] rounded-[24px] p-6 sm:p-8 shadow-[var(--shadow-card)]">
+      <form onSubmit={submit} noValidate className="surface-dark w-full max-w-[420px] bg-[var(--surface)] text-[var(--text)] border border-[var(--border)] rounded-[24px] p-6 sm:p-8">
         <div className="flex items-center gap-2.5">
           <span className="size-2.5 rounded-full bg-[var(--color-primary)]" aria-hidden />
           <span className="font-extrabold text-[16px] text-[var(--color-ink)]">AMTDEX — تسجيل الدخول</span>
         </div>
         <p className="mt-2 text-[12px] text-[var(--color-text-muted)]">لوحة التحكم — تجربة Mock. جرّب: admin@amtdex.ye / Amtdex2026!</p>
 
-        {err && <div role="alert" className="mt-4 bg-red-50 border border-red-200 text-red-700 text-[12px] rounded-xl px-3 py-2">{err}</div>}
+        {err && <div role="alert" className="mt-4 bg-[var(--danger-bg)] border border-[var(--danger)] text-[var(--danger)] text-[12px] rounded-xl px-3 py-2">{err}</div>}
 
-        <label className="block mt-5 text-[12px] font-medium text-[var(--color-ink)]">البريد</label>
-        <input value={email} onChange={(e) => setEmail(e.target.value)} dir="ltr" className={`mt-1.5 w-full rounded-xl border px-4 py-2.5 text-[13px] outline-none ${fieldErrs.email ? "border-red-400" : "border-[var(--color-border)] focus:border-[var(--color-primary)]"}`} placeholder="you@amtdex.ye" />
-        {fieldErrs.email && <p className="text-[11px] text-red-600 mt-1">{fieldErrs.email}</p>}
+        <label className="block mt-5 text-[12px] font-medium text-[var(--text)]">البريد</label>
+        <input value={email} onChange={(e) => setEmail(e.target.value)} dir="ltr" className={`mt-1.5 w-full rounded-xl border px-4 py-2.5 text-[13px] outline-none bg-[var(--input-bg)] text-[var(--input-text)] placeholder:text-[var(--placeholder)] ${fieldErrs.email ? "border-[var(--danger)]" : "border-[var(--border)]"}`} placeholder="you@amtdex.ye" />
+        {fieldErrs.email && <p className="text-[11px] text-[var(--danger)] mt-1">{fieldErrs.email}</p>}
 
-        <label className="block mt-3 text-[12px] font-medium text-[var(--color-ink)]">كلمة المرور</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} dir="ltr" className={`mt-1.5 w-full rounded-xl border px-4 py-2.5 text-[13px] outline-none ${fieldErrs.password ? "border-red-400" : "border-[var(--color-border)] focus:border-[var(--color-primary)]"}`} placeholder="••••••••" />
-        {fieldErrs.password && <p className="text-[11px] text-red-600 mt-1">{fieldErrs.password}</p>}
+        <label className="block mt-3 text-[12px] font-medium text-[var(--text)]">كلمة المرور</label>
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} dir="ltr" className={`mt-1.5 w-full rounded-xl border px-4 py-2.5 text-[13px] outline-none bg-[var(--input-bg)] text-[var(--input-text)] placeholder:text-[var(--placeholder)] ${fieldErrs.password ? "border-[var(--danger)]" : "border-[var(--border)]"}`} placeholder="••••••••" />
+        {fieldErrs.password && <p className="text-[11px] text-[var(--danger)] mt-1">{fieldErrs.password}</p>}
 
         <button type="submit" className="btn btn-ink brand-cta mt-6 w-full">دخول</button>
 

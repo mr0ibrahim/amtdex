@@ -160,7 +160,7 @@ export function BlogHomePage() {
                   }}
                   placeholder="ابحث في المقالات والتقنيات..."
                   aria-label="ابحث في المقالات والتقنيات"
-                  className="flex-1 px-4 py-2 text-[14px] bg-transparent outline-none text-[var(--color-text)] placeholder:text-[var(--color-text-faint)]"
+                  className="flex-1 px-4 py-2 text-[14px] bg-[var(--input-bg)] text-[var(--input-text)] outline-none placeholder:text-[var(--placeholder)]"
                 />
                 <Button type="submit" size="sm" variant="primary">
                   بحث

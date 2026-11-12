@@ -3,6 +3,25 @@
    لا تستخدم hex مباشر — استخدم هذه المتغيرات. */
 
 :root {
+  color-scheme: dark;
+  /* ── Semantic surface: public dark ── */
+  --bg: #0B0816;
+  --surface: #120D22;
+  --text: #F4F1EA;
+  --text-muted: #D5CEE3;
+  --text-faint: #D5CEE3;
+  --border: #3A3450;
+  --accent: #FFBF08;
+  --accent-text: #16064F;
+  --input-bg: #1A1433;
+  --input-text: #F7F4EE;
+  --placeholder: #E4DDF0;
+  --focus-ring: #FFBF08;
+  --danger: #FFB4B4;
+  --danger-bg: #3A1820;
+  --success: #8EE0B8;
+  --success-text: #073221;
+
   /* ── الهوية الأساسية (10 ألوان) ── */
   --color-brand: #16064F;            /* الكحلي — الخلفيات والألواح */
   --color-ink: #F4F1EA;              /* النص الفاتح على الحقل الداكن */
@@ -23,9 +42,9 @@
   --color-border: #2C2640;
   --color-border-strong: #F4F1EA;
   --color-outline-peach: #2C2640;
-  --color-text: #F4F1EA;
-  --color-text-muted: #B7B0C6;
-  --color-text-faint: #8D86A0;
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-faint: var(--text-faint);
   --color-success: #0E9F6E;
   --color-success-bg: #E6F4EA;
   --color-accent: #FFBF08;

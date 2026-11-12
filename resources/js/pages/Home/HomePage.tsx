@@ -241,10 +241,10 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
               type="email"
               aria-invalid={!!err}
               aria-describedby={err ? "home-email-err" : undefined}
-              className={`mt-5 w-full bg-transparent border-b px-0 py-3 text-[14px] outline-none placeholder:text-[var(--color-text-faint)] ${err ? "border-red-500" : "border-[var(--color-ink)]"}`}
+              className={`mt-5 w-full bg-[var(--input-bg)] text-[var(--input-text)] border px-3 py-3 text-[14px] outline-none placeholder:text-[var(--placeholder)] ${err ? "border-[var(--danger)]" : "border-[var(--border)]"}`}
             />
             {err && (
-              <p id="home-email-err" role="alert" className="mt-2 text-[12px] text-red-600">{err}</p>
+              <p id="home-email-err" role="alert" className="mt-2 text-[12px] text-[var(--danger)]">{err}</p>
             )}
             <button type="submit" className="btn btn-ink brand-cta mt-5">اشتراك</button>
             <p className="mt-3 text-[11px] text-[var(--color-text-faint)]">POST /api/newsletter — جاهز للربط مع Laravel</p>
