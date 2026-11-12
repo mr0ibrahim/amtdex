@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { useDebouncedValue } from "@/routing/search"
-import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { Icon, type IconName } from "@/components/ui/Icon"
 import { getSession, logout } from "@/lib/auth"
 import { getMainUrl } from "@/lib/subdomain"

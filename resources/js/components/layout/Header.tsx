@@ -208,15 +208,15 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
       <header className={`site-header${entered ? " is-in" : ""}${condensed ? " is-condensed" : ""}${hidden ? " is-hidden" : ""}`}>
         <div className="site-header-stack">
         <div className="site-header-utility">
-          <span>Amtdex — نبني حلولك البرمجية من الفكرة للإطلاق</span>
+          <span>امتدكس سوفت — من الفكرة إلى التنفيذ</span>
         </div>
         <div className="site-header-bar">
           <span className="site-header-shimmer" aria-hidden />
           <SiteLink to="/" className="site-brand">
             <span className="site-brand-mark" aria-hidden />
             <span className="site-brand-text">
-              <span className="site-brand-name">AMTDEX</span>
-              <span className="site-brand-sub">حلول برمجية</span>
+              <span className="site-brand-name">AMTDEX SOFT</span>
+              <span className="site-brand-sub">هندسة الفكرة قبل برمجتها</span>
             </span>
           </SiteLink>
 

@@ -15,6 +15,7 @@ use App\Models\SiteSetting;
 use App\Models\TeamMember;
 use App\Models\Testimonial;
 use App\Models\User;
+use App\Support\CompanyServices;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -69,78 +70,10 @@ class DatabaseSeeder extends Seeder
         );
 
         // 2. Seed Services
-        $services = [
-            [
-                'slug' => 'web',
-                'icon' => 'web',
-                'title' => 'تطوير المواقع',
-                'desc' => 'مواقع سريعة، متجاوبة، ومحسّنة للتحويل — من الهبوط إلى المتاجر والمنصات.',
-                'bullets' => ['Next.js / Laravel / WordPress', 'تحسين سرعة 95+ Lighthouse', 'SEO تقني + تحليلات'],
-                'tech' => ['Next.js', 'Laravel', 'Tailwind'],
-                'detail' => 'نبني مواقع تبيع. نبدأ بفهم هدفك التجاري، ثم نصمم رحلة مستخدم تحوّل الزائر لعميل — مع لوحة تحكم Laravel لإدارة كل شيء بدون مطوّر.',
-                'sort_order' => 1,
-                'is_published' => true,
-            ],
-            [
-                'slug' => 'mobile',
-                'icon' => 'mobile',
-                'title' => 'تطبيقات الجوال',
-                'desc' => 'iOS و Android بتجربة أصلية — Flutter أو Native حسب احتياجك.',
-                'bullets' => ['Flutter / Swift / Kotlin', 'إشعارات، دفع، خرائط', 'نشر على المتاجر'],
-                'tech' => ['Flutter', 'Firebase', 'Stripe'],
-                'detail' => 'تطبيق واحد يعمل كأنه اثنان. نركز على الأداء، استهلاك البطارية، وتجربة استخدام تشبه تطبيقات الشركات الكبرى.',
-                'sort_order' => 2,
-                'is_published' => true,
-            ],
-            [
-                'slug' => 'erp',
-                'icon' => 'erp',
-                'title' => 'أنظمة ERP و CRM',
-                'desc' => 'أنظمة مخصصة لإدارة المبيعات، المخزون، الموارد البشرية والمالية.',
-                'bullets' => ['Laravel + Filament', 'صلاحيات وأدوار دقيقة', 'تقارير ولوحات تحكم'],
-                'tech' => ['Laravel', 'Filament', 'MySQL'],
-                'detail' => 'نحوّل عملياتك الورقية لنظام رقمي متكامل. كل قسم يرى ما يخصه، والمدير يرى الصورة الكاملة لحظياً.',
-                'sort_order' => 3,
-                'is_published' => true,
-            ],
-            [
-                'slug' => 'ai',
-                'icon' => 'ai',
-                'title' => 'الذكاء الاصطناعي',
-                'desc' => 'مساعدات ذكية، تحليل بيانات، وأتمتة مهام متكررة.',
-                'bullets' => ['Chatbots و RAG', 'تحليل نصوص وصور', 'تكامل مع أنظمتك'],
-                'tech' => ['OpenAI', 'Python', 'Pinecone'],
-                'detail' => 'ليس مجرد شات بوت. نبني مساعداً يفهم بيانات شركتك ويجيب من مصادرك الخاصة — آمن ومستضاف على خوادمك إن رغبت.',
-                'sort_order' => 4,
-                'is_published' => true,
-            ],
-            [
-                'slug' => 'security',
-                'icon' => 'security',
-                'title' => 'الأمن السيبراني',
-                'desc' => 'اختبار اختراق، حماية تطبيقات، وامتثال.',
-                'bullets' => ['Penetration Testing', 'WAF & Hardening', 'SOC 2 / ISO 27001'],
-                'tech' => ['OWASP', 'Cloudflare', 'Vault'],
-                'detail' => 'نحمي ما بنيناه وما ستبنيه. فحص ثغرات، إصلاح، وتقرير تنفيذي يفهمه مجلس الإدارة.',
-                'sort_order' => 5,
-                'is_published' => true,
-            ],
-            [
-                'slug' => 'cloud',
-                'icon' => 'cloud',
-                'title' => 'الحوسبة السحابية',
-                'desc' => 'استضافة، CI/CD، مراقبة، وتوسع تلقائي.',
-                'bullets' => ['AWS / GCP / DigitalOcean', 'Docker + CI/CD', 'مراقبة 24/7'],
-                'tech' => ['Docker', 'AWS', 'Grafana'],
-                'detail' => 'موقعك لا ينام. ننشر بنيتك على خوادم عالمية مع نسخ احتياطي واستعادة كوارث.',
-                'sort_order' => 6,
-                'is_published' => true,
-            ],
-        ];
-
-        foreach ($services as $service) {
+        foreach (CompanyServices::all() as $service) {
             Service::updateOrCreate(['slug' => $service['slug']], $service);
         }
+        Service::whereNotIn('slug', array_column(CompanyServices::all(), 'slug'))->update(['is_published' => false]);
 
         // 3. Seed Projects
         $projects = [
@@ -225,24 +158,25 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($projects as $project) {
+            $project['is_published'] = false;
             Project::updateOrCreate(['slug' => $project['slug']], $project);
         }
 
         // 4. Seed Site Settings
         SiteSetting::updateFromMap([
-            'siteName' => 'Amtdex',
-            'email' => 'hello@amtdex.ye',
-            'phone' => '+967 7xx xxx xxx',
+            'siteName' => 'AMTDEX SOFT',
+            'email' => 'Info@amtdex.com',
+            'phone' => '+967 784 440 429',
         ]);
 
         // 5. Seed SEO Metadata
         $seoRoutes = [
-            ['path' => '/', 'title' => 'Amtdex — حلول تقنية وبرمجية متكاملة', 'description' => 'شريكك التقني لتطوير مواقع الويب، تطبيقات الجوال، أنظمة ERP المتقدمة، وحلول الذكاء الاصطناعي والأمن السيبراني.'],
-            ['path' => '/about', 'title' => 'من نحن — Amtdex', 'description' => 'تعرف على فريق ومهام وقيم شركة Amtdex الرائدة في تقديم الحلول البرمجية.'],
-            ['path' => '/services', 'title' => 'خدماتنا التقنية — Amtdex', 'description' => 'استكشف حزمة خدماتنا البرمجية المتقدمة المصممة لنمو أعمالك.'],
-            ['path' => '/projects', 'title' => 'أعمالنا ومشاريعنا — Amtdex', 'description' => 'شاهد نماذج من المشاريع والمنصات الرقمية التي قمنا بتطويرها بنجاح.'],
-            ['path' => '/contact', 'title' => 'تواصل معنا — Amtdex', 'description' => 'ابدأ محادثة معنا اليوم لمناقشة مشروعك القادم وتحدياتك التقنية.'],
-            ['path' => '/quote', 'title' => 'طلب عرض سعر — Amtdex', 'description' => 'احصل على تسعير وتقدير زمني مخصص لمشروعك الرقمي خلال دقائق.'],
+            ['path' => '/', 'title' => 'AMTDEX SOFT — امتدكس سوفت', 'description' => 'هندسة الفكرة قبل برمجتها. من الفكرة إلى التنفيذ.'],
+            ['path' => '/about', 'title' => 'من نحن — امتدكس سوفت', 'description' => 'نطوّر الحلول الرقمية ونحوّل الأفكار والمشكلات إلى أنظمة وبرمجيات قابلة للعمل والنمو.'],
+            ['path' => '/services', 'title' => 'ماذا نقدم؟ — AMTDEX SOFT', 'description' => 'مواقع، تطبيقات، متاجر، أنظمة إدارة، تسويق، هوية بصرية، وحماية المواقع والأنظمة.'],
+            ['path' => '/projects', 'title' => 'أعمالنا — AMTDEX SOFT', 'description' => 'لم تُنشر أعمال بعد.'],
+            ['path' => '/contact', 'title' => 'تواصل معنا — AMTDEX SOFT', 'description' => 'اليمن - إب. Info@amtdex.com. +967 784 440 429.'],
+            ['path' => '/quote', 'title' => 'اطلب عرض سعر — AMTDEX SOFT', 'description' => 'أخبرنا عن فكرتك ونعود إليك.'],
         ];
 
         foreach ($seoRoutes as $seo) {
@@ -350,6 +284,7 @@ class DatabaseSeeder extends Seeder
             $features = $pData['features'];
             unset($pData['features']);
 
+            $pData['is_active'] = false;
             $plan = PricingPlan::updateOrCreate(['slug' => $pData['slug']], $pData);
 
             // Re-seed features
@@ -396,6 +331,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($testimonials as $t) {
+            $t['is_active'] = false;
             Testimonial::updateOrCreate(['author' => $t['author'], 'company' => $t['company']], $t);
         }
 
@@ -468,6 +404,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($team as $tm) {
+            $tm['is_active'] = false;
             TeamMember::updateOrCreate(['name' => $tm['name']], $tm);
         }
 
@@ -484,6 +421,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($clients as $cl) {
+            $cl['is_active'] = false;
             Client::updateOrCreate(['name' => $cl['name']], $cl);
         }
 

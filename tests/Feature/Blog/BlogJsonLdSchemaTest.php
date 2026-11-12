@@ -64,7 +64,7 @@ it('builds BlogPosting with all required fields matching the post content', func
     expect($article['author']['name'])->toBe($author->name);
     expect($article['image'])->toBe([$post->og_image]);
     expect($article['publisher']['@type'])->toBe('Organization');
-    expect($article['publisher']['name'])->toBe('Amtdex');
+    expect($article['publisher']['name'])->toBe('AMTDEX SOFT');
     expect($article['mainEntityOfPage']['@id'])->toBe($post->canonical_url);
     expect($article['articleSection'])->toBe('هندسة البرمجيات');
 });

@@ -3,12 +3,7 @@ import { useRef, useState } from "react"
 
 export function DashboardPage({ onToast }: { onToast: (m: string) => void }) {
   const [tab, setTab] = useState<"overview" | "projects" | "invoices" | "settings">("overview")
-  const [projects, setProjects] = useState([
-    { id: 1, name: "متجر نون — إعادة بناء", client: "نون", status: "قيد التنفيذ", progress: 64 },
-    { id: 2, name: "سداد — محفظة", client: "سداد", status: "مراجعة", progress: 88 },
-    { id: 3, name: "شفاء — منصة طبية", client: "شفاء", status: "مكتمل", progress: 100 },
-    { id: 4, name: "رواء — ERP", client: "رواء", status: "قيد التنفيذ", progress: 42 },
-  ])
+  const [projects, setProjects] = useState<{ id: number; name: string; client: string; status: string; progress: number }[]>([])
   const nextIdRef = useRef(5)
 
   const addProject = () => {
@@ -26,11 +21,11 @@ export function DashboardPage({ onToast }: { onToast: (m: string) => void }) {
 
       <div className="mt-6 grid lg:grid-cols-[220px_1fr] gap-6 items-start">
         <aside className="bg-white border border-black/5 rounded-[20px] p-3 lg:sticky lg:top-[76px]">
-          <div className="flex items-center gap-2 px-2 py-2">
+              <div className="flex items-center gap-2 px-2 py-2">
             <span className="size-8 rounded-xl bg-[var(--color-ink)] text-white grid place-items-center text-[12px] font-bold">A</span>
             <div>
-              <div className="text-[12px] font-bold leading-none">لوحة Amtdex</div>
-              <div className="text-[10px] text-black/40">admin@amtdex.com</div>
+              <div className="text-[12px] font-bold leading-none">AMTDEX SOFT</div>
+              <div className="text-[10px] text-black/40">Info@amtdex.com</div>
             </div>
           </div>
           <nav className="mt-4 grid gap-1">
@@ -66,9 +61,9 @@ export function DashboardPage({ onToast }: { onToast: (m: string) => void }) {
               </div>
               <div className="grid sm:grid-cols-3 gap-3">
                 {[
-                  { k: "المشاريع النشطة", v: "12", sub: "4 قيد التنفيذ" },
-                  { k: "إجمالي الإيراد", v: "﷼ 1.2M", sub: "+18% هذا الشهر" },
-                  { k: "تذاكر الدعم", v: "3", sub: "مفتوحة" },
+                  { k: "المشاريع النشطة", v: "0", sub: "لا مشاريع منشورة" },
+                  { k: "إجمالي الإيراد", v: "—", sub: "لا فواتير منشورة" },
+                  { k: "تذاكر الدعم", v: "0", sub: "لا تذاكر" },
                 ].map((c) => (
                   <div key={c.k} className="bg-white border border-black/5 rounded-2xl p-5">
                     <div className="text-[11px] text-black/40">{c.k}</div>
@@ -104,15 +99,11 @@ export function DashboardPage({ onToast }: { onToast: (m: string) => void }) {
               <div className="grid sm:grid-cols-2 gap-3">
                 <div className="bg-white border border-black/5 rounded-2xl p-5">
                   <h3 className="text-[12px] font-bold">نشاط الفريق</h3>
-                  <ul className="mt-3 space-y-2 text-[12px] text-black/60">
-                    <li>• أحمد أكمل واجهة الدفع — قبل ساعة</li>
-                    <li>• ريم رفعت تصميم المتجر — أمس</li>
-                    <li>• فيصل نشر تحديث الخادم — أمس</li>
-                  </ul>
+                  <p className="mt-3 text-[12px] text-black/60">لا نشاط منشور.</p>
                 </div>
                 <div className="bg-[var(--color-ink)] text-white rounded-2xl p-5">
                   <h3 className="text-[12px] font-bold">تنبيه</h3>
-                  <p className="text-[12px] text-white/60 mt-2">فاتورة #INV-0421 مستحقة خلال 3 أيام — ﷼ 14,900</p>
+                  <p className="text-[12px] text-white/60 mt-2">لا فواتير منشورة.</p>
                   <button onClick={() => setTab("invoices")} className="mt-3 text-[11px] font-medium bg-white text-black px-4 py-1.5 rounded-full">
                     عرض الفواتير
                   </button>
@@ -207,11 +198,7 @@ export function DashboardPage({ onToast }: { onToast: (m: string) => void }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {[
-                        { id: "INV-0421", client: "نون", amount: "﷼ 14,900", status: "مستحقة", due: "2026-04-01" },
-                        { id: "INV-0420", client: "سداد", amount: "﷼ 32,000", status: "مدفوعة", due: "2026-03-15" },
-                        { id: "INV-0419", client: "شفاء", amount: "﷼ 8,500", status: "مدفوعة", due: "2026-03-01" },
-                      ].map((r) => (
+                      {([] as { id: string; client: string; amount: string; status: string; due: string }[]).map((r) => (
                         <tr key={r.id} className="border-t border-black/5">
                           <td className="px-4 py-3 font-mono text-[12px]">{r.id}</td>
                           <td className="px-4 py-3">{r.client}</td>
@@ -239,13 +226,13 @@ export function DashboardPage({ onToast }: { onToast: (m: string) => void }) {
                     <label htmlFor="dash-company" className="text-[12px] font-medium">
                       اسم الشركة
                     </label>
-                    <input id="dash-company" defaultValue="Amtdex" className="mt-1.5 w-full bg-[var(--color-bg)] border border-black/10 rounded-xl px-4 py-3 text-[13px] outline-none" />
+                    <input id="dash-company" defaultValue="AMTDEX SOFT" className="mt-1.5 w-full bg-[var(--color-bg)] border border-black/10 rounded-xl px-4 py-3 text-[13px] outline-none" />
                   </div>
                   <div>
                     <label htmlFor="dash-email" className="text-[12px] font-medium">
                       البريد
                     </label>
-                    <input id="dash-email" defaultValue="admin@amtdex.com" dir="ltr" className="mt-1.5 w-full bg-[var(--color-bg)] border border-black/10 rounded-xl px-4 py-3 text-[13px] outline-none" />
+                    <input id="dash-email" defaultValue="Info@amtdex.com" dir="ltr" className="mt-1.5 w-full bg-[var(--color-bg)] border border-black/10 rounded-xl px-4 py-3 text-[13px] outline-none" />
                   </div>
                   <div>
                     <label htmlFor="dash-api" className="text-[12px] font-medium">

@@ -22,9 +22,9 @@ class SiteSetting extends Model
         $settings = static::pluck('value', 'key')->toArray();
 
         return [
-            'siteName' => $settings['siteName'] ?? 'Amtdex',
-            'email' => $settings['email'] ?? 'hello@amtdex.ye',
-            'phone' => $settings['phone'] ?? '+967 7xx xxx xxx',
+            'siteName' => $settings['siteName'] ?? 'AMTDEX SOFT',
+            'email' => $settings['email'] ?? 'Info@amtdex.com',
+            'phone' => $settings['phone'] ?? '+967 784 440 429',
         ];
     }
 

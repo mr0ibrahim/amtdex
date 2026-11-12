@@ -1,222 +1,104 @@
 import { useState } from "react"
-import { Container } from "@/components/layout/Container"
 import { PageHeader } from "@/components/layout/PageHeader"
-import { Icon, type IconName } from "@/components/ui/Icon"
-import { Input, Textarea, Select } from "@/components/ui/Input"
+import { Icon } from "@/components/ui/Icon"
+import { Input, Select, Textarea } from "@/components/ui/Input"
 import { API } from "@/lib/api"
-import { contactSchema, zodErrors } from "@/lib/schemas"
-import { addLead } from "@/lib/leadStore"
 
-export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
+const PHONES = [
+  { label: "+967 784 440 429", href: "tel:+967784440429" },
+  { label: "+967 784 440 428", href: "tel:+967784440428" },
+]
+
+export function ContactPage({ onToast }: { onToast?: (m: string) => void }) {
+  void onToast
+  const email = "Info@amtdex.com"
+  const [sent, setSent] = useState(false)
   const [sending, setSending] = useState(false)
-  const [serverError, setServerError] = useState<string | null>(null)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [error, setError] = useState("")
+  const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "web", message: "" })
 
-  const contacts: Array<{ l: string; v: string; href?: string; icon: IconName }> = [
-    { l: "البريد الإلكتروني", v: "hello@amtdex.com", href: "mailto:hello@amtdex.com", icon: "mail" },
-    { l: "الجوال / الواتساب", v: "+966 50 000 0000", href: "https://wa.me/966500000000", icon: "phone" },
-    { l: "المقر الرئيسي", v: "صنعاء — حدة، برج الأعمال", icon: "mapPin" },
-  ]
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setServerError(null)
-
-    const form = e.currentTarget
-    const fd = new FormData(form)
-    const vals: Record<string, string> = {}
-    fd.forEach((v, k) => (vals[k] = String(v).trim()))
-
-    const parsed = contactSchema.safeParse(vals)
-    if (!parsed.success) {
-      setErrors(zodErrors(parsed))
-      return
-    }
-
-    setErrors({})
     setSending(true)
-
+    setError("")
     try {
-      await API.contact(fd)
-      addLead({
-        id: Date.now().toString(),
-        name: vals.name,
-        email: vals.email,
-        phone: vals.phone,
-        subject: vals.subject,
-        message: vals.message,
-        status: "جديد",
-        createdAt: new Date().toISOString(),
-        source: "contact",
-        meta: {},
-      })
-      onToast("تم إرسال رسالتك بنجاح — سنرد عليك خلال ساعات العمل ✉")
-      form.reset()
-    } catch (err: any) {
-      const msg =
-        err?.response?.data?.message ||
-        err?.message ||
-        "تعذر إرسال الرسالة، يرجى التأكد من اتصال الإنترنت والمحاولة مجدداً."
-      setServerError(msg)
+      const body = new FormData()
+      body.set("name", form.name)
+      body.set("email", form.email)
+      body.set("phone", form.phone)
+      body.set("subject", form.subject)
+      body.set("message", form.message)
+      await API.contact(body)
+      setSent(true)
+    } catch {
+      setError("تعذّر إرسال الرسالة. حاول مرة أخرى، أو راسلنا على واتساب.")
     } finally {
       setSending(false)
     }
   }
 
   return (
-    <Container className="py-8 sm:py-16 da-contact-grid">
-      <div className="grid gap-4">
-        <div>
-          <PageHeader
-            eyebrow="تواصل معنا"
-            title={
-              <>
-                لنتحدث عن
-                <br />
-                مشروعك التقني القادم.
-              </>
-            }
-            description="يسعدنا الإجابة عن استفساراتك وتقديم استشارة أولية مجانية لمشروعك البرمجي، ومساعدتك في اختيار التقنيات والحلول المعمارية الأنسب."
-          />
+    <div className="da-page">
+      <PageHeader
+        eyebrow="تواصل"
+        title={<>لنبدأ<br />مشروعك.</>}
+        description="من الفكرة إلى التنفيذ. راسلنا وسنعود إليك."
+      />
 
-          <div className="mt-8 space-y-3.5">
-            {contacts.map((c) => (
-              <div
-                key={c.l}
-                className="da-panel flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3.5">
-                  <span className="size-10 rounded-xl bg-[var(--color-card-soft)] text-[var(--color-primary)] grid place-items-center shrink-0">
-                    <Icon name={c.icon} size={18} />
-                  </span>
-                  <div>
-                    <div className="text-[11.5px] text-[var(--color-text-muted)] font-medium">{c.l}</div>
-                    <div className="text-[13.5px] font-bold text-[var(--color-ink)] mt-0.5" dir={c.v.startsWith("+") ? "ltr" : undefined}>
-                      {c.v}
-                    </div>
-                  </div>
-                </div>
-                {c.href && (
-                  <a
-                    href={c.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[12px] font-semibold border-b border-[var(--color-ink)] pb-0.5"
-                  >
-                    تواصل
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="da-hours text-white">
-            <div className="flex items-center gap-2 text-[13px] font-bold text-amber-300">
-              <Icon name="clock" size={16} />
-              ساعات العمل والرد
+      <div className="da-grid-2">
+        <form onSubmit={submit} className="da-panel da-form">
+          {sent ? (
+            <div>
+              <h2>وصلت رسالتك.</h2>
+              <p className="da-lede">سنعود إليك على البريد أو الهاتف الذي كتبته.</p>
             </div>
-            <div className="text-[12.5px] text-white/80 mt-2">السبت — الخميس: 9:00 ص — 6:00 م (توقيت مكة)</div>
-            <div className="text-[11.5px] text-white/50 mt-1.5 leading-relaxed">
-              خارج أوقات العمل: يمكنك ترك رسالتك وسيتواصل معك مهندس النظم خلال 12 ساعة كحد أقصى.
-            </div>
-          </div>
-        </div>
-
-        {/* Right Form Card */}
-        <form
-          onSubmit={handleSubmit}
-          noValidate
-          className="da-panel da-form"
-        >
-          <div className="flex items-center justify-between">
-            <h2 className="text-[18px] font-bold text-[var(--color-ink)]">أرسل استفسارك</h2>
-            <span className="text-[11px] text-[var(--color-text-muted)]">الرد خلال ساعات العمل</span>
-          </div>
-          <p className="text-[12px] text-[var(--color-text-muted)] mt-1">
-            املأ النموذج أدناه وسيقوم فريق الدعم الفني والمبيعات بالتواصل معك مباشرة.
-          </p>
-
-          {serverError && (
-            <div role="alert" className="mt-4 rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-[12.5px] text-rose-800 flex items-center gap-2">
-              <Icon name="alertCircle" size={16} />
-              <span>{serverError}</span>
+          ) : (
+            <div className="grid gap-4">
+              <h2 className="text-[18px] font-bold text-[var(--color-ink)]">أرسل رسالتك</h2>
+              <Input id="c-name" label="الاسم" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <Input id="c-email" type="email" label="البريد" required dir="ltr" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+              <Input id="c-phone" type="tel" label="الهاتف" required dir="ltr" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              <Select id="c-subject" label="الخدمة" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })}>
+                <option value="web">تصميم وبرمجة المواقع</option>
+                <option value="mobile">تطبيقات الجوال</option>
+                <option value="stores">المتاجر الإلكترونية</option>
+                <option value="admin-systems">أنظمة الإدارة</option>
+                <option value="identity">الهوية البصرية</option>
+                <option value="security">حماية المواقع والأنظمة</option>
+              </Select>
+              <Textarea id="c-message" label="الرسالة" required rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
+              {error && <p role="alert" className="text-[13px] text-[var(--color-danger)]">{error}</p>}
+              <button type="submit" disabled={sending} className="btn btn-ink brand-cta">{sending ? "جارٍ الإرسال" : "أرسل الرسالة"}</button>
             </div>
           )}
-
-          <div className="mt-6 grid gap-4">
-            <Input
-              id="c-name"
-              name="name"
-              label="الاسم الكامل"
-              required
-              autoComplete="name"
-              placeholder="أحمد محمد"
-              error={errors.name}
-            />
-
-            <div className="grid sm:grid-cols-2 gap-4">
-              <Input
-                id="c-email"
-                name="email"
-                type="email"
-                label="البريد الإلكتروني"
-                required
-                autoComplete="email"
-                placeholder="name@company.com"
-                dir="ltr"
-                error={errors.email}
-              />
-              <Input
-                id="c-phone"
-                name="phone"
-                type="tel"
-                label="رقم الجوال"
-                required
-                autoComplete="tel"
-                placeholder="+966 50 123 4567"
-                dir="ltr"
-                error={errors.phone}
-              />
-            </div>
-
-            <Select id="c-subject" name="subject" label="موضوع الاستفسار" defaultValue="">
-              <option value="" disabled>
-                اختر مجال المشروع أو الاستفسار
-              </option>
-              <option value="web">تطوير منصة ويب أو متجر إلكتروني</option>
-              <option value="mobile">تطبيقات الهواتف الذكية (iOS & Android)</option>
-              <option value="erp">أنظمة إدارة الموارد السحابية (ERP & CRM)</option>
-              <option value="consultation">استشارة فنية وهندسة برمجيات</option>
-              <option value="other">استفسار عام آخر</option>
-            </Select>
-
-            <Textarea
-              id="c-message"
-              name="message"
-              label="تفاصيل الرسالة"
-              required
-              rows={4}
-              placeholder="أخبرنا عن فكرتك، الميزات الرئيسية المطلوبة، والموعد المستهدف للإطلاق..."
-              error={errors.message}
-            />
-
-            <button
-              type="submit"
-              disabled={sending}
-              className="btn btn-ink brand-cta mt-2 w-full disabled:opacity-50 disabled:cursor-wait"
-            >
-              {sending ? (
-                <>
-                  <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  جارٍ إرسال الرسالة...
-                </>
-              ) : (
-                "إرسال الرسالة الآن ←"
-              )}
-            </button>
-          </div>
         </form>
+
+        <aside style={{ display: "grid", gap: 14, alignContent: "start" }}>
+          <article className="da-panel">
+            <p className="da-kicker">الهاتف وواتساب</p>
+            {PHONES.map((phone) => (
+              <a key={phone.href} href={phone.href} className="flex items-center gap-2 mt-3 font-semibold" dir="ltr">
+                <Icon name="phone" size={16} /> {phone.label}
+              </a>
+            ))}
+            <a href="https://wa.me/967784440429" className="btn btn-gold brand-cta" style={{ marginTop: 16 }}>واتساب</a>
+          </article>
+          <article className="da-panel">
+            <p className="da-kicker">البريد</p>
+            <a href={`mailto:${email}`} className="flex items-center gap-2 mt-3 font-semibold" dir="ltr">
+              <Icon name="mail" size={16} /> {email}
+            </a>
+          </article>
+          <article className="da-panel">
+            <p className="da-kicker">الموقع</p>
+            <p className="flex items-center gap-2 mt-3 font-semibold"><Icon name="mapPin" size={16} /> اليمن - إب</p>
+          </article>
+          <article className="da-panel">
+            <p className="da-kicker">إنستغرام</p>
+            <a href="https://www.instagram.com/amtdex/" className="mt-3 inline-flex font-semibold" dir="ltr">instagram.com/amtdex</a>
+          </article>
+        </aside>
       </div>
-    </Container>
+    </div>
   )
 }

@@ -71,6 +71,16 @@ export function PricingPage({ onToast: _onToast }: { onToast: (m: string) => voi
   const isAnnual = billing === "annual"
   const hasRecurringPlans = plans.some((plan: any) => Boolean(plan.period))
 
+  if (!isLoading && plans.length === 0) {
+    return (
+      <div className="page-container page-container--wide py-16">
+        <h1 className="text-[34px] font-semibold text-[var(--color-ink)]">لا أسعار منشورة</h1>
+        <p className="mt-4 text-[15px] leading-8 text-[var(--color-text-muted)]">تواصل معنا لعرض يناسب مشروعك.</p>
+        <Link to="/contact" className="btn btn-ink brand-cta mt-6">تواصل معنا</Link>
+      </div>
+    )
+  }
+
   return (
     <div className="page-container page-container--wide py-12 sm:py-16 bg-[var(--color-surface)]">
       {/* Header & Title */}

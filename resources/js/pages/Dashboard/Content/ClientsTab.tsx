@@ -212,7 +212,7 @@ export function ClientsTab() {
                 اسم الشريك / العميل <span className="text-red-500">*</span>
               </label>
               <input
-                placeholder="مثال: نون، أرامكو، STC..."
+                placeholder="اسم الشريك"
                 value={editingClient.name}
                 onChange={(e) => setEditingClient({ ...editingClient, name: e.target.value })}
                 className="w-full border border-[var(--color-border)] rounded-xl px-3 py-2 text-[12px] outline-none focus:border-[var(--color-primary)]"

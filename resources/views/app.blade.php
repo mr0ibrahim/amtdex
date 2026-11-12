@@ -6,8 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
-    <title>{{ config('app.name', 'Amtdex') }} — حلول برمجية تصنع الفرق</title>
-    <meta name="description" content="Amtdex — شركة حلول برمجية متكاملة: مواقع، تطبيقات، أنظمة ERP، ذكاء اصطناعي وأمن سيبراني. نصمم ونبني ونطلق.">
+    <title>AMTDEX SOFT — هندسة الفكرة قبل برمجتها</title>
+    <meta name="description" content="امتدكس سوفت للبرمجيات وتقنية المعلومات والأنظمة. من الفكرة إلى التنفيذ. اليمن - إب.">
     @php
         $googleSiteVerification = trim((string) config('services.google.site_verification', ''));
         if ($googleSiteVerification === '') {

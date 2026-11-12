@@ -5,13 +5,16 @@ import { getBlogUrl, getMainUrl, isBlogSubdomain } from "@/lib/subdomain"
 import { pageIsListed, useCms, useCopy } from "@/cms/useCms"
 
 export function Footer({ onToast }: { onToast: (m: string) => void }) {
+  void onToast
   const onBlog = isBlogSubdomain()
   const { pages } = useCms()
-  const blurb = useCopy("footer.blurb", "حلول برمجية متكاملة — من الفكرة للكود للإطلاق. نبني مواقع، تطبيقات، وأنظمة أعمال بمعايير عالمية.")
-  const city = useCopy("footer.city", "صنعاء — الجمهورية اليمنية")
+  const blurb = useCopy("footer.blurb", "نحن شركة برمجيات وتقنية معلومات، نطوّر الحلول الرقمية ونحوّل الأفكار والمشكلات إلى أنظمة وبرمجيات قابلة للعمل والنمو.")
+  const city = useCopy("footer.city", "اليمن - إب")
   const shown = (path: string) => pageIsListed(pages, path, false)
   const { data: apiServices } = useServicesQuery()
-  const services = (apiServices && apiServices.length > 0) ? apiServices : SEED_SERVICES
+  const real = new Set(SEED_SERVICES.map((service) => service.slug))
+  const fromApi = (apiServices ?? []).filter((service) => real.has(service.slug))
+  const services = fromApi.length > 0 ? fromApi : SEED_SERVICES
 
   const columns = [
     {
@@ -22,29 +25,22 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
       title: "الشركة",
       links: [
         { label: "من نحن", to: "/about" },
-        { label: "الأعمال", to: "/portfolio" },
-        { label: "الأسعار", to: "/pricing" },
         { label: "تواصل", to: "/contact" },
       ].filter((link) => shown(link.to)),
     },
     {
       title: "الموارد",
       links: [
-        { label: "المدونة التقنية", href: onBlog ? "/" : getBlogUrl("/") },
-        { label: "الأسئلة الشائعة", to: "/about#faq" },
-        { label: "سياسة الخصوصية", to: "/contact" },
-        { label: "الشروط", to: "/contact" },
-        { label: "API Docs", to: "/services" },
-        { label: "الحالة", to: "/" },
-      ].filter((link) => shown(link.to ?? "/blog")),
+        { label: "المدونة", href: onBlog ? "/" : getBlogUrl("/") },
+      ],
     },
     {
       title: "تواصل سريع",
       links: [
         { label: "اطلب عرض سعر", to: "/quote" },
-        { label: "واتساب", to: "/contact" },
-        { label: "حجز استشارة", to: "/contact" },
-      ].filter((link) => shown(link.to)),
+        { label: "واتساب", href: "https://wa.me/967784440429" },
+        { label: "إنستغرام", href: "https://www.instagram.com/amtdex/" },
+      ].filter((link) => !link.to || shown(link.to)),
     },
   ]
 
@@ -57,35 +53,22 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
               <span className="size-2 bg-[var(--color-gold)]" aria-hidden />
               {onBlog ? (
                 <a href={getMainUrl("/")} className="font-display font-semibold text-[18px] text-[var(--color-ink)]">
-                  AMTDEX
+                  AMTDEX SOFT
                 </a>
               ) : (
                 <Link to="/" className="font-display font-semibold text-[18px] text-[var(--color-ink)]">
-                  AMTDEX
+                  AMTDEX SOFT
                 </Link>
               )}
             </div>
             <p className="mt-4 text-[13px] leading-7 text-[var(--color-text-muted)] max-w-[260px]">
               {blurb}
             </p>
-            <div className="mt-5 flex gap-4">
-              {["X", "in", "ig"].map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => onToast(s)}
-                  aria-label={s}
-                  className="text-[12px] font-semibold tracking-wide text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-            <div className="mt-4 text-[11px] text-[var(--color-text-faint)] leading-5">
+            <div className="mt-4 text-[11px] text-[var(--color-text-faint)] leading-6">
               <div>{city}</div>
-              <div dir="ltr" className="text-left">
-                hello@amtdex.com • +966 50 000 0000
-              </div>
+              <a href="mailto:Info@amtdex.com" dir="ltr" className="block text-left">Info@amtdex.com</a>
+              <a href="tel:+967784440429" dir="ltr" className="block text-left">+967 784 440 429</a>
+              <a href="tel:+967784440428" dir="ltr" className="block text-left">+967 784 440 428</a>
             </div>
           </div>
 
@@ -128,7 +111,7 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
           ))}
         </div>
         <div className="mt-10 pt-6 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[var(--color-text-faint)]">
-          <span>© 2026 Amtdex — جميع الحقوق محفوظة. صُنع في صنعاء.</span>
+          <span>© 2026 امتدكس سوفت — AMTDEX SOFT. جميع الحقوق محفوظة.</span>
         </div>
       </div>
     </footer>

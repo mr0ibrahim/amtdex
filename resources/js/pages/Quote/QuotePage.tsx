@@ -244,7 +244,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
               name="phone"
               label="رقم الجوال / الواتساب"
               required
-              placeholder="+966 50 123 4567"
+              placeholder="+967 784 440 429"
               dir="ltr"
               error={quoteErrors.phone}
             />

@@ -1,0 +1,1 @@
+import{o as e}from"./vendor-query-Cx6Y3u0W.js";import{n as t}from"./vendor-router-5UQ0Drsm.js";import{tt as n,ut as r}from"./app-5EGxbx5-.js";var i=e();function a({to:e,...a}){let{pages:o}=n(),s=typeof e==`string`?e:e.pathname??`/`;return r(o,s,!1)?(0,i.jsx)(t,{to:e,...a}):null}export{a as t};

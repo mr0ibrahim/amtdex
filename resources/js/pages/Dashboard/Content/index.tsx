@@ -752,7 +752,7 @@ export function ContentPage() {
                   عنوان المشروع <span className="text-red-500">*</span>
                 </label>
                 <input
-                  placeholder="مثال: منصة نون — 40% تسريع"
+                  placeholder="اسم المشروع"
                   value={editingProject.title}
                   onChange={(e) => setEditingProject({ ...editingProject, title: e.target.value })}
                   className="w-full border border-[var(--color-border)] rounded-xl px-3 py-2 text-[12px] outline-none focus:border-[var(--color-primary)]"
@@ -827,7 +827,7 @@ export function ContentPage() {
                   اسم العميل / الجهة <span className="text-red-500">*</span>
                 </label>
                 <input
-                  placeholder="مثال: شركة نون القابضة"
+                  placeholder="اسم العميل"
                   value={editingProject.client}
                   onChange={(e) => setEditingProject({ ...editingProject, client: e.target.value })}
                   className="w-full border border-[var(--color-border)] rounded-xl px-3 py-2 text-[12px] outline-none focus:border-[var(--color-primary)]"

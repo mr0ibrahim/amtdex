@@ -150,7 +150,7 @@ export function buildPostSchemaPreview(input: SchemaPreviewInput): Record<string
         "@type": "ImageObject",
         url: ORG_LOGO,
       },
-      sameAs: ["https://twitter.com/amtdex", "https://www.linkedin.com/company/amtdex"],
+      sameAs: ["https://www.instagram.com/amtdex/"],
     },
   ]
 

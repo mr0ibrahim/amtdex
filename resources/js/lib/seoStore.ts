@@ -14,13 +14,11 @@ export type SeoEntry = {
 const KEY = "amtdex_seo"
 
 const SEED: SeoEntry[] = [
-  { path: "/", title: "الرئيسية", description: "Amtdex — شركة يمنية للحلول البرمجية: مواقع، تطبيقات، ERP/CRM، ذكاء اصطناعي." },
-  { path: "/services", title: "الخدمات", description: "خدمات Amtdex: تطوير مواقع، تطبيقات، ERP، ذكاء اصطناعي، أمن سيبراني، سحابة." },
-  { path: "/portfolio", title: "أعمالنا", description: "مختارات من مشاريع Amtdex — كل مشروع قصة نجاح." },
-  { path: "/pricing", title: "الأسعار", description: "باقات Amtdex: الانطلاقة والنمو والمؤسسي — استثمار واضح ومرن." },
-  { path: "/about", title: "من نحن", description: "Amtdex — نبني برمجيات تخدم الناس. فريق يمني في صنعاء." },
-  { path: "/contact", title: "تواصل معنا", description: "تواصل مع Amtdex — صنعاء، حدة. نرد خلال ساعات." },
-  { path: "/quote", title: "اطلب عرض سعر", description: "اطلب عرض سعر من Amtdex — 3 خطوات ونرسل تقدير خلال 24 ساعة." },
+  { path: "/", title: "AMTDEX SOFT — امتدكس سوفت", description: "هندسة الفكرة قبل برمجتها. من الفكرة إلى التنفيذ." },
+  { path: "/services", title: "ماذا نقدم؟ — AMTDEX SOFT", description: "مواقع، تطبيقات، متاجر، أنظمة إدارة، تسويق، هوية بصرية، وحماية المواقع والأنظمة." },
+  { path: "/about", title: "من نحن — امتدكس سوفت", description: "نطوّر الحلول الرقمية ونحوّل الأفكار والمشكلات إلى أنظمة وبرمجيات قابلة للعمل والنمو." },
+  { path: "/contact", title: "تواصل معنا — AMTDEX SOFT", description: "اليمن - إب. Info@amtdex.com. +967 784 440 429." },
+  { path: "/quote", title: "اطلب عرض سعر — AMTDEX SOFT", description: "أخبرنا عن فكرتك ونعود إليك." },
 ]
 
 function load(): SeoEntry[] {
