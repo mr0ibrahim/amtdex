@@ -48,7 +48,6 @@ export function AboutPage() {
           <h2 style={{ marginTop: 12 }}>هندسة الفكرة قبل برمجتها.</h2>
           <p className="da-lede" style={{ marginTop: 12 }}>اليمن - إب</p>
           <Link to="/contact" className="btn btn-gold brand-cta" style={{ marginTop: 18 }}>تواصل معنا</Link>
-          <img src="/images/company/identity.jpg" alt="تصميم الشعارات والهوية البصرية والإعلانات" style={{ marginTop: 18, width: "100%", borderRadius: 12 }} />
         </aside>
       </div>
 

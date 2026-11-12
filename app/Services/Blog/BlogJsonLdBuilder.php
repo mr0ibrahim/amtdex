@@ -15,7 +15,7 @@ class BlogJsonLdBuilder
 {
     public const DEFAULT_ORG_NAME = 'AMTDEX SOFT';
 
-    public const DEFAULT_ORG_LOGO = 'https://amtdex.com/favicon.svg';
+    public const DEFAULT_ORG_LOGO = 'https://amtdex.com/logo.png';
 
     public const DEFAULT_SITE_URL = 'https://amtdex.com';
 
