@@ -1,30 +1,71 @@
-import { useSection } from "@/cms/useCms"
-
-const STEPS = [
-  "نفهم فكرتك واحتياجات مشروعك.",
-  "نخطط للحل التقني المناسب لك.",
-  "نصمم ونبرمج مشروعك باحترافية.",
-  "نختبر الحل ونتأكد من جاهزيته.",
-  "نساعدك على إطلاق مشروعك وتطويره.",
-]
+import { Icon, type IconName } from "@/components/ui/Icon"
+import { PublicLink as Link } from "@/cms/PublicLink"
 
 export function WorkflowSection() {
-  const fields = useSection("workflow").fields
-  const title = fields.title || "خمس خطوات\nمن الفكرة إلى الإنجاز."
-
   return (
     <section data-motion-group className="page-container page-container--wide page-section">
-      <div className="eyebrow">{fields.kicker || "من الفكرة إلى الإنجاز"}</div>
-      <h2 data-motion="rise" className="mt-4 text-[28px] sm:text-[40px] leading-[1.2] font-semibold text-[var(--color-ink)]">
-        {title.split("\n").map((line, index) => <span key={line}>{index > 0 && <br />}{line}</span>)}
-      </h2>
-      <div className="da-steps">
-        {STEPS.map((step, index) => (
-          <article key={step} data-motion="rise" data-motion-delay={index * 100} className="da-step">
-            <span className="num">0{index + 1}</span>
-            <p className="mt-2">{step}</p>
-          </article>
-        ))}
+      <div className="grid gap-6">
+        {/* Left */}
+        <div>
+          <div className="eyebrow">من الفكرة إلى الإنجاز</div>
+          <h2 data-motion="rise" className="mt-4 text-[28px] sm:text-[40px] leading-[1.2] font-semibold text-[var(--color-ink)]">
+            خمس خطوات
+            <br />
+            من الفكرة إلى الإنجاز.
+          </h2>
+          <p className="mt-3 text-[14px] leading-[26px] text-[var(--color-text-muted)] max-w-[480px]">من الفكرة إلى التنفيذ. الخطوات نفسها التي نعمل بها مع كل مشروع.</p>
+          <div className="da-steps">
+            {[
+              { n: "01", t: "نفهم", d: "نفهم فكرتك واحتياجات مشروعك." },
+              { n: "02", t: "نخطط", d: "نخطط للحل التقني المناسب لك." },
+              { n: "03", t: "نصمّم ونبرمج", d: "نصمم ونبرمج مشروعك باحترافية." },
+              { n: "04", t: "نختبر", d: "نختبر الحل ونتأكد من جاهزيته." },
+              { n: "05", t: "نطلق", d: "نساعدك على إطلاق مشروعك وتطويره." },
+            ].map((s, index) => (
+              <article key={s.n} data-motion="rise" data-motion-delay={index * 140} className="da-step">
+                <span className="num">{s.n}</span>
+                <b className="block mt-2">{s.t}</b>
+                <p>{s.d}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div data-motion="rise" data-motion-delay="160" className="da-app overflow-hidden">
+          <div className="flex items-center justify-between px-5 h-[48px] bg-white border-b border-[var(--color-border)]">
+            <span className="text-[12px] font-bold text-[var(--color-ink)]">خارطة طريق — نظام إدارة المبيعات</span>
+              <span className="inline-flex items-center gap-1.5 text-[var(--color-success)] text-[11px] font-semibold">
+              <span className="size-1.5 rounded-full bg-[var(--color-success)]" /> قيد التطوير
+            </span>
+          </div>
+          <div className="p-5 space-y-3">
+            {[
+              { icon: "mail", bg: "var(--color-accent)", fg: "#16064F", title: "تحليل المتطلبات", sub: "ورشة اكتشاف + وثيقة SRS", time: "الأسبوع 1" },
+              { icon: "code", bg: "var(--color-brand)", fg: "#F6F3EC", title: "تصميم وتطوير", sub: "من التصميم إلى النسخة الجاهزة", time: "الأسابيع 2-6" },
+              { icon: "launch", bg: "var(--color-brand)", fg: "#F6F3EC", title: "اختبار وإطلاق", sub: "QA + نشر سحابي + تدريب", time: "الأسبوع 7" },
+            ].map((f, index) => (
+              <div key={f.title} data-motion="rise" data-motion-delay={200 + index * 240} className="flex items-center gap-3.5 bg-[var(--color-surface)] border border-[var(--color-border)] p-4">
+                <span className="size-10 shrink-0 grid place-items-center" style={{ background: f.bg, color: f.fg }}>
+                  <Icon name={f.icon as IconName} size={21} />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] font-bold text-[var(--color-ink)]">{f.title}</div>
+                  <div className="text-[11px] text-[var(--color-text-muted)]">{f.sub}</div>
+                </div>
+                <span className="text-[10px] font-semibold font-mono text-[var(--color-text-faint)] shrink-0">{f.time}</span>
+                <span className="text-[var(--color-text-faint)] text-[14px]">›</span>
+              </div>
+            ))}
+            <div className="flex items-center justify-center gap-2 py-1">
+              <span className="w-px h-4 bg-[var(--color-border)]" />
+              <span className="text-[var(--color-text-faint)]">↓</span>
+              <span className="w-px h-4 bg-[var(--color-border)]" />
+            </div>
+            <Link to="/contact" className="flex items-center justify-center gap-2 border border-[var(--color-ink)] py-3.5 text-[12px] font-semibold hover:bg-[var(--color-ink)] hover:text-white transition-colors">
+              <span>+</span> إضافة مرحلة جديدة
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   )

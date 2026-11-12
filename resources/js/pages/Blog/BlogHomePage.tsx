@@ -234,7 +234,7 @@ export function BlogHomePage() {
 
                   <div className="relative aspect-[16/10] lg:aspect-auto lg:h-full bg-[var(--color-card-soft)] order-1 lg:order-2">
                     <img
-                      src={featuredPost.cover_image ?? "https://amtdex.com/images/screens/business.webp"}
+                      src={featuredPost.cover_image ?? "https://amtdex.com/images/screens/projects.webp"}
                       alt={featuredPost.cover_image_alt ?? featuredPost.title}
                       className="w-full h-full object-cover"
                       loading="eager"

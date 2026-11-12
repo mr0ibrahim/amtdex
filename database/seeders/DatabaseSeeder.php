@@ -158,7 +158,6 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($projects as $project) {
-            $project['is_published'] = false;
             Project::updateOrCreate(['slug' => $project['slug']], $project);
         }
 
@@ -174,9 +173,9 @@ class DatabaseSeeder extends Seeder
             ['path' => '/', 'title' => 'AMTDEX SOFT — امتدكس سوفت', 'description' => 'هندسة الفكرة قبل برمجتها. من الفكرة إلى التنفيذ.'],
             ['path' => '/about', 'title' => 'من نحن — امتدكس سوفت', 'description' => 'نطوّر الحلول الرقمية ونحوّل الأفكار والمشكلات إلى أنظمة وبرمجيات قابلة للعمل والنمو.'],
             ['path' => '/services', 'title' => 'ماذا نقدم؟ — AMTDEX SOFT', 'description' => 'مواقع، تطبيقات، متاجر، أنظمة إدارة، تسويق، هوية بصرية، وحماية المواقع والأنظمة.'],
-            ['path' => '/projects', 'title' => 'أعمالنا — AMTDEX SOFT', 'description' => 'لم تُنشر أعمال بعد.'],
+            ['path' => '/projects', 'title' => 'أعمالنا — AMTDEX SOFT', 'description' => 'نماذج من مشاريع ومنصات رقمية قمنا بتطويرها وإطلاقها بنجاح.'],
             ['path' => '/contact', 'title' => 'تواصل معنا — AMTDEX SOFT', 'description' => 'اليمن - إب. Info@amtdex.com. +967 784 440 429.'],
-            ['path' => '/quote', 'title' => 'اطلب عرض سعر — AMTDEX SOFT', 'description' => 'أخبرنا عن فكرتك ونعود إليك.'],
+            ['path' => '/quote', 'title' => 'ابدأ مشروعك — AMTDEX SOFT', 'description' => 'أخبرنا عن فكرتك ونعود إليك.'],
         ];
 
         foreach ($seoRoutes as $seo) {
@@ -207,7 +206,7 @@ class DatabaseSeeder extends Seeder
                 'source' => 'quote',
                 'meta' => [
                     'service' => 'mobile',
-                    'budget' => '30K — 80K',
+                    'budget' => 'غير محدد',
                     'timeline' => 'مرن — 3 أشهر',
                     'details' => 'تطبيق لتوصيل طلبات المطاعم مع لوحة إدارة ولوحة مناديب.',
                 ],
@@ -331,7 +330,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($testimonials as $t) {
-            $t['is_active'] = false;
+            $t['is_active'] = true;
             Testimonial::updateOrCreate(['author' => $t['author'], 'company' => $t['company']], $t);
         }
 
@@ -404,7 +403,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($team as $tm) {
-            $tm['is_active'] = false;
+            $tm['is_active'] = true;
             TeamMember::updateOrCreate(['name' => $tm['name']], $tm);
         }
 
@@ -421,7 +420,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($clients as $cl) {
-            $cl['is_active'] = false;
+            $cl['is_active'] = true;
             Client::updateOrCreate(['name' => $cl['name']], $cl);
         }
 
