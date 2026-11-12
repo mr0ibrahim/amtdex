@@ -4,7 +4,7 @@ type Variant = "primary" | "secondary" | "ghost" | "outline"
 type Size = "sm" | "md" | "lg"
 
 const variantClasses: Record<Variant, string> = {
-  primary: "bg-gradient-primary text-white hover:opacity-90 shadow-[var(--shadow-primary)]",
+  primary: "bg-[var(--color-ink)] text-white hover:bg-[var(--color-primary)]",
   secondary:
     "bg-[var(--color-surface)] text-[var(--color-ink)] border border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:text-white hover:border-[var(--color-primary)]",
   ghost: "bg-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-lavender)]",
@@ -24,11 +24,11 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = "primary", size = "md", pill = true, className = "", ...props }, ref) => {
+  ({ variant = "primary", size = "md", pill = false, className = "", ...props }, ref) => {
     return (
       <button
         ref={ref}
-        className={`inline-flex items-center justify-center gap-2 font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-light)]/30 ${variantClasses[variant]} ${sizeClasses[size]} ${pill ? "rounded-full" : "rounded-xl"} ${className}`}
+        className={`inline-flex items-center justify-center gap-2 font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-light)]/30 ${variantClasses[variant]} ${sizeClasses[size]} ${pill ? "rounded-full" : "rounded-[4px]"} ${className}`}
         {...props}
       />
     )

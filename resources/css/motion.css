@@ -4,18 +4,18 @@
 .screen-gallery-heading > span { font-size: 11px; font-weight: 700; color: var(--color-primary-light); }
 .screen-gallery-heading h2 { margin-block: 12px; color: var(--color-ink); font-size: clamp(28px, 3.2vw, 40px); line-height: 1.4; font-weight: 700; }
 .screen-gallery-heading p { max-width: 540px; color: var(--color-text-muted); font-size: 14px; line-height: 1.9; }
-.screen-gallery-window { overflow: hidden; position: relative; margin-top: 36px; padding-block: 45px; perspective: 1400px; background: linear-gradient(180deg, var(--color-surface), var(--color-card-soft) 50%, var(--color-surface)); }
+.screen-gallery-window { overflow: hidden; position: relative; margin-top: 36px; padding-block: 45px; perspective: 1400px; background: var(--color-bg); border-block: 1px solid var(--color-border); }
 .screen-gallery-stage { direction: ltr; transform: rotateX(var(--gallery-tilt, 0deg)) rotateZ(var(--gallery-turn, 0deg)); transform-origin: center; }
 .screen-gallery-row { display: flex; direction: ltr; gap: 36px; width: max-content; position: relative; left: 50%; transform: translateX(calc(-50% + var(--gallery-travel, 0px))); }
 .screen-gallery-row + .screen-gallery-row { margin-top: 36px; transform: translateX(calc(-50% - var(--gallery-travel, 0px))); }
 .screen-gallery-card { margin: 0; width: clamp(230px, 21vw, 300px); flex: 0 0 auto; direction: rtl; }
-.screen-gallery-image { overflow: hidden; aspect-ratio: 9 / 19; border-radius: 22px; border: 1px solid var(--color-border); background: var(--color-card-soft); box-shadow: 0 12px 32px rgb(22 6 79 / 8%); transition: transform 240ms ease, box-shadow 240ms ease; }
+.screen-gallery-image { overflow: hidden; aspect-ratio: 9 / 19; border-radius: 8px; border: 1px solid var(--color-border); background: var(--color-card-soft); transition: transform 300ms ease-out; }
 .screen-gallery-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .screen-gallery-card figcaption { display: flex; align-items: center; gap: 8px; padding: 14px 4px 0; color: var(--color-ink); font-size: 12px; font-weight: 600; }
 .screen-gallery-card figcaption::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--color-primary-light); }
 .screen-gallery-note { margin-top: 14px; padding-inline: 24px; text-align: center; font-size: 11px; color: var(--color-text-muted); }
 @media (hover: hover) and (pointer: fine) {
-  .screen-gallery-card:hover .screen-gallery-image { transform: translateY(-14px); box-shadow: 0 20px 40px rgb(22 6 79 / 13%); }
+  .screen-gallery-card:hover .screen-gallery-image { transform: translateY(-8px); }
 }
 @media (min-width: 1024px) { .screen-gallery-heading { padding-inline: 40px; } }
 @media (min-width: 1280px) { .screen-gallery-heading { max-width: 1440px; } }
@@ -44,4 +44,67 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }
+}
+
+/* RTL marquee: same direction and timing as a linear track
+   (0 → translateX(50%) over ~45s). Duplicate the set so the loop is seamless. */
+.marquee { overflow: hidden; }
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-rtl var(--marquee-duration, 45s) linear infinite;
+  will-change: transform;
+}
+html[dir="ltr"] .marquee-track { animation-name: marquee-ltr; }
+.marquee-set { display: flex; align-items: center; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  padding-inline: 28px;
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.marquee-item::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: var(--color-gold);
+  flex: none;
+}
+@keyframes marquee-rtl {
+  from { transform: translateX(0); }
+  to { transform: translateX(50%); }
+}
+@keyframes marquee-ltr {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-success);
+  animation: status-pulse 2s ease infinite;
+}
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.82); }
+}
+
+.motion-ready [data-motion="rise"],
+.motion-ready [data-motion="signal"] { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+  .marquee-set[aria-hidden="true"] { display: none; }
+  .marquee-set { flex-wrap: wrap; width: auto; }
+  .status-dot { animation: none; }
+  .motion-ready [data-motion="rise"],
+  .motion-ready [data-motion="signal"] { opacity: 1; }
 }

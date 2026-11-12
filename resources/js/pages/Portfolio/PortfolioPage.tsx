@@ -31,16 +31,16 @@ export function PortfolioPage() {
         description="نماذج من مشاريع ومنصات رقمية قمنا بتطويرها وإطلاقها بنجاح — كل مشروع يمثل قصة نجاح وقيمة عملية قابلة للقياس."
       />
 
-      <div className="mt-8 flex flex-wrap gap-2">
+      <div data-motion-group className="mt-8 flex flex-wrap gap-x-5 gap-y-2 border-b border-[var(--color-border)]">
         {cats.map((c) => (
           <button
             key={c}
             type="button"
             onClick={() => setFilter(c)}
-            className={`text-[12.5px] font-bold px-4 py-2 rounded-full border transition-all ${
+            className={`text-[13px] font-semibold pb-3 border-b-2 -mb-px ${
               filter === c
-                ? "bg-[var(--color-ink)] text-white border-[var(--color-ink)] shadow-sm"
-                : "bg-white border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-ink)] hover:border-[var(--color-primary-light)]/40"
+                ? "border-[var(--color-gold)] text-[var(--color-ink)]"
+                : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
             }`}
           >
             {c}
@@ -49,7 +49,7 @@ export function PortfolioPage() {
       </div>
 
       {/* Projects Grid with Skeletons */}
-      <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div data-motion-group className="mt-8 grid md:grid-cols-2 gap-x-8 gap-y-10">
         {isLoading ? (
           <>
             <CardSkeleton />
@@ -57,11 +57,13 @@ export function PortfolioPage() {
             <CardSkeleton />
           </>
         ) : (
-          filtered.map((p) => (
+          filtered.map((p, index) => (
             <Link
               key={p.slug}
               to={`/portfolio/${p.slug}`}
-              className="group rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-surface)] border border-[var(--color-border)] hover:shadow-[var(--shadow-card-lg)] hover:-translate-y-1 transition-all flex flex-col"
+              data-motion="rise"
+              data-motion-delay={(index % 2) * 140}
+              className="group lift flex flex-col border-t border-[var(--color-ink)] pt-4"
             >
               <div
                 className="h-[210px] relative overflow-hidden bg-[var(--color-ink)]"
@@ -71,29 +73,13 @@ export function PortfolioPage() {
                   <img
                     src={p.cover_image}
                     alt={p.cover_image_alt || p.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover"
                   />
                 ) : (
                   <>
-                    <div
-                      className="absolute inset-0 opacity-20"
-                      style={{ background: `radial-gradient(600px 300px at 70% 30%, ${p.accent}, transparent 60%)` }}
-                    />
-                    <div className="absolute inset-0 p-5 flex flex-col justify-between">
-                      <div className="flex gap-1.5">
-                        <span className="size-2.5 rounded-full bg-white/20" />
-                        <span className="size-2.5 rounded-full bg-white/20" />
-                        <span className="size-2.5 rounded-full bg-white/20" />
-                      </div>
-                      <div className="space-y-2">
-                        <div className="h-2.5 w-3/5 bg-white/15 rounded-full" />
-                        <div className="h-2 w-2/5 bg-white/10 rounded-full" />
-                        <div className="grid grid-cols-3 gap-2 pt-2">
-                          <div className="h-12 rounded-xl bg-white/10 border border-white/10" />
-                          <div className="h-12 rounded-xl bg-white/10 border border-white/10" />
-                          <div className="h-12 rounded-xl" style={{ background: p.accent }} />
-                        </div>
-                      </div>
+                    <div className="absolute inset-0 p-5 flex flex-col justify-end">
+                      <div className="text-[12px] font-semibold text-white/80">{p.cat}</div>
+                      <div className="mt-3 h-1 w-16" style={{ background: p.accent }} />
                     </div>
                   </>
                 )}
@@ -116,7 +102,7 @@ export function PortfolioPage() {
                   {p.stack.map((s) => (
                     <span
                       key={s}
-                      className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-[var(--color-card-soft)]/50 border border-[var(--color-border)] text-[var(--color-ink)]"
+                      className="text-[11px] font-medium text-[var(--color-text-muted)]"
                     >
                       {s}
                     </span>

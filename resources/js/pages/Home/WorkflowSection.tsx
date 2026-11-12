@@ -3,12 +3,12 @@ import { Link } from "react-router-dom"
 
 export function WorkflowSection() {
   return (
-    <section data-motion-group className="page-container page-container--wide py-10 sm:py-14 bg-[var(--color-surface)]">
+    <section data-motion-group className="page-container page-container--wide page-section">
       <div className="grid lg:grid-cols-[minmax(0,520px)_1fr] gap-6 sm:gap-8 items-start">
         {/* Left */}
         <div>
-          <div className="text-[11px] font-bold tracking-[0.6px] text-[var(--color-primary)]">منهجية العمل</div>
-          <h2 className="mt-3 text-[26px] sm:text-[34px] leading-[1.15] sm:leading-[39px] font-bold tracking-[-0.5px] text-[var(--color-ink)]">
+          <div className="eyebrow">منهجية العمل</div>
+          <h2 data-motion="rise" className="mt-4 text-[28px] sm:text-[40px] leading-[1.2] font-semibold text-[var(--color-ink)]">
             من الفكرة إلى الإطلاق
             <br />
             في ثلاث خطوات.
@@ -22,7 +22,7 @@ export function WorkflowSection() {
               { n: "03", t: "نطلق وندعم", d: "إطلاق آمن، تدريب لفريقك، ودعم مستمر وتطوير إضافي حسب نمو أعمالك.", dark: false },
             ].map((s, index) => (
               <div key={s.n} data-motion="rise" data-motion-delay={index * 240} className="flex gap-4 py-5">
-                <span className={`size-10 shrink-0 grid place-items-center rounded-full text-[12px] font-bold font-mono ${s.dark ? "bg-[var(--color-ink)] text-white" : "bg-[var(--color-beige)] text-[var(--color-ink)] border border-[var(--color-border)]"}`}>{s.n}</span>
+                <span className={`size-10 shrink-0 grid place-items-center text-[12px] font-semibold font-mono ${s.dark ? "bg-[var(--color-ink)] text-white" : "border border-[var(--color-ink)] text-[var(--color-ink)]"}`}>{s.n}</span>
                 <div>
                   <div className="text-[14px] font-bold text-[var(--color-ink)]">{s.t}</div>
                   <div className="text-[12.5px] leading-[23px] text-[var(--color-text-muted)] mt-1">{s.d}</div>
@@ -33,10 +33,10 @@ export function WorkflowSection() {
         </div>
 
         {/* Right — Roadmap mock */}
-        <div className="bg-[var(--color-beige)] rounded-[24px] border border-[var(--color-border)] overflow-hidden">
+        <div data-motion="rise" data-motion-delay="160" className="border border-[var(--color-ink)] overflow-hidden">
           <div className="flex items-center justify-between px-5 h-[48px] bg-white border-b border-[var(--color-border)]">
             <span className="text-[12px] font-bold text-[var(--color-ink)]">خارطة طريق — نظام إدارة المبيعات</span>
-            <span className="inline-flex items-center gap-1.5 bg-[var(--color-success-bg)] text-[var(--color-success)] text-[11px] font-bold px-3 py-1 rounded-full">
+              <span className="inline-flex items-center gap-1.5 text-[var(--color-success)] text-[11px] font-semibold">
               <span className="size-1.5 rounded-full bg-[var(--color-success)]" /> قيد التطوير
             </span>
           </div>
@@ -46,8 +46,8 @@ export function WorkflowSection() {
               { icon: "code", bg: "var(--color-ink)", title: "تصميم وتطوير", sub: "Figma → Next.js / Laravel", time: "الأسابيع 2-6" },
               { icon: "launch", bg: "var(--color-accent-purple)", title: "اختبار وإطلاق", sub: "QA + نشر سحابي + تدريب", time: "الأسبوع 7" },
             ].map((f, index) => (
-              <div key={f.title} data-motion="rise" data-motion-delay={200 + index * 240} className="flex items-center gap-3.5 bg-white rounded-2xl border border-[var(--color-border)] p-4">
-                <span className="size-[42px] shrink-0 grid place-items-center rounded-xl text-white text-[16px]" style={{ background: f.bg }}>
+              <div key={f.title} data-motion="rise" data-motion-delay={200 + index * 240} className="flex items-center gap-3.5 bg-[var(--color-surface)] border border-[var(--color-border)] p-4">
+                <span className="size-10 shrink-0 grid place-items-center text-white" style={{ background: f.bg }}>
                   <Icon name={f.icon as IconName} size={21} />
                 </span>
                 <div className="flex-1 min-w-0">
@@ -63,7 +63,7 @@ export function WorkflowSection() {
               <span className="text-[var(--color-text-faint)]">↓</span>
               <span className="w-px h-4 bg-[var(--color-border)]" />
             </div>
-            <Link to="/contact" className="flex items-center justify-center gap-2 bg-[var(--color-signal)] border-[1.5px] border-[var(--color-outline-peach)] rounded-xl py-3.5 text-[12px] font-bold text-[var(--color-primary)] hover:bg-[var(--color-lavender)] transition-colors">
+            <Link to="/contact" className="flex items-center justify-center gap-2 border border-[var(--color-ink)] py-3.5 text-[12px] font-semibold hover:bg-[var(--color-ink)] hover:text-white transition-colors">
               <span>+</span> إضافة مرحلة جديدة
             </Link>
           </div>

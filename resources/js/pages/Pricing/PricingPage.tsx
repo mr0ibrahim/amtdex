@@ -74,21 +74,18 @@ export function PricingPage({ onToast: _onToast }: { onToast: (m: string) => voi
   return (
     <div className="page-container page-container--wide py-12 sm:py-16 bg-[var(--color-surface)]">
       {/* Header & Title */}
-      <div className="text-center max-w-[680px] mx-auto">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-card-soft)] text-[11px] font-bold tracking-[0.6px] text-[var(--color-primary)]">
-          <Icon name="sparkles" size={13} />
-          باقات استثمارية واضحة ومدروسة
-        </div>
-        <h1 className="mt-3 text-[32px] sm:text-[38px] leading-[44px] font-bold tracking-[-0.5px] text-[var(--color-ink)]">
+      <div data-motion-group className="max-w-[40rem]">
+        <div className="eyebrow">باقات استثمارية واضحة ومدروسة</div>
+        <h1 data-motion="rise" data-motion-delay="120" className="mt-4 text-[34px] sm:text-[48px] leading-[1.2] font-semibold text-[var(--color-ink)]">
           استثمار برمجي واضح وشفاف بدون مفاجآت
         </h1>
-        <p className="mt-2 text-[14px] leading-[24px] text-[var(--color-text-muted)]">
+        <p data-motion="rise" data-motion-delay="240" className="mt-4 text-[15px] leading-8 text-[var(--color-text-muted)]">
           أسعار محددة، عقود مرنة، ودفعات مرتبطة بمراحل الإنجاز والتسليم الفعلي — ابدأ بميزانية تناسب احتياج شركتك.
         </p>
 
         {/* Billing Switch Tabs */}
         {hasRecurringPlans && (
-          <div className="mt-8 flex justify-center">
+          <div className="mt-8">
             <Tabs
               tabs={[
                 { id: "once", label: "دفع مرحلي / مرة واحدة" },
@@ -125,22 +122,17 @@ export function PricingPage({ onToast: _onToast }: { onToast: (m: string) => voi
             return (
               <div
                 key={p.name}
-                className={`rounded-[28px] border p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 relative ${
+                className={`border p-7 sm:p-8 flex flex-col justify-between relative ${
                   p.popular
-                    ? "bg-[var(--color-ink)] text-white border-[var(--color-primary-light)] border-2 shadow-[var(--shadow-card-lg)] ring-1 ring-[var(--color-primary-light)]/20 lg:scale-[1.02]"
-                    : "bg-[var(--color-surface)] border-[var(--color-border)] shadow-[var(--shadow-card)] hover:border-[var(--color-violet-mid)]/40 hover:shadow-[var(--shadow-card-lg)]"
+                    ? "bg-[var(--color-ink)] text-white border-[var(--color-ink)]"
+                    : "bg-[var(--color-surface)] border-[var(--color-border)]"
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-2">
                     <span
-                      className={`text-[12px] font-bold px-3 py-1 rounded-full ${
-                        p.popular
-                          ? "bg-[var(--color-primary-light)] text-white flex items-center gap-1.5"
-                          : "bg-[var(--color-card-soft)] text-[var(--color-primary)]"
-                      }`}
+                      className={`text-[12px] font-semibold ${p.popular ? "text-[var(--color-gold)]" : "text-[var(--color-text-muted)]"}`}
                     >
-                      {p.popular && <Icon name="star" size={13} />}
                       {p.popular ? "الباقة الأكثر طلباً" : p.name}
                     </span>
                     {isAnnual && !isCustom && (
@@ -212,10 +204,10 @@ export function PricingPage({ onToast: _onToast }: { onToast: (m: string) => voi
                 <div className="mt-8">
                   <Link
                     to={`/quote?service=${encodeURIComponent(p.name)}`}
-                    className={`w-full text-center rounded-full py-3.5 px-6 text-[13px] font-bold transition-all block shadow-sm ${
+                    className={`btn brand-cta w-full ${
                       p.popular
-                        ? "bg-white text-[var(--color-ink)] hover:bg-[var(--color-gold)] hover:text-black hover:shadow-md"
-                        : "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-light)]"
+                        ? "btn-gold"
+                        : "btn-ink"
                     }`}
                   >
                     {p.popular ? "ابدأ مشروعك الآن ←" : p.cta}
@@ -228,11 +220,9 @@ export function PricingPage({ onToast: _onToast }: { onToast: (m: string) => voi
       </div>
 
       {/* Custom Quote Banner */}
-      <div className="mt-12 bg-[var(--gradient-card)] border border-[var(--color-border)] rounded-[24px] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[var(--shadow-card)]">
+      <div className="mt-12 border border-[var(--color-ink)] p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white text-[11px] font-bold text-[var(--color-primary)] border border-[var(--color-border)]">
-            حلول مصممة خصيصاً
-          </div>
+          <div className="eyebrow">حلول مصممة خصيصاً</div>
           <h2 className="text-[18px] sm:text-[20px] font-bold text-[var(--color-ink)] mt-2">
             هل تحتاج إلى تسعير مخصص أو نطاق عمل استثنائي؟
           </h2>
@@ -242,7 +232,7 @@ export function PricingPage({ onToast: _onToast }: { onToast: (m: string) => voi
         </div>
         <Link
           to="/quote?service=custom"
-          className="shrink-0 bg-[var(--color-ink)] text-white px-7 py-3.5 rounded-full text-[13px] font-bold hover:bg-[var(--color-primary)] transition-all shadow-md hover:shadow-lg"
+          className="btn btn-ink brand-cta shrink-0"
         >
           اطلب تسعير مخصص الآن ←
         </Link>

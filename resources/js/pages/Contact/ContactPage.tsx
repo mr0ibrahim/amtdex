@@ -101,7 +101,7 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
                     href={c.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[12px] font-bold px-4 py-2 rounded-full bg-[var(--color-lavender)]/60 text-[var(--color-ink)] hover:bg-[var(--color-primary)] hover:text-white transition-colors"
+                    className="text-[12px] font-semibold border-b border-[var(--color-ink)] pb-0.5"
                   >
                     تواصل
                   </a>
@@ -203,7 +203,7 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
             <button
               type="submit"
               disabled={sending}
-              className="mt-2 w-full bg-[var(--color-primary)] text-white rounded-full py-3.5 px-6 text-[13px] font-bold hover:bg-[var(--color-primary-light)] transition-all shadow-md disabled:opacity-50 disabled:cursor-wait flex items-center justify-center gap-2"
+              className="btn btn-ink brand-cta mt-2 w-full disabled:opacity-50 disabled:cursor-wait"
             >
               {sending ? (
                 <>

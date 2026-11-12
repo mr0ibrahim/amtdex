@@ -7,13 +7,18 @@ export function StatsBand() {
   ]
 
   return (
-    <section className="page-container page-container--wide py-6 sm:py-8 bg-gradient-primary">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 divide-y divide-white/10 lg:divide-y-0 lg:divide-x lg:divide-x-reverse">
-        {stats.map((s) => (
-          <div key={s.label} className="px-4 sm:px-6 py-5 sm:py-4 even:border-r lg:even:border-r-0 border-white/10 flex flex-col items-center lg:items-start text-center lg:text-right">
-            <div className="text-white text-[28px] sm:text-[36px] lg:text-[40px] font-bold leading-none">{s.value}</div>
-            <div className="text-white text-[11px] sm:text-[12px] font-bold mt-1.5">{s.label}</div>
-            <div className="text-white/55 text-[10px] sm:text-[11px] mt-1 leading-snug">{s.sub}</div>
+    <section data-motion-group className="border-b border-[var(--color-border)] bg-[var(--color-surface)]">
+      <div className="page-container page-container--wide grid grid-cols-2 lg:grid-cols-4">
+        {stats.map((s, index) => (
+          <div
+            key={s.label}
+            data-motion="rise"
+            data-motion-delay={index * 120}
+            className="px-4 sm:px-6 py-8 border-b lg:border-b-0 border-[var(--color-border)] odd:border-e"
+          >
+            <div className="font-display text-[32px] sm:text-[44px] font-semibold leading-none text-[var(--color-ink)]">{s.value}</div>
+            <div className="mt-3 text-[13px] font-semibold">{s.label}</div>
+            <div className="mt-1 text-[12px] leading-5 text-[var(--color-text-muted)]">{s.sub}</div>
           </div>
         ))}
       </div>

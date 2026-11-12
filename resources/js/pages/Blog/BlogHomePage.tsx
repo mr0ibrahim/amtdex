@@ -130,14 +130,11 @@ export function BlogHomePage() {
 
       <div className="bg-[var(--color-bg)] min-h-screen">
         {/* Blog Header Hero */}
-        <section className="relative overflow-hidden pt-12 pb-14 border-b border-[var(--color-border)] bg-gradient-to-b from-[var(--color-card-soft)]/50 to-[var(--color-bg)]">
-          <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl mx-auto text-center">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-bold bg-[var(--color-lavender)] text-[var(--color-primary)] border border-[var(--color-border)] mb-4">
-                <span className="size-1.5 rounded-full bg-[var(--color-primary)] animate-pulse" />
-                رؤى وأدلة تقنية متقدمة
-              </span>
-              <h1 className="text-3xl sm:text-5xl font-extrabold text-[var(--color-ink)] tracking-tight leading-tight">
+        <section data-motion-group className="pt-14 pb-12 border-b border-[var(--color-border)]">
+          <div className="page-container page-container--wide">
+            <div className="max-w-3xl">
+              <span className="eyebrow">رؤى وأدلة تقنية متقدمة</span>
+              <h1 data-motion="rise" data-motion-delay="120" className="mt-4 text-3xl sm:text-5xl font-semibold text-[var(--color-ink)] leading-[1.2]">
                 {settings?.blog_title ?? "مدونة Amtdex التقنية"}
               </h1>
               <p className="mt-4 text-[15px] sm:text-[17px] text-[var(--color-text-muted)] leading-relaxed">
@@ -145,7 +142,7 @@ export function BlogHomePage() {
               </p>
 
               {/* Search Bar */}
-              <form onSubmit={handleSearchSubmit} className="mt-8 flex items-center max-w-xl mx-auto bg-white border border-[var(--color-border)] rounded-full p-1.5 shadow-[var(--shadow-card)] focus-within:ring-2 focus-within:ring-[var(--color-primary-light)]/20 transition-all">
+              <form onSubmit={handleSearchSubmit} className="mt-8 flex items-center max-w-xl border-b border-[var(--color-ink)]">
                 <input
                   type="text"
                   value={searchInput}

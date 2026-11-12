@@ -10,35 +10,35 @@
   --color-violet-mid: #9775D1;        /* البنفسجي المتوسط — الزخارف والرسومات الثانوية */
   --color-gold: #FFBF08;              /* الذهبي الأساسي — التمييز والعروض والعناصر البارزة */
   --color-gold-dark: #E69A12;         /* الذهبي المتدرج — التدرجات الذهبية */
-  --color-lavender: #E9DDF4;          /* اللافندر الفاتح — خلفيات الأقسام الهادئة */
-  --color-card-soft: #F4EAF7;         /* البنفسجي الضبابي — خلفية البطاقات والمساحات */
-  --color-surface: #FFFFFF;           /* الأبيض — الخلفية الرئيسية */
-  --color-bg: #FFFFFF;                /* الخلفية الرئيسية (alias) */
-  --color-bg-subtle: #F8F4FA;         /* خلفية هادئة للمدونة والأقسام الثانوية */
+  --color-lavender: #E6E0D4;          /* حجر دافئ — حدود ناعمة، ليس غسيلاً بنفسجياً */
+  --color-card-soft: #F6F3EC;         /* ورق — خلفية البطاقات */
+  --color-surface: #FBFAF6;           /* سطح الصفحة */
+  --color-bg: #F3F0E8;                /* ورق دافئ — الخلفية الرئيسية */
+  --color-bg-subtle: #EFEBE3;         /* خلفية هادئة للمدونة والأقسام الثانوية */
 
   /* ── مشتقات ── */
   --color-ink-soft: #281071;
-  --color-beige: #F4EAF7;
-  --color-border: #E9DDF4;
-  --color-border-strong: #281071;
-  --color-outline-peach: #E9DDF4;
+  --color-beige: #F6F3EC;
+  --color-border: #DDD6C8;
+  --color-border-strong: #16064F;
+  --color-outline-peach: #DDD6C8;
   --color-text: #16064F;
-  --color-text-muted: #6B7280;
-  --color-text-faint: #9AA0AB;
+  --color-text-muted: #5C5670;
+  --color-text-faint: #8A8478;
   --color-success: #0E9F6E;
   --color-success-bg: #E6F4EA;
   --color-accent: #FFBF08;
   --color-accent-purple: #5425A4;
-  --color-signal: #EEF3FF;            /* شارة الإشارة في الهيرو (من الهوية الحالية) */
+  --color-signal: #F6F3EC;
   --color-cta-dark-border: #2A3347;   /* حدود عناصر الـ CTA الداكنة */
   --color-live: #7DD3A0;              /* نقطة الحالة الحية */
 
-  /* ── تدرجات معتمدة ── */
-  --gradient-primary: linear-gradient(135deg, #281071 0%, #5425A4 100%);
-  --gradient-gold: linear-gradient(135deg, #FFBF08 0%, #E69A12 100%);
-  --gradient-hero: linear-gradient(180deg, #FFFFFF 0%, #E9DDF4 100%);
-  --gradient-card: linear-gradient(135deg, #F4EAF7 0%, #FFFFFF 100%);
-  --gradient-cta: radial-gradient(ellipse 70% 45% at 50% 0%, #281071 0%, #16064F 100%);
+  /* ── ألوان مسطحة. التدرج البنفسجي كان يقرأ كقالب جاهز. ── */
+  --gradient-primary: linear-gradient(#16064F, #16064F);
+  --gradient-gold: linear-gradient(#FFBF08, #FFBF08);
+  --gradient-hero: linear-gradient(#F3F0E8, #F3F0E8);
+  --gradient-card: linear-gradient(#FBFAF6, #FBFAF6);
+  --gradient-cta: linear-gradient(#16064F, #16064F);
 
   /* ── Spacing (4px / 8px scale) ── */
   --space-1: 4px;
@@ -79,27 +79,27 @@
   --leading-relaxed: 1.75;
   --leading-loose: 1.9;
 
-  /* ── Radii ── */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-card: 24px;
-  --radius-card-sm: 20px;
-  --radius-card-lg: 28px;
+  /* ── Radii — زوايا قصيرة، ليست حبوباً ── */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-card: 8px;
+  --radius-card-sm: 6px;
+  --radius-card-lg: 8px;
   --radius-pill: 9999px;
-  --radius-input: 12px;
-  --radius-service: 22px;             /* ServiceCard — يحافظ على الشكل الحالي */
+  --radius-input: 4px;
+  --radius-service: 8px;
 
   /* ── Shadows (عائلة ink الموحّدة) ── */
-  --shadow-xs: 0 3px 5px rgba(22, 6, 79, 0.02);
-  --shadow-sm: 0 4px 12px rgba(22, 6, 79, 0.04);
-  --shadow-card: 0 10px 24px rgba(22, 6, 79, 0.08);
-  --shadow-card-lg: 0 16px 32px rgba(22, 6, 79, 0.13);
-  --shadow-elevated: 0 24px 48px rgba(22, 6, 79, 0.1);
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-card: none;
+  --shadow-card-lg: none;
+  --shadow-elevated: 0 16px 40px rgba(22, 6, 79, 0.08);
   --shadow-toast: 0 12px 40px rgba(22, 6, 79, 0.18);
-  --shadow-modal: 0 24px 80px rgba(22, 6, 79, 0.12), 0 4px 16px rgba(22, 6, 79, 0.06);
-  --shadow-cta: 0 10px 24px rgba(40, 16, 113, 0.28);
-  --shadow-primary: 0 8px 20px rgba(40, 16, 113, 0.25);
+  --shadow-modal: 0 24px 80px rgba(22, 6, 79, 0.12);
+  --shadow-cta: none;
+  --shadow-primary: none;
 
   /* ── Focus ── */
   --ring: 0 0 0 3px rgba(84, 37, 164, 0.20);
