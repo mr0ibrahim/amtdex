@@ -2,12 +2,11 @@ import { Link } from "react-router-dom"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { SERVICES as SEED_SERVICES } from "@/data/services"
 import { useServicesQuery } from "@/lib/queries"
-import { CardSkeleton } from "@/components/ui/Skeleton"
 
 const REAL_SLUGS = new Set(SEED_SERVICES.map((service) => service.slug))
 
 export function ServicesPage() {
-  const { data: apiServices, isLoading } = useServicesQuery()
+  const { data: apiServices } = useServicesQuery()
   const fromApi = (apiServices ?? []).filter((service) => REAL_SLUGS.has(service.slug))
   const SERVICES = fromApi.length > 0 ? fromApi : SEED_SERVICES
 
@@ -19,13 +18,7 @@ export function ServicesPage() {
         description="نساعد الأفراد والشركات على تطوير أعمالهم: مواقع، تطبيقات، متاجر، أنظمة، تسويق، هوية، وحماية."
       />
 
-      {isLoading ? (
-        <div className="da-grid-2">
-          <CardSkeleton />
-          <CardSkeleton />
-        </div>
-      ) : (
-        <div className="da-grid-2">
+      <div className="da-grid-2">
           {SERVICES.map((service) => (
             <article key={service.slug} className="da-panel da-card">
               <h2 style={{ marginTop: 8 }}>{service.title}</h2>
@@ -36,8 +29,7 @@ export function ServicesPage() {
               <Link to={`/services/${service.slug}`} className="btn btn-ink brand-cta" style={{ marginTop: 14 }}>اكتشف الخدمة</Link>
             </article>
           ))}
-        </div>
-      )}
+      </div>
 
       <div style={{ marginTop: 48 }}>
         <h3 className="text-[28px] font-semibold text-[var(--color-ink)]">من الفكرة إلى الإنجاز</h3>

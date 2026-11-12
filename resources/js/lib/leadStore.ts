@@ -18,7 +18,7 @@ const KEY = "amtdex_leads"
 
 const SEED: Lead[] = [
   { id: "1", name: "سارة العتيبي", email: "sara@test.com", phone: "+966500111222", subject: "web", message: "أحتاج متجر إلكتروني لعلامتي مع دفع مدى", status: "جديد", createdAt: new Date(Date.now() - 1000*60*30).toISOString(), source: "contact", meta: {} },
-  { id: "2", name: "عمر الحربي", email: "omar@test.com", message: "طلب عرض سعر لتطبيق جوال مطاعم", status: "قيد المراجعة", createdAt: new Date(Date.now() - 1000*60*60*5).toISOString(), source: "quote", meta: { service: "mobile", budget: "30K — 80K", timeline: "مرن — شهر" } },
+  { id: "2", name: "عمر الحربي", email: "omar@test.com", message: "طلب تطبيق جوال", status: "قيد المراجعة", createdAt: new Date(Date.now() - 1000*60*60*5).toISOString(), source: "quote", meta: { service: "mobile", timeline: "مرن" } },
   { id: "3", name: "نورة القحطاني", email: "nora@test.com", message: "اشتراك نشرة", status: "تم التواصل", createdAt: new Date(Date.now() - 1000*60*60*24).toISOString(), source: "newsletter", meta: {} },
 ]
 

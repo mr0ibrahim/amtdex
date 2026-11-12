@@ -37,7 +37,7 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
     {
       title: "تواصل سريع",
       links: [
-        { label: "اطلب عرض سعر", to: "/quote" },
+        { label: "ابدأ مشروعك", to: "/contact" },
         { label: "واتساب", href: "https://wa.me/967784440429" },
         { label: "إنستغرام", href: "https://www.instagram.com/amtdex/" },
       ].filter((link) => !link.to || shown(link.to)),

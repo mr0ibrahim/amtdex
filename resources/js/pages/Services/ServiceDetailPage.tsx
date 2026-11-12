@@ -136,9 +136,7 @@ export function ServiceDetailPage() {
 
           <div className="mt-6 p-5 rounded-2xl bg-[var(--color-card-soft)]/50 border border-[var(--color-border)]">
             <div className="text-[11.5px] font-bold text-[var(--color-text-muted)]">مدة التنفيذ التقديرية</div>
-            <div className="text-[14px] font-bold text-[var(--color-ink)] mt-1">2 — 6 أسابيع حسب النطاق</div>
-            <div className="text-[11.5px] font-bold text-[var(--color-text-muted)] mt-3">يبدأ الاستثمار من</div>
-            <div className="text-[20px] font-bold font-mono text-[var(--color-primary)] mt-0.5">4,900 ر.س</div>
+            <div className="text-[14px] font-bold text-[var(--color-ink)] mt-1">حسب نطاق المشروع</div>
           </div>
         </div>
       </div>

@@ -134,7 +134,7 @@ export function PricingPage({ onToast: _onToast }: { onToast: (m: string) => voi
                 key={p.name}
                 className={`da-panel p-7 sm:p-8 flex flex-col justify-between relative ${
                   p.popular
-                    ? "da-price pop text-white border-[#16064f]"
+                    ? "da-price pop text-white border-[#461667]"
                     : ""
                 }`}
               >

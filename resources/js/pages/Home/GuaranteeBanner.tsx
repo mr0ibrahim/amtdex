@@ -9,7 +9,7 @@ export function GuaranteeBanner() {
           <div className="text-[16px] font-semibold">ضمان AMTDEX — اذا لم نسلم حسب الاتفاق، نعيد الدفعة الاخيرة كاملة.</div>
           <div className="text-[13px] text-[var(--color-text-muted)] mt-1">مكتوب في العقد. ثقة نبنيها بالافعال، لا الشعارات.</div>
         </div>
-        <Link to="/pricing" className="btn btn-line brand-cta shrink-0">اقرأ الضمان</Link>
+        <Link to="/contact" className="btn btn-line brand-cta shrink-0">تواصل معنا</Link>
       </div>
     </section>
   )

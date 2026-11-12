@@ -36,7 +36,7 @@ describe("contactSchema", () => {
 describe("quoteSchema", () => {
   const valid = {
     service: "web",
-    budget: "10K — 30K",
+    budget: "",
     timeline: "مرن — شهر",
     name: "سارة",
     email: "sara@test.com",
@@ -50,8 +50,8 @@ describe("quoteSchema", () => {
   it("يرفض بدون service", () => {
     expect(quoteSchema.safeParse({ ...valid, service: "" }).success).toBe(false)
   })
-  it("يرفض بدون budget", () => {
-    expect(quoteSchema.safeParse({ ...valid, budget: "" }).success).toBe(false)
+  it("يقبل طلباً بلا ميزانية", () => {
+    expect(quoteSchema.safeParse({ ...valid, budget: "" }).success).toBe(true)
   })
   it("يرفض بدون timeline", () => {
     expect(quoteSchema.safeParse({ ...valid, timeline: "" }).success).toBe(false)

@@ -23,7 +23,7 @@ export const newsletterSchema = z.object({
 
 export const quoteSchema = z.object({
   service: requiredString("الخدمة"),
-  budget: requiredString("الميزانية"),
+  budget: z.string().trim().optional(),
   timeline: requiredString("الجدول الزمني"),
   name: z.string().trim().min(2, "الاسم مطلوب ولا يقل عن حرفين"),
   email: emailSchema,

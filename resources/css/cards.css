@@ -76,17 +76,17 @@
   background: var(--color-card-soft);
   transition: background 220ms ease, color 220ms ease;
 }
-.service-card-featured { background: var(--color-brand); color: #F6F3EC; border-color: var(--color-brand); }
+.service-card-featured { background: var(--color-brand); color: #F8F2FB; border-color: var(--color-brand); }
 .service-card-featured .service-card-icon {
   background: rgb(255 255 255 / 7%);
   border-color: rgb(255 255 255 / 15%);
   color: var(--color-gold);
 }
 .service-card-featured > p,
-.service-card-featured li { color: #E6E0D4; }
+.service-card-featured li { color: #E6D6F0; }
 .service-card-featured .service-card-badge {
   color: var(--color-gold);
-  border-color: rgb(255 191 8 / 25%);
+  border-color: rgb(245 168 28 / 25%);
 }
 .service-card-featured .service-card-footer { border-color: rgb(255 255 255 / 14%); }
 .service-card-featured .service-card-arrow { background: rgb(255 255 255 / 10%); }

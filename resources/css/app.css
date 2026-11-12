@@ -3,19 +3,28 @@
 @import "./motion.css";
 @import "./brand-motion.css";
 @import "./cards.css";
-@import "./dashboard.css";
-@import "./blog-prose.css";
 @import "./direction-a.css";
 @import "./contrast.css";
 
+@font-face {
+  font-family: "IBM Plex Sans Arabic";
+  src: url("/fonts/ibm-plex-sans-arabic.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: optional;
+}
+
 @theme {
   --font-arabic: "IBM Plex Sans Arabic", system-ui, sans-serif;
-  --font-display: "Readex Pro", "IBM Plex Sans Arabic", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
 }
 
 * { scrollbar-width: thin; scrollbar-color: var(--color-border) transparent; }
 html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
 body {
   font-family: var(--font-arabic);
   background: var(--color-bg);
@@ -104,16 +113,16 @@ h1, h2, h3, .font-display {
   text-decoration: none;
   transition: transform 300ms ease-out, background-color 200ms ease, color 200ms ease;
 }
-.btn-ink { background: #16064F; color: #F6F3EC; }
-.bg-\[var\(--color-ink\)\] { background-color: #16064F !important; }
-.brand-motion .bg-white { background-color: #FBFAF6; color: var(--text); }
-.bg-gradient-primary { color: #F6F3EC; }
+.btn-ink { background: #461667; color: #F8F2FB; }
+.bg-\[var\(--color-ink\)\] { background-color: #461667 !important; }
+.brand-motion .bg-white { background-color: #FBF7FD; color: var(--text); }
+.bg-gradient-primary { color: #F8F2FB; }
 .btn-line {
   background: transparent;
   color: var(--color-ink);
   border: 1px solid var(--color-ink);
 }
-.btn-line:hover { background: #16064F; color: #F6F3EC; }
+.btn-line:hover { background: #461667; color: #F8F2FB; }
 .btn-gold { background: var(--color-gold); color: var(--accent-text); }
 
 .site-nav {
@@ -187,7 +196,7 @@ h1, h2, h3, .font-display {
   max-width: 1180px;
   margin: 0 auto 8px;
   padding-inline: 8px;
-  color: #5C5670;
+  color: #5A3D72;
   font-size: 12px;
   justify-content: space-between;
   gap: 16px;
@@ -240,7 +249,7 @@ h1, h2, h3, .font-display {
   inset-inline-start: 0;
   width: 38%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #FFBF08, #E69A12, transparent);
+  background: linear-gradient(90deg, transparent, #F5A81C, #C98412, transparent);
   transform: translateX(-130%);
   animation: site-header-shimmer 4.8s ease-in-out infinite;
 }
@@ -254,17 +263,17 @@ h1, h2, h3, .font-display {
   gap: 8px;
   min-width: 0;
   text-decoration: none;
-  color: #16064F;
+  color: #461667;
 }
 .site-brand-mark {
   width: 8px;
   height: 8px;
   flex: none;
-  background: #FFBF08;
+  background: #F5A81C;
 }
 .site-brand-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
 .site-brand-name { font-family: var(--font-display); font-weight: 650; font-size: 17px; letter-spacing: -0.03em; }
-.site-brand-sub { color: #5C5670; font-size: 11px; font-weight: 600; }
+.site-brand-sub { color: #5A3D72; font-size: 11px; font-weight: 600; }
 .site-header.is-condensed .site-brand-sub { opacity: 0; }
 .site-nav-track {
   position: relative;
@@ -281,7 +290,7 @@ h1, h2, h3, .font-display {
   inset-inline-start: 0;
   width: 1px;
   border-radius: 999px;
-  background: #E6E0D4;
+  background: #E6D6F0;
   transform-origin: left center;
   pointer-events: none;
   transition: transform 280ms ease, opacity 200ms ease;
@@ -294,14 +303,14 @@ h1, h2, h3, .font-display {
   min-height: 44px;
   padding: 8px 12px;
   border-radius: 999px;
-  color: #5C5670;
+  color: #5A3D72;
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
 }
 .site-header .site-nav::after { bottom: 8px; inset-inline: 12px; }
-.site-header .site-nav:hover { color: #16064F; }
-.site-header .site-nav.is-active { color: #16064F; }
+.site-header .site-nav:hover { color: #461667; }
+.site-header .site-nav.is-active { color: #461667; }
 .site-header .site-nav-quiet { display: none; }
 .site-header-actions { display: flex; align-items: center; gap: 8px; margin-inline-start: auto; }
 .site-header-cta { min-height: 44px; padding-inline: 14px; font-size: 13px; }
@@ -312,7 +321,7 @@ h1, h2, h3, .font-display {
   flex: none;
   border: 0;
   border-radius: 12px;
-  background: #FFBF08;
+  background: #F5A81C;
 }
 .site-nav-burger span {
   position: absolute;
@@ -321,7 +330,7 @@ h1, h2, h3, .font-display {
   width: 16px;
   height: 2px;
   border-radius: 2px;
-  background: #16064F;
+  background: #461667;
   transition: transform 220ms ease, opacity 180ms ease;
 }
 .site-nav-burger span:nth-child(1) { transform: translateY(-6px); }
@@ -331,7 +340,7 @@ h1, h2, h3, .font-display {
 .site-nav-burger.is-open span:nth-child(3) { transform: rotate(-45deg); }
 .site-menu .site-nav { width: 100%; }
 .site-menu .site-nav::after { display: none; }
-.site-menu .site-nav.is-active { background: #E6E0D4; color: #16064F; }
+.site-menu .site-nav.is-active { background: #E6D6F0; color: #461667; }
 .site-menu-dim {
   position: fixed;
   inset: 0;
@@ -349,8 +358,8 @@ h1, h2, h3, .font-display {
   display: grid;
   padding: 8px;
   border-radius: 24px;
-  border: 1px solid #DDD6C8;
-  background: #FBFAF6;
+  border: 1px solid #DCC8EA;
+  background: #FBF7FD;
   box-shadow: 0 24px 48px rgb(22 6 79 / 0.16);
   opacity: 0;
   transform: translateY(-10px);

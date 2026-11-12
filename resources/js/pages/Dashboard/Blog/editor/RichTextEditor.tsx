@@ -409,7 +409,7 @@ export function RichTextEditor({ value, css = "", postId = null, onChange, onCss
               aria-label="لون النص"
               className="rte-color"
               onChange={(event) => editor.chain().focus().setColor(event.target.value).run()}
-              defaultValue="#16064F"
+              defaultValue="#461667"
             />
           </label>
           <ToolBtn title="مسح التنسيق" onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}>
@@ -561,7 +561,7 @@ export function RichTextEditor({ value, css = "", postId = null, onChange, onCss
                 value={cssDraft}
                 spellCheck={false}
                 onChange={(event) => commitCss(event.target.value)}
-                placeholder={".hero {\n  background: #16064f;\n  color: #fff;\n  padding: 16px;\n}"}
+                placeholder={".hero {\n  background: #461667;\n  color: #fff;\n  padding: 16px;\n}"}
               />
             </div>
           )}

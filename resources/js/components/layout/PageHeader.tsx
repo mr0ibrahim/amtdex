@@ -31,7 +31,7 @@ export function PageHeader({
         ) : (
           <div className="text-[11px] font-bold tracking-[0.6px] text-[var(--color-primary)]">{eyebrow}</div>
         ))}
-      <h1 data-motion="rise" data-motion-delay="120" className="mt-4 text-[34px] sm:text-[52px] font-semibold text-[var(--color-ink)] leading-[1.2]">
+      <h1 className="mt-4 text-[34px] sm:text-[52px] font-semibold text-[var(--color-ink)] leading-[1.2]">
         {title}
       </h1>
       {description != null && (

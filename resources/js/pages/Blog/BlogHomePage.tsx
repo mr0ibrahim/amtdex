@@ -1,3 +1,4 @@
+import "../../../css/blog-prose.css"
 import { useEffect, useState, useTransition } from "react"
 import { useDebouncedValue } from "@/routing/search"
 import { highlightMatch } from "@/search/arabic"
@@ -409,7 +410,7 @@ export function BlogHomePage() {
                   href="/feed"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold bg-[#16064F] text-[#F6F3EC] hover:opacity-90 shadow-[var(--shadow-card)] transition-opacity"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold bg-[#461667] text-[#F8F2FB] hover:opacity-90 shadow-[var(--shadow-card)] transition-opacity"
                 >
                   خلاصة RSS Feed ↗
                 </a>

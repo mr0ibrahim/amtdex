@@ -35,14 +35,14 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
   }, [preselectedService])
 
   const next = () => setStep((s) => Math.min(3, s + 1))
-  const canNext = step === 1 ? !!data.service : step === 2 ? !!data.budget && !!data.timeline : true
+  const canNext = step === 1 ? !!data.service : step === 2 ? !!data.timeline : true
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setServerError(null)
 
     const fd = new FormData(e.currentTarget)
-    const payload: Record<string, unknown> = { ...data }
+    const payload: Record<string, unknown> = { ...data, budget: "غير محدد" }
     fd.forEach((v, k) => (payload[k] = String(v)))
 
     const parsed = quoteSchema.safeParse(payload)
@@ -71,7 +71,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
           timeline: String(payload.timeline ?? ""),
         },
       })
-      onToast("تم استلام طلبك بنجاح — سنرسل لك عرض السعر وخطة العمل خلال 24 ساعة ✨")
+      onToast("تم استلام طلبك. سنعود إليك.")
       nav("/contact")
     } catch (err: any) {
       const msg = err?.response?.data?.message || err?.message || "تعذر إرسال الطلب، يرجى التحقق من الاتصال والمحاولة مجدداً."
@@ -87,10 +87,10 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
         ← العودة للرئيسية
       </Link>
       <h1 className="mt-3 text-[28px] sm:text-[36px] font-bold tracking-tight text-[var(--color-ink)]">
-        اطلب عرض سعر مخصص
+        ابدأ مشروعك
       </h1>
       <p className="mt-2 text-[14px] text-[var(--color-text-muted)] leading-relaxed">
-        3 خطوات بسيطة — نقدّر متطلبات مشروعك بدقة ونرسل لك نطاق عمل واضحاً وتكلفة محددة خلال 24 ساعة.
+        أخبرنا عن فكرتك ونعود إليك.
       </p>
 
       {/* Steps Indicator */}
@@ -111,7 +111,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
                 step >= n ? "text-[var(--color-ink)]" : "text-[var(--color-text-muted)]/60"
               }`}
             >
-              {n === 1 ? "نوع الخدمة" : n === 2 ? "الميزانية والوقت" : "بيانات التواصل"}
+              {n === 1 ? "نوع الخدمة" : n === 2 ? "الوقت" : "بيانات التواصل"}
             </span>
             {n < 3 && (
               <span
@@ -170,27 +170,6 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
         {/* Step 2: Budget & Timeline */}
         {step === 2 && (
           <div className="space-y-7">
-            <div>
-              <h2 className="text-[16px] font-bold text-[var(--color-ink)]">الميزانية التقريبية المتوقعة</h2>
-              <p className="text-[12px] text-[var(--color-text-muted)] mt-1">تساعدنا الميزانية في اقتراح الحل المعماري الأنسب لمشروعك</p>
-              <div className="mt-3.5 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                {["أقل من 10 آلاف ر.س", "10K — 30K ر.س", "30K — 80K ر.س", "أكثر من 80K ر.س"].map((b) => (
-                  <button
-                    key={b}
-                    type="button"
-                    onClick={() => setData((d) => ({ ...d, budget: b }))}
-                    className={`py-3.5 px-3 rounded-2xl border text-[12.5px] font-bold transition-all text-center ${
-                      data.budget === b
-                        ? "bg-[var(--color-ink)] text-white border-[var(--color-primary)] shadow-sm"
-                        : "bg-white border-[var(--color-border)] text-[var(--color-ink)] hover:border-[var(--color-primary-light)]/40 hover:bg-[var(--color-card-soft)]/20"
-                    }`}
-                  >
-                    {b}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <div>
               <h2 className="text-[16px] font-bold text-[var(--color-ink)]">الجدول الزمني المستهدف للإطلاق</h2>
               <div className="mt-3.5 grid grid-cols-1 sm:grid-cols-3 gap-2.5">

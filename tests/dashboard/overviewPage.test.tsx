@@ -25,7 +25,7 @@ describe("OverviewPage (Dashboard)", () => {
     expect(screen.getByPlaceholderText(/ابحث عن طلب/)).toBeInTheDocument()
     expect(await screen.findByText("المشاريع النشطة")).toBeInTheDocument()
     expect(screen.getByText("طلبات التواصل")).toBeInTheDocument()
-    expect(screen.getByText("عروض الأسعار")).toBeInTheDocument()
+    expect(screen.getByText("طلبات المشاريع")).toBeInTheDocument()
     expect(screen.getByText("تابع من حيث توقفت")).toBeInTheDocument()
     expect(screen.getByText("المحتوى والنشر")).toBeInTheDocument()
   })
