@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useMemo, useState } from "react"
+import { createSearchIndex, useDebouncedValue } from "@/routing/search"
 import { Icon, type IconName } from "@/components/ui/Icon"
 import { useDashboardStatsQuery } from "@/lib/queries"
 import { getSession } from "@/lib/auth"
@@ -46,6 +48,17 @@ const RECENT = [
 export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
   void onToast
   const session = getSession()
+  const navigate = useNavigate()
+  const [query, setQuery] = useState("")
+  const debouncedQuery = useDebouncedValue(query, 160)
+  const moduleIndex = useMemo(
+    () => createSearchIndex(
+      MODULE_GROUPS.flatMap((group) => group.items.map((item) => ({ ...item, group: group.title }))),
+      (item) => `${item.title} ${item.desc} ${item.group}`,
+    ),
+    [],
+  )
+  const moduleHits = moduleIndex(debouncedQuery)
   const { data: stats, isLoading, error, refetch } = useDashboardStatsQuery()
   const hour = new Date().getHours()
   const greeting = hour < 12 ? "صباح الخير" : hour < 18 ? "مساء الخير" : "مرحباً"
@@ -68,20 +81,43 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
 
           <form
             className="dash-search mt-6"
+            role="search"
             onSubmit={(e) => {
               e.preventDefault()
-              const q = new FormData(e.currentTarget).get("q")?.toString().trim()
-              if (!q) return
-              if (q.includes("طلب") || q.includes("عرض")) window.location.href = "/dashboard/leads"
-              else if (q.includes("مقال") || q.includes("مدون")) window.location.href = "/dashboard/blog"
-              else if (q.includes("seo") || q.includes("ظهور")) window.location.href = "/dashboard/seo"
-              else window.location.href = "/dashboard/content"
+              const hit = moduleIndex(query)[0]
+              if (hit) navigate(hit.to)
             }}
           >
             <Icon name="search" size={18} className="text-[var(--color-primary)]" />
-            <input name="q" placeholder="ابحث عن طلب، مقال، إعداد، أو وحدة تشغيل..." aria-label="بحث لوحة التحكم" />
+            <input
+              name="q"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="ابحث عن طلب، مقال، إعداد، أو وحدة تشغيل..."
+              aria-label="بحث لوحة التحكم"
+              role="searchbox"
+              aria-controls="dash-module-results"
+            />
             <button type="submit">بحث</button>
           </form>
+          {debouncedQuery.trim() && (
+            <div id="dash-module-results" className="mt-3 text-start">
+              {moduleHits.length === 0 ? (
+                <p className="text-[12px] text-white/70">لا توجد وحدات مطابقة.</p>
+              ) : (
+                <ul className="grid gap-2">
+                  {moduleHits.map((hit) => (
+                    <li key={hit.to + hit.title}>
+                      <Link to={hit.to} className="block rounded-xl bg-white/10 px-3 py-2 text-[13px] font-bold text-white">
+                        {hit.title}
+                        <span className="block text-[11px] font-medium text-white/70">{hit.desc}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
 
           <div className="dash-pill-row">
             <Link to="/dashboard/leads" className="dash-pill">الطلبات الجديدة</Link>
@@ -157,7 +193,12 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
 
       <div className="grid xl:grid-cols-[minmax(0,1fr)_300px] gap-5 items-start">
         <div className="space-y-6">
-          {MODULE_GROUPS.map((group) => (
+          {MODULE_GROUPS.map((group) => ({
+            ...group,
+            items: debouncedQuery.trim()
+              ? group.items.filter((item) => moduleHits.some((hit) => hit.to === item.to && hit.title === item.title))
+              : group.items,
+          })).filter((group) => group.items.length > 0).map((group) => (
             <section key={group.title}>
               <div className="flex items-center justify-between gap-3 mb-3 px-1">
                 <h2 className="text-[14px] font-bold text-[var(--color-ink)]">{group.title}</h2>

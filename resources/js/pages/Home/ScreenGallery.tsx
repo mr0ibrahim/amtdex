@@ -27,7 +27,8 @@ export function ScreenGallery() {
                   alt={screen.alt}
                   width={960}
                   height={2027}
-                  loading="eager"
+                  loading="lazy"
+                  fetchPriority="low"
                   decoding="async"
                 />
               </div>

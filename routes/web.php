@@ -36,7 +36,19 @@ Route::get('/blog/{path?}', function (?string $path = null) {
     return redirect($target, 301);
 })->where('path', '.*');
 
-$spaExclude = '^(?!(api|sanctum|storage|build|hot|_debugbar|feed|robots\.txt|sitemap\.xml|sitemap-blog\.xml|sitemaps/)).*$';
+Route::get('/google-site-verification.html', function () {
+    $path = public_path('google-site-verification.html');
+    abort_unless(is_file($path), 404);
+
+    return response(file_get_contents($path), 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+});
+
+// Dashboard HTML is not public. Auth + role run before the SPA shell is sent.
+Route::middleware('dashboard.access')->get('/dashboard/{path?}', function () {
+    return view('app');
+})->where('path', '.*');
+
+$spaExclude = '^(?!(api|sanctum|storage|build|hot|_debugbar|feed|robots\.txt|sitemap\.xml|sitemap-blog\.xml|sitemaps/|dashboard)).*$';
 
 // Subdomain redirection for non-blog routes & SPA fallback
 Route::get('/{any?}', function (?string $any = null) {

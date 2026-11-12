@@ -2,29 +2,32 @@ import { Icon } from "@/components/ui/Icon"
 import { useEffect, useRef, useState } from "react"
 import { Link, NavLink, useLocation } from "react-router-dom"
 import { getBlogUrl, getMainUrl, isBlogSubdomain } from "@/lib/subdomain"
+import { prefetchRoute } from "@/routing/lifecycle"
 
 function SiteNavLink({
   to,
   className,
   children,
   onClick,
+  onIntent,
 }: {
   to: string
   className: (props: { isActive: boolean }) => string
   children: React.ReactNode
   onClick?: () => void
+  onIntent?: () => void
 }) {
   const onBlog = isBlogSubdomain()
   if (onBlog) {
     const href = getMainUrl(to)
     return (
-      <a href={href} onClick={onClick} className={className({ isActive: false })}>
+      <a href={href} onClick={onClick} onMouseEnter={onIntent} onFocus={onIntent} className={className({ isActive: false })}>
         {children}
       </a>
     )
   }
   return (
-    <NavLink to={to} onClick={onClick} className={className}>
+    <NavLink to={to} onClick={onClick} onMouseEnter={onIntent} onFocus={onIntent} className={className}>
       {children}
     </NavLink>
   )
@@ -36,24 +39,26 @@ function SiteLink({
   style,
   children,
   onClick,
+  onIntent,
 }: {
   to: string
   className?: string
   style?: React.CSSProperties
   children: React.ReactNode
   onClick?: () => void
+  onIntent?: () => void
 }) {
   const onBlog = isBlogSubdomain()
   if (onBlog) {
     const href = getMainUrl(to)
     return (
-      <a href={href} onClick={onClick} className={className} style={style}>
+      <a href={href} onClick={onClick} onMouseEnter={onIntent} onFocus={onIntent} className={className} style={style}>
         {children}
       </a>
     )
   }
   return (
-    <Link to={to} onClick={onClick} className={className} style={style}>
+    <Link to={to} onClick={onClick} onMouseEnter={onIntent} onFocus={onIntent} className={className} style={style}>
       {children}
     </Link>
   )
@@ -126,10 +131,10 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
               </span>
             </SiteLink>
             <div className="hidden lg:flex items-center gap-6 h-full">
-              <SiteNavLink to="/services" className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
+              <SiteNavLink to="/services" onIntent={() => prefetchRoute("/services")} className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
                 الخدمات
               </SiteNavLink>
-              <SiteNavLink to="/portfolio" className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
+              <SiteNavLink to="/portfolio" onIntent={() => prefetchRoute("/portfolio")} className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
                 أعمالنا
               </SiteNavLink>
               {onBlog ? (
@@ -144,7 +149,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
               <SiteLink to="/services" className="site-nav">
                 التقنيات
               </SiteLink>
-              <SiteNavLink to="/about" className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
+              <SiteNavLink to="/about" onIntent={() => prefetchRoute("/about")} className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
                 من نحن
               </SiteNavLink>
             </div>
@@ -155,7 +160,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
             <SiteLink to="/dashboard" className="site-nav">
               لوحة التحكم
             </SiteLink>
-            <SiteLink to="/contact" className="site-nav">
+            <SiteLink to="/contact" onIntent={() => prefetchRoute("/contact")} className="site-nav">
               تواصل معنا
             </SiteLink>
             <SiteLink to="/quote" className="btn btn-ink brand-cta">

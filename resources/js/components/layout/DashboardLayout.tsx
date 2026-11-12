@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
+import { useDebouncedValue } from "@/routing/search"
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { Icon, type IconName } from "@/components/ui/Icon"
 import { getSession, logout } from "@/lib/auth"
@@ -77,6 +78,17 @@ function SidebarContent({
             onChange={(e) => onSearch?.(e.target.value)}
             placeholder="بحث سريع في القائمة..."
             aria-label="بحث في القائمة"
+            role="searchbox"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                onSearch?.("")
+              }
+              if (e.key === "ArrowDown") {
+                e.preventDefault()
+                const root = e.currentTarget.closest("aside, .dash-mobile-drawer-panel")
+                root?.querySelector<HTMLElement>(".dash-nav-link")?.focus()
+              }
+            }}
           />
         </label>
       )}
@@ -138,7 +150,8 @@ function SidebarContent({
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [navFilter, setNavFilter] = useState("")
+  const [navQuery, setNavQuery] = useState("")
+  const navFilter = useDebouncedValue(navQuery, 120)
   const session = getSession()
   const location = useLocation()
   const isOverview = location.pathname === "/dashboard" || location.pathname === "/dashboard/overview"
@@ -161,10 +174,10 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
     <div className="dash-shell" dir="rtl" lang="ar">
       <div className="dash-frame">
         <aside className="dash-sidebar hidden lg:flex">
-          <SidebarContent filter={navFilter} showSearch searchValue={navFilter} onSearch={setNavFilter} />
+          <SidebarContent filter={navFilter} showSearch searchValue={navQuery} onSearch={setNavQuery} />
         </aside>
 
-        <div className="dash-main">
+        <div className="dash-main" id="main-content" tabIndex={-1}>
           <div className="dash-topbar lg:hidden">
             <button
               type="button"
@@ -209,8 +222,8 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
             <SidebarContent
               filter={navFilter}
               onNavigate={() => setMobileOpen(false)}
-              searchValue={navFilter}
-              onSearch={setNavFilter}
+              searchValue={navQuery}
+              onSearch={setNavQuery}
             />
           </div>
         </div>

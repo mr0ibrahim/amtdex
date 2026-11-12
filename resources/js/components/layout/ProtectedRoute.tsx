@@ -1,9 +1,13 @@
-import { Navigate } from "react-router-dom"
+import { Navigate, useLocation } from "react-router-dom"
 import { hasRole, isAuthenticated } from "@/lib/auth"
 import type { Role } from "@/lib/auth"
 
 export function ProtectedRoute({ children, roles }: { children: React.ReactNode; roles?: Role[] }) {
-  if (!isAuthenticated()) return <Navigate to="/login" replace />
+  const location = useLocation()
+  if (!isAuthenticated()) {
+    const next = `${location.pathname}${location.search}`
+    return <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />
+  }
   if (roles && !hasRole(roles)) return <Navigate to="/403" replace />
   return <>{children}</>
 }

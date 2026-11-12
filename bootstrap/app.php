@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureUserRole::class,
+            'dashboard.access' => \App\Http\Middleware\EnsureDashboardAccess::class,
         ]);
 
         $middleware->web(append: [

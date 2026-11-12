@@ -28,7 +28,12 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
+    @php
+        $fontHref = 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Readex+Pro:wght@500;600;700&display=swap';
+    @endphp
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/ibmplexsansarabic/v15/Qw3NZRtWPQCuHme67tEYUIx3Kh0PHR9N6YPi-OCUXMRrKATt.woff2">
+    <link rel="preload" as="style" href="{{ $fontHref }}" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ $fontHref }}"></noscript>
     <meta name="theme-color" content="#16064F">
 
     <script>
@@ -66,7 +71,7 @@
     @endif
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root"><p style="font-family:system-ui,sans-serif;padding:24px">Amtdex — حلول برمجية تصنع الفرق</p></div>
 </body>
 </html>
 

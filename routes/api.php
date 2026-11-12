@@ -48,7 +48,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/blog/feed', [PublicBlogController::class, 'feed']);
     Route::get('/blog/sitemap.xml', [PublicBlogController::class, 'sitemap']);
 
-    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
     // ── Protected Endpoints (Auth: Sanctum) ──
     Route::middleware('auth:sanctum')->group(function () {
@@ -58,10 +58,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
 
         // Dashboard Stats
-        Route::get('/dashboard/stats', [DashboardOverviewController::class, 'stats']);
+        Route::get('/dashboard/stats', [DashboardOverviewController::class, 'stats'])
+            ->middleware('role:admin,editor,author,viewer');
 
         // Leads Management
-        Route::get('/leads', [LeadController::class, 'index']);
+        Route::get('/leads', [LeadController::class, 'index'])->middleware('role:admin,editor,viewer');
         Route::patch('/leads/{id}/status', [LeadController::class, 'updateStatus'])->middleware('role:admin,editor');
         Route::delete('/leads/{id}', [LeadController::class, 'destroy'])->middleware('role:admin');
 
@@ -108,7 +109,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/seo', [SeoController::class, 'destroy'])->middleware('role:admin');
 
         // Settings Management
-        Route::get('/settings', [SettingsController::class, 'get']);
+        Route::get('/settings', [SettingsController::class, 'get'])->middleware('role:admin');
         Route::put('/settings', [SettingsController::class, 'update'])->middleware('role:admin');
 
         // User Management (Admin only)
@@ -121,38 +122,38 @@ Route::prefix('v1')->group(function () {
         Route::get('/audit', [AuditLogController::class, 'index'])->middleware('role:admin');
 
         // Media Library
-        Route::get('/media', [MediaController::class, 'index']);
+        Route::get('/media', [MediaController::class, 'index'])->middleware('role:admin,editor,author');
         Route::post('/media', [MediaController::class, 'upload'])->middleware('role:admin,editor');
         Route::delete('/media/{id}', [MediaController::class, 'destroy'])->middleware('role:admin');
 
         // ── Blog Management (Admin & Editor & Author) ──
-        Route::get('/admin/blog/stats', [AdminBlogController::class, 'stats']);
-        Route::get('/admin/blog/posts', [AdminBlogController::class, 'indexPosts']);
-        Route::get('/admin/blog/posts/{id}', [AdminBlogController::class, 'showPost']);
+        Route::get('/admin/blog/stats', [AdminBlogController::class, 'stats'])->middleware('role:admin,editor,author');
+        Route::get('/admin/blog/posts', [AdminBlogController::class, 'indexPosts'])->middleware('role:admin,editor,author');
+        Route::get('/admin/blog/posts/{id}', [AdminBlogController::class, 'showPost'])->middleware('role:admin,editor,author');
         Route::post('/admin/blog/posts', [AdminBlogController::class, 'storePost'])->middleware('role:admin,editor,author');
         Route::put('/admin/blog/posts/{id}', [AdminBlogController::class, 'updatePost'])->middleware('role:admin,editor,author');
         Route::delete('/admin/blog/posts/{id}', [AdminBlogController::class, 'destroyPost'])->middleware('role:admin,editor');
         Route::post('/admin/blog/posts/bulk', [AdminBlogController::class, 'bulkAction'])->middleware('role:admin,editor');
 
-        Route::get('/admin/blog/categories', [AdminBlogController::class, 'categories']);
+        Route::get('/admin/blog/categories', [AdminBlogController::class, 'categories'])->middleware('role:admin,editor,author');
         Route::post('/admin/blog/categories', [AdminBlogController::class, 'storeCategory'])->middleware('role:admin,editor');
         Route::put('/admin/blog/categories/{id}', [AdminBlogController::class, 'updateCategory'])->middleware('role:admin,editor');
         Route::delete('/admin/blog/categories/{id}', [AdminBlogController::class, 'destroyCategory'])->middleware('role:admin');
 
-        Route::get('/admin/blog/tags', [AdminBlogController::class, 'tags']);
+        Route::get('/admin/blog/tags', [AdminBlogController::class, 'tags'])->middleware('role:admin,editor,author');
         Route::post('/admin/blog/tags', [AdminBlogController::class, 'storeTag'])->middleware('role:admin,editor');
         Route::put('/admin/blog/tags/{id}', [AdminBlogController::class, 'updateTag'])->middleware('role:admin,editor');
         Route::delete('/admin/blog/tags/{id}', [AdminBlogController::class, 'destroyTag'])->middleware('role:admin');
 
-        Route::get('/admin/blog/comments', [AdminBlogController::class, 'comments']);
+        Route::get('/admin/blog/comments', [AdminBlogController::class, 'comments'])->middleware('role:admin,editor');
         Route::patch('/admin/blog/comments/{id}/status', [AdminBlogController::class, 'updateCommentStatus'])->middleware('role:admin,editor');
         Route::delete('/admin/blog/comments/{id}', [AdminBlogController::class, 'destroyComment'])->middleware('role:admin');
 
-        Route::get('/admin/blog/redirects', [AdminBlogController::class, 'redirects']);
+        Route::get('/admin/blog/redirects', [AdminBlogController::class, 'redirects'])->middleware('role:admin');
         Route::post('/admin/blog/redirects', [AdminBlogController::class, 'storeRedirect'])->middleware('role:admin');
         Route::delete('/admin/blog/redirects/{id}', [AdminBlogController::class, 'destroyRedirect'])->middleware('role:admin');
 
-        Route::get('/admin/blog/settings', [AdminBlogController::class, 'getSettings']);
+        Route::get('/admin/blog/settings', [AdminBlogController::class, 'getSettings'])->middleware('role:admin');
         Route::put('/admin/blog/settings', [AdminBlogController::class, 'updateSettings'])->middleware('role:admin');
     });
 });

@@ -27,12 +27,14 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id: string) {
-          if (id.includes("node_modules")) {
-            if (id.includes("react-router")) return "vendor-router"
-            if (id.includes("react")) return "vendor-react"
-            if (id.includes("@tanstack")) return "vendor-query"
-            return "vendor"
-          }
+          if (!id.includes("node_modules")) return
+          if (id.includes("node_modules/react-router") || id.includes("node_modules/@remix-run/")) return "vendor-router"
+          if (id.includes("node_modules/@tanstack/")) return "vendor-query"
+          if (
+            id.includes("node_modules/react-dom/")
+            || id.includes("node_modules/react/")
+            || id.includes("node_modules/scheduler/")
+          ) return "vendor-react"
         },
       },
     },
