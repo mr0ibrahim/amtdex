@@ -33,15 +33,28 @@
   .code b { color: #7dcea0; font-weight: 500; }
   .avatars b { background: #241a4a; color: #fff; border-color: #0b0816; }
   .proof small { color: #b7b0c6; }
-  .logos { display: flex; justify-content: space-between; gap: 18px; padding: 28px 0 8px; color: #8d86a0; font-weight: 650; font-size: 14px; }
-  section { padding: 88px 0; }
+  .logos { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 22px; padding: 20px 0 0; color: #c8c2d4; font-weight: 650; font-size: 15px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chips li { padding: 8px 12px; border-radius: 999px; border: 1px solid rgb(255 255 255 / 14%); font-family: var(--mono); font-size: 13px; }
+  .road { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 14px 0; border-top: 1px solid rgb(255 255 255 / 8%); }
+  .road em { font-style: normal; color: #e4b23a; font-family: var(--mono); font-size: 12px; white-space: nowrap; }
+  .systems { display: grid; gap: 8px; margin-top: 14px; }
+  .systems span { display: flex; align-items: center; min-height: 48px; padding: 0 14px; border-radius: 10px; background: rgb(255 255 255 / 6%); font-weight: 700; }
+  .mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+  .mini strong { font-size: 28px; font-family: var(--display); }
+  section { padding: 0 0 80px; }
+  .hero { padding-top: 36px; }
+  .app-body { min-height: 440px; }
+  .spark { height: 128px; }
+  .metric strong { font-size: 26px; }
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid rgb(255 255 255 / 8%); }
   .stats article { padding: 28px 8px 8px; }
   .stats strong { font-size: 44px; font-family: var(--display); letter-spacing: -0.04em; }
   .stats p { color: #9a93ab; font-size: 13px; margin-top: 6px; }
-  .g6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 28px; }
-  .g6 img { height: 250px; width: 100%; object-fit: cover; object-position: top; border-radius: 16px; border: 1px solid rgb(255 255 255 / 8%); }
-  .g6 figcaption { margin-top: 8px; font-size: 12px; color: #c8c2d4; }
+  .showcase { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
+  .showcase figure { margin: 0; padding: 10px 10px 12px; border-radius: 28px; background: #161222; border: 1px solid rgb(255 255 255 / 10%); }
+  .showcase img { height: 500px; width: 100%; object-fit: cover; object-position: top; border-radius: 18px; }
+  .showcase figcaption { margin-top: 10px; font-size: 13px; font-weight: 650; color: #f4f1ea; }
   .note { margin-top: 14px; color: #8d86a0; font-size: 12px; }
   .split { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 40px; align-items: center; }
   .compare { display: grid; grid-template-columns: 1fr 1fr; border-radius: 14px; overflow: hidden; border: 1px solid rgb(255 255 255 / 10%); min-height: 260px; }
@@ -64,10 +77,47 @@
   footer.site { border-top: 1px solid rgb(255 255 255 / 8%); color: #b7b0c6; }
   .foot h3, .brand { color: #f4f1ea; }
   .legal { border-top: 1px solid rgb(255 255 255 / 8%); color: #8d86a0; }
-  @media (max-width: 800px) {
-    .steps, .compare, .news, .g6 { grid-template-columns: 1fr 1fr; }
-    .stats { grid-template-columns: 1fr 1fr; }
-    .logos { flex-wrap: wrap; }
+  @media (max-width: 1024px) {
+    h1 { font-size: 48px !important; }
+    h2 { font-size: 32px !important; }
+    section { padding-bottom: 64px; }
+    .split, .news, .steps { grid-template-columns: 1fr !important; }
+    .app-body { grid-template-columns: 1fr !important; }
+    .side { display: none !important; }
+    .showcase { display: flex !important; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; margin: 0; padding: 4px 0 8px; scroll-padding-inline: 0; }
+    .showcase figure { flex: 0 0 42%; scroll-snap-align: start; }
+    .showcase img { height: 460px; }
+    .foot { grid-template-columns: 1fr 1fr !important; }
+    .foot > div:first-child { grid-column: 1 / -1; }
+  }
+  @media (max-width: 700px) {
+    .wrap { width: auto !important; margin-inline: 18px; }
+    section { padding-bottom: 56px; }
+    .hero { padding-top: 12px; }
+    h1 { font-size: 34px !important; max-width: none; }
+    h2 { font-size: 26px !important; }
+    .lede { font-size: 15px; line-height: 1.7; }
+    .hero .row { display: grid; grid-template-columns: 1fr; }
+    .hero .row .btn { width: 100%; }
+    .stage-wrap { margin-top: 18px; }
+    .proof { margin-top: 14px; }
+    .app-top { height: auto; flex-wrap: wrap; gap: 6px; padding: 12px 14px; }
+    .metrics { grid-template-columns: 1fr 1fr; }
+    .metrics .metric:first-child { grid-column: 1 / -1; }
+    .metric strong { font-size: 28px; }
+    .spark { height: 140px; }
+    .stats { grid-template-columns: 1fr 1fr !important; }
+    .stats article { padding: 16px 4px; }
+    .stats strong { font-size: 32px; }
+    .showcase { margin-inline: 0; padding-inline: 0; }
+    .showcase figure { flex-basis: 82%; }
+    .showcase img { height: 520px; }
+    .compare { min-height: 0; }
+    .compare .after h3 { margin-top: 16px !important; }
+    .logos { justify-content: flex-start; gap: 8px 14px; font-size: 14px; }
+    .med { width: 88px; height: 88px; margin: 8px 0 0; }
+    .svc a { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .legal { flex-direction: column; }
   }
 </style>
 </head>
@@ -141,7 +191,7 @@
     <p class="kicker">واجهات تصنع الفرق</p>
     <h2 style="margin-top:10px">من فكرتك، إلى تجربة متكاملة.</h2>
     <p class="lede">متاجر، تطبيقات، وأنظمة أعمال — نصمّم لكل منتج واجهة تخدم مستخدميه، وتعبّر عن هويته.</p>
-    <div class="g6">
+    <div class="showcase">
       <figure><img src="/public/images/screens/business.webp" alt="نموذج واجهة إدارة الأعمال: مؤشرات الأداء ومخطط الإيرادات والطلبات" /><figcaption>إدارة الأعمال والمبيعات</figcaption></figure>
       <figure><img src="/public/images/screens/shop.webp" alt="نموذج متجر إلكتروني: البحث والتصنيفات وبطاقات المنتجات" /><figcaption>التجارة الإلكترونية</figcaption></figure>
       <figure><img src="/public/images/screens/projects.webp" alt="نموذج تطبيق إدارة المشاريع: نسب الإنجاز ومهام الفريق" /><figcaption>إدارة المشاريع والمهام</figcaption></figure>
@@ -157,7 +207,7 @@
       <p class="kicker">قصة نجاح — من ورشة الى منصة</p>
       <h2 style="margin-top:12px">“AMTDEX لم تبن لنا نظاما، بنت لنا قدرة على النمو.”</h2>
       <p class="lede">نخبة كانت تدير 3 انظمة منفصلة. اليوم منصة واحدة تخدم فرعين وتستعد للثالث — بلا اعادة بناء.</p>
-      <div class="stats" style="border:0;margin-top:18px">
+      <div class="mini">
         <article><strong>60%+</strong><p>نمو المبيعات</p></article>
         <article><strong>18 ساعة</strong><p>توفير اسبوعي</p></article>
         <article><strong>10 اسابيع</strong><p>من الفكرة للاطلاق</p></article>
@@ -165,7 +215,7 @@
       <a class="btn btn-solid" style="margin-top:8px" href="#">اقرأ دراسة الحالة كاملة <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
     </div>
     <div class="compare">
-      <div><b>قبل — 3 انظمة</b><div class="ph"></div><div class="ph"></div><div class="ph"></div></div>
+      <div><b>قبل — 3 انظمة</b><div class="systems"><span>01</span><span>02</span><span>03</span></div></div>
       <div class="after"><b>بعد — منصة واحدة</b><h3 style="margin-top:48px">AMTDEX Platform</h3><p class="note">nukhba.sa — قبل / بعد</p></div>
     </div>
   </div></section>
@@ -182,9 +232,9 @@
     <div class="app" style="margin-top:18px">
       <div class="app-top"><b>خارطة طريق — نظام إدارة المبيعات</b><span class="live"><i></i> قيد التطوير</span></div>
       <div class="stage">
-        <p><b>تحليل المتطلبات</b> — ورشة اكتشاف + وثيقة SRS <span class="note">الأسبوع 1</span></p>
-        <p style="margin-top:10px"><b>تصميم وتطوير</b> — Figma → Next.js / Laravel <span class="note">الأسابيع 2-6</span></p>
-        <p style="margin-top:10px"><b>اختبار وإطلاق</b> — QA + نشر سحابي + تدريب <span class="note">الأسبوع 7</span></p>
+        <div class="road"><div><b>تحليل المتطلبات</b><div class="note">ورشة اكتشاف + وثيقة SRS</div></div><em>الأسبوع 1</em></div>
+        <div class="road"><div><b>تصميم وتطوير</b><div class="note">Figma → Next.js / Laravel</div></div><em>الأسابيع 2-6</em></div>
+        <div class="road"><div><b>اختبار وإطلاق</b><div class="note">QA + نشر سحابي + تدريب</div></div><em>الأسبوع 7</em></div>
         <p style="margin-top:14px;font-weight:700">+ إضافة مرحلة جديدة</p>
       </div>
     </div>
@@ -194,7 +244,8 @@
     <div>
       <p class="kicker">تقنياتنا تدور حول عملك — لا العكس</p>
       <h2 style="margin-top:10px">من الفكرة الى الـ API في اسابيع</h2>
-      <p class="lede"><b>ما نستخدمه يوميا</b><br />Next.js · Laravel · Flutter · PostgreSQL · AWS</p>
+      <p class="lede"><b>ما نستخدمه يوميا</b></p>
+      <ul class="chips"><li>Next.js</li><li>Laravel</li><li>Flutter</li><li>PostgreSQL</li><li>AWS</li></ul>
       <p class="lede">نختار التقنية حسب مشكلتك — لا نفرض ما نعرفه فقط.</p>
     </div>
     <div>
