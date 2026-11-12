@@ -890,8 +890,15 @@
 .site-manager .dash-tab,
 .site-manager .site-toggle,
 .site-savebar .btn { min-height: 44px; min-width: 44px; }
-.site-manager input,
+.site-manager input:not([type="checkbox"]):not([type="radio"]),
 .site-manager textarea { width: 100%; max-width: 100%; min-height: 44px; }
+.site-manager .site-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding-inline: 4px;
+}
 .site-savebar {
   position: sticky;
   bottom: 0;
@@ -923,8 +930,12 @@
 .dash-shell input[type="checkbox"],
 .dash-shell input[type="radio"] {
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  max-width: 22px;
+  max-height: 22px;
   margin: 0;
   border: 1.5px solid #16064F;
   border-radius: 4px;
@@ -932,7 +943,7 @@
   display: inline-grid;
   place-content: center;
   vertical-align: middle;
-  flex: none;
+  flex: 0 0 22px;
 }
 .dash-shell input[type="radio"] { border-radius: 999px; }
 .dash-shell input[type="checkbox"]:checked,

@@ -176,7 +176,7 @@ export function SeoPage() {
               <div>
                 <h2 className="text-[13px] font-extrabold text-[var(--color-ink)]">الملفات الحية على الخادم</h2>
                 <p className="text-[11px] text-[var(--color-text-muted)] mt-1">
-                  هذه روابط حقيقية يخدمها Laravel — ليست نصوصاً منسوخة محلياً.
+                  هذه روابط الملفات المنشورة على الموقع.
                 </p>
               </div>
               {(toolsError || toolsLoading) && (

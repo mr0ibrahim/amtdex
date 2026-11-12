@@ -126,7 +126,7 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
           </div>
 
           <div className="mt-5 text-[11px] text-[var(--color-text-muted)]">
-            نظرة لحظية على المشاريع والطلبات والعروض — بيانات حية من الـ API
+            نظرة لحظية على المشاريع والطلبات والعروض
           </div>
         </div>
       </section>

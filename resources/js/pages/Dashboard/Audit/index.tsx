@@ -78,7 +78,7 @@ export function AuditPage() {
           {blocked.length === 0 ? "لا يوجد عنوان IP محظور حالياً." : blocked.join(", ")}
         </p>
         <p className="text-[10px] text-amber-700 mt-2">
-          * يتم تفعيل حظر IP التلقائي ومعدل الطلبات (Rate Limiting) عبر Laravel Middleware (`throttle:api`).
+          يُحظر العنوان تلقائياً عند تكرار الطلبات بشكل غير طبيعي.
         </p>
       </div>
     </div>

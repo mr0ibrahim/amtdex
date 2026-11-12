@@ -130,7 +130,7 @@ export function SettingsPage() {
       <div className="bg-white border border-[var(--color-border)] rounded-2xl p-5">
         <h2 className="text-[14px] font-bold text-[var(--color-ink)]">النسخ الاحتياطي والاستعادة</h2>
         <p className="mt-1 text-[11px] text-[var(--color-text-muted)]">
-          SEO: {seoCount} مسارات مسجلة — يتم تصدير كامل البيانات كملف JSON.
+          تحسين الظهور: {seoCount} مسارات مسجلة — يتم تصدير كامل البيانات كملف.
         </p>
         <button
           onClick={handleExport}

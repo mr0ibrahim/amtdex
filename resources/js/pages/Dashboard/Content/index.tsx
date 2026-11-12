@@ -994,7 +994,7 @@ export function ContentPage() {
               <TagsInput
                 label="ما بنيناه وتسليمه (Deliverables) — اضغط Enter للإضافة"
                 tags={editingProject.deliverables || []}
-                placeholder="مثال: واجهة سريعة، لوحة تحكم Filament، بوابات دفع، API موثق"
+                placeholder="مثال: واجهة سريعة، لوحة تحكم، بوابات دفع"
                 onChange={(deliverables) => setEditingProject({ ...editingProject, deliverables })}
               />
 
