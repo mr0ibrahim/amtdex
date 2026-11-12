@@ -5,6 +5,7 @@
 import { Suspense, lazy, useEffect } from "react"
 import { Route, Routes, useLocation } from "react-router-dom"
 import { RouteProgress, useRouteLifecycle } from "@/routing/lifecycle"
+import { PublicPage } from "@/cms/PublicPage"
 import type { Role } from "@/lib/auth"
 import { AuthLayout, MarketingLayout } from "@/components/layout/MarketingLayout"
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary"
@@ -42,6 +43,7 @@ const BlogCategoryPage = lazy(() => import("@/pages/Blog/BlogCategoryPage").then
 const BlogTagPage = lazy(() => import("@/pages/Blog/BlogTagPage").then((m) => ({ default: m.BlogTagPage })))
 const BlogNotFoundPage = lazy(() => import("@/pages/Blog/BlogNotFoundPage").then((m) => ({ default: m.BlogNotFoundPage })))
 const DashboardBlogPage = lazy(() => import("@/pages/Dashboard/Blog/DashboardBlogPage").then((m) => ({ default: m.DashboardBlogPage })))
+const SiteManagerPage = lazy(() => import("@/pages/Dashboard/Site").then((m) => ({ default: m.SiteManagerPage })))
 
 function PageLoader() {
   return (
@@ -130,18 +132,18 @@ export default function App() {
               /* Main site domain routes */
               <>
                 <Route element={<MarketingLayout onToast={show} />}>
-                  <Route path="/" element={<><Seo title="الرئيسية" description="Amtdex - شركة يمنية للحلول البرمجية: مواقع، تطبيقات، ERP/CRM، ذكاء اصطناعي." /><HomePage onToast={show} /></>} />
-                  <Route path="/services" element={<><Seo title="الخدمات" /><ServicesPage /></>} />
+                  <Route path="/" element={<PublicPage path="/"><Seo title="الرئيسية" description="Amtdex - شركة يمنية للحلول البرمجية: مواقع، تطبيقات، ERP/CRM، ذكاء اصطناعي." /><HomePage onToast={show} /></PublicPage>} />
+                  <Route path="/services" element={<PublicPage path="/services"><Seo title="الخدمات" /><ServicesPage /></PublicPage>} />
                   <Route path="/services/:slug" element={<ServiceDetailPage />} />
-                  <Route path="/portfolio" element={<><Seo title="اعمالنا" /><PortfolioPage /></>} />
+                  <Route path="/portfolio" element={<PublicPage path="/portfolio"><Seo title="اعمالنا" /><PortfolioPage /></PublicPage>} />
                   <Route path="/portfolio/:slug" element={<PortfolioDetailPage />} />
-                  <Route path="/pricing" element={<><Seo title="الاسعار" /><PricingPage onToast={show} /></>} />
-                  <Route path="/about" element={<><Seo title="من نحن" /><AboutPage /></>} />
-                  <Route path="/contact" element={<><Seo title="تواصل معنا" /><ContactPage onToast={show} /></>} />
-                  <Route path="/quote" element={<><Seo title="اطلب عرض سعر" /><QuotePage onToast={show} /></>} />
+                  <Route path="/pricing" element={<PublicPage path="/pricing"><Seo title="الاسعار" /><PricingPage onToast={show} /></PublicPage>} />
+                  <Route path="/about" element={<PublicPage path="/about"><Seo title="من نحن" /><AboutPage /></PublicPage>} />
+                  <Route path="/contact" element={<PublicPage path="/contact"><Seo title="تواصل معنا" /><ContactPage onToast={show} /></PublicPage>} />
+                  <Route path="/quote" element={<PublicPage path="/quote"><Seo title="اطلب عرض سعر" /><QuotePage onToast={show} /></PublicPage>} />
 
                   {/* Blog routes on main site */}
-                  <Route path="/blog" element={<BlogHomePage />} />
+                  <Route path="/blog" element={<PublicPage path="/blog"><BlogHomePage /></PublicPage>} />
                   <Route path="/blog/posts/:slug" element={<BlogPostPage />} />
                   <Route path="/blog/categories/:slug" element={<BlogCategoryPage />} />
                   <Route path="/blog/tags/:slug" element={<BlogTagPage />} />
@@ -157,6 +159,7 @@ export default function App() {
                 <Route path="/dashboard/overview" element={<DashboardFrame roles={STAFF}><OverviewPage onToast={show} /></DashboardFrame>} />
                 <Route path="/dashboard/blog" element={<DashboardFrame roles={WRITERS}><DashboardBlogPage onToast={show} /></DashboardFrame>} />
                 <Route path="/dashboard/content" element={<DashboardFrame roles={EDITORS}><ContentPage /></DashboardFrame>} />
+                <Route path="/dashboard/site" element={<DashboardFrame roles={EDITORS}><SiteManagerPage /></DashboardFrame>} />
                 <Route path="/dashboard/leads" element={<DashboardFrame roles={READERS}><LeadsPage /></DashboardFrame>} />
                 <Route path="/dashboard/seo" element={<DashboardFrame roles={EDITORS}><SeoPage /></DashboardFrame>} />
                 <Route path="/dashboard/media" element={<DashboardFrame roles={WRITERS}><MediaPage /></DashboardFrame>} />

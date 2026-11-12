@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { Link, NavLink, useLocation } from "react-router-dom"
 import { getBlogUrl, getMainUrl, isBlogSubdomain } from "@/lib/subdomain"
 import { prefetchRoute } from "@/routing/lifecycle"
+import { pageIsListed, useCms } from "@/cms/useCms"
 
 function SiteNavLink({
   to,
@@ -72,6 +73,8 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
   const menuRef = useRef<HTMLDivElement>(null)
   const toggleRef = useRef<HTMLButtonElement>(null)
   const onBlog = isBlogSubdomain()
+  const { nav, pages, staff } = useCms()
+  const menu = nav.filter((item) => item.visible && pageIsListed(pages, item.to, staff))
 
   useEffect(() => {
     if (prevPath.current !== loc.pathname) {
@@ -131,27 +134,15 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
               </span>
             </SiteLink>
             <div className="hidden lg:flex items-center gap-6 h-full">
-              <SiteNavLink to="/services" onIntent={() => prefetchRoute("/services")} className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
-                الخدمات
-              </SiteNavLink>
-              <SiteNavLink to="/portfolio" onIntent={() => prefetchRoute("/portfolio")} className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
-                أعمالنا
-              </SiteNavLink>
-              {onBlog ? (
-                <NavLink to="/" className="site-nav is-active">
-                  المدونة
-                </NavLink>
-              ) : (
-                <a href={getBlogUrl("/")} className="site-nav">
-                  المدونة
-                </a>
-              )}
-              <SiteLink to="/services" className="site-nav">
-                التقنيات
-              </SiteLink>
-              <SiteNavLink to="/about" onIntent={() => prefetchRoute("/about")} className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
-                من نحن
-              </SiteNavLink>
+              {menu.filter((item) => !["contact", "quote", "pricing"].includes(item.id)).map((item) => (
+                item.id === "blog" && !onBlog ? (
+                  <a key={item.id} href={getBlogUrl("/")} className="site-nav">{item.label}</a>
+                ) : (
+                  <SiteNavLink key={item.id} to={item.id === "blog" ? "/" : item.to} onIntent={() => prefetchRoute(item.to)} className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
+                    {item.label}
+                  </SiteNavLink>
+                )
+              ))}
             </div>
           </div>
 
@@ -195,20 +186,17 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
               </button>
             </div>
             <SiteNavLink to="/" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>الرئيسية</SiteNavLink>
-            <SiteNavLink to="/services" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>الخدمات</SiteNavLink>
-            <SiteNavLink to="/portfolio" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>أعمالنا</SiteNavLink>
-            {onBlog ? (
-              <NavLink to="/" onClick={() => setOpen(false)} className="is-on">المدونة</NavLink>
-            ) : (
-              <a href={getBlogUrl("/")} onClick={() => setOpen(false)}>المدونة</a>
-            )}
-            <SiteLink to="/services" onClick={() => setOpen(false)}>التقنيات</SiteLink>
-            <SiteNavLink to="/pricing" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>الأسعار</SiteNavLink>
-            <SiteNavLink to="/about" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>من نحن</SiteNavLink>
-            <SiteNavLink to="/contact" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>تواصل</SiteNavLink>
+            {menu.map((item) => (
+              item.id === "blog" && !onBlog ? (
+                <a key={item.id} href={getBlogUrl("/")} onClick={() => setOpen(false)}>{item.label}</a>
+              ) : (
+                <SiteNavLink key={item.id} to={item.id === "blog" ? "/" : item.to} onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>
+                  {item.label}
+                </SiteNavLink>
+              )
+            ))}
             <SiteNavLink to="/dashboard" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>لوحة التحكم</SiteNavLink>
             <SiteLink to="/login" onClick={() => setOpen(false)}>تسجيل الدخول</SiteLink>
-            <SiteLink to="/quote" onClick={() => setOpen(false)} className="btn btn-ink brand-cta" style={{ marginTop: 16, width: "100%" }}>اطلب عرض سعر</SiteLink>
           </div>
         )}
       </header>

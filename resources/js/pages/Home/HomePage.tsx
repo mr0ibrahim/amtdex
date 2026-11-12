@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { Link } from "react-router-dom"
 import { Icon } from "@/components/ui/Icon"
 import { Marquee } from "@/components/ui/Marquee"
@@ -13,6 +13,7 @@ import { FinalCTA } from "@/pages/Home/FinalCTA"
 import { GuaranteeBanner } from "@/pages/Home/GuaranteeBanner"
 import { OrbitSection } from "@/pages/Home/OrbitSection"
 import { ScreenGallery } from "./ScreenGallery"
+import { useCms, useSection } from "@/cms/useCms"
 import { SpotlightSection } from "@/pages/Home/SpotlightSection"
 import { StatsBand } from "@/pages/Home/StatsBand"
 import { WorkflowSection } from "@/pages/Home/WorkflowSection"
@@ -24,6 +25,17 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
   const [email, setEmail] = useState("")
   const [err, setErr] = useState("")
   const logos = (dbClients && dbClients.length > 0 ? dbClients : LOGOS) as Array<string | { id?: string; name?: string; logo?: string }>
+  const { homeSections, staff } = useCms()
+  const hero = useSection("hero").fields
+  const why = useSection("services").fields
+  const news = useSection("newsletter").fields
+  const band = useSection("marquee").fields
+  const gate = (id: string, node: ReactNode) => {
+    const index = homeSections.findIndex((section) => section.id === id)
+    const section = homeSections[index]
+    if (section && !section.visible && !staff) return null
+    return <div style={{ order: index < 0 ? 0 : index }} className={section && !section.visible ? "home-hidden-preview" : undefined}>{node}</div>
+  }
 
   const handleSub = (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,27 +53,25 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
   }
 
   return (
-    <div>
-      <section data-motion-group className="page-container page-container--wide da-hero">
+    <div className="home-stack">
+      {gate("hero", <section data-motion-group className="page-container page-container--wide da-hero">
         <div>
           <div className="da-hero-copy">
-            <p data-motion="rise" className="da-kicker">AMTDEX — شريكك للتحول الرقمي والحلول البرمجية</p>
+            <p data-motion="rise" className="da-kicker">{hero.kicker}</p>
             <h1 data-motion="rise" data-motion-delay="140" className="mt-4 text-[34px] sm:text-[68px] leading-[1.15] font-semibold text-[var(--color-ink)]">
-              نحوّل أفكارك
-              <br />
-              إلى برمجيات تنمو.
+              {hero.title.split("\n").map((line, index) => <span key={line}>{index > 0 && <br />}{line}</span>)}
             </h1>
             <p data-motion="rise" data-motion-delay="280" className="mt-4 text-[16px] leading-8 text-[var(--color-text-muted)] max-w-[34rem]">
-              شركة برمجيات يمنية نطوّر أنظمة مخصصة، تطبيقات جوال، ومنصات سحابية — من الفكرة إلى الإطلاق والدعم، بجودة مؤسسية وسرعة تنفيذ.
+              {hero.lede}
             </p>
             <div data-motion="rise" data-motion-delay="420" className="hero-actions">
-              <Link to="/quote" className="btn btn-ink brand-cta">اطلب استشارة مجانية</Link>
+              <Link to="/quote" className="btn btn-ink brand-cta">{hero.cta}</Link>
               <Link to="/portfolio" className="btn btn-line brand-cta">
-                <Icon name="play" size={14} /> استعرض أعمالنا
+                <Icon name="play" size={14} /> {hero.cta2}
               </Link>
             </div>
             <p data-motion="rise" data-motion-delay="560" className="da-proof text-[13px] text-[var(--color-text-muted)]">
-              <span className="text-[var(--color-gold)]">★★★★★</span> 4.9/5 من 300+ عميل في الخليج يثقون بنا
+              <span className="text-[var(--color-gold)]">★★★★★</span> {hero.proof}
             </p>
           </div>
 
@@ -126,11 +136,11 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
             </div>
           </div>
         </div>
-      </section>
+      </section>)}
 
-      <section data-motion-group className="border-y border-[var(--color-border)]">
+      {gate("marquee", <section data-motion-group className="border-y border-[var(--color-border)]">
         <div className="page-container page-container--wide py-4 flex items-center justify-between gap-6">
-          <p data-motion="fade" className="text-[12px] font-semibold text-[var(--color-text-muted)] shrink-0">شركاؤنا في التحول الرقمي — من صنعاء إلى المنطقة</p>
+          <p data-motion="fade" className="text-[12px] font-semibold text-[var(--color-text-muted)] shrink-0">{band.label}</p>
         </div>
         <Marquee label="أسماء الشركاء">
           {logos.map((l, idx) => {
@@ -150,28 +160,26 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
           ))}
         </Marquee>
         <div className="h-6" />
-      </section>
+      </section>)}
 
-      <StatsBand />
-      <ScreenGallery />
-      <SpotlightSection />
-      <WorkflowSection />
-      <OrbitSection />
-      <GuaranteeBanner />
+      {gate("stats", <StatsBand />)}
+      {gate("gallery", <ScreenGallery />)}
+      {gate("spotlight", <SpotlightSection />)}
+      {gate("workflow", <WorkflowSection />)}
+      {gate("orbit", <OrbitSection />)}
+      {gate("guarantee", <GuaranteeBanner />)}
 
-      <section data-motion-group className="page-container page-container--wide page-section">
+      {gate("services", <section data-motion-group className="page-container page-container--wide page-section">
         <div className="grid lg:grid-cols-[1fr_18rem] gap-10 items-end border-b border-[var(--color-ink)] pb-8">
           <div>
-            <div className="eyebrow">لماذا AMTDEX</div>
+            <div className="eyebrow">{why.kicker}</div>
             <h2 data-motion="rise" data-motion-delay="120" className="mt-4 text-[32px] sm:text-[44px] leading-[1.2] font-semibold">
-              حلول برمجية
-              <br />
-              مصممة لنموك.
+              {why.title.split("\n").map((line, index) => <span key={line}>{index > 0 && <br />}{line}</span>)}
             </h2>
           </div>
           <div data-motion="rise" data-motion-delay="240">
-            <p className="text-[14px] leading-7 text-[var(--color-text-muted)]">لا نبيع قوالب جاهزة. نحلل عملك، نصمم الحل، ونبنيه ليخدمك لسنوات — آمن، قابل للتوسع، وسهل الاستخدام.</p>
-            <Link to="/services" className="mt-4 inline-flex text-[13px] font-semibold border-b border-[var(--color-ink)] pb-0.5">تعرّف على خدماتنا</Link>
+            <p className="text-[14px] leading-7 text-[var(--color-text-muted)]">{why.lede}</p>
+            <Link to="/services" className="mt-4 inline-flex text-[13px] font-semibold border-b border-[var(--color-ink)] pb-0.5">{why.link}</Link>
           </div>
         </div>
         <div className="da-svc">
@@ -204,20 +212,18 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
             <Testimonials />
           </div>
         </div>
-      </section>
+      </section>)}
 
-      <FinalCTA onToast={onToast} />
+      {gate("cta", <FinalCTA onToast={onToast} />)}
 
-      <section data-motion-group className="page-container page-container--wide pb-20">
+      {gate("newsletter", <section data-motion-group className="page-container page-container--wide pb-20">
         <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 items-start border border-[var(--color-ink)] p-6 sm:p-10">
           <div>
             <h2 data-motion="rise" className="text-[32px] sm:text-[42px] font-semibold leading-[1.2]">
-              عندك فكرة؟
-              <br />
-              نحوّلها لمنتج.
+              {news.title.split("\n").map((line, index) => <span key={line}>{index > 0 && <br />}{line}</span>)}
             </h2>
             <p data-motion="rise" data-motion-delay="140" className="mt-4 text-[15px] leading-8 text-[var(--color-text-muted)] max-w-[36rem]">
-              احجز استشارة مجانية 30 دقيقة — نرسم خارطة طريق، نقدّر التكلفة، ونبدأ خلال أيام.
+              {news.lede}
             </p>
             <div data-motion="rise" data-motion-delay="260" className="mt-6 flex flex-wrap gap-3">
               <Link to="/quote" className="btn btn-ink brand-cta">اطلب عرض سعر</Link>
@@ -250,7 +256,7 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
             <p className="mt-3 text-[11px] text-[var(--color-text-faint)]">POST /api/newsletter — جاهز للربط مع Laravel</p>
           </form>
         </div>
-      </section>
+      </section>)}
     </div>
   )
 }

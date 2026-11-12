@@ -163,16 +163,26 @@ TXT;
         $blog = self::blogBaseUrl();
         $now = now()->toAtomString();
 
-        $urls = [
-            ['loc' => "{$base}/", 'priority' => '1.0', 'changefreq' => 'weekly', 'lastmod' => $now],
-            ['loc' => "{$base}/services", 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => $now],
-            ['loc' => "{$base}/portfolio", 'priority' => '0.8', 'changefreq' => 'weekly', 'lastmod' => $now],
-            ['loc' => "{$base}/pricing", 'priority' => '0.8', 'changefreq' => 'monthly', 'lastmod' => $now],
-            ['loc' => "{$base}/about", 'priority' => '0.7', 'changefreq' => 'monthly', 'lastmod' => $now],
-            ['loc' => "{$base}/contact", 'priority' => '0.7', 'changefreq' => 'monthly', 'lastmod' => $now],
-            ['loc' => "{$base}/quote", 'priority' => '0.7', 'changefreq' => 'monthly', 'lastmod' => $now],
-            ['loc' => "{$blog}/", 'priority' => '0.9', 'changefreq' => 'daily', 'lastmod' => $now],
+        $published = \App\Support\CmsStore::publishedPaths();
+        $candidates = [
+            ['path' => '/', 'priority' => '1.0', 'changefreq' => 'weekly'],
+            ['path' => '/services', 'priority' => '0.9', 'changefreq' => 'weekly'],
+            ['path' => '/portfolio', 'priority' => '0.8', 'changefreq' => 'weekly'],
+            ['path' => '/pricing', 'priority' => '0.8', 'changefreq' => 'monthly'],
+            ['path' => '/about', 'priority' => '0.7', 'changefreq' => 'monthly'],
+            ['path' => '/contact', 'priority' => '0.7', 'changefreq' => 'monthly'],
+            ['path' => '/quote', 'priority' => '0.7', 'changefreq' => 'monthly'],
         ];
+        $urls = [];
+        foreach ($candidates as $page) {
+            if (! in_array($page['path'], $published, true)) {
+                continue;
+            }
+            $urls[] = ['loc' => $base.$page['path'], 'priority' => $page['priority'], 'changefreq' => $page['changefreq'], 'lastmod' => $now];
+        }
+        if (in_array('/blog', $published, true)) {
+            $urls[] = ['loc' => "{$blog}/", 'priority' => '0.9', 'changefreq' => 'daily', 'lastmod' => $now];
+        }
 
         return self::urlset($urls);
     }
@@ -238,16 +248,18 @@ TXT;
         $base = self::siteBaseUrl();
         $blog = self::blogBaseUrl();
 
-        return [
-            "{$base}/",
-            "{$base}/services",
-            "{$base}/portfolio",
-            "{$base}/pricing",
-            "{$base}/about",
-            "{$base}/contact",
-            "{$base}/quote",
-            "{$blog}/",
-        ];
+        $published = \App\Support\CmsStore::publishedPaths();
+        $urls = [];
+        foreach (['/', '/services', '/portfolio', '/pricing', '/about', '/contact', '/quote'] as $path) {
+            if (in_array($path, $published, true)) {
+                $urls[] = $base.$path;
+            }
+        }
+        if (in_array('/blog', $published, true)) {
+            $urls[] = "{$blog}/";
+        }
+
+        return $urls;
     }
 
     public static function postsXml(int $chunk = 1): string

@@ -66,16 +66,23 @@ html { color-scheme: dark; }
   transition: background-color 99999s ease-out;
 }
 
+.dash-shell .dash-sidebar-search {
+  background: rgb(255 255 255 / 10%);
+  border-color: rgb(255 255 255 / 22%);
+}
 .dash-shell .dash-sidebar-search input,
-.dash-shell .dash-sidebar-search input:focus {
-  color: #16064F;
-  background-color: #FFFFFF;
-  -webkit-text-fill-color: #16064F;
+.dash-shell .dash-sidebar-search input:focus,
+.dash-shell .dash-sidebar-search input:-webkit-autofill {
+  color: #F7F4EE !important;
+  background-color: transparent !important;
+  -webkit-text-fill-color: #F7F4EE !important;
+  box-shadow: none !important;
+  caret-color: #F7F4EE;
 }
 .dash-shell .dash-sidebar-search input::placeholder {
-  color: #3E3658;
-  -webkit-text-fill-color: #3E3658;
-  opacity: 1;
+  color: #E7E1F4 !important;
+  -webkit-text-fill-color: #E7E1F4;
+  opacity: 1 !important;
 }
 
 .dash-search input,
@@ -119,4 +126,16 @@ html { color-scheme: dark; }
 .dash-shell .text-white\/60,
 .dash-shell .text-white\/70 {
   color: rgb(247 244 238 / 92%);
+}
+
+.home-stack { display: flex; flex-direction: column; }
+.home-hidden-preview { outline: 1px dashed #FFBF08; }
+.search-hit { background: #FFBF08; color: #16064F; }
+.blog-clear-filters { color: #FFD0D8; }
+.blog-search { display: flex; align-items: stretch; gap: 8px; max-width: 36rem; }
+.blog-search input { flex: 1 1 auto; min-width: 0; width: 100%; height: 44px; min-height: 44px; }
+.blog-search button { min-height: 44px; min-width: 44px; }
+@media (max-width: 430px) {
+  .blog-search { flex-direction: column; }
+  .blog-search button { width: 100%; }
 }
