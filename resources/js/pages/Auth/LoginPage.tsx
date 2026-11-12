@@ -37,11 +37,11 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-[70vh] grid place-items-center px-4 py-10 bg-[var(--color-lavender)]/40">
-      <form onSubmit={submit} noValidate className="surface-dark w-full max-w-[420px] bg-[var(--surface)] text-[var(--text)] border border-[var(--border)] rounded-[24px] p-6 sm:p-8">
+    <div className="login-shell min-h-screen grid place-items-center px-4 py-10">
+      <form onSubmit={submit} noValidate className="login-card w-full max-w-[420px] p-6 sm:p-8">
         <div className="flex items-center gap-2.5">
-          <span className="size-2.5 rounded-full bg-[var(--color-primary)]" aria-hidden />
-          <span className="font-extrabold text-[16px] text-[var(--color-ink)]">AMTDEX — تسجيل الدخول</span>
+          <span className="size-2 bg-[var(--color-gold)]" aria-hidden />
+          <span className="font-display font-semibold text-[16px] text-[var(--color-ink)]">AMTDEX — تسجيل الدخول</span>
         </div>
         <p className="mt-2 text-[12px] text-[var(--color-text-muted)]">لوحة التحكم — تجربة Mock. جرّب: admin@amtdex.ye / Amtdex2026!</p>
 

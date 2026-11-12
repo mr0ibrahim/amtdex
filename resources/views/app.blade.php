@@ -35,7 +35,7 @@
     <link rel="preload" as="style" href="{{ $fontHref }}" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="{{ $fontHref }}"></noscript>
     <meta name="theme-color" content="#16064F">
-    @if(\App\Support\DashboardHost::matches())
+    @if(\App\Support\DashboardHost::matches() || request()->is('dashboard', 'dashboard/*', 'login'))
         <meta name="robots" content="noindex, nofollow">
     @endif
 
@@ -47,7 +47,7 @@
             basename: @json(rtrim(parse_url(url('/'), PHP_URL_PATH) ?? '', '/') ?: '/'),
             blogSubdomain: @json(env('BLOG_SUBDOMAIN', 'blog.amtdex.com')),
             isBlogSubdomain: @json(str_starts_with(request()->getHost(), 'blog.')),
-            dashboardDomain: @json(config('amtdex.dashboard_domain')),
+            dashboardDomain: @json(\App\Support\DashboardHost::isolated() ? \App\Support\DashboardHost::name() : ''),
             isDashboardHost: @json(\App\Support\DashboardHost::matches()),
             publicHost: @json(parse_url((string) config('app.url'), PHP_URL_HOST) ?: request()->getHost()),
             host: @json(request()->getHost()),

@@ -2,6 +2,27 @@
    Structure inspired by premium RTL admin consoles;
    colors/radii/shadows come only from Amtdex tokens. */
 
+.login-shell { background: #F3F0E8; color: #16064F; }
+.login-card {
+  position: relative;
+  overflow: hidden;
+  background: rgb(251 250 246 / 0.86);
+  color: #16064F;
+  border: 1px solid #DDD6C8;
+  border-radius: 28px;
+  box-shadow: 0 16px 36px rgb(22 6 79 / 0.08);
+  backdrop-filter: blur(16px);
+}
+.login-card::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #FFBF08, #E69A12, transparent);
+}
+.login-card .btn { min-height: 44px; }
+
 .dash-shell {
   direction: rtl;
   font-family: "IBM Plex Sans Arabic", var(--font-arabic), system-ui, sans-serif;
@@ -63,9 +84,9 @@
 }
 
 .dash-sidebar {
-  background: #16064F;
-  color: #F6F3EC;
-  border-inline-end: 1px solid rgb(255 255 255 / 8%);
+  background: #FBFAF6;
+  color: #16064F;
+  border-inline-end: 1px solid #DDD6C8;
   flex-direction: column;
   gap: 16px;
   padding: 20px 16px;
@@ -86,7 +107,7 @@
   align-items: center;
   gap: 12px;
   padding: 4px 8px 12px;
-  border-bottom: 1px solid rgb(255 255 255 / 10%);
+  border-bottom: 1px solid #DDD6C8;
 }
 
 .dash-sidebar-brand-mark {
@@ -112,18 +133,19 @@
 .dash-sidebar-brand-sub {
   margin-top: 2px;
   font-size: 11px;
-  color: #E6E0D4;
+  color: #5C5670;
 }
 
 .dash-sidebar-search {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgb(255 255 255 / 7%);
-  border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 14px;
-  padding: 10px 12px;
-  color: #E6E0D4;
+  background: #F3F0E8;
+  border: 1px solid #DDD6C8;
+  border-radius: 999px;
+  padding: 8px 12px;
+  min-height: 44px;
+  color: #16064F;
 }
 
 .dash-sidebar-search input {
@@ -131,12 +153,12 @@
   background: transparent;
   border: 0;
   outline: none;
-  color: #F6F3EC;
+  color: #16064F;
   font-size: 12.5px;
 }
 
 .dash-sidebar-search input::placeholder {
-  color: #E6E0D4;
+  color: #5C5670;
 }
 
 .dash-nav-group {
@@ -148,7 +170,7 @@
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: #FFBF08;
+  color: #5C5670;
   text-transform: uppercase;
 }
 
@@ -160,24 +182,25 @@
   border-radius: 14px;
   font-size: 13px;
   font-weight: 600;
-  color: #E6E0D4;
-  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+  min-height: 44px;
+  color: #16064F;
+  transition: background 160ms ease, color 160ms ease;
 }
 
 .dash-nav-link:hover {
-  background: rgb(255 255 255 / 8%);
-  color: #F6F3EC;
+  background: #E6E0D4;
+  color: #16064F;
 }
 
 .dash-nav-link.is-active {
-  background: #F6F3EC;
-  color: #16064F;
-  box-shadow: 0 8px 20px rgb(0 0 0 / 18%);
+  background: #16064F;
+  color: #F6F3EC;
+  box-shadow: none;
 }
 
 .dash-nav-link.is-active .dash-nav-ico {
-  color: var(--color-primary-light);
-  background: var(--color-card-soft);
+  color: #16064F;
+  background: #FFBF08;
 }
 
 .dash-nav-ico {
@@ -186,15 +209,15 @@
   border-radius: 10px;
   display: grid;
   place-items: center;
-  background: rgb(255 255 255 / 8%);
-  color: var(--color-gold);
+  background: #F6F3EC;
+  color: #16064F;
   flex-shrink: 0;
 }
 
 .dash-sidebar-foot {
   margin-top: auto;
   padding-top: 12px;
-  border-top: 1px solid rgb(255 255 255 / 10%);
+  border-top: 1px solid #DDD6C8;
   display: grid;
   gap: 12px;
 }
@@ -205,8 +228,8 @@
   gap: 10px;
   padding: 10px;
   border-radius: 16px;
-  background: rgb(255 255 255 / 6%);
-  border: 1px solid rgb(255 255 255 / 8%);
+  background: #F6F3EC;
+  border: 1px solid #DDD6C8;
 }
 
 .dash-user-avatar {
@@ -226,7 +249,7 @@
   align-items: center;
   gap: 8px;
   font-size: 11px;
-  color: rgb(255 255 255 / 60%);
+  color: #5C5670;
   padding-inline: 4px;
 }
 
@@ -297,11 +320,18 @@
   overflow: hidden;
   border-radius: 28px;
   padding: 28px 20px 24px;
-  background:
-    radial-gradient(circle at 20% 20%, rgb(255 191 8 / 22%), transparent 42%),
-    #16064F;
-  color: #F6F3EC;
-  box-shadow: var(--shadow-card);
+  background: #FBFAF6;
+  color: #16064F;
+  border: 1px solid #DDD6C8;
+  box-shadow: 0 10px 28px rgb(22 6 79 / 0.06);
+}
+.dash-hero::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #FFBF08, #E69A12, transparent);
 }
 
 @media (min-width: 768px) {
@@ -367,9 +397,10 @@
   align-items: center;
   gap: 6px;
   border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / 22%);
-  background: rgb(255 255 255 / 10%);
-  color: rgb(255 255 255 / 90%);
+  border: 1px solid #DDD6C8;
+  background: #F3F0E8;
+  color: #16064F;
+  min-height: 44px;
   font-size: 12px;
   font-weight: 600;
   padding: 8px 14px;
@@ -377,8 +408,8 @@
 }
 
 .dash-pill:hover {
-  background: rgb(255 255 255 / 18%);
-  border-color: rgb(255 191 8 / 45%);
+  background: #E6E0D4;
+  border-color: #E69A12;
 }
 
 .dash-module-card {
@@ -889,9 +920,39 @@
   line-height: 1.8;
 }
 
+.dash-shell input[type="checkbox"],
+.dash-shell input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 1.5px solid #16064F;
+  border-radius: 4px;
+  background: #FBFAF6;
+  display: inline-grid;
+  place-content: center;
+  vertical-align: middle;
+  flex: none;
+}
+.dash-shell input[type="radio"] { border-radius: 999px; }
+.dash-shell input[type="checkbox"]:checked,
+.dash-shell input[type="radio"]:checked {
+  background: #16064F;
+  box-shadow: inset 0 0 0 3px #FFBF08;
+}
+.dash-shell input[type="checkbox"]:focus-visible,
+.dash-shell input[type="radio"]:focus-visible {
+  outline: 2px solid #16064F;
+  outline-offset: 2px;
+}
+.dash-mobile-toggle { width: 44px; height: 44px; border-radius: 12px; background: #FFBF08; border-color: #FFBF08; }
+
 @media (prefers-reduced-motion: reduce) {
   .dash-module-card,
-  .dash-nav-link {
+  .dash-nav-link,
+  .dash-tab,
+  .dash-pill,
+  .dash-search button {
     transition: none;
   }
   .dash-module-card:hover {

@@ -46,21 +46,24 @@ Route::get('/google-site-verification.html', function () {
     return response(file_get_contents($path), 200, ['Content-Type' => 'text/html; charset=UTF-8']);
 });
 
-$dashboardDomain = config('amtdex.dashboard_domain');
-
-// Dashboard and login exist only on the dashboard host. The public host 404s
-// instead of redirecting, so the paths are not advertised.
-Route::domain($dashboardDomain)->group(function () {
+$registerDashboard = function () {
     Route::middleware('dashboard.access')->get('/dashboard/{path?}', function () {
         return view('app');
     })->where('path', '.*');
     Route::get('/login', fn () => view('app'));
     Route::get('/403', fn () => view('app'));
-});
+};
 
-Route::get('/dashboard/{path?}', fn () => abort(404))->where('path', '.*');
-Route::get('/login', fn () => abort(404));
-Route::get('/403', fn () => view('app'));
+// Host isolation is opt-in. An empty DASHBOARD_DOMAIN serves the dashboard
+// on the main host. A dedicated host 404s these paths everywhere else.
+if (\App\Support\DashboardHost::isolated()) {
+    Route::domain(\App\Support\DashboardHost::name())->group($registerDashboard);
+    Route::get('/dashboard/{path?}', fn () => abort(404))->where('path', '.*');
+    Route::get('/login', fn () => abort(404));
+    Route::get('/403', fn () => view('app'));
+} else {
+    $registerDashboard();
+}
 
 $spaExclude = '^(?!(api|sanctum|storage|build|hot|_debugbar|feed|robots\.txt|sitemap\.xml|sitemap-blog\.xml|sitemaps/|dashboard|login)).*$';
 

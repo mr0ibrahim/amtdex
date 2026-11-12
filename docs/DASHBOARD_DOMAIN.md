@@ -1,8 +1,20 @@
 # Dashboard domain
 
-The public site and the dashboard are the same Laravel app on two hosts. Visitors never see a link to the dashboard. On the public host, `/dashboard`, `/login`, and the admin APIs answer **404**. They are not redirected.
+By default the dashboard and the login page live on the same host as the public site. `/dashboard` and `/login` are not linked from the public header, mobile menu, or footer. They stay out of the sitemap, and their responses send `noindex`.
 
-## Environment
+## Same host
+
+Leave `DASHBOARD_DOMAIN` empty:
+
+```env
+DASHBOARD_DOMAIN=
+```
+
+Open `https://example.com/login`. A `*.localhost` value, such as `admin.localhost`, is also ignored when `APP_ENV=production`, so a local default cannot hide the dashboard on the live site.
+
+## Separate host, later
+
+Set a real hostname to turn isolation back on. The public host then answers `/dashboard`, `/login`, and the admin APIs with **404** (not a redirect).
 
 ```env
 DASHBOARD_DOMAIN=admin.example.com
@@ -11,24 +23,16 @@ SESSION_DOMAIN=null
 SANCTUM_STATEFUL_DOMAINS=example.com,admin.example.com
 ```
 
-`DASHBOARD_DOMAIN` is the host only, without a scheme or port. Locally the default is `admin.localhost`. Add it to your hosts file:
+`DASHBOARD_DOMAIN` is the host only, without a scheme or port. The dashboard session cookie is separate and is limited to that host.
 
-```
-127.0.0.1 admin.localhost
-```
+### DNS and Hostinger
 
-Then open `http://admin.localhost:8000/login`. The public site stays on `http://127.0.0.1:8000` (or whatever `APP_URL` is).
+1. In hPanel → DNS, add an **A** record for `admin` pointing at the same server as the public site. Do not redirect `admin` to the apex.
+2. Attach `admin.example.com` to the same website and install SSL for it.
+3. Set `DASHBOARD_DOMAIN=admin.example.com`, add that host to `SANCTUM_STATEFUL_DOMAINS`, and keep `SESSION_DOMAIN` empty.
+4. Rebuild `php artisan route:cache` after changing the domain.
+5. The dashboard host sends `X-Robots-Tag: noindex, nofollow`. Do not submit it in Search Console.
 
-The dashboard session cookie name is separate from the public site cookie, and its domain is the dashboard host only. A login on the dashboard is not sent to the public host.
+## Local check
 
-## DNS and Hostinger
-
-1. In hPanel → DNS, add an **A** record for `admin` pointing at the same server as the public site. Do not turn on a redirect from `admin` to the apex.
-2. Attach `admin.example.com` to the same website so both hosts reach this app. Install SSL for the subdomain.
-3. Set `DASHBOARD_DOMAIN=admin.example.com` in the site’s environment variables, include that host in `SANCTUM_STATEFUL_DOMAINS`, and keep `SESSION_DOMAIN` empty.
-4. If you cache routes (`php artisan route:cache`), rebuild the cache after changing `DASHBOARD_DOMAIN`.
-5. The dashboard host sends `X-Robots-Tag: noindex, nofollow` and a robots meta tag. Do not submit the admin host in Search Console.
-
-## What stays on the public host
-
-Marketing pages, the public CMS payload, contact and quote forms, and the public blog APIs. A page hidden in **الموقع** is omitted from navigation and returns HTTP 404 for its HTML route and its public API.
+With `DASHBOARD_DOMAIN` empty, `http://127.0.0.1:8000/login` opens the dashboard login. To try isolation locally, set `DASHBOARD_DOMAIN=admin.localhost`, add `127.0.0.1 admin.localhost` to your hosts file, and open `http://admin.localhost:8000/login`.
