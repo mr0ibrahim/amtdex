@@ -20,6 +20,7 @@ class EnsureDashboardAccess
         'dashboard/settings' => ['admin'],
         'dashboard/legacy' => ['admin'],
         'dashboard/content' => ['admin', 'editor'],
+        'dashboard/site' => ['admin', 'editor'],
         'dashboard/seo' => ['admin', 'editor'],
         'dashboard/leads' => ['admin', 'editor', 'viewer'],
         'dashboard/media' => ['admin', 'editor', 'author'],

@@ -33,6 +33,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/team', [ContentController::class, 'team']);
     Route::get('/clients', [ContentController::class, 'clients']);
     Route::get('/settings/public', [SettingsController::class, 'get']);
+    Route::get('/cms', [\App\Http\Controllers\Api\V1\CmsController::class, 'show']);
     Route::get('/seo', [SeoController::class, 'index']);
     Route::get('/system/diagnose', [SystemDiagnosticsController::class, 'diagnose']);
 
@@ -110,6 +111,7 @@ Route::prefix('v1')->group(function () {
 
         // Settings Management
         Route::get('/settings', [SettingsController::class, 'get'])->middleware('role:admin');
+        Route::put('/cms', [\App\Http\Controllers\Api\V1\CmsController::class, 'update'])->middleware('role:admin,editor');
         Route::put('/settings', [SettingsController::class, 'update'])->middleware('role:admin');
 
         // User Management (Admin only)

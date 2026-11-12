@@ -2,9 +2,14 @@ import { Link } from "react-router-dom"
 import { SERVICES as SEED_SERVICES } from "@/data/services"
 import { useServicesQuery } from "@/lib/queries"
 import { getBlogUrl, getMainUrl, isBlogSubdomain } from "@/lib/subdomain"
+import { pageIsListed, useCms, useCopy } from "@/cms/useCms"
 
 export function Footer({ onToast }: { onToast: (m: string) => void }) {
   const onBlog = isBlogSubdomain()
+  const { pages, staff } = useCms()
+  const blurb = useCopy("footer.blurb", "حلول برمجية متكاملة — من الفكرة للكود للإطلاق. نبني مواقع، تطبيقات، وأنظمة أعمال بمعايير عالمية.")
+  const city = useCopy("footer.city", "صنعاء — الجمهورية اليمنية")
+  const shown = (path: string) => pageIsListed(pages, path, staff)
   const { data: apiServices } = useServicesQuery()
   const services = (apiServices && apiServices.length > 0) ? apiServices : SEED_SERVICES
 
@@ -21,7 +26,7 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
         { label: "الأسعار", to: "/pricing" },
         { label: "تواصل", to: "/contact" },
         { label: "لوحة التحكم", to: "/dashboard" },
-      ],
+      ].filter((link) => link.to === "/dashboard" || shown(link.to)),
     },
     {
       title: "الموارد",
@@ -32,7 +37,7 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
         { label: "الشروط", to: "/contact" },
         { label: "API Docs", to: "/services" },
         { label: "الحالة", to: "/" },
-      ],
+      ].filter((link) => shown(link.to ?? "/blog")),
     },
     {
       title: "تواصل سريع",
@@ -40,7 +45,7 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
         { label: "اطلب عرض سعر", to: "/quote" },
         { label: "واتساب", to: "/contact" },
         { label: "حجز استشارة", to: "/contact" },
-      ],
+      ].filter((link) => shown(link.to)),
     },
   ]
 
@@ -62,7 +67,7 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
               )}
             </div>
             <p className="mt-4 text-[13px] leading-7 text-[var(--color-text-muted)] max-w-[260px]">
-              حلول برمجية متكاملة — من الفكرة للكود للإطلاق. نبني مواقع، تطبيقات، وأنظمة أعمال بمعايير عالمية.
+              {blurb}
             </p>
             <div className="mt-5 flex gap-4">
               {["X", "in", "ig"].map((s) => (
@@ -78,7 +83,7 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
               ))}
             </div>
             <div className="mt-4 text-[11px] text-[var(--color-text-faint)] leading-5">
-              <div>صنعاء — الجمهورية اليمنية</div>
+              <div>{city}</div>
               <div dir="ltr" className="text-left">
                 hello@amtdex.com • +966 50 000 0000
               </div>

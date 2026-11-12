@@ -1,5 +1,6 @@
 import { useEffect, useState, useTransition } from "react"
 import { useDebouncedValue } from "@/routing/search"
+import { highlightMatch } from "@/search/arabic"
 import { Link, useSearchParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { BlogAPI } from "@/lib/blogApi"
@@ -150,9 +151,11 @@ export function BlogHomePage() {
               </p>
 
               {/* Search Bar */}
-              <form onSubmit={handleSearchSubmit} role="search" className="mt-8 flex items-center max-w-xl border-b border-[var(--color-ink)]">
+              <form onSubmit={handleSearchSubmit} role="search" className="blog-search mt-8">
                 <input
                   type="search"
+                  inputMode="search"
+                  enterKeyHint="search"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   onKeyDown={(e) => {
@@ -160,7 +163,7 @@ export function BlogHomePage() {
                   }}
                   placeholder="ابحث في المقالات والتقنيات..."
                   aria-label="ابحث في المقالات والتقنيات"
-                  className="flex-1 px-4 py-2 text-[14px] bg-[var(--input-bg)] text-[var(--input-text)] outline-none placeholder:text-[var(--placeholder)]"
+                  className="px-4 py-2 text-[14px] bg-[var(--input-bg)] text-[var(--input-text)] outline-none placeholder:text-[var(--placeholder)]"
                 />
                 <Button type="submit" size="sm" variant="primary">
                   بحث
@@ -284,7 +287,7 @@ export function BlogHomePage() {
                 <button
                   type="button"
                   onClick={handleClearFilter}
-                  className="text-[12px] font-medium text-rose-600 hover:underline"
+                  className="blog-clear-filters text-[12px] font-medium hover:underline"
                 >
                   ✕ مسح الفلاتر
                 </button>
@@ -334,7 +337,7 @@ export function BlogHomePage() {
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {posts.map((post: BlogPost) => (
-                  <PostCard key={post.id} post={post} />
+                  <PostCard key={post.id} post={post} query={debouncedQuery} />
                 ))}
               </div>
             )}
@@ -424,7 +427,7 @@ export function BlogHomePage() {
   )
 }
 
-function PostCard({ post }: { post: BlogPost }) {
+function PostCard({ post, query = "" }: { post: BlogPost; query?: string }) {
   return (
     <Card hover padding="none" className="overflow-hidden flex flex-col justify-between bg-white border border-[var(--color-border)] group">
       <div>
@@ -450,7 +453,7 @@ function PostCard({ post }: { post: BlogPost }) {
           </div>
 
           <h3 className="text-[17px] font-bold text-[var(--color-ink)] leading-snug group-hover:text-[var(--color-primary-light)] transition-colors line-clamp-2">
-            <Link to={`/posts/${post.slug}`}>{post.title}</Link>
+            <Link to={`/posts/${post.slug}`}>{highlightMatch(post.title, query)}</Link>
           </h3>
 
           <p className="mt-2 text-[13px] text-[var(--color-text-muted)] leading-relaxed line-clamp-3">

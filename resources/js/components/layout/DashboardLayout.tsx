@@ -14,6 +14,7 @@ const NAV_GROUPS: NavGroup[] = [
       { to: "/dashboard", label: "الرئيسية", icon: "home", end: true },
       { to: "/dashboard/blog", label: "المدونة", icon: "pen" },
       { to: "/dashboard/content", label: "المحتوى", icon: "layers" },
+      { to: "/dashboard/site", label: "الموقع", icon: "layers" },
       { to: "/dashboard/leads", label: "الطلبات", icon: "mail" },
       { to: "/dashboard/media", label: "الوسائط", icon: "image" },
     ],

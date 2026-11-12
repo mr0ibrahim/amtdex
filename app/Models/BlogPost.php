@@ -178,12 +178,24 @@ class BlogPost extends Model
             return $query;
         }
 
-        return $query->where(function ($q) use ($term) {
-            $q->where('title', 'like', "%{$term}%")
-                ->orWhere('summary', 'like', "%{$term}%")
-                ->orWhere('content', 'like', "%{$term}%")
-                ->orWhere('focus_keyword', 'like', "%{$term}%");
-        });
+        $term = \App\Support\ArabicText::normalize($term);
+        $like = '%'.$term.'%';
+        $title = \App\Support\ArabicText::sql('title');
+        $summary = \App\Support\ArabicText::sql('summary');
+        $content = \App\Support\ArabicText::sql('content');
+        $keyword = \App\Support\ArabicText::sql('focus_keyword');
+
+        return $query->where(function ($q) use ($like, $title, $summary, $content, $keyword) {
+            $q->whereRaw("{$title} LIKE ?", [$like])
+                ->orWhereRaw("{$summary} LIKE ?", [$like])
+                ->orWhereRaw("{$content} LIKE ?", [$like])
+                ->orWhereRaw("{$keyword} LIKE ?", [$like])
+                ->orWhereHas('tags', fn ($tag) => $tag->whereRaw(\App\Support\ArabicText::sql('name').' LIKE ?', [$like]))
+                ->orWhereHas('category', fn ($cat) => $cat->whereRaw(\App\Support\ArabicText::sql('name').' LIKE ?', [$like]));
+        })->orderByRaw(
+            "CASE WHEN {$title} LIKE ? THEN 0 WHEN {$keyword} LIKE ? THEN 1 WHEN {$summary} LIKE ? THEN 2 ELSE 3 END",
+            [$like, $like, $like]
+        );
     }
 
     public static function calculateReadingTime(string $content): int

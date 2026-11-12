@@ -73,13 +73,14 @@ export function useRouteLifecycle() {
       window.scrollTo({ top: 0, behavior: "auto" })
     }
 
-    const main = document.getElementById("main-content")
-    main?.focus({ preventScroll: true })
+    const active = document.activeElement
+    const typing = active instanceof HTMLElement && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)
+    if (!typing) document.getElementById("main-content")?.focus({ preventScroll: true })
 
     const onScroll = () => {
       sessionStorage.setItem(scrollKey(location.key), String(window.scrollY))
     }
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
-  }, [location.pathname, location.hash, location.key, navigationType])
+  }, [location.pathname, location.hash])
 }
