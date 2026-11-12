@@ -122,10 +122,10 @@ export function PricingPage({ onToast: _onToast }: { onToast: (m: string) => voi
             return (
               <div
                 key={p.name}
-                className={`border p-7 sm:p-8 flex flex-col justify-between relative ${
+                className={`da-panel p-7 sm:p-8 flex flex-col justify-between relative ${
                   p.popular
-                    ? "bg-[var(--color-ink)] text-white border-[var(--color-ink)]"
-                    : "bg-[var(--color-surface)] border-[var(--color-border)]"
+                    ? "da-price pop text-white border-[#16064f]"
+                    : ""
                 }`}
               >
                 <div>
@@ -239,7 +239,7 @@ export function PricingPage({ onToast: _onToast }: { onToast: (m: string) => voi
       </div>
 
       {/* Trust & Guarantee Badges */}
-      <div className="mt-8 grid md:grid-cols-3 gap-4 text-[13px]">
+      <div className="da-trust mt-8 text-[13px]">
         {(
           [
             {

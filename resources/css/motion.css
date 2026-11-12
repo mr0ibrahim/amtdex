@@ -1,37 +1,32 @@
 /* Confined to the approved screen gallery; existing page design is unchanged. */
-.screen-gallery { padding-block: 64px 44px; background: var(--color-surface); }
-.screen-gallery-heading { max-width: 1280px; margin-inline: auto; padding-inline: 24px; }
-.screen-gallery-heading > span { font-size: 11px; font-weight: 700; color: var(--color-primary-light); }
-.screen-gallery-heading h2 { margin-block: 12px; color: var(--color-ink); font-size: clamp(28px, 3.2vw, 40px); line-height: 1.4; font-weight: 700; }
-.screen-gallery-heading p { max-width: 540px; color: var(--color-text-muted); font-size: 14px; line-height: 1.9; }
-.screen-gallery-window { overflow: hidden; position: relative; margin-top: 36px; padding-block: 45px; perspective: 1400px; background: var(--color-bg); border-block: 1px solid var(--color-border); }
-.screen-gallery-stage { direction: ltr; transform: rotateX(var(--gallery-tilt, 0deg)) rotateZ(var(--gallery-turn, 0deg)); transform-origin: center; }
-.screen-gallery-row { display: flex; direction: ltr; gap: 36px; width: max-content; position: relative; left: 50%; transform: translateX(calc(-50% + var(--gallery-travel, 0px))); }
-.screen-gallery-row + .screen-gallery-row { margin-top: 36px; transform: translateX(calc(-50% - var(--gallery-travel, 0px))); }
-.screen-gallery-card { margin: 0; width: clamp(230px, 21vw, 300px); flex: 0 0 auto; direction: rtl; }
-.screen-gallery-image { overflow: hidden; aspect-ratio: 9 / 19; border-radius: 8px; border: 1px solid var(--color-border); background: var(--color-card-soft); transition: transform 300ms ease-out; }
-.screen-gallery-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.screen-gallery-card figcaption { display: flex; align-items: center; gap: 8px; padding: 14px 4px 0; color: var(--color-ink); font-size: 12px; font-weight: 600; }
-.screen-gallery-card figcaption::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--color-primary-light); }
-.screen-gallery-note { margin-top: 14px; padding-inline: 24px; text-align: center; font-size: 11px; color: var(--color-text-muted); }
+.screen-gallery { padding-block: 56px 36px; background: transparent; }
+.screen-gallery-heading { max-width: 1180px; margin-inline: auto; padding-inline: 20px; }
+.screen-gallery-heading > span { font-size: 13px; font-weight: 600; color: #e4b23a; }
+.screen-gallery-heading h2 { margin-block: 10px; color: var(--color-ink); font-size: clamp(26px, 3.2vw, 40px); line-height: 1.25; font-weight: 600; }
+.screen-gallery-heading p { max-width: 540px; color: var(--color-text-muted); font-size: 15px; line-height: 1.75; }
+.screen-gallery-window { margin-top: 22px; }
+.screen-gallery-stage { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 1180px; margin-inline: auto; padding-inline: 20px; }
+.screen-gallery-card { margin: 0; min-width: 0; padding: 10px 10px 12px; border-radius: 28px; background: #161222; border: 1px solid rgb(255 255 255 / 10%); }
+.screen-gallery-image { overflow: hidden; height: 500px; border-radius: 18px; background: #1a1433; transition: transform 300ms ease-out; }
+.screen-gallery-image img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.screen-gallery-card figcaption { display: flex; align-items: center; gap: 8px; padding: 10px 4px 0; color: var(--color-ink); font-size: 13px; font-weight: 650; }
+.screen-gallery-card figcaption::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #e4b23a; }
+.screen-gallery-note { margin-top: 14px; padding-inline: 20px; text-align: center; font-size: 12px; color: #8d86a0; }
 @media (hover: hover) and (pointer: fine) {
   .screen-gallery-card:hover .screen-gallery-image { transform: translateY(-8px); }
 }
-@media (min-width: 1024px) { .screen-gallery-heading { padding-inline: 40px; } }
-@media (min-width: 1280px) { .screen-gallery-heading { max-width: 1440px; } }
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
+  .screen-gallery-stage { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; width: 100%; max-width: none; padding-bottom: 8px; }
+  .screen-gallery-card { flex: 0 0 42%; scroll-snap-align: start; }
+  .screen-gallery-image { height: 460px; }
+}
+@media (max-width: 700px) {
   .screen-gallery { padding-block: 40px 28px; }
-  .screen-gallery-heading { padding-inline: 18px; }
-  .screen-gallery-window { margin-top: 16px; padding-block: 0; overflow-x: auto; scroll-snap-type: x mandatory; perspective: none; }
-  .screen-gallery-stage, .screen-gallery-row, .screen-gallery-row + .screen-gallery-row { transform: none !important; left: 0; width: max-content; }
-  .screen-gallery-row + .screen-gallery-row { margin-top: 12px; }
-  .screen-gallery-card { width: 78vw; scroll-snap-align: start; }
-  .screen-gallery-image { height: 460px; aspect-ratio: auto; border-radius: 22px; }
-  .screen-gallery-card figcaption { font-size: 13px; }
+  .screen-gallery-heading, .screen-gallery-stage { padding-inline: 18px; }
+  .screen-gallery-card { flex-basis: 82%; }
+  .screen-gallery-image { height: 520px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .screen-gallery-stage { transform: none; }
-  .screen-gallery-row, .screen-gallery-row + .screen-gallery-row { transform: translateX(-50%); }
   .screen-gallery-image { transition: none; }
   .screen-gallery-card:hover .screen-gallery-image { transform: none; }
 }
@@ -97,14 +92,12 @@ html[dir="ltr"] .marquee-track { animation-name: marquee-ltr; }
   50% { opacity: 0.4; transform: scale(0.82); }
 }
 
-.motion-ready [data-motion="rise"],
-.motion-ready [data-motion="signal"] { opacity: 0; }
+/* Content stays visible until an animation actually runs.
+   A full-page capture must not depend on IntersectionObserver. */
 
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
   .marquee-set[aria-hidden="true"] { display: none; }
   .marquee-set { flex-wrap: wrap; width: auto; }
   .status-dot { animation: none; }
-  .motion-ready [data-motion="rise"],
-  .motion-ready [data-motion="signal"] { opacity: 1; }
 }

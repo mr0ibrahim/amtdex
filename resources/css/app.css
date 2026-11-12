@@ -5,6 +5,7 @@
 @import "./cards.css";
 @import "./dashboard.css";
 @import "./blog-prose.css";
+@import "./direction-a.css";
 
 @theme {
   --font-arabic: "IBM Plex Sans Arabic", system-ui, sans-serif;
@@ -18,6 +19,7 @@ body {
   font-family: var(--font-arabic);
   background: var(--color-bg);
   color: var(--color-text);
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }

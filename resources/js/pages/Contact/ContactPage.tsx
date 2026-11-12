@@ -64,8 +64,8 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
   }
 
   return (
-    <Container className="py-8 sm:py-16">
-      <div className="grid lg:grid-cols-[1fr_1fr] gap-10 items-start">
+    <Container className="py-8 sm:py-16 da-contact-grid">
+      <div className="grid gap-4">
         <div>
           <PageHeader
             eyebrow="تواصل معنا"
@@ -83,7 +83,7 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
             {contacts.map((c) => (
               <div
                 key={c.l}
-                className="bg-white border border-[var(--color-border)] rounded-2xl p-4 sm:p-5 flex items-center justify-between shadow-sm hover:border-[var(--color-primary-light)]/40 transition-all"
+                className="da-panel flex items-center justify-between"
               >
                 <div className="flex items-center gap-3.5">
                   <span className="size-10 rounded-xl bg-[var(--color-card-soft)] text-[var(--color-primary)] grid place-items-center shrink-0">
@@ -110,7 +110,7 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
             ))}
           </div>
 
-          <div className="mt-6 rounded-2xl bg-[var(--color-ink)] text-white p-6 shadow-md">
+          <div className="da-hours text-white">
             <div className="flex items-center gap-2 text-[13px] font-bold text-amber-300">
               <Icon name="clock" size={16} />
               ساعات العمل والرد
@@ -126,7 +126,7 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
         <form
           onSubmit={handleSubmit}
           noValidate
-          className="bg-white border border-[var(--color-border)] rounded-[28px] p-6 sm:p-8 shadow-[var(--shadow-card)]"
+          className="da-panel da-form"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-[18px] font-bold text-[var(--color-ink)]">أرسل استفسارك</h2>

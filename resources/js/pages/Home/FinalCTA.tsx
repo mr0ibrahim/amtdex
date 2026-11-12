@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 export function FinalCTA(_props: { onToast?: (m: string) => void }) {
   void _props
   return (
-    <section data-motion-group className="bg-[var(--color-ink)] text-white">
+    <section data-motion-group className="da-band text-white">
       <div className="page-container page-container--wide py-16 sm:py-20 grid lg:grid-cols-[1.2fr_auto] gap-8 items-end">
         <div>
           <p data-motion="fade" className="text-[12px] text-white/60">انضم الى 300+ عميل يبنون مستقبلهم مع AMTDEX</p>

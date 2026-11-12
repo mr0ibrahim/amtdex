@@ -182,42 +182,28 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
         </nav>
 
         {open && (
-          <div id="mobile-menu" ref={menuRef} className="lg:hidden border-t border-[var(--color-border)] bg-white px-4 py-4" style={{ animation: "fadeIn 0.2s ease" }}>
-            <div className="grid gap-1">
-              <SiteNavLink to="/" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
-                الرئيسية
-              </SiteNavLink>
-              <SiteNavLink to="/services" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
-                الخدمات
-              </SiteNavLink>
-              <SiteNavLink to="/portfolio" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
-                أعمالنا
-              </SiteNavLink>
-              {onBlog ? (
-                <NavLink to="/" onClick={() => setOpen(false)} className="py-3 px-3 rounded-xl text-[15px] font-medium bg-[var(--color-ink)] text-white">
-                  المدونة
-                </NavLink>
-              ) : (
-                <a href={getBlogUrl("/")} onClick={() => setOpen(false)} className="py-3 px-3 rounded-xl text-[15px] font-medium hover:bg-[var(--color-lavender)]">
-                  المدونة
-                </a>
-              )}
-              <SiteNavLink to="/pricing" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
-                الأسعار
-              </SiteNavLink>
-              <SiteNavLink to="/about" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
-                من نحن
-              </SiteNavLink>
-              <SiteNavLink to="/contact" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium ${isActive ? "bg-[var(--color-ink)] text-white" : "hover:bg-[var(--color-lavender)]"}`}>
-                تواصل
-              </SiteNavLink>
-              <SiteNavLink to="/dashboard" onClick={() => setOpen(false)} className={({ isActive }) => `py-3 px-3 rounded-xl text-[15px] font-medium border mt-1 ${isActive ? "bg-[var(--color-ink)] text-white border-[var(--color-ink)]" : "border-[var(--color-border)] hover:bg-[var(--color-lavender)]"}`}>
-                لوحة التحكم
-              </SiteNavLink>
-              <SiteLink to="/login" onClick={() => setOpen(false)} className="mt-2 text-center w-full py-3 rounded-full border border-[var(--color-border)] font-medium text-[13px] hover:bg-[var(--color-lavender)] transition-colors">
-                تسجيل الدخول
-              </SiteLink>
+          <div id="mobile-menu" ref={menuRef} className="da-menu lg:hidden" style={{ animation: "fadeIn 0.2s ease" }}>
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-display font-semibold">AMTDEX</span>
+              <button type="button" onClick={() => setOpen(false)} aria-label="إغلاق" className="size-10 grid place-items-center border border-white/20">
+                <Icon name="close" size={18} />
+              </button>
             </div>
+            <SiteNavLink to="/" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>الرئيسية</SiteNavLink>
+            <SiteNavLink to="/services" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>الخدمات</SiteNavLink>
+            <SiteNavLink to="/portfolio" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>أعمالنا</SiteNavLink>
+            {onBlog ? (
+              <NavLink to="/" onClick={() => setOpen(false)} className="is-on">المدونة</NavLink>
+            ) : (
+              <a href={getBlogUrl("/")} onClick={() => setOpen(false)}>المدونة</a>
+            )}
+            <SiteLink to="/services" onClick={() => setOpen(false)}>التقنيات</SiteLink>
+            <SiteNavLink to="/pricing" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>الأسعار</SiteNavLink>
+            <SiteNavLink to="/about" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>من نحن</SiteNavLink>
+            <SiteNavLink to="/contact" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>تواصل</SiteNavLink>
+            <SiteNavLink to="/dashboard" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>لوحة التحكم</SiteNavLink>
+            <SiteLink to="/login" onClick={() => setOpen(false)}>تسجيل الدخول</SiteLink>
+            <SiteLink to="/quote" onClick={() => setOpen(false)} className="btn btn-ink brand-cta" style={{ marginTop: 16, width: "100%" }}>اطلب عرض سعر</SiteLink>
           </div>
         )}
       </header>

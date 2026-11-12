@@ -60,7 +60,7 @@ export function LeadsPage() {
           onClick={handleExport}
           className="text-[11px] font-bold bg-white border border-[var(--color-border)] px-4 py-2.5 rounded-full hover:bg-[var(--color-lavender)] w-full sm:w-auto"
         >
-          تصدير CSV
+          تصدير <bdi dir="ltr">CSV</bdi>
         </button>
       </div>
 
@@ -77,9 +77,14 @@ export function LeadsPage() {
           ))}
         </div>
         <div className="dash-tabs">
-          {["الكل", "contact", "quote", "newsletter"].map((s) => (
-            <button key={s} onClick={() => setSource(s)} className={`dash-tab${source === s ? " is-active" : ""}`}>
-              {s}
+          {([
+            ["الكل", "الكل"],
+            ["contact", "تواصل"],
+            ["quote", "عروض الأسعار"],
+            ["newsletter", "النشرة"],
+          ] as const).map(([id, label]) => (
+            <button key={id} onClick={() => setSource(id)} className={`dash-tab${source === id ? " is-active" : ""}`}>
+              {label}{id !== "الكل" && <> <bdi dir="ltr" className="dash-bidi">{id}</bdi></>}
             </button>
           ))}
         </div>
@@ -96,7 +101,7 @@ export function LeadsPage() {
             </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="p-8 text-center text-[12px] text-[var(--color-text-faint)]">لا توجد طلبات مطابقة.</div>
+          <div className="dash-empty">لا توجد طلبات مطابقة.</div>
         ) : (
           <>
             <div className="dash-mobile-cards p-3">
@@ -158,7 +163,8 @@ export function LeadsPage() {
                       <td className="px-4 py-3">
                         <div className="font-bold text-[var(--color-ink)]">{l.name}</div>
                         <div className="text-[11px] text-[var(--color-text-muted)]">
-                          {l.email} {l.phone ? `• ${l.phone}` : ""}
+                          <bdi dir="ltr">{l.email}</bdi>
+                          {l.phone ? <> • <bdi dir="ltr">{l.phone}</bdi></> : ""}
                         </div>
                         <div className="text-[11px] text-[var(--color-text-faint)] line-clamp-1">{l.message}</div>
                       </td>

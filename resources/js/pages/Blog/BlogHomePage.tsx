@@ -292,15 +292,29 @@ export function BlogHomePage() {
                 ))}
               </div>
             ) : posts.length === 0 ? (
-              <div className="text-center py-20 bg-white border border-[var(--color-border)] rounded-[24px]">
-                <div className="text-4xl mb-3">🔍</div>
-                <h3 className="text-lg font-bold text-[var(--color-ink)]">لا توجد مقالات مطابقة</h3>
-                <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-                  جرب تغيير كلمات البحث أو تصفح تصنيف آخر.
-                </p>
-                <Button onClick={handleClearFilter} size="sm" variant="secondary" className="mt-4">
-                  إعادة تعيين الفلاتر
-                </Button>
+              <div>
+                <div className="da-blog-empty">
+                  <h3 className="text-lg font-bold text-[var(--color-ink)]">لا توجد مقالات مطابقة</h3>
+                  <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+                    جرب تغيير كلمات البحث أو تصفح تصنيف آخر.
+                  </p>
+                  <Button onClick={handleClearFilter} size="sm" variant="secondary" className="mt-4">
+                    إعادة تعيين الفلاتر
+                  </Button>
+                </div>
+                <div className="da-template" aria-hidden="true">
+                  <p className="da-kicker">قالب العرض — ليس مقالاً منشوراً</p>
+                  <p className="mt-2 text-[13px] text-[var(--color-text-muted)]">يُستخدم هذا الشكل عندما تُنشر مقالات من لوحة المدونة. الكلمات أدناه أسماء حقول، وليست عناوين مقالات.</p>
+                  <div className="da-post-skel" style={{ marginTop: 16 }}>
+                    <div className="da-cover">غلاف المقال</div>
+                    <div>
+                      <div className="text-[12px] text-[var(--color-text-faint)]">التصنيف</div>
+                      <div className="mt-1 font-bold">عنوان المقال</div>
+                      <div className="mt-1 text-[13px] text-[var(--color-text-muted)]">الملخص</div>
+                      <div className="mt-3 text-[13px] font-bold">اقرأ المقال</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

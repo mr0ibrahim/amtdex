@@ -1,5 +1,4 @@
-import { ServiceCard } from "@/components/ui/ServiceCard"
-import { Container } from "@/components/layout/Container"
+import { Link } from "react-router-dom"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { SERVICES as SEED_SERVICES } from "@/data/services"
 import { useServicesQuery } from "@/lib/queries"
@@ -9,8 +8,26 @@ export function ServicesPage() {
   const { data: apiServices, isLoading } = useServicesQuery()
   const SERVICES = apiServices && apiServices.length > 0 ? apiServices : SEED_SERVICES
 
+  const web = SERVICES.find((s) => s.slug === "web")
+  const cloud = SERVICES.find((s) => s.slug === "cloud")
+  const middle = SERVICES.filter((s) => s.slug !== "web" && s.slug !== "cloud")
+  const screenFor = (slug: string) => (slug === "cloud" ? "crm" : "business")
+
+  const ServiceBody = ({ service }: { service: (typeof SERVICES)[number] }) => (
+    <>
+      {service.slug === "web" && <p className="da-kicker">الأكثر طلبًا</p>}
+      {service.slug === "erp" && <p className="da-kicker">لأعمال أكثر كفاءة</p>}
+      <h2 style={{ marginTop: 8 }}>{service.title}</h2>
+      <p className="da-lede">{service.desc}</p>
+      {service.detail && <p className="da-lede">{service.detail}</p>}
+      {service.bullets && <ul>{service.bullets.map((item) => <li key={item}>{item}</li>)}</ul>}
+      {service.tech && service.tech.length > 0 && <p className="da-lede">{service.tech.join(" · ")}</p>}
+      <Link to={`/services/${service.slug}`} className="btn btn-ink brand-cta" style={{ marginTop: 14 }}>اكتشف الخدمة</Link>
+    </>
+  )
+
   return (
-    <Container className="py-8 sm:py-12">
+    <div className="da-page">
       <PageHeader
         eyebrow="خدماتنا"
         title={
@@ -23,58 +40,57 @@ export function ServicesPage() {
         description="نغطي دورة التطوير البرمجي كاملة: تحليل، تصميم، برمجة، إطلاق، وصيانة مستمرة. فريق واحد، عقد واضح، ومسؤولية تنفيذية مباشرة."
       />
 
-      <div data-motion-group className="mt-12 grid md:grid-cols-2 gap-x-8 gap-y-6">
-        {isLoading ? (
-          <>
-            <CardSkeleton />
-            <CardSkeleton />
-            <CardSkeleton />
-            <CardSkeleton />
-            <CardSkeleton />
-            <CardSkeleton />
-          </>
-        ) : (
-          SERVICES.map((s, index) => (
-            <div key={s.slug} data-motion="rise" data-motion-delay={(index % 2) * 140} className={index === 0 ? "md:col-span-2" : undefined}>
-              <ServiceCard service={s} detailed />
-            </div>
-          ))
-        )}
-      </div>
+      {isLoading ? (
+        <div className="da-grid-2">
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+        </div>
+      ) : (
+        <>
+          {web && (
+            <article className="da-panel da-feature da-card" style={{ marginTop: 28 }}>
+              <ServiceBody service={web} />
+              <figure>
+                <img className="da-screen" src={`/images/screens/${screenFor(web.slug)}.webp`} alt="نموذج واجهة إدارة الأعمال: مؤشرات الأداء ومخطط الإيرادات والطلبات" />
+                <figcaption className="da-lede">إدارة الأعمال والمبيعات</figcaption>
+              </figure>
+            </article>
+          )}
+          <div className="da-grid-2">
+            {middle.map((service) => (
+              <article key={service.slug} className={`da-panel da-card${service.slug === "erp" ? " pop" : ""}`}>
+                <ServiceBody service={service} />
+              </article>
+            ))}
+          </div>
+          {cloud && (
+            <article id="tech" className="da-panel da-feature da-card da-span" style={{ marginTop: 16 }}>
+              <ServiceBody service={cloud} />
+              <img className="da-screen" src="/images/screens/crm.webp" alt="نموذج نظام خدمة العملاء: المحادثات والطلبات والمساعد الذكي" />
+            </article>
+          )}
+        </>
+      )}
 
-      <div data-motion-group className="mt-16 border-t border-[var(--color-ink)] pt-10">
-        <h3 className="text-[18px] font-bold text-[var(--color-ink)]">منهجية العمل وتسليم المشاريع</h3>
-        <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div data-motion-group style={{ marginTop: 48 }}>
+        <h3 className="text-[28px] font-semibold text-[var(--color-ink)]">منهجية العمل وتسليم المشاريع</h3>
+        <div className="da-grid-4">
           {[
-            {
-              n: "01",
-              t: "استكشاف وتحليل",
-              d: "نفهم نموذج عملك، جمهورك المستهدف، وميزانيتك بدقة في ورشة عمل متخصصة.",
-            },
-            {
-              n: "02",
-              t: "تصميم واجهات وتجربة UX",
-              d: "مخططات هيكلية وتصميم تفاعلي متكامل جاهز للمعاينة قبل كتابة أي سطر كود.",
-            },
-            {
-              n: "03",
-              t: "تطوير برمجي مرن Agile",
-              d: "برمجة بنية متينة واختبارات آلية مع تسليم نسخة تجريبية حية للمعاينة أسبوعياً.",
-            },
-            {
-              n: "04",
-              t: "إطلاق وضمان ودعم",
-              d: "نشر على خوادم سحابية آمنة، تدريب فريقك، ودعم فني وصيانة مجانية لمدة 30 يوماً.",
-            },
+            { n: "01", t: "استكشاف وتحليل", d: "نفهم نموذج عملك، جمهورك المستهدف، وميزانيتك بدقة في ورشة عمل متخصصة." },
+            { n: "02", t: "تصميم واجهات وتجربة UX", d: "مخططات هيكلية وتصميم تفاعلي متكامل جاهز للمعاينة قبل كتابة أي سطر كود." },
+            { n: "03", t: "تطوير برمجي مرن Agile", d: "برمجة بنية متينة واختبارات آلية مع تسليم نسخة تجريبية حية للمعاينة أسبوعياً." },
+            { n: "04", t: "إطلاق وضمان ودعم", d: "نشر على خوادم سحابية آمنة، تدريب فريقك، ودعم فني وصيانة مجانية لمدة 30 يوماً." },
           ].map((s) => (
-            <div key={s.n} data-motion="rise" data-motion-delay={Number(s.n) * 80} className="border-e border-[var(--color-border)] pe-4 last:border-e-0">
-              <div className="text-[28px] font-bold tracking-tight text-[var(--color-primary-light)]/20 font-mono">{s.n}</div>
-              <div className="text-[14px] font-bold text-[var(--color-ink)] mt-1">{s.t}</div>
-              <div className="text-[12.5px] leading-relaxed text-[var(--color-text-muted)] mt-1.5">{s.d}</div>
-            </div>
+            <article key={s.n} className="da-step">
+              <div className="num">{s.n}</div>
+              <div className="text-[14px] font-bold text-[var(--color-ink)] mt-2">{s.t}</div>
+              <p>{s.d}</p>
+            </article>
           ))}
         </div>
       </div>
-    </Container>
+    </div>
   )
 }

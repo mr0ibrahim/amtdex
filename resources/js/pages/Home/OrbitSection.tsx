@@ -8,9 +8,9 @@ export function OrbitSection() {
           <div className="eyebrow">تقنياتنا تدور حول عملك — لا العكس</div>
           <h2 className="mt-4 text-[28px] sm:text-[36px] font-semibold leading-[1.25]">من الفكرة الى الـ API في اسابيع</h2>
           <p className="mt-3 text-[14px] leading-7 text-[var(--color-text-muted)]">نختار التقنية حسب مشكلتك — لا نفرض ما نعرفه فقط.</p>
-          <ul className="mt-6 divide-y divide-[var(--color-border)] border-y border-[var(--color-border)]">
+          <ul className="da-chips">
             {["Next.js", "Laravel", "Flutter", "PostgreSQL", "AWS"].map((item) => (
-              <li key={item} className="py-2.5 font-mono text-[13px]">{item}</li>
+              <li key={item}><bdi dir="ltr">{item}</bdi></li>
             ))}
           </ul>
         </div>
