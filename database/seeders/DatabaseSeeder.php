@@ -49,6 +49,16 @@ class DatabaseSeeder extends Seeder
         );
 
         User::updateOrCreate(
+            ['email' => 'author@amtdex.ye'],
+            [
+                'name' => 'فيصل المطيري',
+                'password' => $defaultPassword,
+                'role' => 'author',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        User::updateOrCreate(
             ['email' => 'viewer@amtdex.ye'],
             [
                 'name' => 'لينا عسيري',

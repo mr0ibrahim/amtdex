@@ -106,6 +106,7 @@ type RequestOptions = {
   headers?: Record<string, string>
   params?: Record<string, string | number | boolean | undefined>
   isRetry?: boolean
+  signal?: AbortSignal
 }
 
 /**
@@ -171,6 +172,7 @@ export async function apiClient<T>(
       method,
       headers,
       credentials: "include",
+      signal: options.signal,
     }
     if (requestBody !== undefined && isMutating) {
       init.body = requestBody
@@ -228,6 +230,9 @@ export async function apiClient<T>(
     if (err instanceof ApiError) {
       throw err
     }
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw err
+    }
 
     // In DEV mode, allow fallback if backend is not reachable
     if (isDev) {
@@ -268,7 +273,7 @@ function handleDevFallback<T>(method: string, endpoint: string, body?: unknown):
             id: creds.email,
             name: creds.email.includes("admin") ? "أحمد الغامدي" : "مستخدم تجريبي",
             email: creds.email,
-            role: creds.email.includes("admin") ? "admin" : creds.email.includes("editor") ? "editor" : "viewer",
+            role: creds.email.includes("admin") ? "admin" : creds.email.includes("editor") ? "editor" : creds.email.includes("author") ? "author" : "viewer",
           },
         } as T
       }

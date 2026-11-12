@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
+import { useNavigate, Link, useSearchParams } from "react-router-dom"
 import { login } from "@/lib/auth"
 import { z } from "zod"
 
@@ -10,6 +10,7 @@ const schema = z.object({
 
 export function LoginPage() {
   const nav = useNavigate()
+  const [params] = useSearchParams()
   const [email, setEmail] = useState("admin@amtdex.ye")
   const [password, setPassword] = useState("Amtdex2026!")
   const [err, setErr] = useState<string | null>(null)
@@ -26,7 +27,9 @@ export function LoginPage() {
     setFieldErrs({})
     try {
       await login(email, password)
-      nav("/dashboard", { replace: true })
+      const next = params.get("next") || "/dashboard"
+      const safe = next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard"
+      nav(safe, { replace: true })
     } catch (e: unknown) {
       setErr(e instanceof Error ? e.message : "فشل تسجيل الدخول")
     }

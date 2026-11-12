@@ -1,4 +1,5 @@
-import { useState, useTransition } from "react"
+import { useEffect, useState, useTransition } from "react"
+import { useDebouncedValue } from "@/routing/search"
 import { Link, useSearchParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { BlogAPI } from "@/lib/blogApi"
@@ -15,18 +16,20 @@ export function BlogHomePage() {
   const category = searchParams.get("category") ?? ""
   const tag = searchParams.get("tag") ?? ""
   const [searchInput, setSearchInput] = useState(searchParams.get("q") ?? "")
+  const debouncedQuery = useDebouncedValue(searchInput, 200)
   const [, startTransition] = useTransition()
 
   // Queries
-  const { data: postsRes, isLoading } = useQuery({
-    queryKey: ["blog-posts", { page, category, tag, q: searchParams.get("q") ?? "" }],
-    queryFn: () =>
+  const { data: postsRes, isLoading, isFetching } = useQuery({
+    queryKey: ["blog-posts", { page, category, tag, q: debouncedQuery.trim() }],
+    queryFn: ({ signal }) =>
       BlogAPI.getPosts({
         page,
         category: category || undefined,
         tag: tag || undefined,
-        q: searchParams.get("q") || undefined,
+        q: debouncedQuery.trim() || undefined,
         per_page: 9,
+        signal,
       }),
   })
 
@@ -61,15 +64,20 @@ export function BlogHomePage() {
     })
   }
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  useEffect(() => {
+    const current = searchParams.get("q") ?? ""
+    if (debouncedQuery.trim() === current) return
     startTransition(() => {
       const next = new URLSearchParams(searchParams)
-      if (searchInput.trim()) next.set("q", searchInput.trim())
+      if (debouncedQuery.trim()) next.set("q", debouncedQuery.trim())
       else next.delete("q")
       next.set("page", "1")
       setSearchParams(next)
     })
+  }, [debouncedQuery])
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
   }
 
   const handleClearFilter = () => {
@@ -142,18 +150,25 @@ export function BlogHomePage() {
               </p>
 
               {/* Search Bar */}
-              <form onSubmit={handleSearchSubmit} className="mt-8 flex items-center max-w-xl border-b border-[var(--color-ink)]">
+              <form onSubmit={handleSearchSubmit} role="search" className="mt-8 flex items-center max-w-xl border-b border-[var(--color-ink)]">
                 <input
-                  type="text"
+                  type="search"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") setSearchInput("")
+                  }}
                   placeholder="ابحث في المقالات والتقنيات..."
+                  aria-label="ابحث في المقالات والتقنيات"
                   className="flex-1 px-4 py-2 text-[14px] bg-transparent outline-none text-[var(--color-text)] placeholder:text-[var(--color-text-faint)]"
                 />
                 <Button type="submit" size="sm" variant="primary">
                   بحث
                 </Button>
               </form>
+              {isFetching && searchInput.trim() && (
+                <p className="mt-2 text-[12px] text-[var(--color-text-muted)]" role="status">جار البحث...</p>
+              )}
             </div>
           </div>
         </section>

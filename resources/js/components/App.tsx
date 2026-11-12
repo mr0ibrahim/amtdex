@@ -4,6 +4,8 @@
  */
 import { Suspense, lazy, useEffect } from "react"
 import { Route, Routes, useLocation } from "react-router-dom"
+import { RouteProgress, useRouteLifecycle } from "@/routing/lifecycle"
+import type { Role } from "@/lib/auth"
 import { AuthLayout, MarketingLayout } from "@/components/layout/MarketingLayout"
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary"
 import { ForbiddenPage, ProtectedRoute } from "@/components/layout/ProtectedRoute"
@@ -69,9 +71,9 @@ function SubdomainCrossRedirect() {
   )
 }
 
-function DashboardFrame({ children }: { children: React.ReactNode }) {
+function DashboardFrame({ children, roles }: { children: React.ReactNode; roles: Role[] }) {
   return (
-    <ProtectedRoute>
+    <ProtectedRoute roles={roles}>
       <Seo title="لوحة التحكم" noindex />
       <ErrorBoundary>
         <DashboardLayout>{children}</DashboardLayout>
@@ -80,12 +82,20 @@ function DashboardFrame({ children }: { children: React.ReactNode }) {
   )
 }
 
+const STAFF: Role[] = ["admin", "editor", "author", "viewer"]
+const EDITORS: Role[] = ["admin", "editor"]
+const WRITERS: Role[] = ["admin", "editor", "author"]
+const READERS: Role[] = ["admin", "editor", "viewer"]
+const ADMINS: Role[] = ["admin"]
+
 export default function App() {
   const { show, el } = useToast()
   const onBlogSubdomain = isBlogSubdomain()
+  useRouteLifecycle()
 
   return (
     <>
+      <RouteProgress />
       {el}
       <ErrorBoundary>
         <Suspense fallback={<PageLoader />}>
@@ -143,17 +153,17 @@ export default function App() {
                 </Route>
 
                 {/* Unified Central Dashboard */}
-                <Route path="/dashboard" element={<DashboardFrame><OverviewPage onToast={show} /></DashboardFrame>} />
-                <Route path="/dashboard/overview" element={<DashboardFrame><OverviewPage onToast={show} /></DashboardFrame>} />
-                <Route path="/dashboard/blog" element={<DashboardFrame><DashboardBlogPage onToast={show} /></DashboardFrame>} />
-                <Route path="/dashboard/content" element={<DashboardFrame><ContentPage /></DashboardFrame>} />
-                <Route path="/dashboard/leads" element={<DashboardFrame><LeadsPage /></DashboardFrame>} />
-                <Route path="/dashboard/seo" element={<DashboardFrame><SeoPage /></DashboardFrame>} />
-                <Route path="/dashboard/media" element={<DashboardFrame><MediaPage /></DashboardFrame>} />
-                <Route path="/dashboard/settings" element={<DashboardFrame><SettingsPage /></DashboardFrame>} />
-                <Route path="/dashboard/users" element={<DashboardFrame><UsersPage /></DashboardFrame>} />
-                <Route path="/dashboard/audit" element={<DashboardFrame><AuditPage /></DashboardFrame>} />
-                <Route path="/dashboard/legacy" element={<><Seo title="لوحة التحكم قديم" noindex /><ProtectedRoute><DashboardPageOld onToast={show} /></ProtectedRoute></>} />
+                <Route path="/dashboard" element={<DashboardFrame roles={STAFF}><OverviewPage onToast={show} /></DashboardFrame>} />
+                <Route path="/dashboard/overview" element={<DashboardFrame roles={STAFF}><OverviewPage onToast={show} /></DashboardFrame>} />
+                <Route path="/dashboard/blog" element={<DashboardFrame roles={WRITERS}><DashboardBlogPage onToast={show} /></DashboardFrame>} />
+                <Route path="/dashboard/content" element={<DashboardFrame roles={EDITORS}><ContentPage /></DashboardFrame>} />
+                <Route path="/dashboard/leads" element={<DashboardFrame roles={READERS}><LeadsPage /></DashboardFrame>} />
+                <Route path="/dashboard/seo" element={<DashboardFrame roles={EDITORS}><SeoPage /></DashboardFrame>} />
+                <Route path="/dashboard/media" element={<DashboardFrame roles={WRITERS}><MediaPage /></DashboardFrame>} />
+                <Route path="/dashboard/settings" element={<DashboardFrame roles={ADMINS}><SettingsPage /></DashboardFrame>} />
+                <Route path="/dashboard/users" element={<DashboardFrame roles={ADMINS}><UsersPage /></DashboardFrame>} />
+                <Route path="/dashboard/audit" element={<DashboardFrame roles={ADMINS}><AuditPage /></DashboardFrame>} />
+                <Route path="/dashboard/legacy" element={<><Seo title="لوحة التحكم قديم" noindex /><ProtectedRoute roles={ADMINS}><DashboardPageOld onToast={show} /></ProtectedRoute></>} />
                 <Route path="*" element={<NotFoundPage />} />
               </>
             )}

@@ -41,6 +41,7 @@ export const BlogAPI = {
     q?: string
     featured?: boolean
     per_page?: number
+    signal?: AbortSignal
   }) => {
     const q = new URLSearchParams()
     if (params?.page) q.set("page", String(params.page))
@@ -51,7 +52,7 @@ export const BlogAPI = {
     if (params?.per_page) q.set("per_page", String(params.per_page))
 
     const url = `/blog/posts${q.toString() ? `?${q.toString()}` : ""}`
-    return apiClient<PaginatedResult<BlogPost>>(url, "GET")
+    return apiClient<PaginatedResult<BlogPost>>(url, "GET", undefined, { signal: params?.signal })
   },
 
   getPost: async (slug: string): Promise<PostDetailResponse> => {

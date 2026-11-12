@@ -14,7 +14,7 @@ import { useSyncExternalStore } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { API, ApiError } from "./api"
 
-export type Role = "admin" | "editor" | "viewer"
+export type Role = "admin" | "editor" | "author" | "viewer"
 
 export type User = {
   id: string
@@ -72,7 +72,7 @@ export function hasRole(allowed: Role[]): boolean {
   return !!s && allowed.includes(s.user.role)
 }
 
-const ROLE_RANK: Record<Role, number> = { viewer: 1, editor: 2, admin: 3 }
+const ROLE_RANK: Record<Role, number> = { viewer: 1, author: 2, editor: 3, admin: 4 }
 
 export function canAccess(required: Role): boolean {
   const s = readCachedSession()
