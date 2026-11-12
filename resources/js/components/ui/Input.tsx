@@ -1,11 +1,11 @@
 import * as React from "react"
 
 const fieldBase =
-  "mt-1.5 w-full bg-[var(--color-card-soft)]/30 border rounded-xl px-4 py-3 text-[13px] outline-none transition-colors placeholder:text-[var(--color-text-faint)]"
-const fieldOk = "border-[var(--color-border)] focus:border-[var(--color-primary)]"
-const fieldErr = "border-rose-400 bg-rose-50/20 focus:border-rose-400"
-const labelClass = "text-[12.5px] font-bold text-[var(--color-ink)]"
-const errorClass = "mt-1.5 text-[11px] font-semibold text-rose-500"
+  "mt-1.5 w-full bg-[var(--input-bg)] text-[var(--input-text)] border rounded-xl px-4 py-3 text-[13px] outline-none transition-colors placeholder:text-[var(--placeholder)]"
+const fieldOk = "border-[var(--border)] focus:border-[var(--focus-ring)]"
+const fieldErr = "border-[var(--danger)] bg-[var(--danger-bg)] focus:border-[var(--danger)]"
+const labelClass = "text-[12.5px] font-bold text-[var(--text)]"
+const errorClass = "mt-1.5 text-[11px] font-semibold text-[var(--danger)]"
 
 function fieldId(id: string | undefined, label: string | undefined) {
   if (id) return id
