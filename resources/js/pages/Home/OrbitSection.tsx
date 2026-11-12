@@ -1,24 +1,20 @@
 import { Icon } from "@/components/ui/Icon"
+
 export function OrbitSection() {
   return (
-    <section data-motion-group className="page-container page-container--wide py-10 sm:py-12 bg-[var(--color-card-soft)] border-y border-[var(--color-border)]">
-      <div className="text-center">
-        <div className="text-[11px] font-bold text-[var(--color-primary-light)]">تقنياتنا تدور حول عملك — لا العكس</div>
-        <h2 className="mt-2 text-[26px] sm:text-[32px] font-bold text-[var(--color-ink)] text-center">من الفكرة الى الـ API في اسابيع</h2>
-      </div>
-      <div className="mt-8 mx-auto max-w-[720px] flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-center">
-        <div data-motion="rise" data-motion-delay="0" className="w-full sm:flex-1 sm:min-w-0 bg-white rounded-2xl border border-[var(--color-border)] p-4 sm:p-5">
-          <div className="text-[10px] font-bold tracking-[0.6px] text-[var(--color-text-faint)]">ما نستخدمه يوميا</div>
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            <span className="bg-[var(--color-ink)] text-white text-[11px] font-bold font-mono px-3.5 py-2 rounded-full">Next.js</span>
-            <span className="bg-[var(--color-ink)] text-white text-[11px] font-bold font-mono px-3.5 py-2 rounded-full">Laravel</span>
-            <span className="bg-[var(--color-ink)] text-white text-[11px] font-bold font-mono px-3.5 py-2 rounded-full">Flutter</span>
-            <span className="bg-[var(--color-ink)] text-white text-[11px] font-bold font-mono px-3.5 py-2 rounded-full">PostgreSQL</span>
-            <span className="bg-[var(--color-ink)] text-white text-[11px] font-bold font-mono px-3.5 py-2 rounded-full">AWS</span>
-          </div>
-          <p className="mt-3 text-[12px] leading-5 text-[var(--color-text-muted)]">نختار التقنية حسب مشكلتك — لا نفرض ما نعرفه فقط.</p>
+    <section data-motion-group className="page-container page-container--wide page-section border-y border-[var(--color-border)]">
+      <div className="grid lg:grid-cols-[1fr_auto_1fr] gap-8 items-center">
+        <div data-motion="rise">
+          <div className="eyebrow">تقنياتنا تدور حول عملك — لا العكس</div>
+          <h2 className="mt-4 text-[28px] sm:text-[36px] font-semibold leading-[1.25]">من الفكرة الى الـ API في اسابيع</h2>
+          <p className="mt-3 text-[14px] leading-7 text-[var(--color-text-muted)]">نختار التقنية حسب مشكلتك — لا نفرض ما نعرفه فقط.</p>
+          <ul className="mt-6 divide-y divide-[var(--color-border)] border-y border-[var(--color-border)]">
+            {["Next.js", "Laravel", "Flutter", "PostgreSQL", "AWS"].map((item) => (
+              <li key={item} className="py-2.5 font-mono text-[13px]">{item}</li>
+            ))}
+          </ul>
         </div>
-        <div className="brand-core shrink-0 size-[90px] sm:size-[100px] rounded-full grid place-items-center shadow-[var(--shadow-cta)] bg-gradient-primary">
+        <div className="brand-core size-[140px] mx-auto grid place-items-center border border-[var(--color-ink)] bg-[var(--color-ink)]">
           <svg className="brand-core-orbits" viewBox="0 0 100 100" fill="none" aria-hidden="true">
             <circle className="orbit-track" cx="50" cy="50" r="43" />
             <path data-motion="draw" data-motion-delay="200" pathLength="1" d="M7 50 A43 43 0 0 1 93 50" stroke="currentColor" strokeWidth="1.5" />
@@ -26,15 +22,22 @@ export function OrbitSection() {
             <circle data-motion="signal" data-motion-delay="1450" cx="7" cy="50" r="3" fill="currentColor" />
             <circle data-motion="signal" data-motion-delay="1000" cx="93" cy="50" r="3" fill="currentColor" />
           </svg>
-          <span className="text-white text-[13px] font-extrabold">AMTDEX</span>
+          <span className="text-white text-[12px] font-semibold tracking-[0.14em]">AMTDEX</span>
         </div>
-        <div data-motion="rise" data-motion-delay="550" className="w-full sm:flex-1 sm:min-w-0 bg-white rounded-2xl border border-[var(--color-border)] p-4 sm:p-5">
-          <div className="text-[10px] font-bold text-[var(--color-text-faint)]">ما نقدمه لك</div>
-          <div className="mt-3 space-y-2.5">
-            <div className="flex items-center gap-2 text-[11px] font-semibold text-[var(--color-ink)]"><span className="size-5 rounded-full bg-[var(--color-success-bg)] grid place-items-center text-[10px] text-[var(--color-success)]"><Icon name="check" size={16} /></span> تسليم مرحلي — ترى كل اسبوع</div>
-            <div className="flex items-center gap-2 text-[11px] font-semibold text-[var(--color-ink)]"><span className="size-5 rounded-full bg-[var(--color-success-bg)] grid place-items-center text-[10px] text-[var(--color-success)]"><Icon name="check" size={16} /></span> كود نظيف وموثق</div>
-            <div className="flex items-center gap-2 text-[11px] font-semibold text-[var(--color-ink)]"><span className="size-5 rounded-full bg-[var(--color-success-bg)] grid place-items-center text-[10px] text-[var(--color-success)]"><Icon name="check" size={16} /></span> ضمان 90 يوم مجانا</div>
-          </div>
+        <div data-motion="rise" data-motion-delay="200">
+          <div className="text-[12px] font-semibold text-[var(--color-text-muted)]">ما نقدمه لك</div>
+          <ul className="mt-4 space-y-4">
+            {[
+              "تسليم مرحلي — ترى كل اسبوع",
+              "كود نظيف وموثق",
+              "ضمان 90 يوم مجانا",
+            ].map((item) => (
+              <li key={item} className="flex items-start gap-3 text-[14px] font-semibold">
+                <Icon name="check" size={16} />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

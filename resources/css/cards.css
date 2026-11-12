@@ -9,8 +9,9 @@
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-ink);
-  box-shadow: var(--shadow-xs);
-  transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+  box-shadow: none;
+  transition: transform 300ms ease-out;
+  height: 100%;
   text-decoration: none;
 }
 .service-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 24px; }
@@ -206,9 +207,7 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .service-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--color-violet-mid);
-    box-shadow: var(--shadow-card-lg);
+    transform: translateY(-8px);
   }
   .service-card:hover .service-card-arrow {
     background: var(--color-primary);

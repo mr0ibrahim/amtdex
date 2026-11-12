@@ -1,10 +1,21 @@
-import { Outlet } from "react-router-dom"
+import { useEffect } from "react"
+import { Outlet, useLocation } from "react-router-dom"
 import { Footer } from "@/components/layout/Footer"
 import { Header } from "@/components/layout/Header"
+import { useBrandMotion } from "@/hooks/useBrandMotion"
 
 export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
+  const motionRef = useBrandMotion()
+  const loc = useLocation()
+
+  useEffect(() => {
+    if (loc.hash) return
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
+    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" })
+  }, [loc.pathname])
+
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] selection:bg-[var(--color-ink)] selection:text-white">
+    <div ref={motionRef} className="brand-motion min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] selection:bg-[var(--color-ink)] selection:text-white">
       <a
         href="#main-content"
         className="skip-link sr-only focus:not-sr-only focus:fixed focus:top-3 focus:z-[100] focus:bg-[var(--color-ink)] focus:text-white focus:px-4 focus:py-2 focus:rounded-full focus:text-[13px]"

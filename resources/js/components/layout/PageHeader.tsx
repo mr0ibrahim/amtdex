@@ -24,18 +24,18 @@ export function PageHeader({
   const alignClass = align === "center" ? "text-center mx-auto" : ""
 
   return (
-    <header className={`${alignClass} ${className}`.trim()}>
+    <header data-motion-group className={`${alignClass} ${className}`.trim()}>
       {eyebrow != null &&
         (withSectionLabel ? (
           <SectionLabel>{eyebrow}</SectionLabel>
         ) : (
           <div className="text-[11px] font-bold tracking-[0.6px] text-[var(--color-primary)]">{eyebrow}</div>
         ))}
-      <h1 className="mt-3 text-[32px] sm:text-[44px] font-bold tracking-tight text-[var(--color-ink)] leading-tight">
+      <h1 data-motion="rise" data-motion-delay="120" className="mt-4 text-[34px] sm:text-[52px] font-semibold text-[var(--color-ink)] leading-[1.2]">
         {title}
       </h1>
       {description != null && (
-        <p className={`mt-3 text-[14px] leading-relaxed text-[var(--color-text-muted)] max-w-[560px] ${align === "center" ? "mx-auto" : ""}`}>
+        <p data-motion="rise" data-motion-delay="240" className={`mt-4 text-[15px] leading-8 text-[var(--color-text-muted)] max-w-[36rem] ${align === "center" ? "mx-auto" : ""}`}>
           {description}
         </p>
       )}

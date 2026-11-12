@@ -45,33 +45,33 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
   ]
 
   return (
-    <footer className="border-t border-[var(--color-border)] bg-[var(--color-surface)]">
-      <div className="page-container page-container--wide py-10">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
+    <footer className="border-t border-[var(--color-ink)] bg-[var(--color-bg)]">
+      <div className="page-container page-container--wide py-14">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-10">
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
             <div className="flex items-center gap-2">
-              <span className="size-8 rounded-xl bg-[var(--color-ink)] text-white grid place-items-center text-[12px] font-bold">A</span>
+              <span className="size-2 bg-[var(--color-gold)]" aria-hidden />
               {onBlog ? (
-                <a href={getMainUrl("/")} className="font-display font-bold tracking-tight text-[var(--color-text)]">
-                  amtdex
+                <a href={getMainUrl("/")} className="font-display font-semibold text-[18px] text-[var(--color-ink)]">
+                  AMTDEX
                 </a>
               ) : (
-                <Link to="/" className="font-display font-bold tracking-tight text-[var(--color-text)]">
-                  amtdex
+                <Link to="/" className="font-display font-semibold text-[18px] text-[var(--color-ink)]">
+                  AMTDEX
                 </Link>
               )}
             </div>
-            <p className="mt-3 text-[12px] leading-6 text-[var(--color-text-muted)] max-w-[260px]">
+            <p className="mt-4 text-[13px] leading-7 text-[var(--color-text-muted)] max-w-[260px]">
               حلول برمجية متكاملة — من الفكرة للكود للإطلاق. نبني مواقع، تطبيقات، وأنظمة أعمال بمعايير عالمية.
             </p>
-            <div className="mt-4 flex gap-2">
-              {["𝕏", "in", "ig"].map((s) => (
+            <div className="mt-5 flex gap-4">
+              {["X", "in", "ig"].map((s) => (
                 <button
                   key={s}
                   type="button"
                   onClick={() => onToast(s)}
                   aria-label={s}
-                  className="size-8 rounded-full bg-[var(--color-bg)] border border-[var(--color-border)] grid place-items-center text-[11px] font-bold text-[var(--color-text-muted)] hover:bg-[var(--color-ink)] hover:text-white transition-colors"
+                  className="text-[12px] font-semibold tracking-wide text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
                 >
                   {s}
                 </button>
@@ -126,7 +126,7 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
         <div className="mt-10 pt-6 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[var(--color-text-faint)]">
           <span>© 2026 Amtdex — جميع الحقوق محفوظة. صُنع في صنعاء.</span>
           <span className="flex items-center gap-2">
-            واجهات أمامية جاهزة للربط مع Laravel • <span className="px-2 py-1 rounded-full bg-[var(--color-ink)] text-white text-[10px]">API READY</span>
+            واجهات أمامية جاهزة للربط مع Laravel · API READY
           </span>
         </div>
       </div>

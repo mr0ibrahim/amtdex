@@ -8,7 +8,7 @@
 
 @theme {
   --font-arabic: "IBM Plex Sans Arabic", system-ui, sans-serif;
-  --font-display: "Instrument Sans", system-ui, sans-serif;
+  --font-display: "Readex Pro", "IBM Plex Sans Arabic", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -20,6 +20,13 @@ body {
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 999px; }
@@ -49,10 +56,10 @@ body {
   max-width: var(--container-narrow);
 }
 .page-section {
-  padding-block: 32px;
+  padding-block: 56px;
 }
 @media (min-width: 640px) {
-  .page-section { padding-block: 48px; }
+  .page-section { padding-block: 88px; }
 }
 
 /* ── Gradient utilities (بدلاً من style={{ background }}) ── */
@@ -63,6 +70,77 @@ body {
 .bg-gradient-cta { background-image: var(--gradient-cta); }
 
 .font-display { font-family: var(--font-display); }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+.eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 2px;
+  background: var(--color-gold);
+  flex: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 300ms ease-out, background-color 200ms ease, color 200ms ease;
+}
+.btn-ink { background: var(--color-ink); color: #fff; }
+.btn-line {
+  background: transparent;
+  color: var(--color-ink);
+  border: 1px solid var(--color-ink);
+}
+.btn-line:hover { background: var(--color-ink); color: #fff; }
+.btn-gold { background: var(--color-gold); color: var(--color-ink); }
+
+.site-nav {
+  position: relative;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  padding-block: 8px;
+}
+.site-nav.is-active { color: var(--color-ink); font-weight: 600; }
+.site-nav::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--color-gold);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 300ms ease-out;
+}
+.site-nav:hover::after,
+.site-nav.is-active::after { transform: scaleX(1); }
+
+/* Marketing surfaces stay sharp. Avatars and status dots keep their own radius. */
+.brand-motion :is(a, button).rounded-full { border-radius: 4px; }
+.brand-motion :is(.rounded-2xl, .rounded-3xl, .rounded-xl, .rounded-\[20px\], .rounded-\[24px\], .rounded-\[28px\], .rounded-\[32px\]) {
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .site-nav::after { transition: none; }
+}
 
 /* Skip link uses logical inset for RTL */
 .skip-link:focus {

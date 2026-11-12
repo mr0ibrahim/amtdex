@@ -20,21 +20,24 @@ export function AboutPage() {
     : defaultFaqs
 
   const team = (apiTeam && apiTeam.length > 0)
-    ? apiTeam.map((m: any) => ({
-        n: m.name,
-        r: m.role,
-        i: m.name?.slice(0, 1) || "أ",
-        avatar: m.avatar,
-      }))
+    ? apiTeam.map((m: any) => {
+        const name = m.name || m.n || ""
+        return {
+          n: name,
+          r: m.role || m.r || "",
+          i: name.slice(0, 1) || m.i || "أ",
+          avatar: m.avatar,
+        }
+      })
     : FALLBACK_TEAM
 
   return (
-    <div className="bg-[var(--color-beige)]">
-      <div className="page-container py-8 sm:py-12">
+    <div>
+      <div data-motion-group className="page-container page-section">
         <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 items-start">
           <div>
-            <div className="text-[11px] font-bold tracking-[0.6px] text-[var(--color-primary)]">من نحن</div>
-            <h1 className="mt-2 text-[32px] sm:text-[44px] font-bold tracking-[-0.04em] leading-tight text-[var(--color-ink)]">
+            <div className="eyebrow">من نحن</div>
+            <h1 data-motion="rise" data-motion-delay="120" className="mt-4 text-[36px] sm:text-[56px] font-semibold leading-[1.15] text-[var(--color-ink)]">
               نبني برمجيات
               <br />
               تخدم الناس.
@@ -48,14 +51,14 @@ export function AboutPage() {
                 { v: "+120", l: "مشروع" },
                 { v: "12", l: "عضو فريق" },
               ].map((x) => (
-                <div key={x.l} className="bg-white border border-[var(--color-border)] rounded-2xl p-4 text-center">
+                <div key={x.l} className="border-t border-[var(--color-ink)] pt-3">
                   <div className="text-[20px] font-bold text-[var(--color-ink)]">{x.v}</div>
                   <div className="text-[11px] text-[var(--color-text-faint)] mt-1">{x.l}</div>
                 </div>
               ))}
             </div>
           </div>
-          <div className="bg-[var(--color-ink)] text-white rounded-[28px] p-6 sm:p-8">
+          <div data-motion="rise" data-motion-delay="180" className="bg-[var(--color-ink)] text-white p-6 sm:p-8">
             <div className="text-[11px] tracking-[0.16em] text-white/40 font-semibold">قيمنا</div>
             <ul className="mt-4 space-y-4">
               {[
@@ -64,7 +67,7 @@ export function AboutPage() {
                 { t: "الشفافية", d: "تقرير أسبوعي، وصول للكود، ولا مفاجآت في الفاتورة." },
               ].map((v) => (
                 <li key={v.t} className="flex gap-3">
-                  <span className="size-7 rounded-full bg-white text-black grid place-items-center text-[10px] shrink-0 mt-0.5"><Icon name="check" size={16} /></span>
+                  <span className="mt-1 text-[var(--color-gold)] shrink-0"><Icon name="check" size={16} /></span>
                   <div>
                     <div className="text-[13px] font-semibold">{v.t}</div>
                     <div className="text-[12px] leading-5 text-white/50 mt-1">{v.d}</div>
@@ -80,11 +83,11 @@ export function AboutPage() {
           <p className="text-[12px] text-[var(--color-text-faint)] mt-1">فريق صغير، خبرة كبيرة — نعمل كامتداد لفريقك.</p>
           <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {team.map((m: any) => (
-              <div key={m.n} className="bg-white border border-[var(--color-border)] rounded-[20px] p-5 text-center">
+              <div key={m.n} className="border-t border-[var(--color-ink)] pt-4">
                 {m.avatar ? (
-                  <img src={m.avatar} alt={m.n} className="size-12 rounded-full object-cover border border-black/10 mx-auto" />
+                  <img src={m.avatar} alt={m.n} className="size-12 object-cover border border-[var(--color-border)]" />
                 ) : (
-                  <span className="size-12 rounded-full bg-[var(--color-ink)] text-white grid place-items-center text-[16px] font-bold mx-auto">{m.i}</span>
+                  <span className="size-12 bg-[var(--color-ink)] text-white grid place-items-center text-[16px] font-semibold">{m.i}</span>
                 )}
                 <div className="mt-3 text-[13px] font-bold text-[var(--color-ink)]">{m.n}</div>
                 <div className="text-[11px] text-[var(--color-text-faint)]">{m.r}</div>
@@ -104,7 +107,7 @@ export function AboutPage() {
             معرفته.
           </h2>
           <p className="mt-3 text-[13px] leading-6 text-[var(--color-text-muted)]">لم تجد إجابتك؟ تحدث مع مهندس حلول خلال دقائق.</p>
-          <a href="mailto:hello@amtdex.com" className="mt-5 inline-flex items-center gap-2 bg-white border border-[var(--color-border)] rounded-full px-5 py-3 text-[13px] font-bold text-[var(--color-ink)] hover:bg-[var(--color-bg)] transition-colors">
+          <a href="mailto:hello@amtdex.com" className="btn btn-line brand-cta mt-6">
             <Icon name="mail" size={16} /> تواصل معنا الآن
           </a>
         </div>

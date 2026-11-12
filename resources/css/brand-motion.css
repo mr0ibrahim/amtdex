@@ -9,12 +9,16 @@
 .brand-workflow-track { position: absolute; inset-inline-start: 19px; top: 24px; height: calc(100% - 48px); width: 2px; pointer-events: none; color: var(--color-violet-mid); }
 .brand-motion .brand-workflow > div { position: relative; }
 .brand-motion .brand-workflow > div > span { position: relative; z-index: 1; }
-.brand-motion .brand-cta { transition: box-shadow 220ms ease, translate 220ms ease; }
+.brand-motion .brand-cta,
+.brand-motion .lift { transition: transform 300ms ease-out; }
 @media (hover: hover) and (pointer: fine) {
-  .brand-motion .brand-cta:hover { translate: 0 -3px; box-shadow: 0 14px 28px rgb(40 16 113 / 22%); }
-  .brand-motion .brand-cta:active { translate: 0 0; }
+  .brand-motion .brand-cta:hover,
+  .brand-motion .lift:hover { transform: translateY(-8px); }
+  .brand-motion .brand-cta:active,
+  .brand-motion .lift:active { transform: translateY(0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .brand-motion *, .brand-motion *::before, .brand-motion *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-  .brand-motion .brand-cta:hover { translate: none; }
+  .brand-motion .brand-cta:hover,
+  .brand-motion .lift:hover { transform: none; }
 }

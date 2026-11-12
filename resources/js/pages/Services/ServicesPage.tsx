@@ -23,7 +23,7 @@ export function ServicesPage() {
         description="نغطي دورة التطوير البرمجي كاملة: تحليل، تصميم، برمجة، إطلاق، وصيانة مستمرة. فريق واحد، عقد واضح، ومسؤولية تنفيذية مباشرة."
       />
 
-      <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div data-motion-group className="mt-12 grid md:grid-cols-2 gap-x-8 gap-y-6">
         {isLoading ? (
           <>
             <CardSkeleton />
@@ -34,11 +34,15 @@ export function ServicesPage() {
             <CardSkeleton />
           </>
         ) : (
-          SERVICES.map((s) => <ServiceCard key={s.slug} service={s} detailed />)
+          SERVICES.map((s, index) => (
+            <div key={s.slug} data-motion="rise" data-motion-delay={(index % 2) * 140} className={index === 0 ? "md:col-span-2" : undefined}>
+              <ServiceCard service={s} detailed />
+            </div>
+          ))
         )}
       </div>
 
-      <div className="mt-12 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-card-lg)] p-6 sm:p-8 shadow-[var(--shadow-sm)]">
+      <div data-motion-group className="mt-16 border-t border-[var(--color-ink)] pt-10">
         <h3 className="text-[18px] font-bold text-[var(--color-ink)]">منهجية العمل وتسليم المشاريع</h3>
         <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
@@ -63,7 +67,7 @@ export function ServicesPage() {
               d: "نشر على خوادم سحابية آمنة، تدريب فريقك، ودعم فني وصيانة مجانية لمدة 30 يوماً.",
             },
           ].map((s) => (
-            <div key={s.n} className="border-e border-[var(--color-border)] pe-4 first:border-0">
+            <div key={s.n} data-motion="rise" data-motion-delay={Number(s.n) * 80} className="border-e border-[var(--color-border)] pe-4 last:border-e-0">
               <div className="text-[28px] font-bold tracking-tight text-[var(--color-primary-light)]/20 font-mono">{s.n}</div>
               <div className="text-[14px] font-bold text-[var(--color-ink)] mt-1">{s.t}</div>
               <div className="text-[12.5px] leading-relaxed text-[var(--color-text-muted)] mt-1.5">{s.d}</div>

@@ -110,42 +110,41 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
 
   return (
     <>
-      <div className="hidden md:flex h-8 bg-[var(--color-ink)] text-white/70 text-[11px] tracking-wide items-center justify-center gap-6">
-        <span className="flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" /> جميع الأنظمة تعمل — 99.99% uptime
-        </span>
-        <span className="hidden lg:inline opacity-40">|</span>
-        <span className="hidden lg:inline">Amtdex — نبني حلولك البرمجية من الفكرة للإطلاق</span>
+      <div className="hidden md:block border-b border-[var(--color-border)] text-[12px] text-[var(--color-text-muted)]">
+        <div className="page-container page-container--wide h-9 flex items-center justify-between gap-6">
+          <span>جميع الأنظمة تعمل — 99.99% uptime</span>
+          <span className="hidden lg:inline">Amtdex — نبني حلولك البرمجية من الفكرة للإطلاق</span>
+        </div>
       </div>
-      <header className="sticky top-0 z-40 backdrop-blur-[14px] bg-[var(--color-bg)]/95 border-b border-[var(--color-border)]">
-        <nav className="page-container page-container--wide h-16 sm:h-[76px] flex items-center justify-between gap-4 sm:gap-6" aria-label="التنقل">
-          <div className="flex items-center gap-7 h-full">
-            <SiteLink to="/" className="flex items-center gap-2.5 shrink-0 group">
-              <span className="size-2.5 rounded-full bg-[var(--color-primary)] shrink-0" aria-hidden />
-              <span className="font-display font-extrabold text-[18px] tracking-[-0.5px] text-[var(--color-ink)]">
+      <header className="sticky top-0 z-40 bg-[var(--color-bg)] border-b border-[var(--color-border)]">
+        <nav className="page-container page-container--wide h-16 sm:h-[72px] flex items-center justify-between gap-4 sm:gap-6" aria-label="التنقل">
+          <div className="flex items-center gap-8 h-full">
+            <SiteLink to="/" className="flex items-center gap-2.5 shrink-0">
+              <span className="size-2 bg-[var(--color-gold)] shrink-0" aria-hidden />
+              <span className="font-display font-semibold text-[18px] text-[var(--color-ink)]">
                 AMTDEX
               </span>
             </SiteLink>
-            <div className="hidden lg:flex items-center gap-[22px]">
-              <SiteNavLink to="/services" className={({ isActive }) => `text-[13.5px] font-medium ${isActive ? "text-[var(--color-ink)] font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"}`}>
+            <div className="hidden lg:flex items-center gap-6 h-full">
+              <SiteNavLink to="/services" className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
                 الخدمات
               </SiteNavLink>
-              <SiteNavLink to="/portfolio" className={({ isActive }) => `text-[13.5px] font-medium ${isActive ? "text-[var(--color-ink)] font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"}`}>
+              <SiteNavLink to="/portfolio" className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
                 أعمالنا
               </SiteNavLink>
               {onBlog ? (
-                <NavLink to="/" className="text-[13.5px] font-semibold text-[var(--color-ink)] transition-colors">
+                <NavLink to="/" className="site-nav is-active">
                   المدونة
                 </NavLink>
               ) : (
-                <a href={getBlogUrl("/")} className="text-[13.5px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-ink)] transition-colors">
+                <a href={getBlogUrl("/")} className="site-nav">
                   المدونة
                 </a>
               )}
-              <SiteLink to="/services" className="text-[13.5px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-ink)]">
+              <SiteLink to="/services" className="site-nav">
                 التقنيات
               </SiteLink>
-              <SiteNavLink to="/about" className={({ isActive }) => `text-[13.5px] font-medium ${isActive ? "text-[var(--color-ink)] font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"}`}>
+              <SiteNavLink to="/about" className={({ isActive }) => `site-nav ${isActive ? "is-active" : ""}`}>
                 من نحن
               </SiteNavLink>
             </div>
@@ -153,20 +152,20 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
 
           {/* Desktop right — لوحة التحكم + تواصل + عرض سعر */}
           <div className="hidden lg:flex items-center gap-2.5">
-            <SiteLink to="/dashboard" className="text-[13px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-ink)] px-3 py-1.5 rounded-full border border-[var(--color-border)] hover:border-[var(--color-ink)] transition-all">
+            <SiteLink to="/dashboard" className="site-nav">
               لوحة التحكم
             </SiteLink>
-            <SiteLink to="/contact" className="text-[13.5px] font-semibold text-[var(--color-ink)] hover:opacity-70 transition-opacity">
+            <SiteLink to="/contact" className="site-nav">
               تواصل معنا
             </SiteLink>
-            <SiteLink to="/quote" className="inline-flex items-center gap-2 text-white text-[13.5px] font-bold px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity bg-gradient-primary">
-              اطلب عرض سعر <span aria-hidden>←</span>
+            <SiteLink to="/quote" className="btn btn-ink brand-cta">
+              اطلب عرض سعر
             </SiteLink>
           </div>
 
           {/* Mobile toggle */}
           <div className="flex lg:hidden items-center gap-2">
-            <SiteLink to="/quote" className="bg-[var(--color-ink)] text-white text-[12px] font-semibold px-4 py-2 rounded-full">
+            <SiteLink to="/quote" className="btn btn-ink min-h-9 px-3 text-[12px]">
               عرض سعر
             </SiteLink>
             <button
@@ -175,7 +174,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
               aria-label={open ? "إغلاق" : "فتح القائمة"}
               aria-expanded={open}
               aria-controls="mobile-menu"
-              className="size-9 grid place-items-center rounded-full border border-[var(--color-border)] bg-white text-[14px]"
+              className="size-10 grid place-items-center border border-[var(--color-ink)] bg-[var(--color-bg)]"
             >
               <Icon name={open ? "close" : "menu"} size={19} />
             </button>
