@@ -81,7 +81,7 @@ export function AboutPage() {
         <div className="mt-10">
           <h2 className="text-[20px] font-bold text-[var(--color-ink)]">الفريق</h2>
           <p className="text-[12px] text-[var(--color-text-faint)] mt-1">فريق صغير، خبرة كبيرة — نعمل كامتداد لفريقك.</p>
-          <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="da-people mt-6">
             {team.map((m: any) => (
               <div key={m.n} className="border-t border-[var(--color-ink)] pt-4">
                 {m.avatar ? (
@@ -117,13 +117,12 @@ export function AboutPage() {
             const btnId = `faq-btn-${i}`
             const isOpen = open === i
             return (
-              <div key={f.q} className="bg-white border border-[var(--color-border)] rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(7,11,26,0.04)]">
+              <div key={f.q} className="da-faq">
                 <button
                   id={btnId}
                   onClick={() => setOpen(isOpen ? null : i)}
                   aria-expanded={isOpen}
                   aria-controls={panelId}
-                  className="w-full flex items-center justify-between gap-4 p-5 text-right"
                 >
                   <span className="text-[13.5px] font-bold text-[var(--color-ink)]">{f.q}</span>
                   <span className={`size-7 rounded-full grid place-items-center text-[14px] shrink-0 transition-colors ${isOpen ? "bg-[var(--color-ink)] text-white" : "bg-[var(--color-beige)] text-[var(--color-ink)]"}`}>{isOpen ? "−" : "+"}</span>

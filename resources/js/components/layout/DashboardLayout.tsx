@@ -110,7 +110,7 @@ function SidebarContent({
           <span className="dash-user-avatar">{initial}</span>
           <div className="min-w-0 flex-1">
             <div className="text-[12px] font-bold truncate">{session?.user.name ?? "مستخدم Amtdex"}</div>
-            <div className="text-[10px] text-white/50 truncate">{session?.user.role ?? "viewer"}</div>
+            <div className="text-[10px] text-white/50 truncate"><bdi dir="ltr">{session?.user.role ?? "viewer"}</bdi></div>
           </div>
           <button
             type="button"
@@ -129,7 +129,7 @@ function SidebarContent({
           onClick={onNavigate}
           className="text-[11px] text-center text-white/55 hover:text-white transition-colors"
         >
-          ← العودة للموقع
+          <span className="dash-mirror" aria-hidden>←</span> العودة للموقع
         </Link>
       </div>
     </>
@@ -158,7 +158,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   }, [mobileOpen])
 
   return (
-    <div className="dash-shell">
+    <div className="dash-shell" dir="rtl" lang="ar">
       <div className="dash-frame">
         <aside className="dash-sidebar hidden lg:flex">
           <SidebarContent filter={navFilter} showSearch searchValue={navFilter} onSearch={setNavFilter} />

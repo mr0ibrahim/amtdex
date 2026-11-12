@@ -4,40 +4,41 @@
 
 :root {
   /* ── الهوية الأساسية (10 ألوان) ── */
-  --color-ink: #16064F;              /* الكحلي الملكي — العناوين والنصوص المهمة */
+  --color-brand: #16064F;            /* الكحلي — الخلفيات والألواح */
+  --color-ink: #F4F1EA;              /* النص الفاتح على الحقل الداكن */
   --color-primary: #281071;          /* البنفسجي الداكن — الأزرار والعناصر الأساسية */
   --color-primary-light: #5425A4;    /* البنفسجي الملكي — التدرجات والأيقونات والتفاعل */
   --color-violet-mid: #9775D1;        /* البنفسجي المتوسط — الزخارف والرسومات الثانوية */
   --color-gold: #FFBF08;              /* الذهبي الأساسي — التمييز والعروض والعناصر البارزة */
   --color-gold-dark: #E69A12;         /* الذهبي المتدرج — التدرجات الذهبية */
-  --color-lavender: #E6E0D4;          /* حجر دافئ — حدود ناعمة، ليس غسيلاً بنفسجياً */
-  --color-card-soft: #F6F3EC;         /* ورق — خلفية البطاقات */
-  --color-surface: #FBFAF6;           /* سطح الصفحة */
-  --color-bg: #F3F0E8;                /* ورق دافئ — الخلفية الرئيسية */
-  --color-bg-subtle: #EFEBE3;         /* خلفية هادئة للمدونة والأقسام الثانوية */
+  --color-lavender: #2A2444;
+  --color-card-soft: #1A1433;
+  --color-surface: #120D22;
+  --color-bg: #0B0816;
+  --color-bg-subtle: #0E0A1C;
 
   /* ── مشتقات ── */
   --color-ink-soft: #281071;
-  --color-beige: #F6F3EC;
-  --color-border: #DDD6C8;
-  --color-border-strong: #16064F;
-  --color-outline-peach: #DDD6C8;
-  --color-text: #16064F;
-  --color-text-muted: #5C5670;
-  --color-text-faint: #8A8478;
+  --color-beige: #1A1433;
+  --color-border: #2C2640;
+  --color-border-strong: #F4F1EA;
+  --color-outline-peach: #2C2640;
+  --color-text: #F4F1EA;
+  --color-text-muted: #B7B0C6;
+  --color-text-faint: #8D86A0;
   --color-success: #0E9F6E;
   --color-success-bg: #E6F4EA;
   --color-accent: #FFBF08;
   --color-accent-purple: #5425A4;
-  --color-signal: #F6F3EC;
+  --color-signal: #1A1433;
   --color-cta-dark-border: #2A3347;   /* حدود عناصر الـ CTA الداكنة */
   --color-live: #7DD3A0;              /* نقطة الحالة الحية */
 
   /* ── ألوان مسطحة. التدرج البنفسجي كان يقرأ كقالب جاهز. ── */
-  --gradient-primary: linear-gradient(#16064F, #16064F);
+  --gradient-primary: linear-gradient(#F4F1EA, #F4F1EA);
   --gradient-gold: linear-gradient(#FFBF08, #FFBF08);
-  --gradient-hero: linear-gradient(#F3F0E8, #F3F0E8);
-  --gradient-card: linear-gradient(#FBFAF6, #FBFAF6);
+  --gradient-hero: linear-gradient(#0B0816, #0B0816);
+  --gradient-card: linear-gradient(#120D22, #120D22);
   --gradient-cta: linear-gradient(#16064F, #16064F);
 
   /* ── Spacing (4px / 8px scale) ── */

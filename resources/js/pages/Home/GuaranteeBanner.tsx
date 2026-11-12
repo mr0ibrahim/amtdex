@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 
 export function GuaranteeBanner() {
   return (
-    <section data-motion-group className="border-y border-[var(--color-ink)]">
+    <section data-motion-group className="da-band">
       <div className="page-container page-container--wide py-8 flex flex-col sm:flex-row sm:items-center gap-5">
         <span className="font-display text-[13px] font-semibold tracking-[0.14em] text-[var(--color-text-muted)]">الضمان</span>
         <div data-motion="rise" className="flex-1">

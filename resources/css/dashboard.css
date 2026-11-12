@@ -3,8 +3,35 @@
    colors/radii/shadows come only from Amtdex tokens. */
 
 .dash-shell {
+  direction: rtl;
+  font-family: "IBM Plex Sans Arabic", var(--font-arabic), system-ui, sans-serif;
+  line-height: 1.7;
+  text-align: start;
+  /* Light console from main. Public pages keep the dark Direction A tokens. */
+  --color-ink: #16064F;
+  --color-primary: #281071;
+  --color-primary-light: #5425A4;
+  --color-violet-mid: #9775D1;
+  --color-gold: #FFBF08;
+  --color-lavender: #E9DDF4;
+  --color-card-soft: #F4EAF7;
+  --color-surface: #FFFFFF;
+  --color-bg: #FFFFFF;
+  --color-bg-subtle: #F8F4FA;
+  --color-beige: #F4EAF7;
+  --color-border: #E9DDF4;
+  --color-border-strong: #281071;
+  --color-text: #16064F;
+  --color-text-muted: #6B7280;
+  --color-text-faint: #9AA0AB;
+  --color-signal: #EEF3FF;
+  --gradient-primary: linear-gradient(135deg, #281071 0%, #5425A4 100%);
+  --radius-card: 24px;
+  --radius-input: 12px;
+  --shadow-card: 0 10px 24px rgba(22, 6, 79, 0.08);
+  --shadow-primary: 0 8px 20px rgba(40, 16, 113, 0.25);
   --dash-sidebar-w: 272px;
-  --dash-sidebar-bg: var(--color-ink);
+  --dash-sidebar-bg: #16064F;
   --dash-canvas: #F7F3FA;
   min-height: 100vh;
   background: var(--dash-canvas);
@@ -261,7 +288,7 @@
   flex-direction: column;
   width: min(86vw, 300px);
   height: 100%;
-  margin-inline-start: auto;
+  margin-inline-end: auto;
   overflow: auto;
 }
 
@@ -814,6 +841,29 @@
   margin-top: 4px;
   font-size: 13px;
   color: var(--color-text-muted);
+}
+
+.dash-shell table { width: 100%; text-align: start; border-collapse: collapse; }
+.dash-shell th, .dash-shell td { text-align: start; }
+.dash-shell :is(.font-mono, [dir="ltr"], .dash-bidi) { unicode-bidi: isolate; }
+.dash-shell .dash-mirror { display: inline-block; transform: scaleX(-1); }
+.dash-shell button.bg-\[\#f4f1ea\] {
+  background: linear-gradient(135deg, #281071 0%, #5425A4 100%);
+  color: #fff;
+}
+.dash-shell input, .dash-shell select, .dash-shell textarea {
+  text-align: start;
+  font-family: inherit;
+  line-height: 1.6;
+}
+.dash-empty {
+  padding: 28px 20px;
+  text-align: center;
+  color: var(--color-text-muted);
+  background: var(--color-card-soft);
+  border: 1px dashed var(--color-border);
+  border-radius: 16px;
+  line-height: 1.8;
 }
 
 @media (prefers-reduced-motion: reduce) {

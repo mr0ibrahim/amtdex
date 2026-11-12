@@ -1,0 +1,1 @@
+import{l as e}from"./vendor-react-sLSUoF8d.js";var t=e(),n={marketing:`page-container`,wide:`page-container page-container--wide`,narrow:`page-container page-container--narrow`};function r({as:e=`div`,variant:r=`marketing`,section:i=!1,className:a=``,children:o,...s}){return(0,t.jsx)(e,{className:`${n[r]}${i?` page-section`:``} ${a}`.trim(),...s,children:o})}export{r as t};

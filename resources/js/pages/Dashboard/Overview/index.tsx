@@ -146,7 +146,7 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
                 </span>
                 <div className="min-w-0">
                   <div className="text-[11px] text-[var(--color-text-faint)]">{c.k}</div>
-                  <div className="text-[26px] font-extrabold text-[var(--color-ink)] leading-none mt-1">{c.v}</div>
+                  <div className="text-[26px] font-extrabold text-[var(--color-ink)] leading-none mt-1"><bdi className="dash-bidi" dir="ltr">{c.v}</bdi></div>
                   <div className="text-[11px] text-[var(--color-text-muted)] mt-2">{c.sub}</div>
                 </div>
               </div>
@@ -203,7 +203,7 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
                   to={item.to}
                   className="inline-flex items-center justify-center gap-1.5 text-[12px] font-bold text-[var(--color-primary)] bg-[var(--color-card-soft)] hover:bg-[var(--color-lavender)] rounded-full py-2 transition-colors"
                 >
-                  متابعة <span aria-hidden>←</span>
+                  متابعة <span className="dash-mirror" aria-hidden>←</span>
                 </Link>
               </div>
             ))}

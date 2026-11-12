@@ -46,7 +46,7 @@ export function useBrandMotion() {
           duration: type === "draw" ? 1500 : type === "bar" ? 1100 : 1250,
           delay: compact ? delay * .7 : delay,
           easing: "cubic-bezier(0.25, 0.1, 0.25, 1)",
-          fill: "both",
+          fill: "forwards",
         })
         active.add(animation)
         animation.addEventListener("finish", () => { active.delete(animation); paused.delete(animation) }, { once: true })

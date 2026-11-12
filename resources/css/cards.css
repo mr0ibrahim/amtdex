@@ -76,14 +76,14 @@
   background: var(--color-card-soft);
   transition: background 220ms ease, color 220ms ease;
 }
-.service-card-featured { background: var(--color-ink); color: white; border-color: var(--color-ink); }
+.service-card-featured { background: var(--color-brand); color: #f4f1ea; border-color: var(--color-brand); }
 .service-card-featured .service-card-icon {
   background: rgb(255 255 255 / 7%);
   border-color: rgb(255 255 255 / 15%);
   color: var(--color-gold);
 }
 .service-card-featured > p,
-.service-card-featured li { color: var(--color-lavender); }
+.service-card-featured li { color: #d9d3e6; }
 .service-card-featured .service-card-badge {
   color: var(--color-gold);
   border-color: rgb(255 191 8 / 25%);

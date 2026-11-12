@@ -31,17 +31,13 @@ export function PortfolioPage() {
         description="نماذج من مشاريع ومنصات رقمية قمنا بتطويرها وإطلاقها بنجاح — كل مشروع يمثل قصة نجاح وقيمة عملية قابلة للقياس."
       />
 
-      <div data-motion-group className="mt-8 flex flex-wrap gap-x-5 gap-y-2 border-b border-[var(--color-border)]">
+      <div data-motion-group className="da-filters">
         {cats.map((c) => (
           <button
             key={c}
             type="button"
             onClick={() => setFilter(c)}
-            className={`text-[13px] font-semibold pb-3 border-b-2 -mb-px ${
-              filter === c
-                ? "border-[var(--color-gold)] text-[var(--color-ink)]"
-                : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-ink)]"
-            }`}
+            className={filter === c ? "is-on" : undefined}
           >
             {c}
           </button>
@@ -49,7 +45,7 @@ export function PortfolioPage() {
       </div>
 
       {/* Projects Grid with Skeletons */}
-      <div data-motion-group className="mt-8 grid md:grid-cols-2 gap-x-8 gap-y-10">
+      <div data-motion-group className="da-works">
         {isLoading ? (
           <>
             <CardSkeleton />
@@ -63,10 +59,10 @@ export function PortfolioPage() {
               to={`/portfolio/${p.slug}`}
               data-motion="rise"
               data-motion-delay={(index % 2) * 140}
-              className="group lift flex flex-col border-t border-[var(--color-ink)] pt-4"
+              className="group lift flex flex-col"
             >
               <div
-                className="h-[210px] relative overflow-hidden bg-[var(--color-ink)]"
+                className="da-plate"
                 style={{ background: p.cover_image ? undefined : p.color }}
               >
                 {p.cover_image ? (
@@ -76,24 +72,22 @@ export function PortfolioPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <>
-                    <div className="absolute inset-0 p-5 flex flex-col justify-end">
-                      <div className="text-[12px] font-semibold text-white/80">{p.cat}</div>
-                      <div className="mt-3 h-1 w-16" style={{ background: p.accent }} />
-                    </div>
-                  </>
+                  <span>
+                    {p.title}
+                    <small>{p.client} · {p.year}</small>
+                  </span>
                 )}
               </div>
 
-              <div className="p-6 flex-1 flex flex-col justify-between">
+              <div className="pt-4 flex-1 flex flex-col justify-between">
                 <div>
                   <div className="text-[11.5px] font-semibold text-[var(--color-text-muted)]">
                     {p.cat} • {p.year} • {p.client}
                   </div>
-                  <h3 className="mt-1.5 text-[16px] font-bold text-[var(--color-ink)] leading-snug group-hover:text-[var(--color-primary)] transition-colors">
+                  <h3 className="mt-1.5 text-[16px] font-bold text-[var(--color-ink)] leading-snug">
                     {p.title}
                   </h3>
-                  <p className="mt-2 text-[12.5px] leading-relaxed text-[var(--color-text-muted)] line-clamp-2">
+                  <p className="mt-2 text-[12.5px] leading-relaxed text-[var(--color-text-muted)]">
                     {p.summary}
                   </p>
                 </div>

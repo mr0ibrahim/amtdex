@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { ServiceCard } from "@/components/ui/ServiceCard"
 import { Icon } from "@/components/ui/Icon"
 import { Marquee } from "@/components/ui/Marquee"
 import { Testimonials } from "./Testimonials"
@@ -43,30 +42,30 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
 
   return (
     <div>
-      <section data-motion-group className="page-container page-container--wide page-section">
-        <div className="grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] gap-12 lg:gap-16 items-end">
-          <div>
-            <p data-motion="rise" className="eyebrow">AMTDEX — شريكك للتحول الرقمي والحلول البرمجية</p>
-            <h1 data-motion="rise" data-motion-delay="140" className="mt-6 text-[40px] sm:text-[64px] leading-[1.15] font-semibold text-[var(--color-ink)]">
+      <section data-motion-group className="page-container page-container--wide da-hero">
+        <div>
+          <div className="da-hero-copy">
+            <p data-motion="rise" className="da-kicker">AMTDEX — شريكك للتحول الرقمي والحلول البرمجية</p>
+            <h1 data-motion="rise" data-motion-delay="140" className="mt-4 text-[34px] sm:text-[68px] leading-[1.15] font-semibold text-[var(--color-ink)]">
               نحوّل أفكارك
               <br />
               إلى برمجيات تنمو.
             </h1>
-            <p data-motion="rise" data-motion-delay="280" className="mt-6 text-[16px] leading-8 text-[var(--color-text-muted)] max-w-[34rem]">
+            <p data-motion="rise" data-motion-delay="280" className="mt-4 text-[16px] leading-8 text-[var(--color-text-muted)] max-w-[34rem]">
               شركة برمجيات يمنية نطوّر أنظمة مخصصة، تطبيقات جوال، ومنصات سحابية — من الفكرة إلى الإطلاق والدعم، بجودة مؤسسية وسرعة تنفيذ.
             </p>
-            <div data-motion="rise" data-motion-delay="420" className="mt-8 flex flex-wrap gap-3">
+            <div data-motion="rise" data-motion-delay="420" className="hero-actions">
               <Link to="/quote" className="btn btn-ink brand-cta">اطلب استشارة مجانية</Link>
               <Link to="/portfolio" className="btn btn-line brand-cta">
                 <Icon name="play" size={14} /> استعرض أعمالنا
               </Link>
             </div>
-            <p data-motion="rise" data-motion-delay="560" className="mt-8 text-[13px] text-[var(--color-text-muted)] border-t border-[var(--color-border)] pt-4 max-w-[28rem]">
-              4.9/5 من 300+ عميل في الخليج يثقون بنا
+            <p data-motion="rise" data-motion-delay="560" className="da-proof text-[13px] text-[var(--color-text-muted)]">
+              <span className="text-[var(--color-gold)]">★★★★★</span> 4.9/5 من 300+ عميل في الخليج يثقون بنا
             </p>
           </div>
 
-          <div data-motion="rise" data-motion-delay="200" className="border border-[var(--color-ink)] bg-[var(--color-surface)]">
+          <div data-motion="rise" data-motion-delay="200" className="da-app">
             <div className="h-12 flex items-center justify-between px-4 border-b border-[var(--color-border)]">
               <span className="text-[12px] font-semibold">لوحة التحكم</span>
               <span data-motion="signal" data-motion-delay="700" className="inline-flex items-center gap-2 text-[11px] font-semibold">
@@ -85,7 +84,7 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
                 </div>
               </div>
               <div className="p-4 sm:p-5 flex flex-col gap-4">
-                <div className="grid grid-cols-3 gap-px bg-[var(--color-border)] border border-[var(--color-border)]">
+                <div className="da-metrics">
                   {[
                     ["الإيرادات", "﷼ 284,500", "+12.4%"],
                     ["العملاء", "1,842", "+8.1%"],
@@ -175,11 +174,17 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
             <Link to="/services" className="mt-4 inline-flex text-[13px] font-semibold border-b border-[var(--color-ink)] pb-0.5">تعرّف على خدماتنا</Link>
           </div>
         </div>
-        <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-12 gap-4">
+        <div className="da-svc">
           {services.slice(0, 4).map((s, index) => (
-            <div key={s.slug} data-motion="rise" data-motion-delay={index * 120} className={index === 0 ? "md:col-span-2 lg:col-span-7" : index === 1 ? "lg:col-span-5" : "lg:col-span-6"}>
-              <ServiceCard service={s} />
-            </div>
+            <Link key={s.slug} to={`/services/${s.slug}`} data-motion="rise" data-motion-delay={index * 120}>
+              <span>
+                <b>{s.title}</b>
+                {s.slug === "web" && <small>الأكثر طلبًا</small>}
+                {s.slug === "erp" && <small>لأعمال أكثر كفاءة</small>}
+                <small>{s.desc}</small>
+              </span>
+              <span>اكتشف الخدمة</span>
+            </Link>
           ))}
         </div>
         <div className="mt-12 grid lg:grid-cols-[0.9fr_1.1fr] gap-8 items-start">
