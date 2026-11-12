@@ -76,14 +76,14 @@
   background: var(--color-card-soft);
   transition: background 220ms ease, color 220ms ease;
 }
-.service-card-featured { background: var(--color-brand); color: #f4f1ea; border-color: var(--color-brand); }
+.service-card-featured { background: var(--color-brand); color: #F6F3EC; border-color: var(--color-brand); }
 .service-card-featured .service-card-icon {
   background: rgb(255 255 255 / 7%);
   border-color: rgb(255 255 255 / 15%);
   color: var(--color-gold);
 }
 .service-card-featured > p,
-.service-card-featured li { color: #d9d3e6; }
+.service-card-featured li { color: #E6E0D4; }
 .service-card-featured .service-card-badge {
   color: var(--color-gold);
   border-color: rgb(255 191 8 / 25%);
@@ -108,7 +108,7 @@
   box-shadow: var(--shadow-card);
 }
 .testimonial-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.testimonial-heading > .ui-icon { color: var(--color-violet-mid); }
+.testimonial-heading > .ui-icon { color: var(--color-ink); }
 .testimonial-heading span {
   font-size: var(--text-2xs);
   font-weight: 600;
