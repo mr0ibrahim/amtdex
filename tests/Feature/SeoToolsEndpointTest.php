@@ -1,5 +1,9 @@
 <?php
 
+beforeEach(function () {
+    $this->asDashboard();
+});
+
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 

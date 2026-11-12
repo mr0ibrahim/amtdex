@@ -19,18 +19,18 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
 
     // ── Public Endpoints ──
-    Route::post('/contact', [LeadController::class, 'storeContact'])->middleware('throttle:10,1');
-    Route::post('/quotes', [LeadController::class, 'storeQuote'])->middleware('throttle:10,1');
+    Route::post('/contact', [LeadController::class, 'storeContact'])->middleware(['throttle:10,1', 'page.published:/contact']);
+    Route::post('/quotes', [LeadController::class, 'storeQuote'])->middleware(['throttle:10,1', 'page.published:/quote']);
     Route::post('/newsletter', [NewsletterController::class, 'store'])->middleware('throttle:10,1');
 
-    Route::get('/services', [ContentController::class, 'services']);
-    Route::get('/services/{slug}', [ContentController::class, 'service']);
-    Route::get('/projects', [ContentController::class, 'projects']);
-    Route::get('/projects/{slug}', [ContentController::class, 'project']);
-    Route::get('/pricing', [ContentController::class, 'pricing']);
-    Route::get('/testimonials', [ContentController::class, 'testimonials']);
-    Route::get('/faqs', [ContentController::class, 'faqs']);
-    Route::get('/team', [ContentController::class, 'team']);
+    Route::get('/services', [ContentController::class, 'services'])->middleware('page.published:/services');
+    Route::get('/services/{slug}', [ContentController::class, 'service'])->middleware('page.published:/services');
+    Route::get('/projects', [ContentController::class, 'projects'])->middleware('page.published:/portfolio');
+    Route::get('/projects/{slug}', [ContentController::class, 'project'])->middleware('page.published:/portfolio');
+    Route::get('/pricing', [ContentController::class, 'pricing'])->middleware('page.published:/pricing');
+    Route::get('/testimonials', [ContentController::class, 'testimonials'])->middleware('page.published:/about');
+    Route::get('/faqs', [ContentController::class, 'faqs'])->middleware('page.published:/about');
+    Route::get('/team', [ContentController::class, 'team'])->middleware('page.published:/about');
     Route::get('/clients', [ContentController::class, 'clients']);
     Route::get('/settings/public', [SettingsController::class, 'get']);
     Route::get('/cms', [\App\Http\Controllers\Api\V1\CmsController::class, 'show']);
@@ -38,6 +38,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/system/diagnose', [SystemDiagnosticsController::class, 'diagnose']);
 
     // ── Public Blog Endpoints ──
+    Route::middleware('page.published:/blog')->group(function () {
     Route::get('/blog/posts', [PublicBlogController::class, 'posts']);
     Route::get('/blog/posts/{slug}', [PublicBlogController::class, 'post']);
     Route::get('/blog/categories', [PublicBlogController::class, 'categories']);
@@ -48,7 +49,9 @@ Route::prefix('v1')->group(function () {
     Route::post('/blog/posts/{slug}/comments', [PublicBlogController::class, 'storeComment'])->middleware('throttle:5,1');
     Route::get('/blog/feed', [PublicBlogController::class, 'feed']);
     Route::get('/blog/sitemap.xml', [PublicBlogController::class, 'sitemap']);
+    });
 
+    Route::domain(config('amtdex.dashboard_domain'))->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
     // ── Protected Endpoints (Auth: Sanctum) ──
@@ -157,5 +160,6 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/admin/blog/settings', [AdminBlogController::class, 'getSettings'])->middleware('role:admin');
         Route::put('/admin/blog/settings', [AdminBlogController::class, 'updateSettings'])->middleware('role:admin');
+    });
     });
 });

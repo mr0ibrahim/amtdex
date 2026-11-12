@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react"
-import { Link } from "react-router-dom"
+import { PublicLink as Link } from "@/cms/PublicLink"
 import { Icon } from "@/components/ui/Icon"
 import { Marquee } from "@/components/ui/Marquee"
 import { Testimonials } from "./Testimonials"

@@ -26,6 +26,9 @@ Route::get('/{key}.txt', [BlogSeoController::class, 'indexNowKey'])
 
 // 301 Permanent Redirect: /blog and /blog/* on main domain -> Subdomain
 Route::get('/blog/{path?}', function (?string $path = null) {
+    if (! \App\Support\PageVisibility::isPublished('/blog')) {
+        return response()->view('app', [], 404);
+    }
     $host = request()->getHost();
     $subdomain = env('BLOG_SUBDOMAIN', 'blog.amtdex.com');
     if (str_starts_with($host, 'blog.')) {
@@ -43,31 +46,57 @@ Route::get('/google-site-verification.html', function () {
     return response(file_get_contents($path), 200, ['Content-Type' => 'text/html; charset=UTF-8']);
 });
 
-// Dashboard HTML is not public. Auth + role run before the SPA shell is sent.
-Route::middleware('dashboard.access')->get('/dashboard/{path?}', function () {
-    return view('app');
-})->where('path', '.*');
+$dashboardDomain = config('amtdex.dashboard_domain');
 
-$spaExclude = '^(?!(api|sanctum|storage|build|hot|_debugbar|feed|robots\.txt|sitemap\.xml|sitemap-blog\.xml|sitemaps/|dashboard)).*$';
+// Dashboard and login exist only on the dashboard host. The public host 404s
+// instead of redirecting, so the paths are not advertised.
+Route::domain($dashboardDomain)->group(function () {
+    Route::middleware('dashboard.access')->get('/dashboard/{path?}', function () {
+        return view('app');
+    })->where('path', '.*');
+    Route::get('/login', fn () => view('app'));
+    Route::get('/403', fn () => view('app'));
+});
+
+Route::get('/dashboard/{path?}', fn () => abort(404))->where('path', '.*');
+Route::get('/login', fn () => abort(404));
+Route::get('/403', fn () => view('app'));
+
+$spaExclude = '^(?!(api|sanctum|storage|build|hot|_debugbar|feed|robots\.txt|sitemap\.xml|sitemap-blog\.xml|sitemaps/|dashboard|login)).*$';
 
 // Subdomain redirection for non-blog routes & SPA fallback
 Route::get('/{any?}', function (?string $any = null) {
     $host = request()->getHost();
 
+    if (\App\Support\DashboardHost::matches(request())) {
+        abort(404);
+    }
+
+    $path = '/'.ltrim($any ?? '', '/');
+
     // If request arrives at the blog subdomain
     if (str_starts_with($host, 'blog.')) {
-        $path = ltrim($any ?? '', '/');
+        $bare = ltrim($any ?? '', '/');
 
-        // Root or paths that belong to the blog
-        if ($path === '' || preg_match('#^(posts|categories|tags)(/|$)#', $path)) {
+        if ($bare === '' || preg_match('#^(posts|categories|tags)(/|$)#', $bare)) {
+            if (! \App\Support\PageVisibility::isPublished('/blog')) {
+                return response()->view('app', [], 404);
+            }
+
             return view('app');
         }
 
-        // Any non-blog route on blog subdomain (e.g. /about, /services, /dashboard, etc.)
-        // permanently redirects (301) to the main domain
+        if ($bare === 'dashboard' || str_starts_with($bare, 'dashboard/') || $bare === 'login') {
+            abort(404);
+        }
+
         $scheme = request()->getScheme();
         $mainDomain = preg_replace('/^blog\./', '', $host);
-        return redirect("{$scheme}://{$mainDomain}/{$path}", 301);
+        return redirect("{$scheme}://{$mainDomain}/{$bare}", 301);
+    }
+
+    if (! \App\Support\PageVisibility::isPublished($path)) {
+        return response()->view('app', [], 404);
     }
 
     return view('app');

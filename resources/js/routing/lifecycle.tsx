@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useLocation, useNavigationType } from "react-router-dom"
+import { applyVisibility, pageIsListed } from "@/cms/visibility"
 
 const scrollKey = (path: string) => `amtdex-scroll:${path}`
 
@@ -30,6 +31,8 @@ const preloads: Record<string, () => Promise<unknown>> = {
 
 export function prefetchRoute(path: string) {
   const key = path.split("?")[0].split("#")[0]
+  if (key === "/login" || key === "/dashboard" || key.startsWith("/dashboard/")) return
+  if (!pageIsListed(applyVisibility().pages, key, false)) return
   const exact = preloads[key]
   if (exact) {
     void exact()

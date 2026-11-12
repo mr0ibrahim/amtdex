@@ -1,5 +1,5 @@
 import { Icon, type IconName } from "@/components/ui/Icon"
-import { Link } from "react-router-dom"
+import { PublicLink as Link } from "@/cms/PublicLink"
 
 export function WorkflowSection() {
   return (

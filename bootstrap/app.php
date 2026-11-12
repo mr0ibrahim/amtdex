@@ -23,7 +23,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureUserRole::class,
             'dashboard.access' => \App\Http\Middleware\EnsureDashboardAccess::class,
+            'page.published' => \App\Http\Middleware\EnsurePublishedPage::class,
         ]);
+
+        $middleware->prependToGroup('web', \App\Http\Middleware\ConfigureDashboardSession::class);
+        $middleware->prependToGroup('api', \App\Http\Middleware\ConfigureDashboardSession::class);
+        $middleware->appendToGroup('web', \App\Http\Middleware\TagDashboardRobots::class);
+        $middleware->appendToGroup('api', \App\Http\Middleware\TagDashboardRobots::class);
 
         $middleware->web(append: [
             AddLinkHeadersForPreloadedAssets::class,

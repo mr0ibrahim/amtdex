@@ -69,9 +69,16 @@ describe("routing", () => {
     expect(await screen.findByRole("heading", { name: /اطلب عرض سعر/ })).toBeInTheDocument()
   })
 
-  it("لوحة التحكم /dashboard — محمية (تحويل لتسجيل الدخول)", async () => {
+  it("لوحة التحكم على الموقع العام تعيد 404 بلا رابط دخول", async () => {
+    window.__AMTDEX_CONFIG__ = { isDashboardHost: false, host: "127.0.0.1" }
     renderAt("/dashboard")
-    // بعد S1 اللوحة محمية — غير المسجل يُحول لـ /login
+    expect(await screen.findByText(/404/)).toBeInTheDocument()
+    expect(screen.queryByText(/تسجيل الدخول/)).not.toBeInTheDocument()
+  })
+
+  it("لوحة التحكم على نطاقها تحوّل الزائر لتسجيل الدخول", async () => {
+    window.__AMTDEX_CONFIG__ = { isDashboardHost: true, host: "admin.localhost", dashboardDomain: "admin.localhost" }
+    renderAt("/dashboard")
     expect(await screen.findByText(/تسجيل الدخول/)).toBeInTheDocument()
   })
 

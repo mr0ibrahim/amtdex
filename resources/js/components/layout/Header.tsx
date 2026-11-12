@@ -73,8 +73,11 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
   const menuRef = useRef<HTMLDivElement>(null)
   const toggleRef = useRef<HTMLButtonElement>(null)
   const onBlog = isBlogSubdomain()
-  const { nav, pages, staff } = useCms()
-  const menu = nav.filter((item) => item.visible && pageIsListed(pages, item.to, staff))
+  const { nav, pages } = useCms()
+  const menu = nav.filter((item) => item.visible && pageIsListed(pages, item.to, false))
+  const homeListed = pageIsListed(pages, "/", false)
+  const contactListed = pageIsListed(pages, "/contact", false)
+  const quoteListed = pageIsListed(pages, "/quote", false)
 
   useEffect(() => {
     if (prevPath.current !== loc.pathname) {
@@ -146,24 +149,26 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
             </div>
           </div>
 
-          {/* Desktop right — لوحة التحكم + تواصل + عرض سعر */}
           <div className="hidden lg:flex items-center gap-2.5">
-            <SiteLink to="/dashboard" className="site-nav">
-              لوحة التحكم
-            </SiteLink>
-            <SiteLink to="/contact" onIntent={() => prefetchRoute("/contact")} className="site-nav">
-              تواصل معنا
-            </SiteLink>
-            <SiteLink to="/quote" className="btn btn-ink brand-cta">
-              اطلب عرض سعر
-            </SiteLink>
+            {contactListed && (
+              <SiteLink to="/contact" onIntent={() => prefetchRoute("/contact")} className="site-nav">
+                تواصل معنا
+              </SiteLink>
+            )}
+            {quoteListed && (
+              <SiteLink to="/quote" className="btn btn-ink brand-cta">
+                اطلب عرض سعر
+              </SiteLink>
+            )}
           </div>
 
           {/* Mobile toggle */}
           <div className="flex lg:hidden items-center gap-2">
-            <SiteLink to="/quote" className="btn btn-ink min-h-9 px-3 text-[12px]">
-              عرض سعر
-            </SiteLink>
+            {quoteListed && (
+              <SiteLink to="/quote" className="btn btn-ink min-h-9 px-3 text-[12px]">
+                عرض سعر
+              </SiteLink>
+            )}
             <button
               ref={toggleRef}
               onClick={() => setOpen((v) => !v)}
@@ -185,7 +190,9 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
                 <Icon name="close" size={18} />
               </button>
             </div>
-            <SiteNavLink to="/" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>الرئيسية</SiteNavLink>
+            {homeListed && (
+              <SiteNavLink to="/" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>الرئيسية</SiteNavLink>
+            )}
             {menu.map((item) => (
               item.id === "blog" && !onBlog ? (
                 <a key={item.id} href={getBlogUrl("/")} onClick={() => setOpen(false)}>{item.label}</a>
@@ -195,8 +202,6 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
                 </SiteNavLink>
               )
             ))}
-            <SiteNavLink to="/dashboard" onClick={() => setOpen(false)} className={({ isActive }) => isActive ? "is-on" : ""}>لوحة التحكم</SiteNavLink>
-            <SiteLink to="/login" onClick={() => setOpen(false)}>تسجيل الدخول</SiteLink>
           </div>
         )}
       </header>

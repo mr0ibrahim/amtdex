@@ -24,6 +24,7 @@ class ApiEndpointsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->asDashboard();
 
         $this->admin = User::create([
             'name' => 'أحمد الغامدي',

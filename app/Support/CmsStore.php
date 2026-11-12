@@ -50,6 +50,7 @@ class CmsStore
             ['value' => json_encode($merged, JSON_UNESCAPED_UNICODE)]
         );
         Cache::forget('cms.full');
+        Cache::forget('cms.bootstrap');
 
         return $merged;
     }

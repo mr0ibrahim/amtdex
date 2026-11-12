@@ -6,17 +6,17 @@ import { pageIsListed, useCms, useCopy } from "@/cms/useCms"
 
 export function Footer({ onToast }: { onToast: (m: string) => void }) {
   const onBlog = isBlogSubdomain()
-  const { pages, staff } = useCms()
+  const { pages } = useCms()
   const blurb = useCopy("footer.blurb", "حلول برمجية متكاملة — من الفكرة للكود للإطلاق. نبني مواقع، تطبيقات، وأنظمة أعمال بمعايير عالمية.")
   const city = useCopy("footer.city", "صنعاء — الجمهورية اليمنية")
-  const shown = (path: string) => pageIsListed(pages, path, staff)
+  const shown = (path: string) => pageIsListed(pages, path, false)
   const { data: apiServices } = useServicesQuery()
   const services = (apiServices && apiServices.length > 0) ? apiServices : SEED_SERVICES
 
   const columns = [
     {
       title: "الخدمات",
-      links: services.map((s) => ({ label: s.title, to: `/services/${s.slug}` })),
+      links: shown("/services") ? services.map((s) => ({ label: s.title, to: `/services/${s.slug}` })) : [],
     },
     {
       title: "الشركة",
@@ -25,8 +25,7 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
         { label: "الأعمال", to: "/portfolio" },
         { label: "الأسعار", to: "/pricing" },
         { label: "تواصل", to: "/contact" },
-        { label: "لوحة التحكم", to: "/dashboard" },
-      ].filter((link) => link.to === "/dashboard" || shown(link.to)),
+      ].filter((link) => shown(link.to)),
     },
     {
       title: "الموارد",

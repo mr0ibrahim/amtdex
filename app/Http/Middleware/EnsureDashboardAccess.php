@@ -31,13 +31,8 @@ class EnsureDashboardAccess
 
     public function handle(Request $request, Closure $next): Response
     {
-        $host = $request->getHost();
-        if (str_starts_with($host, 'blog.')) {
-            $scheme = $request->getScheme();
-            $main = preg_replace('/^blog\./', '', $host);
-            $path = ltrim($request->path(), '/');
-
-            return redirect("{$scheme}://{$main}/{$path}", 301);
+        if (str_starts_with($request->getHost(), 'blog.')) {
+            abort(404);
         }
 
         $user = $request->user();
