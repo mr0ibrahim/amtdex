@@ -26,42 +26,42 @@ describe("routing", () => {
     const { container } = renderAt("/")
     // بعد R1 الهيرو مجزأ على spans، نتحقق من الـ h1 مباشرةً بدل findByText
     await screen.findByRole("heading", { level: 1 }, { timeout: 5000 })
-    expect(container.querySelector("h1")?.textContent).toMatch(/نحوّل أفكارك/)
+    expect(container.querySelector("h1")?.textContent).toMatch(/هندسة الفكرة/)
   })
 
   it("الخدمات /services تعرض العنوان", async () => {
     renderAt("/services")
-    expect(await screen.findByText(/كل ما تحتاجه لبناء/)).toBeInTheDocument()
+    expect(await screen.findByText(/تصميم وبرمجة وحلول رقمية/)).toBeInTheDocument()
   })
 
   it("تفاصيل خدمة /services/web تعرض العنوان", async () => {
     renderAt("/services/web")
-    expect(await screen.findByRole("heading", { name: "تطوير المواقع" })).toBeInTheDocument()
+    expect(await screen.findByRole("heading", { name: "تصميم وبرمجة المواقع الإلكترونية" })).toBeInTheDocument()
   })
 
-  it("الأعمال /portfolio تعرض العنوان", async () => {
+  it("الأعمال /portfolio غير منشورة", async () => {
     renderAt("/portfolio")
-    expect(await screen.findByText(/نصنع منتجات/)).toBeInTheDocument()
+    expect(await screen.findByText(/404/)).toBeInTheDocument()
   })
 
-  it("تفاصيل مشروع /portfolio/noon-replatform", async () => {
+  it("تفاصيل مشروع مخترع غير منشورة", async () => {
     renderAt("/portfolio/noon-replatform")
-    expect(await screen.findByText(/إعادة بناء منصة نون/)).toBeInTheDocument()
+    expect(await screen.findByText(/404/)).toBeInTheDocument()
   })
 
-  it("الأسعار /pricing تعرض العنوان", async () => {
+  it("الأسعار /pricing غير منشورة", async () => {
     renderAt("/pricing")
-    expect(await screen.findByText(/استثمار برمجي واضح/)).toBeInTheDocument()
+    expect(await screen.findByText(/404/)).toBeInTheDocument()
   })
 
   it("من نحن /about تعرض العنوان", async () => {
     renderAt("/about")
-    expect(await screen.findByText(/نبني برمجيات/)).toBeInTheDocument()
+    expect(await screen.findByRole("heading", { level: 1, name: /امتدكس سوفت/ })).toBeInTheDocument()
   })
 
   it("تواصل /contact تعرض النموذج", async () => {
     renderAt("/contact")
-    expect(await screen.findByText(/لنتحدث عن/)).toBeInTheDocument()
+    expect(await screen.findByText(/لنبدأ/)).toBeInTheDocument()
   })
 
   it("طلب عرض سعر /quote", async () => {

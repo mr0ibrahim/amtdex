@@ -467,9 +467,9 @@ export function useSettingsQuery() {
       } catch (err) {
         if (import.meta.env.DEV) {
           return {
-            siteName: "Amtdex",
-            email: "hello@amtdex.ye",
-            phone: "+967 7xx xxx xxx",
+            siteName: "AMTDEX SOFT",
+            email: "Info@amtdex.com",
+            phone: "+967 784 440 429",
           }
         }
         throw err

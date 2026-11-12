@@ -88,8 +88,8 @@ export function SettingsPage() {
   const handleExport = () => {
     const data = {
       siteName: settings?.siteName ?? "Amtdex",
-      email: settings?.email ?? "hello@amtdex.ye",
-      phone: settings?.phone ?? "+967 7xx xxx xxx",
+      email: settings?.email ?? "Info@amtdex.com",
+      phone: settings?.phone ?? "+967 784 440 429",
       sitemap: generateSitemap(),
       at: new Date().toISOString(),
     }

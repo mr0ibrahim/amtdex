@@ -13,7 +13,7 @@ use App\Models\BlogTag;
  */
 class BlogJsonLdBuilder
 {
-    public const DEFAULT_ORG_NAME = 'Amtdex';
+    public const DEFAULT_ORG_NAME = 'AMTDEX SOFT';
 
     public const DEFAULT_ORG_LOGO = 'https://amtdex.com/logo.png';
 
@@ -195,14 +195,21 @@ class BlogJsonLdBuilder
             '@context' => 'https://schema.org',
             '@type' => 'Organization',
             'name' => self::DEFAULT_ORG_NAME,
+            'alternateName' => 'امتدكس سوفت للبرمجيات وتقنية المعلومات والأنظمة',
             'url' => self::DEFAULT_SITE_URL,
+            'email' => 'Info@amtdex.com',
+            'telephone' => '+967784440429',
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => 'إب',
+                'addressCountry' => 'YE',
+            ],
             'logo' => [
                 '@type' => 'ImageObject',
                 'url' => self::DEFAULT_ORG_LOGO,
             ],
             'sameAs' => [
-                'https://twitter.com/amtdex',
-                'https://www.linkedin.com/company/amtdex',
+                'https://www.instagram.com/amtdex/',
             ],
         ];
     }

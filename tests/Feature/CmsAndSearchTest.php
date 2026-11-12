@@ -20,7 +20,7 @@ class CmsAndSearchTest extends TestCase
     {
         $response = $this->getJson('/api/v1/cms');
         $response->assertOk();
-        $this->assertSame('صنعاء — الجمهورية اليمنية', $response->json('copy')['footer.city']);
+        $this->assertSame('اليمن - إب', $response->json('copy')['footer.city']);
         $this->assertContains('/services', array_column($response->json('pages'), 'path'));
     }
 

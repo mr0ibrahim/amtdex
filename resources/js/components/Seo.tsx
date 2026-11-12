@@ -103,7 +103,7 @@ export function Seo({
   return (
     <Helmet>
       {/* Title & Core Metadata */}
-      <title>{title.includes("Amtdex") ? title : `${title} | Amtdex`}</title>
+      <title>{title.includes("AMTDEX") || title.includes("Amtdex") ? title : `${title} | AMTDEX SOFT`}</title>
       <meta name="description" content={desc} />
       {keywordContent ? <meta name="keywords" content={keywordContent} /> : null}
       {noindex ? null : <link rel="canonical" href={url} />}
@@ -117,7 +117,7 @@ export function Seo({
       {rssFeedUrl && <link rel="alternate" type="application/rss+xml" title="خلاصة المدونة (RSS)" href={rssFeedUrl} />}
 
       {/* Open Graph */}
-      <meta property="og:site_name" content="Amtdex" />
+      <meta property="og:site_name" content="AMTDEX SOFT" />
       <meta property="og:locale" content="ar_AR" />
       <meta property="og:type" content={ogType} />
       <meta property="og:title" content={title} />
@@ -145,8 +145,6 @@ export function Seo({
 
       {/* Twitter Cards */}
       <meta name="twitter:card" content={twitterCard} />
-      <meta name="twitter:site" content="@amtdex" />
-      <meta name="twitter:creator" content="@amtdex" />
       <meta name="twitter:title" content={twitterTitle ?? title} />
       <meta name="twitter:description" content={twitterDescription ?? desc} />
       <meta name="twitter:image" content={twitterImage ?? image} />

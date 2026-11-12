@@ -15,6 +15,7 @@ export function Testimonials() {
   }))
 
   const [index, setIndex] = useState(0)
+  if (list.length === 0) return null
   const safeIndex = index < list.length ? index : 0
   const quote = list[safeIndex] || list[0]
   const move = (direction: number) => setIndex(current => (current + direction + list.length) % list.length)

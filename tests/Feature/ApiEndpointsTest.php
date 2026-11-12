@@ -148,6 +148,15 @@ class ApiEndpointsTest extends TestCase
 
         SiteSetting::updateFromMap(['siteName' => 'Amtdex Pro']);
 
+        $doc = \App\Support\CmsStore::full();
+        foreach ($doc['pages'] as &$page) {
+            if (in_array($page['path'], ['/portfolio', '/pricing'], true)) {
+                $page['published'] = true;
+            }
+        }
+        unset($page);
+        \App\Support\CmsStore::save($doc);
+
         $this->getJson('/api/v1/services')
             ->assertStatus(200)
             ->assertJsonFragment(['slug' => 'web-test']);
@@ -326,6 +335,15 @@ class ApiEndpointsTest extends TestCase
 
     public function test_project_media_details_crud_and_soft_deletes(): void
     {
+        $doc = \App\Support\CmsStore::full();
+        foreach ($doc['pages'] as &$page) {
+            if ($page['path'] === '/portfolio') {
+                $page['published'] = true;
+            }
+        }
+        unset($page);
+        \App\Support\CmsStore::save($doc);
+
         $payload = [
             'slug' => 'test-fintech-app',
             'title' => 'تطبيق التقنية المالية',

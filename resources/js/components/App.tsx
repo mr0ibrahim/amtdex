@@ -149,7 +149,7 @@ export default function App() {
             ) : (
               <>
                 <Route element={<MarketingLayout onToast={show} />}>
-                  <Route path="/" element={<PublicPage path="/"><Seo title="الرئيسية" description="Amtdex - شركة يمنية للحلول البرمجية: مواقع، تطبيقات، ERP/CRM، ذكاء اصطناعي." /><HomePage onToast={show} /></PublicPage>} />
+                  <Route path="/" element={<PublicPage path="/"><Seo title="AMTDEX SOFT — امتدكس سوفت" description="هندسة الفكرة قبل برمجتها. من الفكرة إلى التنفيذ." /><HomePage onToast={show} /></PublicPage>} />
                   <Route path="/services" element={<PublicPage path="/services"><Seo title="الخدمات" /><ServicesPage /></PublicPage>} />
                   <Route path="/services/:slug" element={<PublicPage path="/services"><ServiceDetailPage /></PublicPage>} />
                   <Route path="/portfolio" element={<PublicPage path="/portfolio"><Seo title="اعمالنا" /><PortfolioPage /></PublicPage>} />
