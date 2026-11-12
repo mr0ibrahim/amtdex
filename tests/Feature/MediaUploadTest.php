@@ -14,6 +14,12 @@ class MediaUploadTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->asDashboard();
+    }
+
     protected function tearDown(): void
     {
         foreach (glob(public_path('uploads/media/*')) ?: [] as $file) {

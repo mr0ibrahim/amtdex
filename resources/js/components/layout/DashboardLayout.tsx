@@ -3,6 +3,7 @@ import { useDebouncedValue } from "@/routing/search"
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { Icon, type IconName } from "@/components/ui/Icon"
 import { getSession, logout } from "@/lib/auth"
+import { getMainUrl } from "@/lib/subdomain"
 
 type NavItem = { to: string; label: string; icon: IconName; end?: boolean }
 type NavGroup = { label: string; items: NavItem[] }
@@ -137,13 +138,13 @@ function SidebarContent({
           <span className="dash-status-dot" aria-hidden />
           محرك النظام متصل — جاهز للعمل
         </div>
-        <Link
-          to="/"
+        <a
+          href={getMainUrl("/")}
           onClick={onNavigate}
           className="text-[11px] text-center text-white/55 hover:text-white transition-colors"
         >
           <span className="dash-mirror" aria-hidden>←</span> العودة للموقع
-        </Link>
+        </a>
       </div>
     </>
   )
@@ -193,12 +194,12 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
               <div className="text-[13px] font-extrabold text-[var(--color-ink)] font-display tracking-tight">AMTDEX</div>
               <div className="text-[10px] text-[var(--color-text-faint)] truncate">{session?.user.name ?? "لوحة التحكم"}</div>
             </div>
-            <Link
-              to="/"
+            <a
+              href={getMainUrl("/")}
               className="text-[11px] font-bold px-3 py-2 rounded-full border border-[var(--color-border)] bg-white text-[var(--color-ink)]"
             >
               الموقع
-            </Link>
+            </a>
           </div>
 
           {isOverview ? content : <div className="dash-panel min-h-[70vh]">{content}</div>}

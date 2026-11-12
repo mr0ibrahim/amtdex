@@ -13,7 +13,7 @@ import { ForbiddenPage, ProtectedRoute } from "@/components/layout/ProtectedRout
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Seo } from "@/components/Seo"
 import { useToast } from "@/components/ui/Toast"
-import { isBlogSubdomain, getMainUrl } from "@/lib/subdomain"
+import { isBlogSubdomain, isDashboardHost, getMainUrl } from "@/lib/subdomain"
 
 const HomePage = lazy(() => import("@/pages/Home/HomePage").then((m) => ({ default: m.HomePage })))
 const ServicesPage = lazy(() => import("@/pages/Services/ServicesPage").then((m) => ({ default: m.ServicesPage })))
@@ -93,6 +93,7 @@ const ADMINS: Role[] = ["admin"]
 export default function App() {
   const { show, el } = useToast()
   const onBlogSubdomain = isBlogSubdomain()
+  const onDashboardHost = isDashboardHost()
   useRouteLifecycle()
 
   return (
@@ -102,20 +103,17 @@ export default function App() {
       <ErrorBoundary>
         <Suspense fallback={<PageLoader />}>
           <Routes>
-            {/* If on blog subdomain (e.g. blog.amtdex.com or blog.localhost) */}
             {onBlogSubdomain ? (
               <>
                 <Route element={<MarketingLayout onToast={show} />}>
-                  <Route path="/" element={<BlogHomePage />} />
-                  <Route path="/posts/:slug" element={<BlogPostPage />} />
-                  <Route path="/categories/:slug" element={<BlogCategoryPage />} />
-                  <Route path="/tags/:slug" element={<BlogTagPage />} />
+                  <Route path="/" element={<PublicPage path="/blog"><BlogHomePage /></PublicPage>} />
+                  <Route path="/posts/:slug" element={<PublicPage path="/blog"><BlogPostPage /></PublicPage>} />
+                  <Route path="/categories/:slug" element={<PublicPage path="/blog"><BlogCategoryPage /></PublicPage>} />
+                  <Route path="/tags/:slug" element={<PublicPage path="/blog"><BlogTagPage /></PublicPage>} />
                 </Route>
-
-                {/* Subdomain automatic redirects to main site for non-blog routes */}
-                <Route path="/dashboard" element={<SubdomainCrossRedirect />} />
-                <Route path="/dashboard/*" element={<SubdomainCrossRedirect />} />
-                <Route path="/login" element={<SubdomainCrossRedirect />} />
+                <Route path="/dashboard" element={<NotFoundPage />} />
+                <Route path="/dashboard/*" element={<NotFoundPage />} />
+                <Route path="/login" element={<NotFoundPage />} />
                 <Route path="/403" element={<SubdomainCrossRedirect />} />
                 <Route path="/about" element={<SubdomainCrossRedirect />} />
                 <Route path="/services" element={<SubdomainCrossRedirect />} />
@@ -125,36 +123,14 @@ export default function App() {
                 <Route path="/pricing" element={<SubdomainCrossRedirect />} />
                 <Route path="/contact" element={<SubdomainCrossRedirect />} />
                 <Route path="/quote" element={<SubdomainCrossRedirect />} />
-
                 <Route path="*" element={<BlogNotFoundPage />} />
               </>
-            ) : (
-              /* Main site domain routes */
+            ) : onDashboardHost ? (
               <>
-                <Route element={<MarketingLayout onToast={show} />}>
-                  <Route path="/" element={<PublicPage path="/"><Seo title="الرئيسية" description="Amtdex - شركة يمنية للحلول البرمجية: مواقع، تطبيقات، ERP/CRM، ذكاء اصطناعي." /><HomePage onToast={show} /></PublicPage>} />
-                  <Route path="/services" element={<PublicPage path="/services"><Seo title="الخدمات" /><ServicesPage /></PublicPage>} />
-                  <Route path="/services/:slug" element={<ServiceDetailPage />} />
-                  <Route path="/portfolio" element={<PublicPage path="/portfolio"><Seo title="اعمالنا" /><PortfolioPage /></PublicPage>} />
-                  <Route path="/portfolio/:slug" element={<PortfolioDetailPage />} />
-                  <Route path="/pricing" element={<PublicPage path="/pricing"><Seo title="الاسعار" /><PricingPage onToast={show} /></PublicPage>} />
-                  <Route path="/about" element={<PublicPage path="/about"><Seo title="من نحن" /><AboutPage /></PublicPage>} />
-                  <Route path="/contact" element={<PublicPage path="/contact"><Seo title="تواصل معنا" /><ContactPage onToast={show} /></PublicPage>} />
-                  <Route path="/quote" element={<PublicPage path="/quote"><Seo title="اطلب عرض سعر" /><QuotePage onToast={show} /></PublicPage>} />
-
-                  {/* Blog routes on main site */}
-                  <Route path="/blog" element={<PublicPage path="/blog"><BlogHomePage /></PublicPage>} />
-                  <Route path="/blog/posts/:slug" element={<BlogPostPage />} />
-                  <Route path="/blog/categories/:slug" element={<BlogCategoryPage />} />
-                  <Route path="/blog/tags/:slug" element={<BlogTagPage />} />
-                </Route>
-
                 <Route element={<AuthLayout />}>
-                  <Route path="/login" element={<><Seo title="تسجيل الدخول" noindex /><LoginPage /></>} />
-                  <Route path="/403" element={<><Seo title="غير مصرح" noindex /><ForbiddenPage /></>} />
+                  <Route path="/login" element={<><Seo title="تسجيل الدخول" noindex nofollow /><LoginPage /></>} />
+                  <Route path="/403" element={<><Seo title="غير مصرح" noindex nofollow /><ForbiddenPage /></>} />
                 </Route>
-
-                {/* Unified Central Dashboard */}
                 <Route path="/dashboard" element={<DashboardFrame roles={STAFF}><OverviewPage onToast={show} /></DashboardFrame>} />
                 <Route path="/dashboard/overview" element={<DashboardFrame roles={STAFF}><OverviewPage onToast={show} /></DashboardFrame>} />
                 <Route path="/dashboard/blog" element={<DashboardFrame roles={WRITERS}><DashboardBlogPage onToast={show} /></DashboardFrame>} />
@@ -166,7 +142,30 @@ export default function App() {
                 <Route path="/dashboard/settings" element={<DashboardFrame roles={ADMINS}><SettingsPage /></DashboardFrame>} />
                 <Route path="/dashboard/users" element={<DashboardFrame roles={ADMINS}><UsersPage /></DashboardFrame>} />
                 <Route path="/dashboard/audit" element={<DashboardFrame roles={ADMINS}><AuditPage /></DashboardFrame>} />
-                <Route path="/dashboard/legacy" element={<><Seo title="لوحة التحكم قديم" noindex /><ProtectedRoute roles={ADMINS}><DashboardPageOld onToast={show} /></ProtectedRoute></>} />
+                <Route path="/dashboard/legacy" element={<><Seo title="لوحة التحكم قديم" noindex nofollow /><ProtectedRoute roles={ADMINS}><DashboardPageOld onToast={show} /></ProtectedRoute></>} />
+                <Route path="*" element={<NotFoundPage />} />
+              </>
+            ) : (
+              <>
+                <Route element={<MarketingLayout onToast={show} />}>
+                  <Route path="/" element={<PublicPage path="/"><Seo title="الرئيسية" description="Amtdex - شركة يمنية للحلول البرمجية: مواقع، تطبيقات، ERP/CRM، ذكاء اصطناعي." /><HomePage onToast={show} /></PublicPage>} />
+                  <Route path="/services" element={<PublicPage path="/services"><Seo title="الخدمات" /><ServicesPage /></PublicPage>} />
+                  <Route path="/services/:slug" element={<PublicPage path="/services"><ServiceDetailPage /></PublicPage>} />
+                  <Route path="/portfolio" element={<PublicPage path="/portfolio"><Seo title="اعمالنا" /><PortfolioPage /></PublicPage>} />
+                  <Route path="/portfolio/:slug" element={<PublicPage path="/portfolio"><PortfolioDetailPage /></PublicPage>} />
+                  <Route path="/pricing" element={<PublicPage path="/pricing"><Seo title="الاسعار" /><PricingPage onToast={show} /></PublicPage>} />
+                  <Route path="/about" element={<PublicPage path="/about"><Seo title="من نحن" /><AboutPage /></PublicPage>} />
+                  <Route path="/contact" element={<PublicPage path="/contact"><Seo title="تواصل معنا" /><ContactPage onToast={show} /></PublicPage>} />
+                  <Route path="/quote" element={<PublicPage path="/quote"><Seo title="اطلب عرض سعر" /><QuotePage onToast={show} /></PublicPage>} />
+                  <Route path="/blog" element={<PublicPage path="/blog"><BlogHomePage /></PublicPage>} />
+                  <Route path="/blog/posts/:slug" element={<PublicPage path="/blog"><BlogPostPage /></PublicPage>} />
+                  <Route path="/blog/categories/:slug" element={<PublicPage path="/blog"><BlogCategoryPage /></PublicPage>} />
+                  <Route path="/blog/tags/:slug" element={<PublicPage path="/blog"><BlogTagPage /></PublicPage>} />
+                </Route>
+                <Route path="/403" element={<><Seo title="غير مصرح" noindex /><ForbiddenPage /></>} />
+                <Route path="/login" element={<NotFoundPage />} />
+                <Route path="/dashboard" element={<NotFoundPage />} />
+                <Route path="/dashboard/*" element={<NotFoundPage />} />
                 <Route path="*" element={<NotFoundPage />} />
               </>
             )}

@@ -1,6 +1,7 @@
 import { useState } from "react"
-import { useNavigate, Link, useSearchParams } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { login } from "@/lib/auth"
+import { getMainUrl } from "@/lib/subdomain"
 import { z } from "zod"
 
 const schema = z.object({
@@ -62,7 +63,7 @@ export function LoginPage() {
           <code className="bg-[var(--color-card-soft)] px-1.5 py-0.5 rounded">editor</code>
           <code className="bg-[var(--color-card-soft)] px-1.5 py-0.5 rounded">viewer</code>
         </div>
-        <Link to="/" className="mt-4 block text-center text-[12px] text-[var(--color-text-muted)] hover:text-[var(--color-ink)]">← العودة للرئيسية</Link>
+        <a href={getMainUrl("/")} className="mt-4 block text-center text-[12px] text-[var(--color-text-muted)] hover:text-[var(--color-ink)]">← العودة للرئيسية</a>
       </form>
     </div>
   )

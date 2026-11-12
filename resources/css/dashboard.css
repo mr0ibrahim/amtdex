@@ -852,6 +852,33 @@
   font-family: inherit;
   line-height: 1.6;
 }
+.site-manager { max-width: 100%; }
+.site-acc { border: 1px solid var(--color-border); border-radius: 16px; padding: 8px 12px; background: var(--color-surface); }
+.site-acc summary { display: flex; align-items: center; min-height: 44px; cursor: pointer; }
+.site-acc summary::-webkit-details-marker { display: none; }
+.site-manager .dash-tab,
+.site-manager .site-toggle,
+.site-savebar .btn { min-height: 44px; min-width: 44px; }
+.site-manager input,
+.site-manager textarea { width: 100%; max-width: 100%; min-height: 44px; }
+.site-savebar {
+  position: sticky;
+  bottom: 0;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-inline: -12px;
+  padding: 12px;
+  background: #FBFAF6;
+  border-top: 1px solid #DDD6C8;
+}
+@media (min-width: 1024px) {
+  .site-acc summary { pointer-events: none; }
+}
+
 .dash-empty {
   padding: 28px 20px;
   text-align: center;

@@ -106,7 +106,7 @@ export function Seo({
       <title>{title.includes("Amtdex") ? title : `${title} | Amtdex`}</title>
       <meta name="description" content={desc} />
       {keywordContent ? <meta name="keywords" content={keywordContent} /> : null}
-      <link rel="canonical" href={url} />
+      {noindex ? null : <link rel="canonical" href={url} />}
       <meta name="robots" content={robots} />
       {googleVerification && <meta name="google-site-verification" content={googleVerification} />}
 
@@ -122,7 +122,7 @@ export function Seo({
       <meta property="og:type" content={ogType} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={desc} />
-      <meta property="og:url" content={url} />
+      {noindex ? null : <meta property="og:url" content={url} />}
       <meta property="og:image" content={image} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />

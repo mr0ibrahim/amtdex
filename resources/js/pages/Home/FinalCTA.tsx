@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { PublicLink as Link } from "@/cms/PublicLink"
 
 export function FinalCTA(_props: { onToast?: (m: string) => void }) {
   void _props

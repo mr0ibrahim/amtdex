@@ -45,8 +45,21 @@ class BlogSitemapBuilder
             if (! str_contains($body, 'Sitemap:')) {
                 $body .= "\n\nSitemap: {$sitemap}\nSitemap: {$blogSitemap}";
             }
+            foreach (\App\Support\PageVisibility::flags() as $path => $published) {
+                if (! $published && $path !== '/' && ! str_contains($body, 'Disallow: '.$path)) {
+                    $body .= "\nDisallow: {$path}";
+                }
+            }
 
             return $body."\n";
+        }
+
+        $hidden = '';
+        foreach (\App\Support\PageVisibility::flags() as $path => $published) {
+            if ($published || $path === '/') {
+                continue;
+            }
+            $hidden .= "Disallow: {$path}\n";
         }
 
         return <<<TXT
@@ -58,7 +71,7 @@ Disallow: /login
 Disallow: /403
 Disallow: /api/
 Disallow: /sanctum/
-
+{$hidden}
 # Primary combined urlset (submit this exact URL in Search Console)
 Sitemap: {$sitemap}
 
@@ -197,25 +210,31 @@ TXT;
         $urls = self::marketingPageUrls();
 
         $blog = self::blogBaseUrl();
-        foreach (BlogPost::published()->orderBy('id')->pluck('slug') as $slug) {
-            $urls[] = "{$blog}/posts/{$slug}";
-        }
-        foreach (BlogCategory::visible()->orderBy('id')->pluck('slug') as $slug) {
-            $urls[] = "{$blog}/categories/{$slug}";
-        }
-        foreach (BlogTag::query()->orderBy('id')->pluck('slug') as $slug) {
-            $urls[] = "{$blog}/tags/{$slug}";
+        if (\App\Support\PageVisibility::isPublished('/blog')) {
+            foreach (BlogPost::published()->orderBy('id')->pluck('slug') as $slug) {
+                $urls[] = "{$blog}/posts/{$slug}";
+            }
+            foreach (BlogCategory::visible()->orderBy('id')->pluck('slug') as $slug) {
+                $urls[] = "{$blog}/categories/{$slug}";
+            }
+            foreach (BlogTag::query()->orderBy('id')->pluck('slug') as $slug) {
+                $urls[] = "{$blog}/tags/{$slug}";
+            }
         }
 
         try {
-            foreach (Service::query()->where('is_published', true)->orderBy('id')->pluck('slug') as $slug) {
-                if ($slug) {
-                    $urls[] = self::siteBaseUrl().'/services/'.$slug;
+            if (\App\Support\PageVisibility::isPublished('/services')) {
+                foreach (Service::query()->where('is_published', true)->orderBy('id')->pluck('slug') as $slug) {
+                    if ($slug) {
+                        $urls[] = self::siteBaseUrl().'/services/'.$slug;
+                    }
                 }
             }
-            foreach (Project::query()->where('is_published', true)->orderBy('id')->pluck('slug') as $slug) {
-                if ($slug) {
-                    $urls[] = self::siteBaseUrl().'/portfolio/'.$slug;
+            if (\App\Support\PageVisibility::isPublished('/portfolio')) {
+                foreach (Project::query()->where('is_published', true)->orderBy('id')->pluck('slug') as $slug) {
+                    if ($slug) {
+                        $urls[] = self::siteBaseUrl().'/portfolio/'.$slug;
+                    }
                 }
             }
         } catch (\Throwable) {
@@ -225,7 +244,7 @@ TXT;
         try {
             foreach (SeoMetadata::query()->where('noindex', false)->pluck('path') as $path) {
                 $path = '/'.ltrim((string) $path, '/');
-                if ($path === '/' || $path === '') {
+                if ($path === '/' || $path === '' || ! \App\Support\PageVisibility::isPublished($path)) {
                     continue;
                 }
                 $urls[] = self::siteBaseUrl().rtrim($path, '/');

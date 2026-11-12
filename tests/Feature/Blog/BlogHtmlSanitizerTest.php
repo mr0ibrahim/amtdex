@@ -1,5 +1,9 @@
 <?php
 
+beforeEach(function () {
+    $this->asDashboard();
+});
+
 use App\Models\BlogPost;
 use App\Models\User;
 use App\Services\Blog\BlogCssSanitizer;

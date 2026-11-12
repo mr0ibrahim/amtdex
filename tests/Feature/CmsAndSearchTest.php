@@ -39,7 +39,8 @@ class CmsAndSearchTest extends TestCase
                 $page['published'] = false;
             }
         }
-        $this->putJson('/api/v1/cms', $doc)->assertOk();
+        $this->asDashboard()->putJson('/api/v1/cms', $doc)->assertOk();
+        $this->onDashboard = false;
         $this->assertNotContains('/pricing', CmsStore::publishedPaths());
         $this->getJson('/api/v1/cms')->assertJsonMissing(['path' => '/pricing']);
         $this->assertTrue(AuditLog::query()->where('action', 'تحديث محتوى الموقع')->exists());
@@ -54,7 +55,7 @@ class CmsAndSearchTest extends TestCase
             'role' => 'viewer',
         ]);
         Sanctum::actingAs($viewer);
-        $this->putJson('/api/v1/cms', CmsStore::full())->assertForbidden();
+        $this->asDashboard()->putJson('/api/v1/cms', CmsStore::full())->assertForbidden();
     }
 
     public function test_arabic_search_matches_normalized_title(): void

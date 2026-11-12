@@ -2,6 +2,23 @@ import { useState } from "react"
 import { CMS_DEFAULTS, type CmsDocument } from "@/cms/defaults"
 import { useCms, useSaveCms } from "@/cms/useCms"
 
+const FIELD_LABELS: Record<string, string> = {
+  kicker: "السطر التعريفي",
+  title: "العنوان",
+  lede: "المقدمة",
+  cta: "زر الإجراء",
+  cta2: "الزر الثاني",
+  proof: "سطر الثقة",
+  label: "النص",
+  link: "نص الرابط",
+  "footer.blurb": "نبذة التذييل",
+  "footer.city": "المدينة",
+}
+
+function fieldLabel(key: string) {
+  return FIELD_LABELS[key] ?? key
+}
+
 export function SiteManagerPage() {
   const remote = useCms()
   const save = useSaveCms()
@@ -10,6 +27,12 @@ export function SiteManagerPage() {
   const current = doc ?? { copy: remote.copy, pages: remote.pages, nav: remote.nav, homeSections: remote.homeSections }
 
   const update = (next: CmsDocument) => setDoc(next)
+  const prime = (index: number) => (el: HTMLDetailsElement | null) => {
+    if (!el || el.dataset.ready === "1") return
+    const narrow = window.matchMedia("(max-width: 1024px)").matches
+    el.open = !narrow || index === 0
+    el.dataset.ready = "1"
+  }
   const move = <T,>(list: T[], index: number, dir: -1 | 1) => {
     const target = index + dir
     if (target < 0 || target >= list.length) return list
@@ -19,41 +42,37 @@ export function SiteManagerPage() {
     return copy
   }
 
+  const persist = async () => {
+    setStatus("جار الحفظ...")
+    try {
+      await save(current)
+      setStatus("تم الحفظ ويظهر للزوار الآن")
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "تعذر الحفظ")
+    }
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="dash-page-title">محتوى الموقع</h1>
-          <p className="dash-page-sub">عدّل النصوص، أظهر أو أخفِ الصفحات والأقسام، وأعد ترتيب القائمة. النصوص الحالية هي القيم الافتراضية.</p>
-        </div>
-        <button
-          type="button"
-          className="btn btn-ink"
-          onClick={async () => {
-            setStatus("جار الحفظ...")
-            try {
-              await save(current)
-              setStatus("تم الحفظ ويظهر للزوار الآن")
-            } catch (error) {
-              setStatus(error instanceof Error ? error.message : "تعذر الحفظ")
-            }
-          }}
-        >
-          حفظ التغييرات
-        </button>
+    <div className="site-manager space-y-6">
+      <div>
+        <h1 className="dash-page-title">محتوى الموقع</h1>
+        <p className="dash-page-sub">عدّل النصوص، أظهر أو أخفِ الصفحات والأقسام، وأعد ترتيب القائمة. النصوص الحالية هي القيم الافتراضية.</p>
       </div>
       {status && <p role="status" className="text-[13px] text-[var(--color-text-muted)]">{status}</p>}
 
       <section className="dash-panel space-y-3">
         <h2 className="text-[16px] font-bold">أقسام الصفحة الرئيسية</h2>
         {current.homeSections.map((section, index) => (
-          <article key={section.id} className="border border-[var(--color-border)] rounded-2xl p-3 space-y-2">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+          <details key={section.id} className="site-acc" ref={prime(index)}>
+            <summary>
               <strong>{section.label}</strong>
+            </summary>
+            <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
               <div className="flex gap-2">
                 <button type="button" className="dash-tab" onClick={() => update({ ...current, homeSections: move(current.homeSections, index, -1) })}>أعلى</button>
                 <button type="button" className="dash-tab" onClick={() => update({ ...current, homeSections: move(current.homeSections, index, 1) })}>أسفل</button>
-                <label className="text-[12px] font-bold">
+                <label className="site-toggle text-[12px] font-bold">
                   <input
                     type="checkbox"
                     checked={section.visible}
@@ -68,7 +87,7 @@ export function SiteManagerPage() {
             </div>
             {Object.entries(section.fields).map(([key, value]) => (
               <label key={key} className="block text-[12px] font-bold">
-                {key}
+                {fieldLabel(key)}
                 <textarea
                   className="mt-1 w-full min-h-16 rounded-xl border border-[var(--color-border)] px-3 py-2 font-medium"
                   value={value}
@@ -93,7 +112,8 @@ export function SiteManagerPage() {
                 }}
               />
             </label>
-          </article>
+            </div>
+          </details>
         ))}
       </section>
 
@@ -145,11 +165,15 @@ export function SiteManagerPage() {
         <h2 className="text-[16px] font-bold">نصوص التذييل</h2>
         {Object.entries(current.copy).map(([key, value]) => (
           <label key={key} className="block text-[12px] font-bold">
-            {key}
+            {fieldLabel(key)}
             <textarea className="mt-1 w-full rounded-xl border border-[var(--color-border)] px-3 py-2 font-medium" value={value} onChange={(e) => update({ ...current, copy: { ...current.copy, [key]: e.target.value } })} />
           </label>
         ))}
       </section>
+      <div className="site-savebar">
+        <button type="button" className="btn btn-ink" onClick={persist}>حفظ التغييرات</button>
+        {status && <span className="text-[13px]">{status}</span>}
+      </div>
     </div>
   )
 }

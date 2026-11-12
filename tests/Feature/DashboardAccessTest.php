@@ -23,6 +23,7 @@ class DashboardAccessTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->asDashboard();
 
         $password = Hash::make('Amtdex2026!');
         $this->admin = User::create(['name' => 'أحمد الغامدي', 'email' => 'admin@amtdex.ye', 'password' => $password, 'role' => 'admin']);
