@@ -21,13 +21,13 @@
 @media (min-width: 1280px) { .screen-gallery-heading { max-width: 1440px; } }
 @media (max-width: 767px) {
   .screen-gallery { padding-block: 40px 28px; }
-  .screen-gallery-heading { padding-inline: 16px; }
-  .screen-gallery-window { margin-top: 20px; padding-block: 26px; perspective: 1000px; }
-  .screen-gallery-card { width: clamp(160px, 44vw, 230px); }
-  .screen-gallery-image { border-radius: 16px; }
-  .screen-gallery-row { gap: 16px; }
-  .screen-gallery-row + .screen-gallery-row { margin-top: 22px; }
-  .screen-gallery-card figcaption { font-size: 10px; }
+  .screen-gallery-heading { padding-inline: 18px; }
+  .screen-gallery-window { margin-top: 16px; padding-block: 0; overflow-x: auto; scroll-snap-type: x mandatory; perspective: none; }
+  .screen-gallery-stage, .screen-gallery-row, .screen-gallery-row + .screen-gallery-row { transform: none !important; left: 0; width: max-content; }
+  .screen-gallery-row + .screen-gallery-row { margin-top: 12px; }
+  .screen-gallery-card { width: 78vw; scroll-snap-align: start; }
+  .screen-gallery-image { height: 460px; aspect-ratio: auto; border-radius: 22px; }
+  .screen-gallery-card figcaption { font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .screen-gallery-stage { transform: none; }

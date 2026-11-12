@@ -191,6 +191,14 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
         </div>
       </div>
 
+      <nav className="dash-bottombar lg:hidden" aria-label="اختصارات لوحة التحكم">
+        <Link to="/dashboard">الرئيسية</Link>
+        <Link to="/dashboard/blog">المدونة</Link>
+        <Link to="/dashboard/leads">الطلبات</Link>
+        <Link to="/dashboard/content">المحتوى</Link>
+        <button type="button" onClick={() => setMobileOpen(true)}>القائمة</button>
+      </nav>
+
       {mobileOpen && (
         <div className="dash-mobile-drawer lg:hidden" role="dialog" aria-modal="true" aria-label="قائمة لوحة التحكم">
           <button type="button" className="absolute inset-0 cursor-default" aria-label="إغلاق" onClick={() => setMobileOpen(false)} />

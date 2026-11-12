@@ -101,13 +101,17 @@ h1, h2, h3, .font-display {
   text-decoration: none;
   transition: transform 300ms ease-out, background-color 200ms ease, color 200ms ease;
 }
-.btn-ink { background: var(--color-ink); color: #fff; }
+.btn-ink { background: #f4f1ea; color: #16064f; }
+.bg-\[var\(--color-ink\)\] { background-color: #16064f !important; }
+.brand-motion .bg-white { background-color: #161222 !important; }
+.brand-motion :is(a, button).bg-white { background-color: #f4f1ea !important; color: #16064f !important; }
+.bg-gradient-primary { color: #16064f; }
 .btn-line {
   background: transparent;
   color: var(--color-ink);
   border: 1px solid var(--color-ink);
 }
-.btn-line:hover { background: var(--color-ink); color: #fff; }
+.btn-line:hover { background: #f4f1ea; color: #16064f; }
 .btn-gold { background: var(--color-gold); color: var(--color-ink); }
 
 .site-nav {
