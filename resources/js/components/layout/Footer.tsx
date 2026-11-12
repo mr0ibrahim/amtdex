@@ -129,9 +129,6 @@ export function Footer({ onToast }: { onToast: (m: string) => void }) {
         </div>
         <div className="mt-10 pt-6 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[var(--color-text-faint)]">
           <span>© 2026 Amtdex — جميع الحقوق محفوظة. صُنع في صنعاء.</span>
-          <span className="flex items-center gap-2">
-            واجهات أمامية جاهزة للربط مع Laravel · API READY
-          </span>
         </div>
       </div>
     </footer>

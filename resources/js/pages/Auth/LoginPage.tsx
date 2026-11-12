@@ -12,8 +12,9 @@ const schema = z.object({
 export function LoginPage() {
   const nav = useNavigate()
   const [params] = useSearchParams()
-  const [email, setEmail] = useState("admin@amtdex.ye")
-  const [password, setPassword] = useState("Amtdex2026!")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const showDemo = window.__AMTDEX_CONFIG__?.appEnv === "local" || window.__AMTDEX_CONFIG__?.appEnv === "testing"
   const [err, setErr] = useState<string | null>(null)
   const [fieldErrs, setFieldErrs] = useState<Record<string, string>>({})
 
@@ -37,13 +38,16 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-[70vh] grid place-items-center px-4 py-10 bg-[var(--color-lavender)]/40">
-      <form onSubmit={submit} noValidate className="surface-dark w-full max-w-[420px] bg-[var(--surface)] text-[var(--text)] border border-[var(--border)] rounded-[24px] p-6 sm:p-8">
+    <div className="login-shell min-h-screen grid place-items-center px-4 py-10">
+      <form onSubmit={submit} noValidate className="login-card w-full max-w-[420px] p-6 sm:p-8">
         <div className="flex items-center gap-2.5">
-          <span className="size-2.5 rounded-full bg-[var(--color-primary)]" aria-hidden />
-          <span className="font-extrabold text-[16px] text-[var(--color-ink)]">AMTDEX — تسجيل الدخول</span>
+          <span className="size-2 bg-[var(--color-gold)]" aria-hidden />
+          <span className="font-display font-semibold text-[16px] text-[var(--color-ink)]">AMTDEX — تسجيل الدخول</span>
         </div>
-        <p className="mt-2 text-[12px] text-[var(--color-text-muted)]">لوحة التحكم — تجربة Mock. جرّب: admin@amtdex.ye / Amtdex2026!</p>
+        <p className="mt-2 text-[12px] text-[var(--color-text-muted)]">ادخل إلى لوحة التحكم.</p>
+        {showDemo && (
+          <p className="mt-2 text-[12px] text-[var(--color-text-muted)]">للتجربة المحلية: admin@amtdex.ye / Amtdex2026! — الأدوار: admin، editor، viewer.</p>
+        )}
 
         {err && <div role="alert" className="mt-4 bg-[var(--danger-bg)] border border-[var(--danger)] text-[var(--danger)] text-[12px] rounded-xl px-3 py-2">{err}</div>}
 
@@ -57,12 +61,6 @@ export function LoginPage() {
 
         <button type="submit" className="btn btn-ink brand-cta mt-6 w-full">دخول</button>
 
-        <div className="mt-3 flex gap-2 text-[11px] text-[var(--color-text-faint)]">
-          <span>أدوار للتجربة:</span>
-          <code className="bg-[var(--color-card-soft)] px-1.5 py-0.5 rounded">admin</code>
-          <code className="bg-[var(--color-card-soft)] px-1.5 py-0.5 rounded">editor</code>
-          <code className="bg-[var(--color-card-soft)] px-1.5 py-0.5 rounded">viewer</code>
-        </div>
         <a href={getMainUrl("/")} className="mt-4 block text-center text-[12px] text-[var(--color-text-muted)] hover:text-[var(--color-ink)]">← العودة للرئيسية</a>
       </form>
     </div>

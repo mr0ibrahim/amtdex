@@ -2,6 +2,7 @@ export interface AmtdexRuntimeConfig {
   apiUrl?: string
   csrfToken?: string
   appName?: string
+  appEnv?: string
   basename?: string
   blogSubdomain?: string
   isBlogSubdomain?: boolean

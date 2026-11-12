@@ -128,9 +128,9 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
                     ))}
                   </div>
                 </div>
-                <p className="font-mono text-[12px] border-t border-[var(--color-border)] pt-3">
-                  await amtdex.deploy()
-                  <span className="block text-[var(--color-success)] mt-1">✓ Deployed in 1.2s — Live</span>
+                <p className="text-[12px] border-t border-[var(--color-border)] pt-3">
+                  النظام يعمل الآن
+                  <span className="block text-[var(--color-ink)] mt-1">مباشر وجاهز للاستخدام</span>
                 </p>
               </div>
             </div>
@@ -197,16 +197,15 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
         </div>
         <div className="mt-12 grid lg:grid-cols-[0.9fr_1.1fr] gap-8 items-start">
           <div data-motion="rise" className="bg-[var(--color-ink)] text-white p-7 sm:p-9">
-            <span className="text-[11px] tracking-[0.16em] text-white/60">جاهز للربط مع Laravel</span>
+            <span className="text-[11px] tracking-[0.16em] text-white/60">من الفكرة إلى الإطلاق</span>
             <h3 className="mt-4 text-[28px] font-semibold leading-tight">
-              واجهات جاهزة،
+              تجربة واضحة،
               <br />
-              بنية API نظيفة.
+              من أول زيارة.
             </h3>
             <p className="mt-4 text-[14px] leading-7 text-white/70 max-w-[36rem]">
-              كل فورم يحمل <code className="text-white">name</code> صحيح، وكل استدعاء API موثق في <code className="text-white">src/lib/api.ts</code> — بدّل الرابط واربط Laravel Sanctum مباشرة.
+              نصمم الرحلة، نبني المنتج، ونسلّمه جاهزاً لفريقك — بمظهر ثابت وأداء يخدم عملاءك.
             </p>
-            <Link to="/dashboard" className="btn btn-gold mt-8">استعرض لوحة التحكم التجريبية</Link>
           </div>
           <div data-motion="rise" data-motion-delay="160">
             <Testimonials />
@@ -253,7 +252,6 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
               <p id="home-email-err" role="alert" className="mt-2 text-[12px] text-[var(--danger)]">{err}</p>
             )}
             <button type="submit" className="btn btn-ink brand-cta mt-5">اشتراك</button>
-            <p className="mt-3 text-[11px] text-[var(--color-text-faint)]">POST /api/newsletter — جاهز للربط مع Laravel</p>
           </form>
         </div>
       </section>)}

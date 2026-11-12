@@ -94,6 +94,7 @@ export default function App() {
   const { show, el } = useToast()
   const onBlogSubdomain = isBlogSubdomain()
   const onDashboardHost = isDashboardHost()
+  const dashboardElsewhere = Boolean(window.__AMTDEX_CONFIG__?.dashboardDomain) && !onDashboardHost
   useRouteLifecycle()
 
   return (
@@ -162,10 +163,33 @@ export default function App() {
                   <Route path="/blog/categories/:slug" element={<PublicPage path="/blog"><BlogCategoryPage /></PublicPage>} />
                   <Route path="/blog/tags/:slug" element={<PublicPage path="/blog"><BlogTagPage /></PublicPage>} />
                 </Route>
-                <Route path="/403" element={<><Seo title="غير مصرح" noindex /><ForbiddenPage /></>} />
-                <Route path="/login" element={<NotFoundPage />} />
-                <Route path="/dashboard" element={<NotFoundPage />} />
-                <Route path="/dashboard/*" element={<NotFoundPage />} />
+                {dashboardElsewhere ? (
+                  <>
+                    <Route path="/403" element={<><Seo title="غير مصرح" noindex /><ForbiddenPage /></>} />
+                    <Route path="/login" element={<NotFoundPage />} />
+                    <Route path="/dashboard" element={<NotFoundPage />} />
+                    <Route path="/dashboard/*" element={<NotFoundPage />} />
+                  </>
+                ) : (
+                  <>
+                    <Route element={<AuthLayout />}>
+                      <Route path="/login" element={<><Seo title="تسجيل الدخول" noindex nofollow /><LoginPage /></>} />
+                      <Route path="/403" element={<><Seo title="غير مصرح" noindex nofollow /><ForbiddenPage /></>} />
+                    </Route>
+                    <Route path="/dashboard" element={<DashboardFrame roles={STAFF}><OverviewPage onToast={show} /></DashboardFrame>} />
+                    <Route path="/dashboard/overview" element={<DashboardFrame roles={STAFF}><OverviewPage onToast={show} /></DashboardFrame>} />
+                    <Route path="/dashboard/blog" element={<DashboardFrame roles={WRITERS}><DashboardBlogPage onToast={show} /></DashboardFrame>} />
+                    <Route path="/dashboard/content" element={<DashboardFrame roles={EDITORS}><ContentPage /></DashboardFrame>} />
+                    <Route path="/dashboard/site" element={<DashboardFrame roles={EDITORS}><SiteManagerPage /></DashboardFrame>} />
+                    <Route path="/dashboard/leads" element={<DashboardFrame roles={READERS}><LeadsPage /></DashboardFrame>} />
+                    <Route path="/dashboard/seo" element={<DashboardFrame roles={EDITORS}><SeoPage /></DashboardFrame>} />
+                    <Route path="/dashboard/media" element={<DashboardFrame roles={WRITERS}><MediaPage /></DashboardFrame>} />
+                    <Route path="/dashboard/settings" element={<DashboardFrame roles={ADMINS}><SettingsPage /></DashboardFrame>} />
+                    <Route path="/dashboard/users" element={<DashboardFrame roles={ADMINS}><UsersPage /></DashboardFrame>} />
+                    <Route path="/dashboard/audit" element={<DashboardFrame roles={ADMINS}><AuditPage /></DashboardFrame>} />
+                    <Route path="/dashboard/legacy" element={<><Seo title="لوحة التحكم قديم" noindex nofollow /><ProtectedRoute roles={ADMINS}><DashboardPageOld onToast={show} /></ProtectedRoute></>} />
+                  </>
+                )}
                 <Route path="*" element={<NotFoundPage />} />
               </>
             )}

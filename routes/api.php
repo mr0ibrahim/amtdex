@@ -51,7 +51,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/blog/sitemap.xml', [PublicBlogController::class, 'sitemap']);
     });
 
-    Route::domain(config('amtdex.dashboard_domain'))->group(function () {
+    $registerAdmin = function () {
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
     // ── Protected Endpoints (Auth: Sanctum) ──
@@ -161,5 +161,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/admin/blog/settings', [AdminBlogController::class, 'getSettings'])->middleware('role:admin');
         Route::put('/admin/blog/settings', [AdminBlogController::class, 'updateSettings'])->middleware('role:admin');
     });
-    });
+    };
+
+    if (\App\Support\DashboardHost::isolated()) {
+        Route::domain(\App\Support\DashboardHost::name())->group($registerAdmin);
+    } else {
+        $registerAdmin();
+    }
 });

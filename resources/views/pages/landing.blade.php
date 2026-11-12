@@ -269,14 +269,14 @@
                     <div data-pencil-name="cd" class="box-border w-[6px] shrink-0 h-[6px] bg-[#27C93F] rounded-[50%]"></div>
                   </div>
                   <div data-pencil-name="Code Title" class="text-[9px]/[normal] box-border text-[#9AA0AB] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]">
-                    api.ts
+                    النظام
                   </div>
                 </div>
                 <div data-pencil-name="Code Line1" class="text-[10px]/[normal] box-border text-[#FFFFFF] font-['JetBrains_Mono',system-ui,sans-serif] font-semibold text-left [white-space:nowrap]">
-                  await amtdex.deploy()
+                  النظام يعمل الآن
                 </div>
                 <div data-pencil-name="Code Line2" class="text-[9px]/[normal] box-border text-[#7DD3A0] font-['JetBrains_Mono',system-ui,sans-serif] font-normal text-left [white-space:nowrap]">
-                  ✓ Deployed in 1.2s — Live
+                  مباشر وجاهز للاستخدام
                 </div>
               </div>
             </div>

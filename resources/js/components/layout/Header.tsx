@@ -208,8 +208,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
       <header className={`site-header${entered ? " is-in" : ""}${condensed ? " is-condensed" : ""}${hidden ? " is-hidden" : ""}`}>
         <div className="site-header-stack">
         <div className="site-header-utility">
-          <span>جميع الأنظمة تعمل — 99.99% uptime</span>
-          <span className="hidden lg:inline">Amtdex — نبني حلولك البرمجية من الفكرة للإطلاق</span>
+          <span>Amtdex — نبني حلولك البرمجية من الفكرة للإطلاق</span>
         </div>
         <div className="site-header-bar">
           <span className="site-header-shimmer" aria-hidden />

@@ -12,7 +12,9 @@ class TagDashboardRobots
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
-        if (DashboardHost::matches($request)) {
+        $onDashboard = DashboardHost::matches($request)
+            || $request->is('dashboard', 'dashboard/*', 'login');
+        if ($onDashboard) {
             $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
         }
 

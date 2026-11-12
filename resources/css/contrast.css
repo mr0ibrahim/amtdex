@@ -67,21 +67,21 @@ html { color-scheme: light; }
 }
 
 .dash-shell .dash-sidebar-search {
-  background: rgb(255 255 255 / 10%);
-  border-color: rgb(255 255 255 / 22%);
+  background: #F3F0E8;
+  border-color: #DDD6C8;
 }
 .dash-shell .dash-sidebar-search input,
 .dash-shell .dash-sidebar-search input:focus,
 .dash-shell .dash-sidebar-search input:-webkit-autofill {
-  color: #F6F3EC !important;
+  color: #16064F !important;
   background-color: transparent !important;
-  -webkit-text-fill-color: #F6F3EC !important;
+  -webkit-text-fill-color: #16064F !important;
   box-shadow: none !important;
-  caret-color: #F6F3EC;
+  caret-color: #16064F;
 }
 .dash-shell .dash-sidebar-search input::placeholder {
-  color: #E6E0D4 !important;
-  -webkit-text-fill-color: #E6E0D4;
+  color: #5C5670 !important;
+  -webkit-text-fill-color: #5C5670;
   opacity: 1 !important;
 }
 

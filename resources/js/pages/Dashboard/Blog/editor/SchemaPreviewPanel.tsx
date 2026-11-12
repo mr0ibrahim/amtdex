@@ -43,7 +43,7 @@ export function SchemaPreviewPanel({
 
   return (
     <EditorSection
-      title="Schema.org (JSON-LD)"
+      title="البيانات المنظمة للمقال"
       description="معاينة البيانات المنظمة التي تُحقَن في صفحة المقال بعد النشر."
     >
       <div className="space-y-3">
@@ -61,7 +61,7 @@ export function SchemaPreviewPanel({
               </option>
             ))}
           </select>
-          <FieldHint>يُحفظ مع المقال ويحدد @type في JSON-LD (BlogPosting افتراضياً).</FieldHint>
+          <FieldHint>يُحفظ مع المقال ويظهر في نتائج البحث بعد النشر.</FieldHint>
         </div>
 
         <div className="flex flex-wrap gap-1.5">
@@ -81,7 +81,7 @@ export function SchemaPreviewPanel({
             onClick={copyJson}
             className="text-[11px] font-bold border border-[var(--color-border)] px-3 py-2 rounded-xl hover:bg-[var(--color-lavender)] transition-colors"
           >
-            {copied ? "تم النسخ" : "نسخ JSON-LD"}
+            {copied ? "تم النسخ" : "نسخ البيانات المنظمة"}
           </button>
           <a
             href={richResultsUrl}
@@ -96,13 +96,12 @@ export function SchemaPreviewPanel({
             onClick={() => setExpanded((v) => !v)}
             className="text-[11px] font-bold text-[var(--color-primary)] px-2 py-2"
           >
-            {expanded ? "إخفاء JSON" : "عرض JSON"}
+            {expanded ? "إخفاء البيانات" : "عرض البيانات"}
           </button>
         </div>
 
         <p className="text-[11px] text-[var(--color-text-muted)] leading-relaxed">
-          رابط الاختبار يستخدم الـ canonical الحالي. للمقالات غير المنشورة قد يظهر خطأ في Google حتى يصبح الرابط
-          عاماً — انسخ JSON واختبره يدوياً عند الحاجة.
+          رابط الاختبار يستخدم عنوان المقال الحالي. للمقالات غير المنشورة قد يظهر تنبيه حتى يصبح الرابط عاماً.
         </p>
 
         {expanded && (

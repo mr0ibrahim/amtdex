@@ -124,12 +124,12 @@ function SidebarContent({
           <span className="dash-user-avatar">{initial}</span>
           <div className="min-w-0 flex-1">
             <div className="text-[12px] font-bold truncate">{session?.user.name ?? "مستخدم Amtdex"}</div>
-            <div className="text-[10px] text-white/50 truncate"><bdi dir="ltr">{session?.user.role ?? "viewer"}</bdi></div>
+            <div className="text-[10px] text-[var(--color-text-muted)] truncate"><bdi dir="ltr">{session?.user.role ?? "viewer"}</bdi></div>
           </div>
           <button
             type="button"
             onClick={handleLogout}
-            className="text-[11px] font-bold px-3 py-1.5 rounded-full border border-white/15 hover:bg-white hover:text-[var(--color-ink)] transition-colors"
+            className="text-[11px] font-bold min-h-11 px-3 rounded-full border border-[var(--color-border)] hover:bg-[#16064F] hover:text-[#F6F3EC] transition-colors"
           >
             خروج
           </button>
@@ -141,7 +141,7 @@ function SidebarContent({
         <a
           href={getMainUrl("/")}
           onClick={onNavigate}
-          className="text-[11px] text-center text-white/55 hover:text-white transition-colors"
+          className="text-[11px] text-center text-[var(--color-text-muted)] hover:text-[var(--color-ink)] transition-colors"
         >
           <span className="dash-mirror" aria-hidden>←</span> العودة للموقع
         </a>
@@ -211,11 +211,11 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           <button type="button" className="absolute inset-0 cursor-default" aria-label="إغلاق" onClick={() => setMobileOpen(false)} />
           <div className="dash-mobile-drawer-panel dash-sidebar relative z-10">
             <div className="flex items-center justify-between px-2 pb-2">
-              <span className="text-[12px] font-bold text-white/70">القائمة</span>
+              <span className="text-[12px] font-bold text-[var(--color-ink)]">القائمة</span>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="size-9 grid place-items-center rounded-full border border-white/15"
+                className="size-11 grid place-items-center rounded-full border border-[var(--color-border)]"
                 aria-label="إغلاق القائمة"
               >
                 <Icon name="close" size={16} />

@@ -63,7 +63,7 @@
               <div data-pencil-name="Dot" class="box-border w-[10px] shrink-0 h-[10px] flex flex-row gap-0 justify-start items-start bg-[#0E9F6E] rounded-[999px]"></div>
             </div>
             <div data-pencil-name="Uptime" class="text-[11px]/[normal] box-border text-[#6B7280] font-['JetBrains_Mono',system-ui,sans-serif] font-semibold text-left [white-space:nowrap]">
-              99.99% جاهزية — 30 يوم
+              الخدمة تعمل بشكل طبيعي
             </div>
             <div data-pencil-name="Bar" class="box-border w-full h-[6px] shrink-0 flex flex-row gap-0 justify-start items-start bg-[#F0EDE7] rounded-[999px]">
               <div data-pencil-name="Fill" class="box-border [flex:1_1_0] h-full flex flex-row gap-0 justify-start items-start bg-[#0E9F6E] rounded-[999px]"></div>

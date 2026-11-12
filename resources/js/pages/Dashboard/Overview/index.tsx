@@ -75,7 +75,7 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
           <h1 className="mt-4 text-[28px] sm:text-[36px] font-extrabold tracking-tight leading-tight">
             {greeting}{session?.user.name ? `، ${session.user.name.split(" ")[0]}` : ""}
           </h1>
-          <p className="mt-2 text-[13px] sm:text-[14px] text-white/70 max-w-[560px] mx-auto">
+          <p className="mt-2 text-[13px] sm:text-[14px] text-[var(--color-text-muted)] max-w-[560px] mx-auto">
             أدِر المحتوى والطلبات والفريق من لوحة واحدة بمعايير شركات المنتجات الكبرى.
           </p>
 
@@ -103,14 +103,14 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
           {debouncedQuery.trim() && (
             <div id="dash-module-results" className="mt-3 text-start">
               {moduleHits.length === 0 ? (
-                <p className="text-[12px] text-white/70">لا توجد وحدات مطابقة.</p>
+                <p className="text-[12px] text-[var(--color-text-muted)]">لا توجد وحدات مطابقة.</p>
               ) : (
                 <ul className="grid gap-2">
                   {moduleHits.map((hit) => (
                     <li key={hit.to + hit.title}>
-                      <Link to={hit.to} className="block rounded-xl bg-white/10 px-3 py-2 text-[13px] font-bold text-white">
+                      <Link to={hit.to} className="block rounded-xl bg-[#F6F3EC] px-3 py-2 text-[13px] font-bold text-[var(--color-ink)]">
                         {hit.title}
-                        <span className="block text-[11px] font-medium text-white/70">{hit.desc}</span>
+                        <span className="block text-[11px] font-medium text-[var(--color-text-muted)]">{hit.desc}</span>
                       </Link>
                     </li>
                   ))}
@@ -125,8 +125,8 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
             <Link to="/dashboard/content" className="dash-pill">تحديث المحتوى</Link>
           </div>
 
-          <div className="mt-5 text-[11px] text-white/55">
-            نظرة لحظية على المشاريع والطلبات والعروض — بيانات حية من الـ API
+          <div className="mt-5 text-[11px] text-[var(--color-text-muted)]">
+            نظرة لحظية على المشاريع والطلبات والعروض
           </div>
         </div>
       </section>

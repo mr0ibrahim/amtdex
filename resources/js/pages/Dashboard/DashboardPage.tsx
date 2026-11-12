@@ -15,17 +15,13 @@ export function DashboardPage({ onToast }: { onToast: (m: string) => void }) {
     const n = `مشروع جديد #${projects.length + 1}`
     const id = nextIdRef.current++
     setProjects((p) => [{ id, name: n, client: "عميل جديد", status: "جديد", progress: 0 }, ...p])
-    onToast("تم إنشاء المشروع — واجهة تجريبية فقط")
+    onToast("تم إنشاء المشروع")
   }
 
   return (
     <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <div className="rounded-2xl bg-amber-50 border border-amber-200 px-4 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="text-[12px] leading-5">
-          <span className="font-bold">وضع المعاينة — Frontend Only:</span> هذه لوحة تحكم واجهات فقط بدون قاعدة بيانات. كل البيانات Mock وستُربط مع Laravel (Sanctum + Filament) لاحقاً.
-          <span className="block text-[11px] text-black/50 mt-1">Endpoints المقترحة: GET /api/dashboard/stats — GET /api/projects — POST /api/projects — GET /api/invoices</span>
-        </div>
-        <span className="shrink-0 text-[10px] font-bold tracking-wide bg-[var(--color-ink)] text-white rounded-full px-3 py-1">MOCK MODE</span>
+      <div className="rounded-2xl bg-[var(--color-card-soft)] border border-[var(--color-border)] px-4 py-3">
+        <p className="text-[12px] leading-6 text-[var(--color-ink)]">لوحة المتابعة السريعة للمشاريع والفواتير.</p>
       </div>
 
       <div className="mt-6 grid lg:grid-cols-[220px_1fr] gap-6 items-start">
@@ -181,7 +177,6 @@ export function DashboardPage({ onToast }: { onToast: (m: string) => void }) {
                     </tbody>
                   </table>
                 </div>
-                <div className="px-4 py-3 text-[11px] text-black/30 border-t border-black/5">GET /api/projects — مع pagination و filter?status= — جاهز للربط</div>
               </div>
             </div>
           )}
@@ -254,33 +249,18 @@ export function DashboardPage({ onToast }: { onToast: (m: string) => void }) {
                   </div>
                   <div>
                     <label htmlFor="dash-api" className="text-[12px] font-medium">
-                      رابط الـ API (Laravel)
+                      موقع الشركة
                     </label>
-                    <input id="dash-api" placeholder="https://api.amtdex.test/api" dir="ltr" className="mt-1.5 w-full bg-[var(--color-bg)] border border-black/10 rounded-xl px-4 py-3 text-[13px] outline-none placeholder:text-black/30" />
-                    <p className="text-[11px] text-black/30 mt-1">يُحفظ في VITE_API_URL — src/lib/api.ts</p>
+                    <input id="dash-api" placeholder="https://amtdex.com" dir="ltr" className="mt-1.5 w-full bg-[var(--color-bg)] border border-black/10 rounded-xl px-4 py-3 text-[13px] outline-none placeholder:text-black/30" />
                   </div>
-                  <button onClick={() => onToast("تم الحفظ — واجهة تجريبية")} className="w-fit bg-[var(--color-ink)] text-white px-6 py-2.5 rounded-full text-[13px] font-semibold hover:bg-black transition-colors">
+                  <button onClick={() => onToast("تم الحفظ")} className="w-fit bg-[var(--color-ink)] text-white px-6 py-2.5 rounded-full text-[13px] font-semibold hover:bg-black transition-colors">
                     حفظ التغييرات
                   </button>
                 </div>
               </div>
               <div className="bg-[var(--color-ink)] text-white rounded-2xl p-6">
-                <h3 className="text-[13px] font-bold">الربط مع Laravel — دليل سريع</h3>
-                <ol className="mt-3 space-y-2 text-[12px] leading-6 text-white/70 list-decimal list-inside">
-                  <li>
-                    أنشئ مشروع Laravel + Sanctum + Filament
-                  </li>
-                  <li>
-                    أنشئ endpoints: <code className="bg-white/10 px-1 py-0.5 rounded">/api/contact</code> <code className="bg-white/10 px-1 py-0.5 rounded">/api/quotes</code>{" "}
-                    <code className="bg-white/10 px-1 py-0.5 rounded">/api/projects</code>
-                  </li>
-                  <li>
-                    ضع <code className="bg-white/10 px-1 py-0.5 rounded">VITE_API_URL=https://your-api.test/api</code> في <code className="bg-white/10 px-1 py-0.5 rounded">.env</code>
-                  </li>
-                  <li>
-                    استبدل stubs في <code className="bg-white/10 px-1 py-0.5 rounded">src/lib/api.ts</code> بـ fetch حقيقي مع <code className="bg-white/10 px-1 py-0.5 rounded">Authorization: Bearer</code>
-                  </li>
-                </ol>
+                <h3 className="text-[13px] font-bold">نجهّز اللوحة معك</h3>
+                <p className="mt-3 text-[12px] leading-6 text-white/70">عند التسليم تكون المتابعة والفواتير جاهزة لفريقك، من دون أي إعداد تقني.</p>
               </div>
             </div>
           )}

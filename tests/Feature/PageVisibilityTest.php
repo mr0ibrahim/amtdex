@@ -65,6 +65,21 @@ class PageVisibilityTest extends TestCase
         $this->get('/pricing')->assertNotFound();
     }
 
+    public function test_an_empty_or_local_domain_does_not_isolate_production(): void
+    {
+        config(['amtdex.dashboard_domain' => '']);
+        $this->assertFalse(\App\Support\DashboardHost::isolated());
+
+        config(['amtdex.dashboard_domain' => 'admin.example.com']);
+        $this->assertTrue(\App\Support\DashboardHost::isolated());
+
+        $env = app()['env'];
+        app()->instance('env', 'production');
+        config(['amtdex.dashboard_domain' => 'admin.localhost']);
+        $this->assertFalse(\App\Support\DashboardHost::isolated());
+        app()->instance('env', $env);
+    }
+
     public function test_visibility_helper_treats_nested_urls_as_their_page(): void
     {
         $doc = CmsStore::full();

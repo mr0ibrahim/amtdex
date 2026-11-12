@@ -123,7 +123,7 @@ export function SiteManagerPage() {
           <article key={page.path} className="border border-[var(--color-border)] rounded-2xl p-3 grid gap-2">
             <div className="flex items-center justify-between gap-2">
               <strong>{page.label}</strong>
-              <label className="text-[12px] font-bold">
+              <label className="site-toggle text-[12px] font-bold">
                 <input
                   type="checkbox"
                   checked={page.published}
@@ -154,7 +154,7 @@ export function SiteManagerPage() {
             }} />
             <button type="button" className="dash-tab" onClick={() => update({ ...current, nav: move(current.nav, index, -1) })}>أعلى</button>
             <button type="button" className="dash-tab" onClick={() => update({ ...current, nav: move(current.nav, index, 1) })}>أسفل</button>
-            <label className="text-[12px] font-bold"><input type="checkbox" checked={item.visible} onChange={(e) => {
+            <label className="site-toggle text-[12px] font-bold"><input type="checkbox" checked={item.visible} onChange={(e) => {
               const nav = current.nav.slice(); nav[index] = { ...item, visible: e.target.checked }; update({ ...current, nav })
             }} /> ظاهر</label>
           </div>
