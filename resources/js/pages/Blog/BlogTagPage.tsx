@@ -1,9 +1,9 @@
+import { BlogArticleCard } from "./BlogArticleCard"
 import { useEffect, useTransition } from "react"
 import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { BlogAPI } from "@/lib/blogApi"
 import { Seo } from "@/components/Seo"
-import { Card } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { getBlogUrl, isBlogSubdomain } from "@/lib/subdomain"
 import type { BlogPost } from "@/types/blog"
@@ -51,7 +51,7 @@ export function BlogTagPage() {
   const schema = tagRes?.json_ld
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-subtle)] text-[var(--color-ink)]">
+    <div data-motion-group className="blog-surface min-h-screen bg-[var(--color-bg-subtle)] text-[var(--color-ink)]">
       <Seo
         title={`${tagTitle} | مدونة Amtdex`}
         description={tagDesc}
@@ -118,40 +118,7 @@ export function BlogTagPage() {
           <div className="space-y-10">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {posts.map((post: BlogPost) => (
-                <Card
-                  key={post.id}
-                  className="group overflow-hidden rounded-3xl border border-[var(--color-border)] bg-white hover:shadow-md transition-all flex flex-col"
-                >
-                  <Link
-                    to={isBlogSubdomain() ? `/posts/${post.slug}` : getBlogUrl(`/posts/${post.slug}`)}
-                    className="block aspect-video overflow-hidden bg-gray-100"
-                  >
-                    {post.cover_image ? (
-                      <img
-                        src={post.cover_image}
-                        alt={post.cover_image_alt || post.title}
-                        loading="lazy"
-                        width={640}
-                        height={360}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-[var(--color-card-soft)] text-[var(--color-primary)] font-bold">
-                        Amtdex
-                      </div>
-                    )}
-                  </Link>
-                  <div className="p-5 space-y-2">
-                    <h3 className="text-base font-bold text-[var(--color-ink)] line-clamp-2">
-                      <Link to={isBlogSubdomain() ? `/posts/${post.slug}` : getBlogUrl(`/posts/${post.slug}`)}>
-                        {post.title}
-                      </Link>
-                    </h3>
-                    {post.summary && (
-                      <p className="text-xs text-[var(--color-text-muted)] line-clamp-2">{post.summary}</p>
-                    )}
-                  </div>
-                </Card>
+                <BlogArticleCard key={post.id} post={post} />
               ))}
             </div>
 

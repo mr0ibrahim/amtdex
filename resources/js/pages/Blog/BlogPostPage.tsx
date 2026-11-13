@@ -1,3 +1,4 @@
+import { BlogArticleCard } from "./BlogArticleCard"
 import "../../../css/blog-prose.css"
 import { useEffect, useMemo, useState } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
@@ -248,7 +249,7 @@ export function BlogPostPage() {
   const postCanonical = post.canonical_url || getBlogUrl(`/posts/${post.slug}`)
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-subtle)] text-[var(--color-ink)] relative selection:bg-[var(--color-gold)] selection:text-[var(--color-ink)]">
+    <div data-motion-group className="blog-reader min-h-screen bg-[var(--color-bg-subtle)] text-[var(--color-ink)] relative selection:bg-[var(--color-gold)] selection:text-[var(--color-ink)]">
       {/* Dynamic SEO Tags */}
       <Seo
         title={`${post.meta_title || post.title} | مدونة Amtdex`}
@@ -798,55 +799,7 @@ export function BlogPostPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {relatedPosts.map((rel: BlogPost) => (
-                <Card
-                  key={rel.id}
-                  className="group overflow-hidden rounded-3xl border border-[var(--color-border)] bg-white hover:shadow-md transition-all flex flex-col justify-between"
-                >
-                  <Link
-                    to={isBlogSubdomain() ? `/posts/${rel.slug}` : getBlogUrl(`/posts/${rel.slug}`)}
-                    className="block aspect-video overflow-hidden bg-gray-100 relative"
-                  >
-                    {rel.cover_image ? (
-                      <img
-                        src={rel.cover_image}
-                        alt={rel.cover_image_alt || rel.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-[var(--color-card-soft)] text-[var(--color-primary)] font-bold text-xl">
-                        Amtdex
-                      </div>
-                    )}
-                  </Link>
-
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
-                    <div>
-                      {rel.category && (
-                        <span className="text-[11px] font-bold text-[var(--color-primary)] mb-1 block">
-                          {rel.category.name}
-                        </span>
-                      )}
-                      <h3 className="text-base font-bold text-[var(--color-ink)] line-clamp-2 group-hover:text-[var(--color-primary)] transition-colors">
-                        <Link to={isBlogSubdomain() ? `/posts/${rel.slug}` : getBlogUrl(`/posts/${rel.slug}`)}>
-                          {rel.title}
-                        </Link>
-                      </h3>
-                      {rel.summary && (
-                        <p className="text-xs text-[var(--color-text-muted)] line-clamp-2 mt-1 leading-relaxed">
-                          {rel.summary}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="pt-3 border-t border-[var(--color-border)] flex items-center justify-between text-[11px] text-[var(--color-text-muted)]">
-                      <span>{rel.reading_time} دقيقة قراءة</span>
-                      <span className="font-semibold text-[var(--color-ink)] group-hover:-translate-x-1 rtl:group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                        قراءة المقال ←
-                      </span>
-                    </div>
-                  </div>
-                </Card>
+                <BlogArticleCard key={rel.id} post={rel} />
               ))}
             </div>
           </section>

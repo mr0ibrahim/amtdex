@@ -1,7 +1,9 @@
 import "../../../css/blog-prose.css"
 import { useEffect, useState, useTransition } from "react"
 import { useDebouncedValue } from "@/routing/search"
-import { highlightMatch } from "@/search/arabic"
+import { BlogArticleCard } from "./BlogArticleCard"
+import { BrandArtwork } from "@/components/ui/BrandArtwork"
+import { Icon } from "@/components/ui/Icon"
 import { Link, useSearchParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { BlogAPI } from "@/lib/blogApi"
@@ -9,7 +11,7 @@ import { Card } from "@/components/ui/Card"
 import { Badge } from "@/components/ui/Badge"
 import { Button } from "@/components/ui/Button"
 import { Seo } from "@/components/Seo"
-import { getBlogUrl } from "@/lib/subdomain"
+import { getMainUrl, getBlogUrl } from "@/lib/subdomain"
 import type { BlogPost, BlogCategory } from "@/types/blog"
 
 export function BlogHomePage() {
@@ -138,9 +140,9 @@ export function BlogHomePage() {
         breadcrumbs={[{ name: "الرئيسية", url: "https://amtdex.com" }, { name: "المدونة", url: blogUrl }]}
       />
 
-      <div className="bg-[var(--color-bg)] min-h-screen">
+      <div data-motion-group className="blog-surface bg-[var(--color-bg)] min-h-screen">
         {/* Blog Header Hero */}
-        <section data-motion-group className="pt-14 pb-12 border-b border-[var(--color-border)]">
+        <section data-motion-group className="blog-hero pt-14 pb-12 border-b border-[var(--color-border)]">
           <div className="page-container page-container--wide">
             <div className="max-w-3xl">
               <span className="eyebrow">رؤى وأدلة تقنية متقدمة</span>
@@ -181,12 +183,12 @@ export function BlogHomePage() {
         {page === 1 && !category && !tag && !searchParams.get("q") && featuredPost && (
           <section className="py-10 bg-[var(--color-bg)]">
             <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
-              <Card hover padding="none" className="overflow-hidden border border-[var(--color-border)]">
+              <Card hover padding="none" className="blog-featured overflow-hidden border border-[var(--color-border)]">
                 <div className="grid lg:grid-cols-[1.2fr_1fr] items-center">
                   <div className="p-6 sm:p-10 lg:p-12 flex flex-col justify-between h-full order-2 lg:order-1">
                     <div>
                       <div className="flex flex-wrap items-center gap-2 mb-4">
-                        <Badge variant="warning">⭐ مقال مميز</Badge>
+                        <Badge variant="warning"><Icon name="star" size={14} /> مقال مميز</Badge>
                         {featuredPost.category && (
                           <span className="text-[12px] font-semibold text-[var(--color-primary-light)]">
                             {featuredPost.category.name}
@@ -224,11 +226,7 @@ export function BlogHomePage() {
                           </div>
                         </div>
                       </div>
-                      <Link to={`/posts/${featuredPost.slug}`}>
-                        <Button size="sm" variant="secondary">
-                          اقرأ المقال ←
-                        </Button>
-                      </Link>
+                      <Link to={`/posts/${featuredPost.slug}`} className="blog-featured-link">اقرأ المقال <Icon name="arrowUpLeft" size={17} /></Link>
                     </div>
                   </div>
 
@@ -321,24 +319,12 @@ export function BlogHomePage() {
                     إعادة تعيين الفلاتر
                   </Button>
                 </div>
-                <div className="da-template" aria-hidden="true">
-                  <p className="da-kicker">قالب العرض — ليس مقالاً منشوراً</p>
-                  <p className="mt-2 text-[13px] text-[var(--color-text-muted)]">يُستخدم هذا الشكل عندما تُنشر مقالات من لوحة المدونة. الكلمات أدناه أسماء حقول، وليست عناوين مقالات.</p>
-                  <div className="da-post-skel" style={{ marginTop: 16 }}>
-                    <div className="da-cover">غلاف المقال</div>
-                    <div>
-                      <div className="text-[12px] text-[var(--color-text-faint)]">التصنيف</div>
-                      <div className="mt-1 font-bold">عنوان المقال</div>
-                      <div className="mt-1 text-[13px] text-[var(--color-text-muted)]">الملخص</div>
-                      <div className="mt-3 text-[13px] font-bold">اقرأ المقال</div>
-                    </div>
-                  </div>
-                </div>
+
               </div>
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {posts.map((post: BlogPost) => (
-                  <PostCard key={post.id} post={post} query={debouncedQuery} />
+                  <BlogArticleCard key={post.id} post={post} query={debouncedQuery} />
                 ))}
               </div>
             )}
@@ -392,95 +378,21 @@ export function BlogHomePage() {
           </div>
         </section>
 
-        {/* Newsletter / RSS Subscription CTA */}
-        <section className="py-14 bg-[var(--color-card-soft)] border-t border-[var(--color-border)] mt-12">
-          <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 text-center">
-            <div className="max-w-xl mx-auto">
-              <span className="size-12 rounded-2xl bg-[var(--color-ink)] text-white grid place-items-center mx-auto text-xl mb-4 shadow-[var(--shadow-card)]">
-                📡
-              </span>
-              <h3 className="text-2xl font-bold text-[var(--color-ink)]">
-                تابع جديد التحليلات الهندسية
-              </h3>
-              <p className="mt-2 text-sm text-[var(--color-text-muted)]">
-                نشارك كل أسبوع دراسات حالة وأدلة كود حصرية مباشرة إلى بريدك أو عبر قارئ خلاصات RSS المفضل لديك.
-              </p>
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                <a
-                  href="/feed"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold bg-[#461667] text-[#F8F2FB] hover:opacity-90 shadow-[var(--shadow-card)] transition-opacity"
-                >
-                  خلاصة RSS Feed ↗
-                </a>
-                <Link to="/contact">
-                  <Button variant="secondary" size="md">
-                    استشارة هندسية لمشروعك
-                  </Button>
-                </Link>
+        <section data-motion-group className="blog-follow-section page-container page-container--wide" aria-labelledby="blog-follow-title">
+          <div className="blog-follow-card">
+            <div className="blog-follow-art" data-motion="vector"><BrandArtwork kind="contact" /></div>
+            <div className="blog-follow-copy">
+              <span className="blog-follow-eyebrow"><Icon name="code" size={16} /> معرفة تستحق المتابعة</span>
+              <h2 id="blog-follow-title">تابع جديد التحليلات الهندسية</h2>
+              <p>دراسات حالة وأدلة برمجية عملية تساعدك على فهم التقنية واتخاذ قرارات أوضح لمشروعك.</p>
+              <div className="blog-follow-actions">
+                <a href="/feed" target="_blank" rel="noopener noreferrer" className="blog-follow-primary">تابع جديد المقالات <Icon name="arrowUpLeft" size={18} /></a>
+                <a href={getMainUrl("/contact")} className="blog-follow-secondary">استشارة هندسية لمشروعك <Icon name="arrowUpLeft" size={18} /></a>
               </div>
             </div>
           </div>
         </section>
       </div>
     </>
-  )
-}
-
-function PostCard({ post, query = "" }: { post: BlogPost; query?: string }) {
-  return (
-    <Card hover padding="none" className="overflow-hidden flex flex-col justify-between bg-white border border-[var(--color-border)] group">
-      <div>
-        <Link to={`/posts/${post.slug}`} className="block relative aspect-[16/9] overflow-hidden bg-[var(--color-card-soft)]">
-          <img
-            src={post.cover_image ?? "https://amtdex.com/images/screens/projects.webp"}
-            alt={post.cover_image_alt ?? post.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-          />
-          {post.category && (
-            <span className="absolute top-3 right-3 bg-[var(--color-ink)] text-white text-[11px] font-semibold px-3 py-1 rounded-full shadow-md backdrop-blur-sm">
-              {post.category.name}
-            </span>
-          )}
-        </Link>
-
-        <div className="p-5">
-          <div className="flex items-center gap-2 text-[11px] text-[var(--color-text-faint)] mb-2.5">
-            <span>{post.published_at ? new Date(post.published_at).toLocaleDateString("ar-EG", { year: "numeric", month: "short", day: "numeric" }) : ""}</span>
-            <span>•</span>
-            <span>{post.reading_time_minutes} دقائق قراءة</span>
-          </div>
-
-          <h3 className="text-[17px] font-bold text-[var(--color-ink)] leading-snug group-hover:text-[var(--color-primary-light)] transition-colors line-clamp-2">
-            <Link to={`/posts/${post.slug}`}>{highlightMatch(post.title, query)}</Link>
-          </h3>
-
-          <p className="mt-2 text-[13px] text-[var(--color-text-muted)] leading-relaxed line-clamp-3">
-            {post.summary}
-          </p>
-        </div>
-      </div>
-
-      <div className="p-5 pt-0 border-t border-[var(--color-border)]/60 mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-2 pt-3">
-          {post.author?.avatar && (
-            <img
-              src={post.author.avatar}
-              alt={post.author.name}
-              className="size-7 rounded-full object-cover border border-[var(--color-border)]"
-              loading="lazy"
-            />
-          )}
-          <span className="text-[12px] font-medium text-[var(--color-text)]">
-            {post.author?.name}
-          </span>
-        </div>
-        <Link to={`/posts/${post.slug}`} className="text-[12px] font-bold text-[var(--color-primary-light)] group-hover:underline pt-3">
-          قراءة المزيد ←
-        </Link>
-      </div>
-    </Card>
   )
 }
