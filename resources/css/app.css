@@ -10,6 +10,7 @@
 @import "./vector-system.css";
 @import "./blog-cards.css";
 @import "./contact-page.css";
+@import "./project-motion.css";
 
 @font-face {
   font-family: "IBM Plex Sans Arabic";

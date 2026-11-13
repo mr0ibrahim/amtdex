@@ -17,9 +17,9 @@ export function mountBrandScenes(root: HTMLElement) {
       scenes.forEach((scene, el) => {
         if (!root.contains(el)) { scene.dispose?.(); scene.context.revert(); scenes.delete(el) }
       })
-      root.querySelectorAll<HTMLElement | SVGElement>("[data-motion-group] [data-motion], [data-motion=\"vector\"], [data-parallax], [data-tilt], [data-progress], [data-stack], [data-process-viewport]").forEach(el => {
+      root.querySelectorAll<HTMLElement | SVGElement>("[data-motion-group] [data-motion], [data-motion=\"vector\"], [data-parallax], [data-tilt], [data-progress], [data-stack], [data-process-viewport], [data-scroll-composition]").forEach(el => {
         if (scenes.has(el)) return
-        if (!el.hasAttribute("data-motion") && !el.hasAttribute("data-progress") && !el.hasAttribute("data-stack") && !desktop) return
+        if (!el.hasAttribute("data-motion") && !el.hasAttribute("data-progress") && !el.hasAttribute("data-stack") && !el.hasAttribute("data-scroll-composition") && !desktop) return
         let dispose: (() => void) | undefined
         // Own contexts explicitly so repeated tab changes don't retain detached nodes.
         const scene = gsap.context(() => {
@@ -44,6 +44,13 @@ export function mountBrandScenes(root: HTMLElement) {
             if (strokes.length) gsap.fromTo(strokes, { strokeDasharray: 1, strokeDashoffset: 1 }, {
               strokeDashoffset: 0, duration: 1.1, ease: "power2.out", stagger: .12,
               scrollTrigger: { trigger: el, start: "top 88%", once: true },
+            })
+          }
+          if (el.hasAttribute("data-scroll-composition")) {
+            const stack = el.querySelector<HTMLElement>(".product-stack")
+            if (stack) gsap.fromTo(stack, { y: 0, rotation: -5, scale: 1 }, {
+              y: desktop ? -100 : -38, rotation: desktop ? 12 : 7, scale: .9, ease: "none",
+              scrollTrigger: { trigger: el, start: "top top+=120", end: "bottom top", scrub: .8 },
             })
           }
           if (el.hasAttribute("data-stack")) {

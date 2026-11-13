@@ -47,3 +47,20 @@ grouped as a single grid item to keep feature images aligned. GSAP draws illustr
 strokes once in view and cleans up with its existing scene ownership. Reduced-motion
 content remains visible. Gradient-reference isolation has an automated regression test.
 Visual browser verification is still unavailable in this environment.
+
+## Reference interaction pass: desktop and touch
+
+Replace the static studio preview with three persistent project cards whose x/y,
+rotation, scale and stacking order interpolate with GSAP on selection. The same
+controls work on touch: horizontal pointer gestures, previous/next buttons, and RTL
+keyboard tabs. Actual existing shop/CRM/booking screenshots are used, rather than
+payment imagery. Vertical touch scrolling is preserved with pan-y and a direction
+threshold; cancelled gestures do not select. The selected tab and text panel are
+synchronized. Each selection kills owned tweens/listeners; reduced-motion changes
+apply card positions immediately. Lazy GSAP import failure leaves native controls.
+
+The hero composition now scrubs its rotation/scale/translation with scroll on phone
+and desktop. Mobile screenshot cards expand vertically on selection. Testimonial
+changes animate the incoming quote. These are interaction/scroll changes rather than
+additional generic fade-ins. Validation: 86 tests pass; production build and diff
+checks pass. Live visual verification should follow deployment.

@@ -3,7 +3,7 @@ import { Icon } from "@/components/ui/Icon"
 /** Native UI layers, rather than a flattened hero illustration. */
 export function ProductScene() {
   return (
-    <div className="product-scene" aria-label="نموذج توضيحي لواجهة نظام أعمال">
+    <div className="product-scene" data-scroll-composition aria-label="نموذج توضيحي لواجهة نظام أعمال">
       <div className="product-orbit product-orbit-one" aria-hidden="true" />
       <div className="product-orbit product-orbit-two" aria-hidden="true" />
       <div className="product-stack" data-stack>
