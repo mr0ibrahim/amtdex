@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/Icon"
 import { Link } from "react-router-dom"
 import { SERVICES as SEED_SERVICES } from "@/data/services"
 import { useServicesQuery } from "@/lib/queries"
@@ -33,7 +34,7 @@ export function Footer(_props: { onToast: (m: string) => void }) {
           <div className="footer-brand">
             {siteLink("/", "AMTDEX SOFT", "footer-wordmark")}
             <p>{blurb}</p>
-            <a href="https://www.instagram.com/amtdex/" target="_blank" rel="noreferrer" className="footer-social">Instagram <span aria-hidden="true">↗</span></a>
+            <a href="https://www.instagram.com/amtdex/" target="_blank" rel="noreferrer" className="footer-social"><Icon name="instagram" size={17} /> Instagram <Icon name="arrowUpLeft" size={15} /></a>
           </div>
           {columns.filter(col => col.links.length).map(col => (
             <nav key={col.title} aria-label={col.title} className="footer-nav">
@@ -46,11 +47,11 @@ export function Footer(_props: { onToast: (m: string) => void }) {
           <div className="footer-contact">
             <h2>بيانات التواصل</h2>
             <address>
-              <div className="footer-contact-row"><span>البريد الإلكتروني</span><a href="mailto:Info@amtdex.com" dir="ltr">Info@amtdex.com</a></div>
-              <div className="footer-contact-row"><span>أرقام التواصل</span><a href="tel:+967784440429" dir="ltr">+967 784 440 429</a><a href="tel:+967784440428" dir="ltr">+967 784 440 428</a></div>
-              <div className="footer-contact-row"><span>مقرّنا</span><p>{city}</p></div>
+              <div className="footer-contact-row"><span><Icon name="mail" size={15} /> البريد الإلكتروني</span><a href="mailto:Info@amtdex.com" dir="ltr">Info@amtdex.com</a></div>
+              <div className="footer-contact-row"><span><Icon name="phone" size={15} /> أرقام التواصل</span><a href="tel:+967784440429" dir="ltr">+967 784 440 429</a><a href="tel:+967784440428" dir="ltr">+967 784 440 428</a></div>
+              <div className="footer-contact-row"><span><Icon name="mapPin" size={15} /> مقرّنا</span><p>{city}</p></div>
             </address>
-            <a className="footer-whatsapp" href="https://wa.me/967784440429" target="_blank" rel="noreferrer">تواصل عبر واتساب <span aria-hidden="true">↗</span></a>
+            <a className="footer-whatsapp" href="https://wa.me/967784440429" target="_blank" rel="noreferrer">تواصل عبر واتساب <Icon name="arrowUpLeft" size={16} /></a>
           </div>
         </div>
         <div className="footer-bottom"><span>© {new Date().getFullYear()} AMTDEX SOFT. جميع الحقوق محفوظة.</span><span>{city}</span></div>

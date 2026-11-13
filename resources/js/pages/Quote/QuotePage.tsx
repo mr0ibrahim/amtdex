@@ -1,3 +1,4 @@
+import { BrandArtwork } from "@/components/ui/BrandArtwork"
 import { Icon } from "@/components/ui/Icon"
 import { Input, Textarea } from "@/components/ui/Input"
 import { useState, useEffect } from "react"
@@ -86,6 +87,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
       <Link to="/" className="text-[12px] font-medium text-[var(--color-primary)] hover:underline inline-flex items-center gap-1">
         ← العودة للرئيسية
       </Link>
+      <div className="quote-vector"><BrandArtwork kind="plan" /></div>
       <h1 className="mt-3 text-[28px] sm:text-[36px] font-bold tracking-tight text-[var(--color-ink)]">
         ابدأ مشروعك
       </h1>

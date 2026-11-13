@@ -1,3 +1,4 @@
+import { BrandArtwork } from "@/components/ui/BrandArtwork"
 import { type ReactNode } from "react"
 import { PublicLink as Link } from "@/cms/PublicLink"
 import { ProductScene } from "./ProductScene"
@@ -55,6 +56,7 @@ export function HomePage(_props: { onToast: (m: string) => void }) {
 
       {gate("contact", <section data-motion-group className="page-container page-container--wide contact-news-section" aria-labelledby="contact-news-title">
         <div className="contact-news-card contact-only-card">
+          <div className="contact-art" data-motion="vector"><BrandArtwork kind="contact" /></div>
           <div className="contact-news-copy">
             <span className="contact-news-eyebrow">لنتحدث عن مشروعك القادم</span>
             <h2 id="contact-news-title" data-motion="rise">

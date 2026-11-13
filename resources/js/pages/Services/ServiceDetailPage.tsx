@@ -1,3 +1,4 @@
+import { BrandArtwork } from "@/components/ui/BrandArtwork"
 import { Icon } from "@/components/ui/Icon"
 import { Link, useParams } from "react-router-dom"
 import { SERVICES as SEED_SERVICES } from "@/data/services"
@@ -56,9 +57,7 @@ export function ServiceDetailPage() {
       </Link>
       <div className="mt-4 grid lg:grid-cols-[1.2fr_0.8fr] gap-8 items-start">
         <div>
-          <div className="size-14 rounded-2xl bg-[var(--color-primary)] text-white grid place-items-center text-[22px] shadow-sm">
-            <Icon name={s.icon} size={28} />
-          </div>
+          <div className="service-detail-vector"><BrandArtwork kind={s.slug === "web" ? "web" : s.slug === "security" ? "shield" : "systems"} /></div>
           <h1 className="mt-4 text-[32px] sm:text-[44px] font-bold tracking-tight text-[var(--color-ink)] leading-tight">
             {s.title}
           </h1>

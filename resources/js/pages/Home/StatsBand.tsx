@@ -1,3 +1,4 @@
+import { Icon, type IconName } from "@/components/ui/Icon"
 export function StatsBand() {
   const stats = [
     { value: "+120", label: "مشروع برمجي مسلّم", sub: "من المتاجر إلى الأنظمة المؤسسية" },
@@ -16,7 +17,7 @@ export function StatsBand() {
             data-motion-delay={index * 120}
             className="px-4 sm:px-6 py-8 border-b lg:border-b-0 border-[var(--color-border)] odd:border-e"
           >
-            <span className="stat-orbit" aria-hidden="true" />
+            <span className="stat-vector"><Icon name={(["launch", "clock", "chart", "star"] as IconName[])[index]} size={23} /></span>
             <div className="font-display text-[32px] sm:text-[44px] font-semibold leading-none text-[var(--color-ink)]">{s.value}</div>
             <div className="mt-3 text-[13px] font-semibold">{s.label}</div>
             <div className="mt-1 text-[12px] leading-5 text-[var(--color-text-muted)]">{s.sub}</div>

@@ -1,0 +1,69 @@
+/* Shared AMTDEX vector and card grammar for public pages. */
+.brand-artwork { display:block;width:100%;height:auto;overflow:visible;color:var(--color-brand); }
+.brand-artwork .vector-main { transform-origin:50% 55%;transition:transform .65s cubic-bezier(.2,.8,.2,1); }
+.brand-artwork .vector-satellites { transform-origin:center;transition:transform .8s cubic-bezier(.2,.8,.2,1); }
+.brand-page-header {display:grid;grid-template-columns:minmax(0,1fr) minmax(140px,240px);align-items:center;gap:clamp(20px,5vw,64px);padding-bottom:32px;border-bottom:1px solid var(--color-border);}
+.brand-page-header-copy {min-width:0;}.brand-page-header-art {width:100%;max-width:240px;justify-self:end;}
+.brand-page-header.text-center {grid-template-columns:minmax(0,1fr);}.brand-page-header.text-center .brand-page-header-art {justify-self:center;max-width:180px;grid-row:1;}
+.brand-motion .da-page .da-card {position:relative;isolation:isolate;overflow:hidden;border:1px solid var(--color-border);border-radius:24px;background:var(--color-surface);box-shadow:0 2px 4px #28184903,0 18px 48px -36px #28184945;padding:clamp(24px,3vw,40px);transition:transform .4s cubic-bezier(.2,.8,.2,1),box-shadow .4s,border-color .4s;}
+.brand-motion .da-page .da-card.pop {background:linear-gradient(135deg,#281849,#49306a);color:#fff;border-color:#6b4b8b;}
+.brand-motion .da-page .da-card.pop :is(h2,h3) {color:white;}.brand-motion .da-page .da-card.pop :is(p,li) {color:#ded1ed;}
+.service-vector {width:170px;max-width:65%;margin-bottom:18px;}.da-feature>.service-vector {width:200px;}
+.brand-motion .service-card {border-radius:22px;border-color:var(--color-border);box-shadow:0 2px 6px #28184904,0 24px 50px -40px #28184960;transition:transform .35s,box-shadow .35s,border-color .35s;}
+.brand-motion .service-card-icon {border-radius:14px;background:linear-gradient(140deg,#faf7ff,#e9def7);border:1px solid #ded0ef;box-shadow:inset 0 1px 0 #fff;}
+.brand-motion .service-card-featured .service-card-icon {background:#ffffff0f;border-color:#ffffff20;}
+.home-stack .workflow-steps-only .process-card {padding:24px;min-height:330px;border-radius:22px;background:linear-gradient(155deg,white 55%,#f5effb);box-shadow:0 3px 4px #28184903,0 22px 42px -30px #2818494d;}
+.process-card-top {display:flex;align-items:center;gap:14px;}.process-card-line {height:1px;flex:1;background:linear-gradient(90deg,transparent,#ded0ec);}
+.home-stack .process-card .num {width:32px;height:32px;font-size:11px;border-radius:50%;background:#fff;}
+.home-stack .process-card>.brand-artwork {width:180px;max-width:100%;height:135px;object-fit:contain;margin:10px auto 0;}
+.home-stack .process-card b {margin-top:12px;font-size:19px;}.home-stack .process-card p {font-size:13px;color:#776487;}
+.home-stack .process-card::after {border:none;inset:0;background:linear-gradient(125deg,#bba1db33,transparent 40%);opacity:0;transition:opacity .4s;}
+.home-stack .guarantee-card {border-radius:28px;background:radial-gradient(ellipse at 0 0,#5f3c89,transparent 60%),#211330;box-shadow:0 32px 70px -48px #281849a0;grid-template-columns:minmax(220px,.85fr) minmax(0,1.15fr);gap:24px 48px;}
+.home-stack .guarantee-art {min-height:290px;padding:0;}
+.guarantee-art>.brand-artwork {width:100%;max-width:360px;filter:drop-shadow(0 22px 18px #0c041750);color:#c3a3e5;}
+.home-stack .guarantee-copy h2 {font-weight:650;font-size:clamp(28px,3.5vw,42px);}.home-stack .guarantee-label {letter-spacing:0;}
+.home-stack .contact-only-card {display:grid;grid-template-columns:minmax(160px,.65fr) minmax(0,1fr);gap:32px 64px;align-items:center;text-align:start;background:linear-gradient(130deg,#eee5f9,#faf8fd 65%);border-radius:28px;box-shadow:0 25px 65px -45px #28184950;}
+.contact-art {width:100%;max-width:300px;justify-self:center;}.home-stack .contact-only-card .contact-news-copy {max-width:none;}.home-stack .contact-only-card .contact-news-actions,.home-stack .contact-only-card .contact-news-proof {justify-content:start;}
+.home-stack .contact-only-card .contact-news-lede {margin-inline:0;}
+.home-stack .testimonial-panel {box-shadow:0 4px 8px #28184905,0 32px 72px -42px #28184980;border-radius:26px;border-color:#ded0eb;padding:36px 40px;}
+.home-stack .testimonial-panel::before {inset:12px 5px;background:linear-gradient(140deg,#5f3989,#281849);transform:rotate(3deg);box-shadow:0 20px 45px -30px #28184980;}
+.home-stack .testimonial-panel::after {inset:6px 12px;transform:rotate(-3deg);background:#eee5f8;border:1px solid #e0d1ef;}
+.home-stack .testimonial-heading>svg {padding:12px;box-sizing:content-box;background:#f3ecfa;border-radius:16px;color:#784aa1;width:24px;height:24px;}
+.home-stack .testimonial-navigation {padding-top:12px;border-radius:0 0 16px 16px;}
+.home-stack .screen-gallery-card {background:linear-gradient(140deg,#fff,#f7f2fc);border-radius:24px;box-shadow:0 4px 6px #28184904,0 25px 55px -38px #28184970;}
+.home-stack .screen-gallery-card[data-active="true"] {border-color:#b596cd;box-shadow:0 4px 8px #28184906,0 30px 65px -35px #28184965;}
+.home-stack .studio-tabs button {border:1px solid #e6dced;border-radius:12px;background:white;box-shadow:0 8px 22px -20px #28184980;}
+.home-stack .studio-tabs button[aria-selected="true"] {border-color:#62418a;background:linear-gradient(135deg,#301d47,#5b3682);}
+.home-stack .studio-panel {border:1px solid #634680;border-radius:26px;box-shadow:0 28px 65px -44px #28184985;}
+.footer-contact-row>span {display:inline-flex;align-items:center;gap:8px;}
+@media(hover:hover) and (pointer:fine) {
+  :is(.process-card,.service-vector,.guarantee-art,.contact-art,.brand-page-header-art):hover .vector-main {transform:translateY(-5px) rotate(-2deg);}
+  :is(.process-card,.service-vector,.guarantee-art,.contact-art):hover .vector-satellites {transform:rotate(14deg);}
+  .brand-motion :is(.da-page .da-card,.service-card):hover {transform:translateY(-6px);border-color:#c6acdd;box-shadow:0 4px 8px #28184905,0 30px 60px -36px #28184965;}
+  .home-stack .process-card:hover {box-shadow:0 4px 8px #28184906,0 32px 48px -28px #28184960;}
+  .home-stack .process-card:hover::after {opacity:1;}
+  .brand-motion a:hover>.ui-icon-stroke {stroke-dasharray:none;}
+}
+@media(max-width:767px) {
+  .brand-page-header {grid-template-columns:minmax(0,1fr) 140px;gap:16px;}.brand-page-header-art {max-width:140px;}
+  .home-stack .contact-only-card {grid-template-columns:minmax(0,1fr);text-align:center;gap:16px;padding:28px;}.contact-art {max-width:220px;}.home-stack .contact-only-card .contact-news-actions,.home-stack .contact-only-card .contact-news-proof {justify-content:center;}
+  .home-stack .guarantee-card {gap:16px;padding:28px;}.home-stack .guarantee-art {min-height:220px;}.guarantee-art>.brand-artwork {max-width:280px;}
+}
+@media(max-width:639px) {
+  .brand-page-header {grid-template-columns:minmax(0,1fr);}.brand-page-header-art {grid-row:1;justify-self:start;max-width:160px;}
+  .home-stack .guarantee-card {grid-template-columns:minmax(0,1fr);}.home-stack .process-card {min-height:300px;}
+  .home-stack .testimonial-panel {padding:24px 22px;}.home-stack .testimonial-story blockquote {font-size:20px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .brand-motion :is(.da-card,.service-card,.brand-artwork *,.process-card,.screen-gallery-card) {transition:none!important;}
+  .brand-artwork .vector-main,.brand-artwork .vector-satellites {transform:none!important;}
+}
+.service-copy {min-width:0;}
+.brand-motion .da-feature {align-items:center;}
+.brand-motion .da-page .da-feature>figure {min-width:0;}
+.brand-motion .da-page .da-feature .da-screen {border-radius:18px;border:1px solid var(--color-border);box-shadow:0 22px 45px -32px #28184980;}
+.stat-vector {display:grid;place-items:center;width:48px;height:48px;margin:0 auto 18px;border-radius:15px;color:#e4c48b;background:#ffffff0a;border:1px solid #ffffff18;box-shadow:inset 0 1px 0 #ffffff12;}
+.about-values-card {border-radius:24px;border:1px solid #62447c;box-shadow:0 30px 60px -38px #28184980;}
+.about-vector {width:180px;max-width:60%;margin-inline:auto;margin-bottom:20px;color:#b493d3;}
+.quote-vector {width:150px;max-width:40%;margin-bottom:16px;}
+.service-detail-vector {width:190px;max-width:50%;margin-bottom:20px;}

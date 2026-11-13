@@ -1,3 +1,4 @@
+import { BrandArtwork, type ArtworkKind } from "@/components/ui/BrandArtwork"
 import { Link } from "react-router-dom"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { SERVICES as SEED_SERVICES } from "@/data/services"
@@ -14,7 +15,8 @@ export function ServicesPage() {
   const screenFor = (slug: string) => (slug === "cloud" ? "crm" : "projects")
 
   const ServiceBody = ({ service }: { service: (typeof SERVICES)[number] }) => (
-    <>
+    <div className="service-copy">
+      <div className="service-vector" data-motion="vector"><BrandArtwork kind={({ web: "web", security: "shield", mobile: "launch", cloud: "systems" } as Record<string,ArtworkKind>)[service.slug] || "systems"} /></div>
       {service.slug === "web" && <p className="da-kicker">الأكثر طلبًا</p>}
       {service.slug === "erp" && <p className="da-kicker">لأعمال أكثر كفاءة</p>}
       <h2 style={{ marginTop: 8 }}>{service.title}</h2>
@@ -23,12 +25,12 @@ export function ServicesPage() {
       {service.bullets && <ul>{service.bullets.map((item) => <li key={item}>{item}</li>)}</ul>}
       {service.tech && service.tech.length > 0 && <p className="da-lede">{service.tech.join(" · ")}</p>}
       <Link to={`/services/${service.slug}`} className="btn btn-ink brand-cta" style={{ marginTop: 14 }}>اكتشف الخدمة</Link>
-    </>
+    </div>
   )
 
   return (
     <div className="da-page">
-      <PageHeader
+      <PageHeader artwork="web"
         eyebrow="خدماتنا"
         title={
           <>

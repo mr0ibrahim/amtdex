@@ -17,7 +17,7 @@ export function mountBrandScenes(root: HTMLElement) {
       scenes.forEach((scene, el) => {
         if (!root.contains(el)) { scene.dispose?.(); scene.context.revert(); scenes.delete(el) }
       })
-      root.querySelectorAll<HTMLElement | SVGElement>("[data-motion-group] [data-motion], [data-parallax], [data-tilt], [data-progress], [data-stack], [data-process-viewport]").forEach(el => {
+      root.querySelectorAll<HTMLElement | SVGElement>("[data-motion-group] [data-motion], [data-motion=\"vector\"], [data-parallax], [data-tilt], [data-progress], [data-stack], [data-process-viewport]").forEach(el => {
         if (scenes.has(el)) return
         if (!el.hasAttribute("data-motion") && !el.hasAttribute("data-progress") && !el.hasAttribute("data-stack") && !desktop) return
         let dispose: (() => void) | undefined
@@ -25,7 +25,7 @@ export function mountBrandScenes(root: HTMLElement) {
         const scene = gsap.context(() => {
           if (el.hasAttribute("data-motion")) {
             const type = el.dataset.motion
-            const from: gsap.TweenVars = type === "bar" ? { scaleY: 0 }
+            const from: gsap.TweenVars = type === "vector" ? { opacity: 0, y: 20, scale: .96 } : type === "bar" ? { scaleY: 0 }
               : type === "reveal" ? { opacity: 0, y: 18, clipPath: "inset(0% 0% 100% 0%)" }
               : type === "screen" ? { opacity: 0, y: desktop ? 48 : 24, scale: .97, rotationX: desktop ? 5 : 0, transformPerspective: 1000 }
               : type === "draw" ? { strokeDashoffset: 1, opacity: 0 }
@@ -37,6 +37,13 @@ export function mountBrandScenes(root: HTMLElement) {
               delay: Math.min(Number(el.dataset.motionDelay || 0) / 1000, .55) * (desktop ? 1 : .6),
               immediateRender: false,
               scrollTrigger: { trigger: el, start: "top 92%", once: true },
+            })
+          }
+          if (el.dataset.motion === "vector") {
+            const strokes = el.querySelectorAll<SVGPathElement>(".vector-trace")
+            if (strokes.length) gsap.fromTo(strokes, { strokeDasharray: 1, strokeDashoffset: 1 }, {
+              strokeDashoffset: 0, duration: 1.1, ease: "power2.out", stagger: .12,
+              scrollTrigger: { trigger: el, start: "top 88%", once: true },
             })
           }
           if (el.hasAttribute("data-stack")) {

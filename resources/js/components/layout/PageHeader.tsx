@@ -1,3 +1,4 @@
+import { BrandArtwork, type ArtworkKind } from "@/components/ui/BrandArtwork"
 import type { ReactNode } from "react"
 import { SectionLabel } from "@/components/ui/SectionLabel"
 
@@ -9,6 +10,7 @@ type PageHeaderProps = {
   /** Use SectionLabel (dot + tracking) when true; otherwise primary tracking eyebrow */
   withSectionLabel?: boolean
   actions?: ReactNode
+  artwork?: ArtworkKind
   className?: string
 }
 
@@ -19,12 +21,14 @@ export function PageHeader({
   align = "start",
   withSectionLabel = true,
   actions,
+  artwork = "systems",
   className = "",
 }: PageHeaderProps) {
   const alignClass = align === "center" ? "text-center mx-auto" : ""
 
   return (
-    <header data-motion-group className={`${alignClass} ${className}`.trim()}>
+    <header data-motion-group className={`brand-page-header ${alignClass} ${className}`.trim()}>
+      <div className="brand-page-header-copy">
       {eyebrow != null &&
         (withSectionLabel ? (
           <SectionLabel>{eyebrow}</SectionLabel>
@@ -40,6 +44,8 @@ export function PageHeader({
         </p>
       )}
       {actions != null && <div className="mt-6">{actions}</div>}
+      </div>
+      <div className="brand-page-header-art" data-motion="vector"><BrandArtwork kind={artwork} /></div>
     </header>
   )
 }

@@ -40,6 +40,7 @@ const paths = {
   home: "M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z",
   layers: "M12 2 2 7l10 5 10-5Zm0 9 10-5v6l-10 5-10-5v-6Z",
   globe: "M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 0c2.5 2.7 4 6.2 4 10s-1.5 7.3-4 10m0-20c-2.5 2.7-4 6.2-4 10s1.5 7.3 4 10M2 12h20",
+  instagram: "M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm10 4h.01M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z",
   history: "M3 12a9 9 0 1 0 3-6.7M3 4v5h5m5-1v5l3 2",
 } as const
 
@@ -47,6 +48,7 @@ export type IconName = keyof typeof paths
 
 export function Icon({ name, size = 24, ...props }: Omit<SVGProps<SVGSVGElement>, "name"> & { name: IconName; size?: number }) {
   const pathD = paths[name] || paths.settings
+  const accent = ({ web: "M4 4h16v4H4Z", mobile: "M8 2h8v3H8Z", erp: "M3 3h7v7H3Zm11 11h7v7h-7Z", ai: "M7 7h10v10H7Z", shield: "M12 2 3 6v6c0 5 5 8 9 10V2Z", security: "M12 2 3 6v6c0 5 5 8 9 10V2Z", mail: "m3 5 9 7 9-7Z", cloud: "M7 18H6a4 4 0 0 1-.5-8A6.5 6.5 0 0 1 18 8.5a4.8 4.8 0 0 1 .5 9.5Z", folder: "M3 7h18v12H3Z", layers: "M12 2 2 7l10 5 10-5Z" } as Partial<Record<IconName,string>>)[name]
   return (
     <svg
       width={size}
@@ -62,7 +64,8 @@ export function Icon({ name, size = 24, ...props }: Omit<SVGProps<SVGSVGElement>
       className="ui-icon"
       {...props}
     >
-      <path d={pathD} />
+      {accent && <path d={accent} fill="currentColor" fillOpacity=".12" stroke="none" />}
+      <path d={pathD} className="ui-icon-stroke" />
     </svg>
   )
 }

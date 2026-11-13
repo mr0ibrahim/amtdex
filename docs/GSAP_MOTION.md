@@ -31,3 +31,19 @@ are preserved.
 Validation: 81 tests pass, TypeScript/Vite production build and diff checks pass.
 Browser visual verification remains unavailable: Playwright's bundled Chromium is
 absent and system Chromium exits during launch. No pixel-identical match is claimed.
+
+## Vector card system
+
+Six original inline SVG illustration families (web, systems, shield, contact, plan,
+launch) use per-instance gradient IDs and decorative accessibility semantics.
+They are used in the home process/guarantee/contact sections, public page headers,
+service cards/details, About values and quote page. Shared icons retain their familiar
+silhouettes and add selective duotone fills; footer contact/social icons and home
+stats use SVG. Text and form controls remain native HTML.
+
+Public card styling is centralized in vector-system.css: borders, surface depth,
+hover elevation, illustration response and breakpoint adjustments. Service copy is
+grouped as a single grid item to keep feature images aligned. GSAP draws illustration
+strokes once in view and cleans up with its existing scene ownership. Reduced-motion
+content remains visible. Gradient-reference isolation has an automated regression test.
+Visual browser verification is still unavailable in this environment.

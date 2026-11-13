@@ -1,3 +1,4 @@
+import { BrandArtwork, type ArtworkKind } from "@/components/ui/BrandArtwork"
 
 export function WorkflowSection() {
   return (
@@ -22,7 +23,8 @@ export function WorkflowSection() {
               { n: "05", t: "نطلق", d: "نساعدك على إطلاق مشروعك وتطويره." },
             ].map((s, index) => (
               <article key={s.n} data-motion="rise" data-motion-delay={index * 140} className="da-step process-card">
-                <span className="num">{s.n}</span>
+                <div className="process-card-top"><span className="num">{s.n}</span><span className="process-card-line" /></div>
+                <BrandArtwork kind={(["contact", "plan", "web", "shield", "launch"] as ArtworkKind[])[index]} />
                 <b className="block mt-2">{s.t}</b>
                 <p>{s.d}</p>
               </article>

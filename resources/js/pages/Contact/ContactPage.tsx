@@ -69,7 +69,7 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
     <Container className="py-8 sm:py-16 da-contact-grid">
       <div className="grid gap-4">
         <div>
-          <PageHeader
+          <PageHeader artwork="contact"
             eyebrow="تواصل معنا"
             title={
               <>

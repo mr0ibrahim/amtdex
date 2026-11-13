@@ -1,3 +1,4 @@
+import { BrandArtwork } from "@/components/ui/BrandArtwork"
 import { Icon } from "@/components/ui/Icon"
 import { useState } from "react"
 import { TEAM as FALLBACK_TEAM } from "@/data/site"
@@ -64,7 +65,8 @@ export function AboutPage() {
               ))}
             </div>
           </div>
-          <div data-motion="rise" data-motion-delay="180" className="bg-[var(--color-ink)] text-white p-6 sm:p-8">
+          <div data-motion="rise" data-motion-delay="180" className="about-values-card bg-[var(--color-ink)] text-white p-6 sm:p-8">
+            <div className="about-vector" data-motion="vector"><BrandArtwork kind="systems" /></div>
             <div className="text-[11px] tracking-[0.16em] text-white/40 font-semibold">قيمنا</div>
             <ul className="mt-4 space-y-4">
               {[
