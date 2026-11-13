@@ -6,8 +6,8 @@ const screens = [
 
 export function ScreenGallery() {
   return (
-    <section className="screen-gallery" aria-labelledby="screen-gallery-title">
-      <div className="screen-gallery-heading">
+    <section data-motion-group className="screen-gallery" aria-labelledby="screen-gallery-title">
+      <div data-motion="rise" className="screen-gallery-heading">
         <span>واجهات تصنع الفرق</span>
         <h2 id="screen-gallery-title">من فكرتك، إلى تجربة متكاملة.</h2>
         <p>متاجر، تطبيقات، وأنظمة أعمال — نصمّم لكل منتج واجهة تخدم مستخدميه، وتعبّر عن هويته.</p>
@@ -15,7 +15,7 @@ export function ScreenGallery() {
       <div className="screen-gallery-window">
         <div className="screen-gallery-stage">
           {screens.map((screen) => (
-            <figure className="screen-gallery-card" key={screen.id}>
+            <figure data-motion="rise" className="screen-gallery-card" key={screen.id}>
               <div className="screen-gallery-image">
                 <img
                   src={`/images/screens/${screen.id}.webp`}

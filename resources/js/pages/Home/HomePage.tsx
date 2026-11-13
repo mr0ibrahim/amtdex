@@ -12,6 +12,7 @@ import { useClientsQuery, useServicesQuery } from "@/lib/queries"
 import { FinalCTA } from "@/pages/Home/FinalCTA"
 import { GuaranteeBanner } from "@/pages/Home/GuaranteeBanner"
 import { OrbitSection } from "@/pages/Home/OrbitSection"
+import { ExperienceStudio } from "./ExperienceStudio"
 import { ScreenGallery } from "./ScreenGallery"
 import { useCms, useSection } from "@/cms/useCms"
 import { SpotlightSection } from "@/pages/Home/SpotlightSection"
@@ -75,7 +76,9 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
             </p>
           </div>
 
-          <div data-motion="rise" data-motion-delay="200" className="da-app">
+          <div className="hero-product-scene">
+            <div className="hero-product-label"><span /> من الفكرة إلى منتج يعمل <span aria-hidden="true">AMTDEX STUDIO ↗</span></div>
+            <div data-motion="rise" data-motion-delay="200" className="da-app">
             <div className="h-12 flex items-center justify-between px-4 border-b border-[var(--color-border)]">
               <span className="text-[12px] font-semibold">لوحة التحكم</span>
               <span data-motion="signal" data-motion-delay="700" className="inline-flex items-center gap-2 text-[11px] font-semibold">
@@ -136,6 +139,7 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
             </div>
           </div>
         </div>
+        </div>
       </section>)}
 
       {gate("marquee", <section data-motion-group className="border-y border-[var(--color-border)]">
@@ -163,7 +167,7 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
       </section>)}
 
       {gate("stats", <StatsBand />)}
-      {gate("gallery", <ScreenGallery />)}
+      {gate("gallery", <><ExperienceStudio /><ScreenGallery /></>)}
       {gate("spotlight", <SpotlightSection />)}
       {gate("workflow", <WorkflowSection />)}
       {gate("orbit", <OrbitSection />)}
@@ -182,16 +186,17 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
             <Link to="/services" className="mt-4 inline-flex text-[13px] font-semibold border-b border-[var(--color-ink)] pb-0.5">{why.link}</Link>
           </div>
         </div>
-        <div className="da-svc">
+        <div className="da-svc service-bento">
           {services.slice(0, 4).map((s, index) => (
-            <Link key={s.slug} to={`/services/${s.slug}`} data-motion="rise" data-motion-delay={index * 120}>
+            <Link key={s.slug} to={`/services/${s.slug}`} data-motion="rise" data-motion-delay={index * 120} className="service-bento-card">
+              <span className="service-bento-top"><Icon name={s.icon} size={26} /><span>0{index + 1}</span></span>
               <span>
                 <b>{s.title}</b>
                 {s.slug === "web" && <small>الأكثر طلبًا</small>}
                 {s.slug === "erp" && <small>لأعمال أكثر كفاءة</small>}
                 <small>{s.desc}</small>
               </span>
-              <span>اكتشف الخدمة</span>
+              <span className="service-bento-link">اكتشف الخدمة <Icon name="arrowUpLeft" size={20} /></span>
             </Link>
           ))}
         </div>
