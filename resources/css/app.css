@@ -9,6 +9,7 @@
 @import "./reference-cards.css";
 @import "./vector-system.css";
 @import "./blog-cards.css";
+@import "./contact-page.css";
 
 @font-face {
   font-family: "IBM Plex Sans Arabic";
