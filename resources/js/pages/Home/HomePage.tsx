@@ -216,25 +216,27 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
 
       {gate("cta", <FinalCTA onToast={onToast} />)}
 
-      {gate("newsletter", <section data-motion-group className="page-container page-container--wide pb-20">
-        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 items-start border border-[var(--color-ink)] p-6 sm:p-10">
-          <div>
-            <h2 data-motion="rise" className="text-[32px] sm:text-[42px] font-semibold leading-[1.2]">
+      {gate("newsletter", <section data-motion-group className="page-container page-container--wide contact-news-section" aria-labelledby="contact-news-title">
+        <div className="contact-news-card">
+          <div className="contact-news-copy">
+            <span className="contact-news-eyebrow">لنتحدث عن مشروعك القادم</span>
+            <h2 id="contact-news-title" data-motion="rise">
               {news.title.split("\n").map((line, index) => <span key={line}>{index > 0 && <br />}{line}</span>)}
             </h2>
-            <p data-motion="rise" data-motion-delay="140" className="mt-4 text-[15px] leading-8 text-[var(--color-text-muted)] max-w-[36rem]">
+            <p data-motion="rise" data-motion-delay="140" className="contact-news-lede">
               {news.lede}
             </p>
-            <div data-motion="rise" data-motion-delay="260" className="mt-6 flex flex-wrap gap-3">
-              <Link to="/quote" className="btn btn-ink brand-cta">ابدأ مشروعك</Link>
-              <Link to="/contact" className="btn btn-line brand-cta">تحدث معنا</Link>
+            <div data-motion="rise" data-motion-delay="260" className="contact-news-actions">
+              <Link to="/quote" className="contact-news-primary brand-cta">ابدأ مشروعك <Icon name="arrowUpLeft" size={18} /></Link>
+              <Link to="/contact" className="contact-news-secondary">تحدث معنا <Icon name="arrowUpLeft" size={18} /></Link>
             </div>
-            <p className="mt-5 text-[12px] text-[var(--color-text-muted)]">رد خلال ساعات · استشارة مجانية · عقد واضح</p>
+            <ul className="contact-news-proof" aria-label="مزايا التواصل"><li>رد خلال ساعات</li><li>استشارة مجانية</li><li>عقد واضح</li></ul>
           </div>
-          <form onSubmit={handleSub} noValidate data-motion="rise" data-motion-delay="180" className="border-t lg:border-t-0 lg:border-r border-[var(--color-border)] lg:pr-10 pt-8 lg:pt-0">
-            <div className="text-[14px] font-semibold">نشرة Amtdex</div>
-            <div className="text-[13px] text-[var(--color-text-muted)] mt-1 leading-6">نصائح تقنية، قصص مشاريع، وعروض — رسالة واحدة أسبوعياً.</div>
-            <label htmlFor="home-email" className="sr-only">البريد الإلكتروني</label>
+          <form onSubmit={handleSub} noValidate data-motion="rise" data-motion-delay="180" className="newsletter-panel" aria-labelledby="newsletter-title">
+            <span className="newsletter-mark" aria-hidden="true"><Icon name="mail" size={22} /></span>
+            <h3 id="newsletter-title">نشرة AMTDEX</h3>
+            <p className="newsletter-description">نصائح تقنية، قصص مشاريع، وعروض — رسالة واحدة أسبوعياً.</p>
+            <label htmlFor="home-email" className="newsletter-label">البريد الإلكتروني</label>
             <input
               id="home-email"
               name="email"
@@ -243,16 +245,19 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
                 setEmail(e.target.value)
                 if (err) setErr("")
               }}
-              placeholder="بريدك الإلكتروني"
+              placeholder="you@example.com"
+              dir="ltr"
+              autoComplete="email"
+              inputMode="email"
               type="email"
               aria-invalid={!!err}
               aria-describedby={err ? "home-email-err" : undefined}
-              className={`mt-5 w-full bg-[var(--input-bg)] text-[var(--input-text)] border px-3 py-3 text-[14px] outline-none placeholder:text-[var(--placeholder)] ${err ? "border-[var(--danger)]" : "border-[var(--border)]"}`}
+              className="newsletter-input"
             />
             {err && (
               <p id="home-email-err" role="alert" className="mt-2 text-[12px] text-[var(--danger)]">{err}</p>
             )}
-            <button type="submit" className="btn btn-ink brand-cta mt-5">اشتراك</button>
+            <button type="submit" className="newsletter-submit brand-cta">اشترك في النشرة <Icon name="arrowUpLeft" size={18} /></button>
           </form>
         </div>
       </section>)}
