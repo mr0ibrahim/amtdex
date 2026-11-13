@@ -11,3 +11,9 @@ The public layout now uses a white canvas, restrained lavender surfaces, a share
 GSAP loads asynchronously within MarketingLayout. Heading wipe reveals, screen perspective reveals, chart growth and workflow progress have distinct roles. Desktop parallax is subtle; there is no scroll hijacking. Reduced-motion changes revert active scenes. Route changes, CMS removals and tab switches release contexts and listeners. Dashboard and auth do not mount the marketing engine.
 
 Validation: `npm test` (79 tests), `npm run build`, `git diff --check`. The previous live design was inspected in the browser; the new local preview was blocked by browser URL policy. Local Chromium is also unavailable under the execution policy, so responsive browser QA of this revision remains unverified. Existing unrelated build warnings remain.
+
+## Mobile navigation
+
+The mobile header stays visible while scrolling. Its CTA moves into a portal-based RTL side drawer with a separate close button, distinct active links, and quote/contact actions. Duplicate destinations are consolidated. The drawer scrolls within the dynamic viewport and respects safe-area insets and reduced motion. Background content is inert while open; focus is trapped inside the modal and returns to the trigger on dismissal. Navigation and switching to desktop release scroll/inert state.
+
+Validation includes modal focus cycling, Escape, backdrop dismissal, quote navigation and desktop-breakpoint cleanup. Full suite: 82 tests.

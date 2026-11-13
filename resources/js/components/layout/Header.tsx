@@ -1,4 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
+import { Icon } from "@/components/ui/Icon"
 import { Link, NavLink, useLocation } from "react-router-dom"
 import { getBlogUrl, getMainUrl, isBlogSubdomain } from "@/lib/subdomain"
 import { prefetchRoute } from "@/routing/lifecycle"
@@ -75,12 +77,17 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
   const prevPath = useRef(loc.pathname)
   const menuRef = useRef<HTMLDivElement>(null)
   const toggleRef = useRef<HTMLButtonElement>(null)
+  const restoreFocus = useRef(false)
   const trackRef = useRef<HTMLDivElement>(null)
   const openRef = useRef(open)
   const onBlog = isBlogSubdomain()
   const { nav, pages } = useCms()
   const menu = nav.filter((item) => item.visible && pageIsListed(pages, item.to, false))
   const desktop = menu.filter((item) => !["contact", "quote", "pricing"].includes(item.id))
+  const mobileMenu = menu
+    .filter((item) => !["contact", "quote"].includes(item.id) && item.to !== "/")
+    .filter((item, index, items) => items.findIndex((other) => other.to === item.to) === index)
+  const closeMenu = (returnFocus = true) => { restoreFocus.current = returnFocus; setOpen(false) }
   const homeListed = pageIsListed(pages, "/", false)
   const contactListed = pageIsListed(pages, "/contact", false)
   const quoteListed = pageIsListed(pages, "/quote", false)
@@ -112,7 +119,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
         const nextCondensed = y > 16
         let nextHidden = false
-        if (!reduce && !openRef.current && y > last + 6 && y > 80) nextHidden = true
+        if (window.innerWidth >= 1024 && !reduce && !openRef.current && y > last + 6 && y > 80) nextHidden = true
         if (y < last - 6 || y < 48) nextHidden = false
         last = y
         setCondensed((value) => (value === nextCondensed ? value : nextCondensed))
@@ -147,37 +154,46 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
   useEffect(() => {
     if (!open) return
     const previous = document.body.style.overflow
+    const previousPadding = document.body.style.paddingInlineEnd
+    const gap = Math.max(0, window.innerWidth - document.documentElement.clientWidth)
     document.body.style.overflow = "hidden"
+    if (gap) document.body.style.paddingInlineEnd = `${gap}px`
     const menu = menuRef.current
     const toggle = toggleRef.current
-    const items = () => {
-      const links = menu ? [...menu.querySelectorAll<HTMLElement>("a, button:not([disabled])")] : []
-      return toggle ? [...links, toggle] : links
-    }
+    const shell = toggle?.closest<HTMLElement>(".brand-motion")
+    const previousInert = shell?.inert ?? false
+    if (shell) shell.inert = true
+    const items = () => menu ? [...menu.querySelectorAll<HTMLElement>("a, button:not([disabled])")] : []
     items()[0]?.focus()
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        event.preventDefault()
+        restoreFocus.current = true
         setOpen(false)
-        toggle?.focus()
         return
       }
       if (event.key !== "Tab") return
       const list = items()
-      if (list.length === 0) return
       const first = list[0]
       const last = list[list.length - 1]
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault()
-        last.focus()
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault()
-        first.focus()
+      if (!first) return
+      if (event.shiftKey && (document.activeElement === first || !menu?.contains(document.activeElement))) {
+        event.preventDefault(); last.focus()
+      } else if (!event.shiftKey && (document.activeElement === last || !menu?.contains(document.activeElement))) {
+        event.preventDefault(); first.focus()
       }
     }
+    const desktopQuery = window.matchMedia("(min-width: 1024px)")
+    const onDesktop = () => { if (desktopQuery.matches) { restoreFocus.current = false; setOpen(false) } }
+    desktopQuery.addEventListener("change", onDesktop)
     document.addEventListener("keydown", onKey)
     return () => {
       document.body.style.overflow = previous
+      document.body.style.paddingInlineEnd = previousPadding
+      if (shell) shell.inert = previousInert
       document.removeEventListener("keydown", onKey)
+      desktopQuery.removeEventListener("change", onDesktop)
+      if (restoreFocus.current) toggle?.focus()
     }
   }, [open])
 
@@ -239,7 +255,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
               </SiteLink>
             )}
             {quoteListed && (
-              <SiteLink to="/contact" className="btn btn-ink brand-cta site-header-cta">
+              <SiteLink to="/quote" className="btn btn-ink brand-cta site-header-cta">
                 <span className="hidden sm:inline">ابدأ مشروعك</span>
                 <span className="sm:hidden">ابدأ</span>
               </SiteLink>
@@ -247,8 +263,8 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
             <button
               ref={toggleRef}
               type="button"
-              onClick={() => setOpen((value) => !value)}
-              aria-label={open ? "إغلاق" : "فتح القائمة"}
+              onClick={() => { restoreFocus.current = false; setOpen((value) => !value) }}
+              aria-label={open ? "إغلاق القائمة" : "فتح القائمة"}
               aria-expanded={open}
               aria-controls="mobile-menu"
               className={`site-nav-burger${open ? " is-open" : ""}`}
@@ -263,18 +279,29 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
       </header>
       <div className="site-header-spacer" aria-hidden />
 
-      {open && (
-        <>
-          <button type="button" className="site-menu-dim" aria-label="إغلاق القائمة" onClick={() => setOpen(false)} />
-          <div id="mobile-menu" ref={menuRef} className="site-menu" role="dialog" aria-modal="true" aria-label="القائمة">
-            {homeListed && (
-              <SiteNavLink to="/" onClick={() => setOpen(false)} className={({ isActive }) => `site-nav${isActive ? " is-active" : ""}`}>
-                الرئيسية
-              </SiteNavLink>
-            )}
-            {menu.map((item) => renderItem(item, () => setOpen(false)))}
+      {open && createPortal(
+        <div className="site-mobile-overlay" dir="rtl">
+          <button type="button" tabIndex={-1} className="site-menu-dim" aria-label="إغلاق القائمة بالنقر خارجها" onClick={() => closeMenu()} />
+          <div id="mobile-menu" ref={menuRef} className="site-menu" role="dialog" aria-modal="true" aria-labelledby="mobile-menu-title">
+            <div className="site-menu-heading">
+              <div><span className="site-menu-overline">AMTDEX SOFT</span><h2 id="mobile-menu-title">استكشف امتدكس</h2></div>
+              <button type="button" className="site-menu-close" aria-label="إغلاق القائمة" onClick={() => closeMenu()}><Icon name="close" size={22} /></button>
+            </div>
+            <nav className="site-menu-links" aria-label="التنقل الرئيسي">
+              {homeListed && (
+                <SiteNavLink to="/" onClick={() => closeMenu(false)} className={({ isActive }) => `site-nav${isActive ? " is-active" : ""}`}>
+                  الرئيسية
+                </SiteNavLink>
+              )}
+              {mobileMenu.map((item) => renderItem(item, () => closeMenu(false)))}
+            </nav>
+            <div className="site-menu-footer">
+              <p>من الفكرة إلى التنفيذ.</p>
+              {quoteListed && <SiteLink to="/quote" className="site-menu-primary" onClick={() => closeMenu(false)}>ابدأ مشروعك <Icon name="arrowUpLeft" size={19} /></SiteLink>}
+              {contactListed && <SiteLink to="/contact" className="site-menu-contact" onClick={() => closeMenu(false)}>تواصل معنا <Icon name="mail" size={17} /></SiteLink>}
+            </div>
           </div>
-        </>
+        </div>, document.body
       )}
     </>
   )
