@@ -1,3 +1,4 @@
+import { useState } from "react"
 const screens = [
   { id: "projects", title: "إدارة المشاريع والمهام", alt: "نموذج تطبيق إدارة المشاريع: نسب الإنجاز ومهام الفريق" },
   { id: "health", title: "الحجوزات والخدمات", alt: "نموذج تطبيق حجز طبي: الأطباء والمواعيد المتاحة" },
@@ -5,6 +6,7 @@ const screens = [
 ]
 
 export function ScreenGallery() {
+  const [active, setActive] = useState(0)
   return (
     <section data-motion-group className="screen-gallery" aria-labelledby="screen-gallery-title">
       <div data-motion="rise" className="screen-gallery-heading">
@@ -15,7 +17,8 @@ export function ScreenGallery() {
       <div className="screen-gallery-window">
         <div className="screen-gallery-stage">
           {screens.map((screen, index) => (
-            <figure data-motion="screen" data-motion-delay={index * 120} className="screen-gallery-card" key={screen.id}>
+            <figure data-motion="screen" data-motion-delay={index * 120} className="screen-gallery-card" data-active={active === index} key={screen.id}>
+              <button type="button" className="screen-select" aria-pressed={active === index} aria-label={`عرض ${screen.title}`} onClick={() => setActive(index)} onPointerEnter={event => { if (event.pointerType === "mouse") setActive(index) }}>
               <div className="screen-gallery-image">
                 <img
                   src={`/images/screens/${screen.id}.webp`}
@@ -29,7 +32,8 @@ export function ScreenGallery() {
                   decoding="async"
                 />
               </div>
-              <figcaption>{screen.title}</figcaption>
+              <span className="screen-caption"><span>0{index + 1}</span>{screen.title}<span aria-hidden="true">↗</span></span>
+              </button>
             </figure>
           ))}
         </div>

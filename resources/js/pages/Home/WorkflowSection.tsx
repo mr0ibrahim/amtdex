@@ -13,7 +13,7 @@ export function WorkflowSection() {
           </h2>
           <p className="mt-3 text-[14px] leading-[26px] text-[var(--color-text-muted)] max-w-[480px]">من الفكرة إلى التنفيذ. الخطوات نفسها التي نعمل بها مع كل مشروع.</p>
           <div className="workflow-progress" aria-hidden="true"><span data-progress /></div>
-          <div className="da-steps">
+          <div className="process-viewport" data-process-viewport><div className="da-steps" data-process-track>
             {[
               { n: "01", t: "نفهم", d: "نفهم فكرتك واحتياجات مشروعك." },
               { n: "02", t: "نخطط", d: "نخطط للحل التقني المناسب لك." },
@@ -21,13 +21,13 @@ export function WorkflowSection() {
               { n: "04", t: "نختبر", d: "نختبر الحل ونتأكد من جاهزيته." },
               { n: "05", t: "نطلق", d: "نساعدك على إطلاق مشروعك وتطويره." },
             ].map((s, index) => (
-              <article key={s.n} data-motion="rise" data-motion-delay={index * 140} className="da-step">
+              <article key={s.n} data-motion="rise" data-motion-delay={index * 140} className="da-step process-card">
                 <span className="num">{s.n}</span>
                 <b className="block mt-2">{s.t}</b>
                 <p>{s.d}</p>
               </article>
             ))}
-          </div>
+          </div></div>
         </div>
 
 

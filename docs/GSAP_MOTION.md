@@ -11,3 +11,23 @@ The public layout now uses a white canvas, restrained lavender surfaces, a share
 GSAP loads asynchronously within MarketingLayout. Heading wipe reveals, screen perspective reveals, chart growth and workflow progress have distinct roles. Desktop parallax is subtle; there is no scroll hijacking. Reduced-motion changes revert active scenes. Route changes, CMS removals and tab switches release contexts and listeners. Dashboard and auth do not mount the marketing engine.
 
 Validation: `npm test` (79 tests), `npm run build`, `git diff --check`. The previous live design was inspected in the browser; the new local preview was blocked by browser URL policy. Local Chromium is also unavailable under the execution policy, so responsive browser QA of this revision remains unverified. Existing unrelated build warnings remain.
+
+## Uploaded video reference pass
+
+Reference: the user's 111-second Arabic banking-site recording. Patterns observed:
+layered cards and staggered entrance, expanding card groups, scroll-driven horizontal
+cards, violet feature panels, fanned testimonials, and generous white section spacing.
+The adaptation uses AMTDEX product UI and a contract illustration built with HTML/CSS;
+it does not reuse the reference's banking brand, payment cards or robot artwork.
+
+Home-only visual overrides live in `resources/css/reference-cards.css`. `ProductScene`
+contains native UI layers with staggered GSAP entrance. The screenshot gallery expands
+its active card on desktop and keeps native button activation. The process rail pins
+only with desktop fine-pointer input and no reduced-motion preference. Touch and
+reduced-motion users receive an ordinary grid. GSAP owns and reverts the rail and
+layer scenes on route/DOM changes. Existing stats, ratings and removed-section choices
+are preserved.
+
+Validation: 81 tests pass, TypeScript/Vite production build and diff checks pass.
+Browser visual verification remains unavailable: Playwright's bundled Chromium is
+absent and system Chromium exits during launch. No pixel-identical match is claimed.

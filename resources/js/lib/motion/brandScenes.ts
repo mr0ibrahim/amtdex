@@ -17,9 +17,9 @@ export function mountBrandScenes(root: HTMLElement) {
       scenes.forEach((scene, el) => {
         if (!root.contains(el)) { scene.dispose?.(); scene.context.revert(); scenes.delete(el) }
       })
-      root.querySelectorAll<HTMLElement | SVGElement>("[data-motion-group] [data-motion], [data-parallax], [data-tilt], [data-progress]").forEach(el => {
+      root.querySelectorAll<HTMLElement | SVGElement>("[data-motion-group] [data-motion], [data-parallax], [data-tilt], [data-progress], [data-stack], [data-process-viewport]").forEach(el => {
         if (scenes.has(el)) return
-        if (!el.hasAttribute("data-motion") && !el.hasAttribute("data-progress") && !desktop) return
+        if (!el.hasAttribute("data-motion") && !el.hasAttribute("data-progress") && !el.hasAttribute("data-stack") && !desktop) return
         let dispose: (() => void) | undefined
         // Own contexts explicitly so repeated tab changes don't retain detached nodes.
         const scene = gsap.context(() => {
@@ -38,6 +38,24 @@ export function mountBrandScenes(root: HTMLElement) {
               immediateRender: false,
               scrollTrigger: { trigger: el, start: "top 92%", once: true },
             })
+          }
+          if (el.hasAttribute("data-stack")) {
+            const layers = el.querySelectorAll<HTMLElement>("[data-stack-layer]")
+            gsap.fromTo(layers, { y: 70, opacity: 0 }, {
+              y: 0, opacity: 1, stagger: .13, duration: 1.15, ease: "power3.out",
+              scrollTrigger: { trigger: el, start: "top 94%", once: true },
+            })
+          }
+          if (desktop && el.hasAttribute("data-process-viewport")) {
+            const track = el.querySelector<HTMLElement>("[data-process-track]")
+            const distance = () => Math.max(0, (track?.scrollWidth || 0) - el.clientWidth)
+            if (track && distance() > 0) {
+              // RTL starts at the right: translate positively to reveal later cards.
+              gsap.fromTo(track, { x: 0 }, {
+                x: distance, ease: "none",
+                scrollTrigger: { trigger: el, start: "top 30%", end: () => `+=${distance() + 160}`, pin: true, scrub: .65, invalidateOnRefresh: true },
+              })
+            }
           }
           if (el.hasAttribute("data-progress")) {
             gsap.fromTo(el, { scaleX: 0 }, { scaleX: 1, ease: "none", scrollTrigger: { trigger: el.closest("[data-motion-group]"), start: "top 75%", end: "bottom 65%", scrub: .4 } })
