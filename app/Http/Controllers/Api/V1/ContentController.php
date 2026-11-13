@@ -18,21 +18,6 @@ use Illuminate\Support\Str;
 
 class ContentController extends Controller
 {
-    /** Private editor lists include unpublished/inactive records. */
-    public function adminIndex(string $resource): JsonResponse
-    {
-        $models = [
-            'services' => Service::class,
-            'projects' => Project::class,
-            'testimonials' => Testimonial::class,
-            'faqs' => Faq::class,
-            'team' => TeamMember::class,
-        ];
-        abort_unless(isset($models[$resource]), 404);
-
-        return response()->json(['data' => $models[$resource]::query()->orderBy('sort_order')->get()]);
-    }
-
     // ── SERVICES ──
 
     public function services(): JsonResponse
@@ -402,8 +387,8 @@ class ContentController extends Controller
     {
         $validated = $request->validate([
             'author' => ['required', 'string', 'max:255'],
-            'role' => ['nullable', 'string', 'max:255'],
-            'company' => ['nullable', 'string', 'max:255'],
+            'role' => ['required', 'string', 'max:255'],
+            'company' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
             'avatar' => ['nullable', 'string'],
             'rating' => ['nullable', 'integer', 'min:1', 'max:5'],
@@ -411,8 +396,6 @@ class ContentController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        $validated['role'] = $validated['role'] ?? '';
-        $validated['company'] = $validated['company'] ?? '';
         $testimonial = Testimonial::create($validated);
 
         AuditLog::record("إضافة رأي عميل جديد: {$testimonial->author}", $request->user()?->email);
@@ -429,8 +412,8 @@ class ContentController extends Controller
 
         $validated = $request->validate([
             'author' => ['sometimes', 'string', 'max:255'],
-            'role' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'company' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'role' => ['sometimes', 'string', 'max:255'],
+            'company' => ['sometimes', 'string', 'max:255'],
             'content' => ['sometimes', 'string'],
             'avatar' => ['nullable', 'string'],
             'rating' => ['nullable', 'integer', 'min:1', 'max:5'],
@@ -438,11 +421,6 @@ class ContentController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        foreach (['role', 'company'] as $field) {
-            if (array_key_exists($field, $validated)) {
-                $validated[$field] = $validated[$field] ?? '';
-            }
-        }
         $testimonial->update($validated);
 
         AuditLog::record("تعديل رأي عميل: {$testimonial->author}", $request->user()?->email);

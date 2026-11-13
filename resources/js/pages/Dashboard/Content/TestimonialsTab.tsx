@@ -1,6 +1,6 @@
-import { useAdminContentQuery } from "@/lib/queries"
 import { useState } from "react"
 import {
+  useTestimonialsQuery,
   useCreateTestimonialMutation,
   useUpdateTestimonialMutation,
   useDeleteTestimonialMutation,
@@ -20,7 +20,7 @@ interface TestimonialData {
 }
 
 export function TestimonialsTab() {
-  const { data: testimonials = [], isLoading, error, refetch } = useAdminContentQuery("testimonials")
+  const { data: testimonials = [], isLoading } = useTestimonialsQuery()
   const createMutation = useCreateTestimonialMutation()
   const updateMutation = useUpdateTestimonialMutation()
   const deleteMutation = useDeleteTestimonialMutation()
@@ -94,8 +94,8 @@ export function TestimonialsTab() {
 
     const payload = {
       author: editingItem.author,
-      role: editingItem.role,
-      company: editingItem.company,
+      role: editingItem.role || "عميل",
+      company: editingItem.company || "عميل أمـتـدِكس",
       content: editingItem.content,
       avatar: editingItem.avatar || null,
       rating: editingItem.rating || 5,
@@ -128,8 +128,6 @@ export function TestimonialsTab() {
     }
   }
 
-  if (error) return <div className="dash-empty" role="alert">تعذّر تحميل المحتوى المحفوظ. <button type="button" className="dash-tab" onClick={() => void refetch()}>إعادة المحاولة</button></div>
-
   return (
     <div className="bg-white border border-[var(--color-border)] rounded-2xl p-5 space-y-4">
       <div className="flex items-center justify-between">
@@ -161,6 +159,8 @@ export function TestimonialsTab() {
           {testimonials.map((t: any) => {
             const author = t.author || t.name
             const content = t.content || t.text
+            const role = t.role || ""
+            const company = t.company || ""
             return (
               <div
                 key={t.id || author}
@@ -181,7 +181,9 @@ export function TestimonialsTab() {
                     )}
                     <div>
                       <div className="font-bold text-[13px] text-[var(--color-ink)]">{author}</div>
-
+                      <div className="text-[11px] text-[var(--color-text-muted)]">
+                        {role} {company && `• ${company}`}
+                      </div>
                     </div>
                   </div>
 
@@ -246,6 +248,31 @@ export function TestimonialsTab() {
                 onChange={(e) => setEditingItem({ ...editingItem, author: e.target.value })}
                 className="w-full border border-[var(--color-border)] rounded-xl px-3 py-2 text-[12px] outline-none focus:border-[var(--color-primary)]"
               />
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-bold text-[var(--color-ink)] mb-1">
+                  المسمى الوظيفي
+                </label>
+                <input
+                  placeholder="مثال: الرئيس التنفيذي"
+                  value={editingItem.role}
+                  onChange={(e) => setEditingItem({ ...editingItem, role: e.target.value })}
+                  className="w-full border border-[var(--color-border)] rounded-xl px-3 py-2 text-[12px] outline-none focus:border-[var(--color-primary)]"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-[var(--color-ink)] mb-1">
+                  الشركة / المنظمة
+                </label>
+                <input
+                  placeholder="مثال: شركة مسار للتقنية"
+                  value={editingItem.company}
+                  onChange={(e) => setEditingItem({ ...editingItem, company: e.target.value })}
+                  className="w-full border border-[var(--color-border)] rounded-xl px-3 py-2 text-[12px] outline-none focus:border-[var(--color-primary)]"
+                />
+              </div>
             </div>
 
             <div>

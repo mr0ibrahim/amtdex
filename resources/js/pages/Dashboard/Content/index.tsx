@@ -1,6 +1,7 @@
-import { useAdminContentQuery } from "@/lib/queries"
 import { useState, useMemo } from "react"
 import {
+  useServicesQuery,
+  useProjectsQuery,
   useUpsertServiceMutation,
   useDeleteServiceMutation,
   useUpsertProjectMutation,
@@ -134,8 +135,8 @@ function TagsInput({
 }
 
 export function ContentPage() {
-  const { data: services = [], isLoading: loadingServices, error: servicesError, refetch: reloadServices } = useAdminContentQuery<Service>("services")
-  const { data: projects = [], isLoading: loadingProjects, error: projectsError, refetch: reloadProjects } = useAdminContentQuery<Project>("projects")
+  const { data: services = [], isLoading: loadingServices } = useServicesQuery()
+  const { data: projects = [], isLoading: loadingProjects } = useProjectsQuery()
 
   const upsertServiceMutation = useUpsertServiceMutation()
   const deleteServiceMutation = useDeleteServiceMutation()
@@ -297,11 +298,11 @@ export function ContentPage() {
     { id: "testimonials", label: "آراء العملاء" },
     { id: "faqs", label: "الأسئلة الشائعة" },
     { id: "team", label: "فريق العمل" },
+    { id: "clients", label: "الشركاء والعملاء" },
   ]
 
   return (
     <div className="space-y-5">
-      {(servicesError || projectsError) && <div className="dash-empty" role="alert">تعذّر تحميل بعض المحتوى من الخادم. <button type="button" className="dash-tab" onClick={() => { void reloadServices(); void reloadProjects() }}>إعادة المحاولة</button></div>}
       <div>
         <h1 className="text-lg sm:text-[18px] font-extrabold text-[var(--color-ink)]">إدارة المحتوى</h1>
         <p className="text-[12px] text-[var(--color-text-muted)] mt-1">

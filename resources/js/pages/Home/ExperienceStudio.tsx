@@ -1,4 +1,3 @@
-import { useSection } from "@/cms/useCms"
 import { useEffect, useRef, useState, type KeyboardEvent } from "react"
 import { Icon, type IconName } from "@/components/ui/Icon"
 import { PublicLink as Link } from "@/cms/PublicLink"
@@ -10,7 +9,6 @@ const experiences = [
 ] as const
 
 export function ExperienceStudio() {
-  const fields = useSection("gallery").fields
   const [active, setActive] = useState(0)
   const tabs = useRef<(HTMLButtonElement | null)[]>([])
   const deck = useRef<HTMLDivElement>(null)
@@ -54,9 +52,9 @@ export function ExperienceStudio() {
   return (
     <section data-motion-group className="experience-studio motion-showcase page-container page-container--wide page-section" aria-labelledby="studio-title">
       <div className="studio-heading">
-        <p className="studio-eyebrow"><span /> {fields.deck_kicker}</p>
-        <h2 id="studio-title">{fields.deck_title}</h2>
-        <p>{fields.deck_lede}</p>
+        <p className="studio-eyebrow"><span /> من الفكرة إلى تجربة حقيقية</p>
+        <h2 id="studio-title">ثلاث أفكار.<br /><em>وتجربة تتحرّك معك.</em></h2>
+        <p>بدّل بين النماذج واستكشف كيف يمكن أن يبدو مشروعك.</p>
       </div>
       <div className="project-showcase">
         <div className="project-showcase-copy">

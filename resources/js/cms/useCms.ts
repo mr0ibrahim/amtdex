@@ -6,7 +6,7 @@ import { applyVisibility } from "./visibility"
 
 export function useCms() {
   const staff = isAuthenticated() && hasRole(["admin", "editor"])
-  const onDashboard = typeof window !== "undefined" && (Boolean(window.__AMTDEX_CONFIG__?.isDashboardHost) || /^\/dashboard(?:\/|$)/.test(window.location.pathname))
+  const onDashboard = typeof window !== "undefined" && Boolean(window.__AMTDEX_CONFIG__?.isDashboardHost)
   const preview = staff && onDashboard
   const boot = applyVisibility()
   const query = useQuery({
@@ -16,8 +16,8 @@ export function useCms() {
     placeholderData: preview ? CMS_DEFAULTS : boot,
     staleTime: 0,
   })
-  const doc = applyVisibility(query.data ?? (preview ? undefined : boot), preview)
-  return { ...doc, staff: preview, ready: preview ? query.isSuccess : true, error: query.error, refetch: query.refetch }
+  const doc = applyVisibility(query.data ?? (preview ? undefined : boot))
+  return { ...doc, staff: preview, ready: preview ? query.isSuccess : true }
 }
 
 export function useSection(id: string): CmsSection {

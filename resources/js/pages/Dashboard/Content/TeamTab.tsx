@@ -1,6 +1,6 @@
-import { useAdminContentQuery } from "@/lib/queries"
 import { useState } from "react"
 import {
+  useTeamQuery,
   useCreateTeamMemberMutation,
   useUpdateTeamMemberMutation,
   useDeleteTeamMemberMutation,
@@ -23,7 +23,7 @@ interface TeamMemberData {
 }
 
 export function TeamTab() {
-  const { data: team = [], isLoading, error, refetch } = useAdminContentQuery("team")
+  const { data: team = [], isLoading } = useTeamQuery()
   const createMutation = useCreateTeamMemberMutation()
   const updateMutation = useUpdateTeamMemberMutation()
   const deleteMutation = useDeleteTeamMemberMutation()
@@ -126,8 +126,6 @@ export function TeamTab() {
       })
     }
   }
-
-  if (error) return <div className="dash-empty" role="alert">تعذّر تحميل المحتوى المحفوظ. <button type="button" className="dash-tab" onClick={() => void refetch()}>إعادة المحاولة</button></div>
 
   return (
     <div className="bg-white border border-[var(--color-border)] rounded-2xl p-5 space-y-4">

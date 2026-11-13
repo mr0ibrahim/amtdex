@@ -34,5 +34,3 @@
 }
 @media(prefers-reduced-motion:reduce) {.project-copy-panel,.home-stack .testimonial-story blockquote {animation:none;}.project-showcase *,.home-stack .screen-gallery-card .screen-gallery-image {transition:none!important;}.project-deck-card {will-change:auto;}}
 .project-deck-card[data-active="true"] {z-index:3;}
-
-.home-stack :is(.studio-heading h2,.home-workflow h2) {white-space:pre-line;}

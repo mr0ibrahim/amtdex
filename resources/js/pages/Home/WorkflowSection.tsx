@@ -1,18 +1,18 @@
-import { useSection } from "@/cms/useCms"
 import { BrandArtwork, type ArtworkKind } from "@/components/ui/BrandArtwork"
 
 export function WorkflowSection() {
-  const fields = useSection("workflow").fields
   return (
     <section data-motion-group className="home-workflow workflow-steps-only page-container page-container--wide page-section">
       <div className="grid gap-6">
         {/* Left */}
         <div>
-          <div className="eyebrow">{fields.kicker}</div>
+          <div className="eyebrow">من الفكرة إلى الإنجاز</div>
           <h2 data-motion="rise" className="mt-4 text-[28px] sm:text-[40px] leading-[1.2] font-semibold text-[var(--color-ink)]">
-            {fields.title}
+            خمس خطوات
+            <br />
+            من الفكرة إلى الإنجاز.
           </h2>
-          <p className="mt-3 text-[14px] leading-[26px] text-[var(--color-text-muted)] max-w-[480px]">{fields.lede}</p>
+          <p className="mt-3 text-[14px] leading-[26px] text-[var(--color-text-muted)] max-w-[480px]">من الفكرة إلى التنفيذ. الخطوات نفسها التي نعمل بها مع كل مشروع.</p>
           <div className="workflow-progress" aria-hidden="true"><span data-progress /></div>
           <div className="process-viewport" data-process-viewport><div className="da-steps" data-process-track>
             {[
@@ -25,8 +25,8 @@ export function WorkflowSection() {
               <article key={s.n} data-motion="rise" data-motion-delay={index * 140} className="da-step process-card">
                 <div className="process-card-top"><span className="num">{s.n}</span><span className="process-card-line" /></div>
                 <BrandArtwork kind={(["contact", "plan", "web", "shield", "launch"] as ArtworkKind[])[index]} />
-                <b className="block mt-2">{fields[`step${index+1}_title`] || s.t}</b>
-                <p>{fields[`step${index+1}_description`] || s.d}</p>
+                <b className="block mt-2">{s.t}</b>
+                <p>{s.d}</p>
               </article>
             ))}
           </div></div>

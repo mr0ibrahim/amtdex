@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { type CmsDocument } from "@/cms/defaults"
+import { useState } from "react"
+import { CMS_DEFAULTS, type CmsDocument } from "@/cms/defaults"
 import { useCms, useSaveCms } from "@/cms/useCms"
 
 const FIELD_LABELS: Record<string, string> = {
@@ -16,11 +16,7 @@ const FIELD_LABELS: Record<string, string> = {
 }
 
 function fieldLabel(key: string) {
-  const stat = key.match(/^stat(\d+)_(value|label|sub)$/)
-  if (stat) return `الرقم ${stat[1]} — ${{ value: "القيمة", label: "العنوان", sub: "الوصف" }[stat[2]]}`
-  const step = key.match(/^step(\d+)_(title|description)$/)
-  if (step) return `الخطوة ${step[1]} — ${step[2] === "title" ? "العنوان" : "الوصف"}`
-  return ({ note: "النص التوضيحي", deck_kicker: "تعريف معرض البطاقات", deck_title: "عنوان معرض البطاقات", deck_lede: "وصف معرض البطاقات" } as Record<string,string>)[key] ?? FIELD_LABELS[key] ?? key
+  return FIELD_LABELS[key] ?? key
 }
 
 export function SiteManagerPage() {
@@ -28,13 +24,6 @@ export function SiteManagerPage() {
   const save = useSaveCms()
   const [doc, setDoc] = useState<CmsDocument | null>(null)
   const [status, setStatus] = useState("")
-  const [saving, setSaving] = useState(false)
-  useEffect(() => {
-    if (!doc) return
-    const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = "" }
-    window.addEventListener("beforeunload", warn)
-    return () => window.removeEventListener("beforeunload", warn)
-  }, [doc])
   const current = doc ?? { copy: remote.copy, pages: remote.pages, nav: remote.nav, homeSections: remote.homeSections }
 
   const update = (next: CmsDocument) => setDoc(next)
@@ -54,28 +43,20 @@ export function SiteManagerPage() {
   }
 
   const persist = async () => {
-    if (!remote.ready || saving || !doc) return
-    const snapshot = current
-    setSaving(true)
     setStatus("جار الحفظ...")
     try {
-      await save(snapshot)
-      setDoc(latest => latest === snapshot ? null : latest)
+      await save(current)
       setStatus("تم الحفظ ويظهر للزوار الآن")
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "تعذر الحفظ")
-    } finally {
-      setSaving(false)
     }
   }
-
-  if (!remote.ready) return <div className="dash-panel" role="status">{remote.error ? <>تعذّر تحميل المحتوى. <button type="button" className="dash-tab" onClick={() => void remote.refetch()}>إعادة المحاولة</button></> : "جار تحميل المحتوى المحفوظ..."}</div>
 
   return (
     <div className="site-manager space-y-6">
       <div>
         <h1 className="dash-page-title">محتوى الموقع</h1>
-        <p className="dash-page-sub">عدّل النصوص، أظهر أو أخفِ الصفحات والأقسام، وأعد ترتيب القائمة. تُحمّل القيم المحفوظة من الخادم. الأقسام المحذوفة لا تظهر هنا.</p>
+        <p className="dash-page-sub">عدّل النصوص، أظهر أو أخفِ الصفحات والأقسام، وأعد ترتيب القائمة. النصوص الحالية هي القيم الافتراضية.</p>
       </div>
       {status && <p role="status" className="text-[13px] text-[var(--color-text-muted)]">{status}</p>}
 
@@ -118,7 +99,19 @@ export function SiteManagerPage() {
                 />
               </label>
             ))}
-
+            <label className="block text-[12px] font-bold">
+              صورة القسم
+              <input
+                className="mt-1 w-full rounded-xl border border-[var(--color-border)] px-3 py-2"
+                value={section.image ?? ""}
+                placeholder={CMS_DEFAULTS.homeSections.find((item) => item.id === section.id)?.image ?? ""}
+                onChange={(e) => {
+                  const homeSections = current.homeSections.slice()
+                  homeSections[index] = { ...section, image: e.target.value }
+                  update({ ...current, homeSections })
+                }}
+              />
+            </label>
             </div>
           </details>
         ))}
@@ -178,8 +171,7 @@ export function SiteManagerPage() {
         ))}
       </section>
       <div className="site-savebar">
-        <button type="button" className="btn btn-ink" disabled={saving || !doc} onClick={persist}>{saving ? "جار الحفظ..." : "حفظ التغييرات"}</button>
-        {doc && <span className="text-[12px]">لديك تغييرات غير محفوظة</span>}
+        <button type="button" className="btn btn-ink" onClick={persist}>حفظ التغييرات</button>
         {status && <span className="text-[13px]">{status}</span>}
       </div>
     </div>

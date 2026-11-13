@@ -1,4 +1,3 @@
-import { canVisitDashboard } from "@/lib/dashboardAccess"
 import { Link, useNavigate } from "react-router-dom"
 import { useMemo, useState } from "react"
 import { createSearchIndex, useDebouncedValue } from "@/routing/search"
@@ -18,8 +17,7 @@ const MODULE_GROUPS: Array<{ title: string; items: ModuleCard[] }> = [
     title: "المحتوى والنشر",
     items: [
       { to: "/dashboard/blog", title: "المدونة", desc: "مقالات، تصنيفات، ووسوم", icon: "pen" },
-      { to: "/dashboard/content", title: "الخدمات والأعمال", desc: "الخدمات والمشاريع وآراء العملاء", icon: "layers" },
-      { to: "/dashboard/site", title: "الصفحات والرئيسية", desc: "الأقسام والقائمة والنصوص والنشر", icon: "web" },
+      { to: "/dashboard/content", title: "محتوى الموقع", desc: "خدمات ومحتوى الصفحات", icon: "layers" },
       { to: "/dashboard/media", title: "مكتبة الوسائط", desc: "صور وملفات جاهزة للنشر", icon: "image" },
     ],
   },
@@ -41,25 +39,24 @@ const MODULE_GROUPS: Array<{ title: string; items: ModuleCard[] }> = [
   },
 ]
 
-const SHORTCUTS = [
-  { title: "مراجعة طلب تواصل جديد", meta: "متابعة استفسارات العملاء", to: "/dashboard/leads", icon: "mail" as IconName },
-  { title: "تحديث مقال المدونة", meta: "كتابة المقالات وإدارتها", to: "/dashboard/blog", icon: "pen" as IconName },
-  { title: "ضبط بيانات SEO للخدمات", meta: "إدارة ظهور الصفحات", to: "/dashboard/seo", icon: "globe" as IconName },
+const RECENT = [
+  { title: "مراجعة طلب تواصل جديد", meta: "وصل حديثاً", to: "/dashboard/leads", icon: "mail" as IconName },
+  { title: "تحديث مقال المدونة", meta: "قبل ساعة", to: "/dashboard/blog", icon: "pen" as IconName },
+  { title: "ضبط بيانات SEO للخدمات", meta: "اليوم", to: "/dashboard/seo", icon: "globe" as IconName },
 ]
 
 export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
   void onToast
   const session = getSession()
   const navigate = useNavigate()
-  const groups = useMemo(() => MODULE_GROUPS.map(group => ({ ...group, items: group.items.filter(item => canVisitDashboard(item.to, session?.user.role)) })).filter(group => group.items.length), [session?.user.role])
   const [query, setQuery] = useState("")
   const debouncedQuery = useDebouncedValue(query, 160)
   const moduleIndex = useMemo(
     () => createSearchIndex(
-      groups.flatMap((group) => group.items.map((item) => ({ ...item, group: group.title }))),
+      MODULE_GROUPS.flatMap((group) => group.items.map((item) => ({ ...item, group: group.title }))),
       (item) => `${item.title} ${item.desc} ${item.group}`,
     ),
-    [groups],
+    [],
   )
   const moduleHits = moduleIndex(debouncedQuery)
   const { data: stats, isLoading, error, refetch } = useDashboardStatsQuery()
@@ -96,7 +93,7 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
               name="q"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="ابحث عن قسم في لوحة التحكم..."
+              placeholder="ابحث عن طلب، مقال، إعداد، أو وحدة تشغيل..."
               aria-label="بحث لوحة التحكم"
               role="searchbox"
               aria-controls="dash-module-results"
@@ -124,8 +121,8 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
 
           <div className="dash-pill-row">
             <Link to="/dashboard/leads" className="dash-pill">الطلبات الجديدة</Link>
-            {canVisitDashboard("/dashboard/blog", session?.user.role) && <Link to="/dashboard/blog" className="dash-pill">نشر مقال</Link>}
-            {canVisitDashboard("/dashboard/site", session?.user.role) && <Link to="/dashboard/site" className="dash-pill">إدارة الرئيسية</Link>}
+            <Link to="/dashboard/blog" className="dash-pill">نشر مقال</Link>
+            <Link to="/dashboard/content" className="dash-pill">تحديث المحتوى</Link>
           </div>
 
           <div className="mt-5 text-[11px] text-[var(--color-text-muted)]">
@@ -196,7 +193,7 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
 
       <div className="grid xl:grid-cols-[minmax(0,1fr)_300px] gap-5 items-start">
         <div className="space-y-6">
-          {groups.map((group) => ({
+          {MODULE_GROUPS.map((group) => ({
             ...group,
             items: debouncedQuery.trim()
               ? group.items.filter((item) => moduleHits.some((hit) => hit.to === item.to && hit.title === item.title))
@@ -226,13 +223,13 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
 
         <aside className="dash-panel xl:sticky xl:top-6">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="text-[14px] font-bold text-[var(--color-ink)]">اختصارات سريعة</h2>
+            <h2 className="text-[14px] font-bold text-[var(--color-ink)]">تابع من حيث توقفت</h2>
             <span className="text-[10px] font-bold text-[var(--color-primary)] bg-[var(--color-card-soft)] px-2 py-1 rounded-full">
-              أدوات
+              حديث
             </span>
           </div>
           <div className="mt-4 grid gap-3">
-            {SHORTCUTS.filter(item => canVisitDashboard(item.to, session?.user.role)).map((item) => (
+            {RECENT.map((item) => (
               <div key={item.title} className="dash-recent-card">
                 <div className="flex items-start gap-3">
                   <span className="dash-module-ico !size-10 !rounded-xl">

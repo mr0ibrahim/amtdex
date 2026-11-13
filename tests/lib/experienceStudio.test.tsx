@@ -4,7 +4,6 @@ import { MemoryRouter } from "react-router-dom"
 import { afterEach, beforeEach, expect, it, vi } from "vitest"
 import { ExperienceStudio } from "@/pages/Home/ExperienceStudio"
 
-vi.mock("@/cms/useCms", async () => { const { CMS_DEFAULTS } = await import("@/cms/defaults"); return { useSection: (id: string) => CMS_DEFAULTS.homeSections.find(section => section.id === id)! } })
 vi.mock("@/cms/PublicLink", async () => ({ PublicLink: (await import("react-router-dom")).Link }))
 beforeEach(() => {
   vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })))

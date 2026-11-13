@@ -11,7 +11,7 @@ class CmsStore
 
     public static function full(): array
     {
-        return Cache::remember('cms.full.v2', 3600, function () {
+        return Cache::remember('cms.full', 3600, function () {
             $row = SiteSetting::query()->where('key', self::KEY)->value('value');
             $stored = is_string($row) ? json_decode($row, true) : null;
 
@@ -50,7 +50,6 @@ class CmsStore
             ['value' => json_encode($merged, JSON_UNESCAPED_UNICODE)]
         );
         Cache::forget('cms.full');
-        Cache::forget('cms.full.v2');
         Cache::forget('cms.bootstrap');
 
         return $merged;
@@ -138,6 +137,8 @@ class CmsStore
             $page = $publishedByPath->get($item['to']);
             if ($page && ! $page['published']) {
                 $merged['visible'] = false;
+            } elseif (! empty($item['visible']) && (! $page || $page['published'])) {
+                $merged['visible'] = true;
             }
 
             return $merged;
@@ -150,11 +151,19 @@ class CmsStore
         $storedSections = collect($stored['homeSections'] ?? [])->keyBy('id');
         $sections = collect($defaults['homeSections'])->map(function ($section) use ($storedSections) {
             $override = $storedSections->get($section['id'], []);
-            $fields = array_merge($section['fields'], array_intersect_key($override['fields'] ?? [], $section['fields']));
+            $fields = array_merge($section['fields'], $override['fields'] ?? []);
             foreach ($fields as $key => $value) {
                 $fields[$key] = self::keep($value, $section['fields'][$key] ?? '');
             }
-            $section['visible'] = $override['visible'] ?? $section['visible'];
+            $custom = false;
+            foreach ($override['fields'] ?? [] as $value) {
+                if (is_string($value) && $value !== '' && ! in_array($value, self::RETIRED, true)) {
+                    $custom = true;
+                }
+            }
+            $section['visible'] = $custom
+                ? ($override['visible'] ?? $section['visible'])
+                : $section['visible'];
             $section['fields'] = $fields;
             if (! empty($override['image'])) {
                 $section['image'] = $override['image'];
@@ -164,9 +173,6 @@ class CmsStore
         });
         if (! empty($stored['homeSections'])) {
             $order = array_column($stored['homeSections'], 'id');
-            if (array_intersect($order, ['marquee', 'spotlight', 'orbit', 'services', 'cta', 'newsletter'])) {
-                $order = array_column($defaults['homeSections'], 'id');
-            }
             $sections = $sections->sortBy(fn ($section) => ($i = array_search($section['id'], $order, true)) === false ? 999 : $i);
         }
 

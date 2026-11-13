@@ -1,4 +1,3 @@
-import { canVisitDashboard } from "@/lib/dashboardAccess"
 import "../../../css/dashboard.css"
 import { useEffect, useMemo, useState } from "react"
 import { useDebouncedValue } from "@/routing/search"
@@ -50,13 +49,12 @@ function SidebarContent({
   const nav = useNavigate()
   const groups = useMemo(() => {
     const q = filter.trim()
-    const allowed = NAV_GROUPS.map(group => ({ ...group, items: group.items.filter(item => canVisitDashboard(item.to, session?.user.role)) })).filter(group => group.items.length)
-    if (!q) return allowed
-    return allowed.map((g) => ({
+    if (!q) return NAV_GROUPS
+    return NAV_GROUPS.map((g) => ({
       ...g,
       items: g.items.filter((i) => i.label.includes(q)),
     })).filter((g) => g.items.length > 0)
-  }, [filter, session?.user.role])
+  }, [filter])
 
   const handleLogout = () => {
     logout()

@@ -70,8 +70,6 @@ Route::prefix('v1')->group(function () {
         Route::patch('/leads/{id}/status', [LeadController::class, 'updateStatus'])->middleware('role:admin,editor');
         Route::delete('/leads/{id}', [LeadController::class, 'destroy'])->middleware('role:admin');
 
-        Route::get('/admin/content/{resource}', [ContentController::class, 'adminIndex'])->middleware('role:admin,editor');
-
         // Content Management: Services
         Route::post('/services', [ContentController::class, 'storeService'])->middleware('role:admin,editor');
         Route::put('/services/{slug}', [ContentController::class, 'updateService'])->middleware('role:admin,editor');
