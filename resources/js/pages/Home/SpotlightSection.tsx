@@ -2,7 +2,7 @@ import { PublicLink as Link } from "@/cms/PublicLink"
 
 export function SpotlightSection() {
   return (
-    <section data-motion-group className="page-container page-container--wide page-section">
+    <section data-motion-group className="home-spotlight page-container page-container--wide page-section">
       <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] gap-10 items-start">
         <div>
           <div className="eyebrow">قصة نجاح — من ورشة الى منصة</div>

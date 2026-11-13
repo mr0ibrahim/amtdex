@@ -43,8 +43,8 @@ export function ExperienceStudio() {
           <Link to="/quote" className="studio-link">لنصمّم مشروعك <Icon name="arrowUpLeft" size={20} /></Link>
           <small>واجهات توضيحية ببيانات تجريبية</small>
         </div>
-        <div className="studio-scene">
-          <div className="studio-browser" data-tilt>
+        <div className="studio-scene" data-motion="screen">
+          <div className="studio-browser">
             <div className="studio-browser-bar"><span className="studio-dots" aria-hidden="true"><i /><i /><i /></span><span>AMTDEX / PRODUCT PREVIEW</span><Icon name="shield" size={14} /></div>
             <div className="studio-app-bar"><strong><span className="studio-app-logo"><Icon name={item.icon as IconName} size={20} /></span>{item.app}</strong><span className="studio-avatar">ن</span></div>
             <div className="studio-app-body">

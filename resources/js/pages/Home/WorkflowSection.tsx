@@ -3,7 +3,7 @@ import { PublicLink as Link } from "@/cms/PublicLink"
 
 export function WorkflowSection() {
   return (
-    <section data-motion-group className="page-container page-container--wide page-section">
+    <section data-motion-group className="home-workflow page-container page-container--wide page-section">
       <div className="grid gap-6">
         {/* Left */}
         <div>
@@ -14,6 +14,7 @@ export function WorkflowSection() {
             من الفكرة إلى الإنجاز.
           </h2>
           <p className="mt-3 text-[14px] leading-[26px] text-[var(--color-text-muted)] max-w-[480px]">من الفكرة إلى التنفيذ. الخطوات نفسها التي نعمل بها مع كل مشروع.</p>
+          <div className="workflow-progress" aria-hidden="true"><span data-progress /></div>
           <div className="da-steps">
             {[
               { n: "01", t: "نفهم", d: "نفهم فكرتك واحتياجات مشروعك." },

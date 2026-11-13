@@ -2,7 +2,7 @@ import { Icon } from "@/components/ui/Icon"
 
 export function OrbitSection() {
   return (
-    <section data-motion-group className="page-container page-container--wide page-section border-y border-[var(--color-border)]">
+    <section data-motion-group className="home-tech page-container page-container--wide page-section border-y border-[var(--color-border)]">
       <div className="grid lg:grid-cols-[1fr_auto_1fr] gap-8 items-center">
         <div data-motion="rise">
           <div className="eyebrow">تقنياتنا تدور حول عملك — لا العكس</div>

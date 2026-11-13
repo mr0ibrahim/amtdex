@@ -17,25 +17,30 @@ export function mountBrandScenes(root: HTMLElement) {
       scenes.forEach((scene, el) => {
         if (!root.contains(el)) { scene.dispose?.(); scene.context.revert(); scenes.delete(el) }
       })
-      root.querySelectorAll<HTMLElement | SVGElement>("[data-motion-group] [data-motion], [data-parallax], [data-tilt]").forEach(el => {
+      root.querySelectorAll<HTMLElement | SVGElement>("[data-motion-group] [data-motion], [data-parallax], [data-tilt], [data-progress]").forEach(el => {
         if (scenes.has(el)) return
-        if (!el.hasAttribute("data-motion") && !desktop) return
+        if (!el.hasAttribute("data-motion") && !el.hasAttribute("data-progress") && !desktop) return
         let dispose: (() => void) | undefined
         // Own contexts explicitly so repeated tab changes don't retain detached nodes.
         const scene = gsap.context(() => {
           if (el.hasAttribute("data-motion")) {
             const type = el.dataset.motion
             const from: gsap.TweenVars = type === "bar" ? { scaleY: 0 }
+              : type === "reveal" ? { opacity: 0, y: 18, clipPath: "inset(0% 0% 100% 0%)" }
+              : type === "screen" ? { opacity: 0, y: desktop ? 48 : 24, scale: .97, rotationX: desktop ? 5 : 0, transformPerspective: 1000 }
               : type === "draw" ? { strokeDashoffset: 1, opacity: 0 }
               : type === "signal" ? { opacity: 0, scale: .94 }
               : type === "fade" ? { opacity: 0 } : { opacity: 0, y: desktop ? 34 : 18 }
             gsap.fromTo(el, from, {
-              opacity: 1, y: 0, scale: 1, ...(type === "draw" ? { strokeDashoffset: 0 } : {}),
-              duration: type === "bar" ? .95 : .8, ease: "power3.out",
+              opacity: 1, y: 0, scale: 1, rotationX: 0, ...(type === "reveal" ? { clipPath: "inset(0% 0% 0% 0%)" } : {}), ...(type === "draw" ? { strokeDashoffset: 0 } : {}),
+              duration: type === "screen" ? 1 : type === "bar" ? .8 : .7, ease: "power3.out",
               delay: Math.min(Number(el.dataset.motionDelay || 0) / 1000, .55) * (desktop ? 1 : .6),
               immediateRender: false,
-              scrollTrigger: { trigger: el, start: "top 96%", once: true },
+              scrollTrigger: { trigger: el, start: "top 92%", once: true },
             })
+          }
+          if (el.hasAttribute("data-progress")) {
+            gsap.fromTo(el, { scaleX: 0 }, { scaleX: 1, ease: "none", scrollTrigger: { trigger: el.closest("[data-motion-group]"), start: "top 75%", end: "bottom 65%", scrub: .4 } })
           }
           if (desktop && el.hasAttribute("data-parallax")) {
             gsap.fromTo(el, { y: 28 }, {

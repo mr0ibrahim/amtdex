@@ -59,7 +59,7 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
         <div>
           <div className="da-hero-copy">
             <p data-motion="rise" className="da-kicker">{hero.kicker}</p>
-            <h1 data-motion="rise" data-motion-delay="140" className="mt-4 text-[34px] sm:text-[68px] leading-[1.15] font-semibold text-[var(--color-ink)]">
+            <h1 data-motion="reveal" data-motion-delay="140" className="mt-4 text-[34px] sm:text-[68px] leading-[1.15] font-semibold text-[var(--color-ink)]">
               {hero.title.split("\n").map((line, index) => <span key={line}>{index > 0 && <br />}{line}</span>)}
             </h1>
             <p data-motion="rise" data-motion-delay="280" className="mt-4 text-[16px] leading-8 text-[var(--color-text-muted)] max-w-[34rem]">

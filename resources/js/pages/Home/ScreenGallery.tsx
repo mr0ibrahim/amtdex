@@ -14,8 +14,8 @@ export function ScreenGallery() {
       </div>
       <div className="screen-gallery-window">
         <div className="screen-gallery-stage">
-          {screens.map((screen) => (
-            <figure data-motion="rise" className="screen-gallery-card" key={screen.id}>
+          {screens.map((screen, index) => (
+            <figure data-motion="screen" data-motion-delay={index * 120} className="screen-gallery-card" key={screen.id}>
               <div className="screen-gallery-image">
                 <img
                   src={`/images/screens/${screen.id}.webp`}
