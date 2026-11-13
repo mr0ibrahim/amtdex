@@ -1,10 +1,11 @@
-import { Outlet } from "react-router-dom"
+import { Outlet, useLocation } from "react-router-dom"
 import { Footer } from "@/components/layout/Footer"
 import { Header } from "@/components/layout/Header"
 import { useBrandMotion } from "@/hooks/useBrandMotion"
 
 export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
-  const motionRef = useBrandMotion()
+  const { pathname } = useLocation()
+  const motionRef = useBrandMotion(pathname)
 
   return (
     <div ref={motionRef} className="brand-motion min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] selection:bg-[var(--color-ink)] selection:text-white">
