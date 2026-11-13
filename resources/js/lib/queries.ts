@@ -7,7 +7,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { API, ApiError } from "./api"
+import { API, ApiError, apiClient } from "./api"
 import type { Lead, LeadStatus } from "./leadStore"
 import type { Service } from "@/types/service"
 import type { Project } from "@/types/project"
@@ -730,3 +730,12 @@ export function useDeleteClientMutation() {
   })
 }
 
+
+
+/** Admin data never uses public lists or local demo fallback. */
+export function useAdminContentQuery<T = any>(resource: "services" | "projects" | "testimonials" | "faqs" | "team") {
+  return useQuery({
+    queryKey: ["content", resource, "admin"],
+    queryFn: async () => (await apiClient<{ data: T[] }>(`/admin/content/${resource}`, "GET")).data,
+  })
+}

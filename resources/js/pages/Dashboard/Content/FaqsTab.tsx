@@ -1,6 +1,6 @@
+import { useAdminContentQuery } from "@/lib/queries"
 import { useState } from "react"
 import {
-  useFaqsQuery,
   useCreateFaqMutation,
   useUpdateFaqMutation,
   useDeleteFaqMutation,
@@ -16,7 +16,7 @@ interface FaqData {
 }
 
 export function FaqsTab() {
-  const { data: faqs = [], isLoading } = useFaqsQuery()
+  const { data: faqs = [], isLoading, error, refetch } = useAdminContentQuery("faqs")
   const createMutation = useCreateFaqMutation()
   const updateMutation = useUpdateFaqMutation()
   const deleteMutation = useDeleteFaqMutation()
@@ -91,6 +91,8 @@ export function FaqsTab() {
       })
     }
   }
+
+  if (error) return <div className="dash-empty" role="alert">تعذّر تحميل المحتوى المحفوظ. <button type="button" className="dash-tab" onClick={() => void refetch()}>إعادة المحاولة</button></div>
 
   return (
     <div className="bg-white border border-[var(--color-border)] rounded-2xl p-5 space-y-4">

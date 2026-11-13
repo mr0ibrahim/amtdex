@@ -1,11 +1,13 @@
+import { useSection } from "@/cms/useCms"
 import { Icon, type IconName } from "@/components/ui/Icon"
 export function StatsBand() {
+  const fields = useSection("stats").fields
   const stats = [
     { value: "+120", label: "مشروع برمجي مسلّم", sub: "من المتاجر إلى الأنظمة المؤسسية" },
     { value: "24/7", label: "سنوات خبرة", sub: "فريق هندسي متخصص" },
     { value: "98%", label: "رضا العملاء", sub: "تسليم في الوقت وبجودة عالية" },
     { value: "4.9/5", label: "تقييم رضا العملاء", sub: "من 2,400+ مراجعة" },
-  ]
+  ].map((stat, index) => ({ value: fields[`stat${index+1}_value`] || stat.value, label: fields[`stat${index+1}_label`] || stat.label, sub: fields[`stat${index+1}_sub`] || stat.sub }))
 
   return (
     <section data-motion-group className="reference-stats page-container page-container--wide">

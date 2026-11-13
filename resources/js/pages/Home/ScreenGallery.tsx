@@ -1,3 +1,4 @@
+import { useSection } from "@/cms/useCms"
 import { useState } from "react"
 const screens = [
   { id: "projects", title: "إدارة المشاريع والمهام", alt: "نموذج تطبيق إدارة المشاريع: نسب الإنجاز ومهام الفريق" },
@@ -6,13 +7,14 @@ const screens = [
 ]
 
 export function ScreenGallery() {
+  const fields = useSection("gallery").fields
   const [active, setActive] = useState(0)
   return (
     <section data-motion-group className="screen-gallery" aria-labelledby="screen-gallery-title">
       <div data-motion="rise" className="screen-gallery-heading">
-        <span>واجهات تصنع الفرق</span>
-        <h2 id="screen-gallery-title">من فكرتك، إلى تجربة متكاملة.</h2>
-        <p>متاجر، تطبيقات، وأنظمة أعمال — نصمّم لكل منتج واجهة تخدم مستخدميه، وتعبّر عن هويته.</p>
+        <span>{fields.kicker}</span>
+        <h2 id="screen-gallery-title">{fields.title}</h2>
+        <p>{fields.lede}</p>
       </div>
       <div className="screen-gallery-window">
         <div className="screen-gallery-stage">

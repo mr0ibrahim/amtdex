@@ -1,3 +1,4 @@
+import { useSection } from "@/cms/useCms"
 import { PublicLink as Link } from "@/cms/PublicLink"
 import { useState } from "react"
 import { Icon } from "@/components/ui/Icon"
@@ -5,6 +6,7 @@ import { TESTIMONIALS } from "@/data/site"
 import { useTestimonialsQuery } from "@/lib/queries"
 
 export function Testimonials() {
+  const fields = useSection("testimonials").fields
   const { data: dbData } = useTestimonialsQuery()
   const rawList = dbData && dbData.length > 0 ? dbData : TESTIMONIALS
   const list = rawList.map((item: any) => ({
@@ -20,7 +22,7 @@ export function Testimonials() {
 
   return (
     <section className="testimonial-panel" aria-label="آراء العملاء">
-      <div className="testimonial-heading"><div><span>علاقات تُبنى على الثقة</span><h3>ماذا يقول عملاؤنا</h3></div><Icon name="quote" size={38} /></div>
+      <div className="testimonial-heading"><div><span>{fields.kicker}</span><h3>{fields.title}</h3></div><Icon name="quote" size={38} /></div>
       <div className="testimonial-story" aria-live="polite" aria-atomic="true">
         <span className="sr-only">الرأي {safeIndex + 1} من {list.length}</span>
         <blockquote key={quote?.name}>{quote?.text}</blockquote>
@@ -30,7 +32,7 @@ export function Testimonials() {
         <div className="testimonial-dots" aria-label="اختيار رأي العميل">{list.map((item: any, position: number) => <button key={item.name} type="button" aria-label={`عرض رأي ${item.name}`} aria-pressed={position === safeIndex} onClick={() => setIndex(position)}><span /></button>)}</div>
         <div className="testimonial-arrows"><button type="button" onClick={() => move(-1)} aria-label="الرأي السابق"><Icon name="arrowRight" size={19} /></button><button type="button" onClick={() => move(1)} aria-label="الرأي التالي"><Icon name="arrowLeft" size={19} /></button></div>
       </div>
-      <Link className="testimonial-link" to="/portfolio"><span><small>من الثقة إلى النتيجة</small><strong>تعرّف على أعمالنا</strong></span><span className="testimonial-link-icon"><Icon name="arrowUpLeft" size={20} /></span></Link>
+      <Link className="testimonial-link" to="/portfolio"><span><small>من الثقة إلى النتيجة</small><strong>{fields.link}</strong></span><span className="testimonial-link-icon"><Icon name="arrowUpLeft" size={20} /></span></Link>
     </section>
   )
 }

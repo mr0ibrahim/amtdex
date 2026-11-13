@@ -6,17 +6,31 @@ export function readBootstrap(): Partial<CmsDocument> | undefined {
 }
 
 /** Merge the server payload over the defaults. A known page missing from the payload is hidden. */
-export function applyVisibility(remote?: Partial<CmsDocument> | null): CmsDocument {
+export function applyVisibility(remote?: Partial<CmsDocument> | null, preview = false): CmsDocument {
   const source = remote?.pages ? remote : readBootstrap()
   if (!source?.pages) return CMS_DEFAULTS
   const byPath = new Map(source.pages.map((page) => [page.path, page]))
   const pages: CmsPage[] = CMS_DEFAULTS.pages.map((page) => byPath.get(page.path) ?? { ...page, published: false })
-  const nav = (source.nav ?? CMS_DEFAULTS.nav).filter((item) => item.visible && pages.some((page) => page.path === item.to && page.published))
+  const sourceNav = source.nav ?? CMS_DEFAULTS.nav
+  const supportedNav = sourceNav.filter(item => CMS_DEFAULTS.nav.some(known => known.id === item.id))
+  const nav = preview ? supportedNav : supportedNav.filter((item) => item.visible && pages.some((page) => page.path === item.to && page.published))
+  const savedSections = source.homeSections ?? []
+  const sectionById = new Map(savedSections.map(section => [section.id, section]))
+  const homeSections = CMS_DEFAULTS.homeSections.map(section => {
+    const saved = sectionById.get(section.id)
+    return { ...section, ...(saved ?? {}), visible: saved?.visible ?? false,
+      fields: Object.fromEntries(Object.entries(section.fields).map(([key, value]) => [key, saved?.fields?.[key] ?? value])) }
+  })
+  const order = savedSections.map(section => section.id)
+  homeSections.sort((a,b) => {
+    const rank = (id: string) => { const i = order.indexOf(id); return i < 0 ? 999 : i }
+    return rank(a.id) - rank(b.id)
+  })
   return {
     copy: { ...CMS_DEFAULTS.copy, ...(source.copy ?? {}) },
     pages,
     nav,
-    homeSections: source.homeSections?.length ? source.homeSections : CMS_DEFAULTS.homeSections,
+    homeSections,
   }
 }
 

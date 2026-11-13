@@ -7,6 +7,7 @@ use App\Models\BlogPost;
 use App\Models\User;
 use App\Support\ArabicText;
 use App\Support\CmsStore;
+use App\Support\CmsDefaults;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
@@ -82,4 +83,40 @@ class CmsAndSearchTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.0.slug', 'invoice-ops');
     }
+    public function test_hidden_sections_and_navigation_stay_hidden_after_merge(): void
+    {
+        $doc = CmsDefaults::document();
+        $doc['homeSections'][0]['visible'] = false;
+        $doc['nav'][0]['visible'] = false;
+        $merged = CmsStore::merge($doc);
+        $this->assertFalse($merged['homeSections'][0]['visible']);
+        $this->assertFalse($merged['nav'][0]['visible']);
+        $ids = array_column($merged['homeSections'], 'id');
+        $this->assertContains('contact', $ids);
+        $this->assertNotContains('newsletter', $ids);
+        $this->assertNotContains('marquee', $ids);
+    }
+
+    public function test_private_content_lists_include_inactive_records_for_editors(): void
+    {
+        $editor = User::create(['name' => 'Editor', 'email' => 'content-editor@example.com', 'password' => Hash::make('test-password'), 'role' => 'editor']);
+        $record = \App\Models\Testimonial::create(['author' => 'Hidden customer', 'role' => '', 'company' => '', 'content' => 'Private inactive review', 'rating' => 5, 'sort_order' => 1, 'is_active' => false]);
+        Sanctum::actingAs($editor);
+        $this->asDashboard()->getJson('/api/v1/admin/content/testimonials')->assertOk()->assertJsonFragment(['id' => $record->id, 'is_active' => false]);
+    }
+
+    public function test_viewer_cannot_read_private_content_lists(): void
+    {
+        $viewer = User::create(['name' => 'Viewer', 'email' => 'content-viewer@example.com', 'password' => Hash::make('test-password'), 'role' => 'viewer']);
+        Sanctum::actingAs($viewer);
+        $this->asDashboard()->getJson('/api/v1/admin/content/testimonials')->assertForbidden();
+    }
+
+    public function test_editor_can_create_a_review_without_employer_or_job_title(): void
+    {
+        $editor = User::create(['name' => 'Editor', 'email' => 'review-editor@example.com', 'password' => Hash::make('test-password'), 'role' => 'editor']);
+        Sanctum::actingAs($editor);
+        $this->asDashboard()->postJson('/api/v1/testimonials', ['author' => 'Customer', 'content' => 'A genuine review', 'rating' => 5])->assertCreated()->assertJsonPath('data.role', '')->assertJsonPath('data.company', '');
+    }
+
 }
