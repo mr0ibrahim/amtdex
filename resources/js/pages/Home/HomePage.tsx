@@ -1,15 +1,7 @@
-import { useState, type ReactNode } from "react"
+import { type ReactNode } from "react"
 import { PublicLink as Link } from "@/cms/PublicLink"
 import { Icon } from "@/components/ui/Icon"
-import { Marquee } from "@/components/ui/Marquee"
 import { Testimonials } from "./Testimonials"
-import { API } from "@/lib/api"
-import { newsletterSchema, zodErrors } from "@/lib/schemas"
-import { addLead } from "@/lib/leadStore"
-import { SERVICES as SEED_SERVICES } from "@/data/services"
-import { LOGOS } from "@/data/site"
-import { useClientsQuery, useServicesQuery } from "@/lib/queries"
-import { FinalCTA } from "@/pages/Home/FinalCTA"
 import { GuaranteeBanner } from "@/pages/Home/GuaranteeBanner"
 import { ExperienceStudio } from "./ExperienceStudio"
 import { ScreenGallery } from "./ScreenGallery"
@@ -17,38 +9,14 @@ import { useCms, useSection } from "@/cms/useCms"
 import { StatsBand } from "@/pages/Home/StatsBand"
 import { WorkflowSection } from "@/pages/Home/WorkflowSection"
 
-export function HomePage({ onToast }: { onToast: (m: string) => void }) {
-  const { data: apiServices } = useServicesQuery()
-  const services = (apiServices && apiServices.length > 0) ? apiServices : SEED_SERVICES
-  const { data: dbClients } = useClientsQuery()
-  const [email, setEmail] = useState("")
-  const [err, setErr] = useState("")
-  const logos = (dbClients && dbClients.length > 0 ? dbClients : LOGOS) as Array<string | { id?: string; name?: string; logo?: string }>
+export function HomePage(_props: { onToast: (m: string) => void }) {
   const { homeSections, staff } = useCms()
   const hero = useSection("hero").fields
-  const why = useSection("services").fields
-  const news = useSection("newsletter").fields
-  const band = useSection("marquee").fields
   const gate = (id: string, node: ReactNode) => {
     const index = homeSections.findIndex((section) => section.id === id)
     const section = homeSections[index]
     if (section && !section.visible && !staff) return null
-    return <div style={{ order: index < 0 ? 0 : index }} className={section && !section.visible ? "home-hidden-preview" : undefined}>{node}</div>
-  }
-
-  const handleSub = (e: React.FormEvent) => {
-    e.preventDefault()
-    const parsed = newsletterSchema.safeParse({ email })
-    if (!parsed.success) {
-      setErr(zodErrors(parsed).email ?? "بريد غير صالح")
-      return
-    }
-    setErr("")
-    API.newsletter(email).then(() => {
-      addLead({ id: Date.now().toString(), name: email.split("@")[0], email, message: "اشتراك نشرة", status: "جديد", createdAt: new Date().toISOString(), source: "newsletter", meta: {} })
-      onToast("تم الاشتراك — أهلاً بك في Amtdex ✨")
-    })
-    setEmail("")
+    return <div style={{ order: ["hero", "stats", "gallery", "testimonials", "workflow", "guarantee", "contact"].indexOf(id) }} className={section && !section.visible ? "home-hidden-preview" : undefined}>{node}</div>
   }
 
   return (
@@ -140,91 +108,21 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
         </div>
       </section>)}
 
-      {gate("marquee", <section data-motion-group className="border-y border-[var(--color-border)]">
-        <div className="page-container page-container--wide py-4 flex items-center justify-between gap-6">
-          <p data-motion="fade" className="text-[12px] font-semibold text-[var(--color-text-muted)] shrink-0">{band.label}</p>
-        </div>
-        <Marquee label="أسماء الشركاء">
-          {logos.map((l, idx) => {
-            const key = typeof l === "string" ? l : (l.id || l.name || String(idx))
-            const name = typeof l === "string" ? l : l.name
-            return (
-              <span key={key} className="marquee-item">
-                {typeof l !== "string" && l.logo ? <img src={l.logo} alt={name || ""} className="h-5 inline-block" /> : name}
-              </span>
-            )
-          })}
-        </Marquee>
-        <div className="h-6" />
-        <Marquee label="الخدمات" duration={55}>
-          {services.map((s) => (
-            <span key={s.slug} className="marquee-item">{s.title}</span>
-          ))}
-        </Marquee>
-        <div className="h-6" />
-      </section>)}
-
       {gate("stats", <StatsBand />)}
       {gate("gallery", <><ExperienceStudio /><ScreenGallery /></>)}
+      {gate("testimonials", <section data-motion-group className="page-container page-container--wide page-section home-testimonials"><Testimonials /></section>)}
       {gate("workflow", <WorkflowSection />)}
       {gate("guarantee", <GuaranteeBanner />)}
 
-      {gate("services", <section data-motion-group className="page-container page-container--wide page-section">
-        <div className="grid lg:grid-cols-[1fr_18rem] gap-10 items-end border-b border-[var(--color-ink)] pb-8">
-          <div>
-            <div className="eyebrow">{why.kicker}</div>
-            <h2 data-motion="rise" data-motion-delay="120" className="mt-4 text-[32px] sm:text-[44px] leading-[1.2] font-semibold">
-              {why.title.split("\n").map((line, index) => <span key={line}>{index > 0 && <br />}{line}</span>)}
-            </h2>
-          </div>
-          <div data-motion="rise" data-motion-delay="240">
-            <p className="text-[14px] leading-7 text-[var(--color-text-muted)]">{why.lede}</p>
-            <Link to="/services" className="mt-4 inline-flex text-[13px] font-semibold border-b border-[var(--color-ink)] pb-0.5">{why.link}</Link>
-          </div>
-        </div>
-        <div className="da-svc service-bento">
-          {services.slice(0, 4).map((s, index) => (
-            <Link key={s.slug} to={`/services/${s.slug}`} data-motion="rise" data-motion-delay={index * 120} className="service-bento-card">
-              <span className="service-bento-top"><Icon name={s.icon} size={26} /><span>0{index + 1}</span></span>
-              <span>
-                <b>{s.title}</b>
-                {s.slug === "web" && <small>الأكثر طلبًا</small>}
-                {s.slug === "erp" && <small>لأعمال أكثر كفاءة</small>}
-                <small>{s.desc}</small>
-              </span>
-              <span className="service-bento-link">اكتشف الخدمة <Icon name="arrowUpLeft" size={20} /></span>
-            </Link>
-          ))}
-        </div>
-        <div className="mt-12 grid lg:grid-cols-[0.9fr_1.1fr] gap-8 items-start">
-          <div data-motion="rise" className="bg-[var(--color-ink)] text-white p-7 sm:p-9">
-            <span className="text-[11px] tracking-[0.16em] text-white/60">من الفكرة إلى الإطلاق</span>
-            <h3 className="mt-4 text-[28px] font-semibold leading-tight">
-              تجربة واضحة،
-              <br />
-              من أول زيارة.
-            </h3>
-            <p className="mt-4 text-[14px] leading-7 text-white/70 max-w-[36rem]">
-              نصمم الرحلة، نبني المنتج، ونسلّمه جاهزاً لفريقك — بمظهر ثابت وأداء يخدم عملاءك.
-            </p>
-          </div>
-          <div data-motion="rise" data-motion-delay="160">
-            <Testimonials />
-          </div>
-        </div>
-      </section>)}
-
-      {gate("cta", <FinalCTA onToast={onToast} />)}
-
-      {gate("newsletter", <section data-motion-group className="page-container page-container--wide contact-news-section" aria-labelledby="contact-news-title">
-        <div className="contact-news-card">
+      {gate("contact", <section data-motion-group className="page-container page-container--wide contact-news-section" aria-labelledby="contact-news-title">
+        <div className="contact-news-card contact-only-card">
           <div className="contact-news-copy">
             <span className="contact-news-eyebrow">لنتحدث عن مشروعك القادم</span>
             <h2 id="contact-news-title" data-motion="rise">
-              {news.title.split("\n").map((line, index) => <span key={line}>{index > 0 && <br />}{line}</span>)}
+              عندك فكرة؟ لنتحدث عنها.
             </h2>
             <p data-motion="rise" data-motion-delay="140" className="contact-news-lede">
-              {news.lede}
+              من الفكرة إلى التنفيذ. أخبرنا عن مشروعك وسنناقش معك الخطوة التالية.
             </p>
             <div data-motion="rise" data-motion-delay="260" className="contact-news-actions">
               <Link to="/quote" className="contact-news-primary brand-cta">ابدأ مشروعك <Icon name="arrowUpLeft" size={18} /></Link>
@@ -232,33 +130,7 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
             </div>
             <ul className="contact-news-proof" aria-label="مزايا التواصل"><li>رد خلال ساعات</li><li>استشارة مجانية</li><li>عقد واضح</li></ul>
           </div>
-          <form onSubmit={handleSub} noValidate data-motion="rise" data-motion-delay="180" className="newsletter-panel" aria-labelledby="newsletter-title">
-            <span className="newsletter-mark" aria-hidden="true"><Icon name="mail" size={22} /></span>
-            <h3 id="newsletter-title">نشرة AMTDEX</h3>
-            <p className="newsletter-description">نصائح تقنية، قصص مشاريع، وعروض — رسالة واحدة أسبوعياً.</p>
-            <label htmlFor="home-email" className="newsletter-label">البريد الإلكتروني</label>
-            <input
-              id="home-email"
-              name="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value)
-                if (err) setErr("")
-              }}
-              placeholder="you@example.com"
-              dir="ltr"
-              autoComplete="email"
-              inputMode="email"
-              type="email"
-              aria-invalid={!!err}
-              aria-describedby={err ? "home-email-err" : undefined}
-              className="newsletter-input"
-            />
-            {err && (
-              <p id="home-email-err" role="alert" className="mt-2 text-[12px] text-[var(--danger)]">{err}</p>
-            )}
-            <button type="submit" className="newsletter-submit brand-cta">اشترك في النشرة <Icon name="arrowUpLeft" size={18} /></button>
-          </form>
+
         </div>
       </section>)}
     </div>

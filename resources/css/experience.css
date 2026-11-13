@@ -250,3 +250,13 @@
   .contact-news-actions { flex-direction: column; align-items: stretch; }
   .contact-news-proof { gap: 10px 14px; }
 }
+
+.contact-news-card.contact-only-card { grid-template-columns: minmax(0,1fr); background: linear-gradient(120deg,var(--color-bg-subtle),white); }
+.contact-only-card .contact-news-copy { max-width: 760px; }
+.contact-only-card .contact-news-lede { max-width: 60ch; }
+.home-testimonials .testimonial-panel { max-width: 880px; margin-inline: auto; }
+.home-workflow.workflow-steps-only > .grid { grid-template-columns: minmax(0,1fr); }
+.workflow-steps-only .da-steps { grid-template-columns: repeat(5,minmax(0,1fr)); margin-top: 28px; }
+.home-workflow.workflow-steps-only .da-steps > :last-child { grid-column: auto; }
+@media(max-width:1023px) { .home-workflow.workflow-steps-only .da-steps { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width:639px) { .home-workflow.workflow-steps-only .da-steps { grid-template-columns: minmax(0,1fr); } }
