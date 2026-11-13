@@ -1,15 +1,18 @@
 import { PublicLink as Link } from "@/cms/PublicLink"
+import { Icon } from "@/components/ui/Icon"
 
 export function GuaranteeBanner() {
   return (
-    <section data-motion-group className="da-band">
-      <div className="page-container page-container--wide py-8 flex flex-col sm:flex-row sm:items-center gap-5">
-        <span className="font-display text-[13px] font-semibold tracking-[0.14em] text-[var(--color-text-muted)]">الضمان</span>
-        <div data-motion="rise" className="flex-1">
-          <div className="text-[16px] font-semibold">ضمان AMTDEX — اذا لم نسلم حسب الاتفاق، نعيد الدفعة الاخيرة كاملة.</div>
-          <div className="text-[13px] text-[var(--color-text-muted)] mt-1">مكتوب في العقد. ثقة نبنيها بالافعال، لا الشعارات.</div>
+    <section data-motion-group className="page-container page-container--wide guarantee-section" aria-labelledby="guarantee-title">
+      <div data-motion="rise" className="guarantee-card">
+        <div className="guarantee-symbol" aria-hidden="true"><Icon name="shield" size={32} /></div>
+        <div className="guarantee-copy">
+          <span className="guarantee-label">التزام موثّق في العقد</span>
+          <h2 id="guarantee-title">ضمان AMTDEX</h2>
+          <p>إذا لم نسلّم حسب الاتفاق، نعيد الدفعة الأخيرة كاملة.</p>
+          <span className="guarantee-note">مكتوب في العقد. ثقة نبنيها بالأفعال، لا الشعارات.</span>
         </div>
-        <Link to="/contact" className="btn btn-line brand-cta shrink-0">تواصل معنا</Link>
+        <Link to="/contact" className="guarantee-action brand-cta">تواصل معنا <Icon name="arrowUpLeft" size={18} /></Link>
       </div>
     </section>
   )

@@ -11,11 +11,9 @@ import { LOGOS } from "@/data/site"
 import { useClientsQuery, useServicesQuery } from "@/lib/queries"
 import { FinalCTA } from "@/pages/Home/FinalCTA"
 import { GuaranteeBanner } from "@/pages/Home/GuaranteeBanner"
-import { OrbitSection } from "@/pages/Home/OrbitSection"
 import { ExperienceStudio } from "./ExperienceStudio"
 import { ScreenGallery } from "./ScreenGallery"
 import { useCms, useSection } from "@/cms/useCms"
-import { SpotlightSection } from "@/pages/Home/SpotlightSection"
 import { StatsBand } from "@/pages/Home/StatsBand"
 import { WorkflowSection } from "@/pages/Home/WorkflowSection"
 
@@ -168,9 +166,7 @@ export function HomePage({ onToast }: { onToast: (m: string) => void }) {
 
       {gate("stats", <StatsBand />)}
       {gate("gallery", <><ExperienceStudio /><ScreenGallery /></>)}
-      {gate("spotlight", <SpotlightSection />)}
       {gate("workflow", <WorkflowSection />)}
-      {gate("orbit", <OrbitSection />)}
       {gate("guarantee", <GuaranteeBanner />)}
 
       {gate("services", <section data-motion-group className="page-container page-container--wide page-section">
