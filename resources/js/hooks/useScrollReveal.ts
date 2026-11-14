@@ -2,10 +2,11 @@ import { useEffect, type RefObject } from "react"
 import { GEO_CARD_SELECTOR } from "@/lib/motion/geoLayer"
 
 const TEXT = "main h1, main h2, main h3, main :is(h1, h2) + p, main .eyebrow, main .da-kicker, main .reference-section-label, main .reference-section-heading > p, main .brand-page-header-art, main .da-filters, main .hero-actions, main .reference-platforms, main .quote-choice, main .reference-section-action, .site-footer .footer-grid > *, .site-footer .footer-bottom"
-const SCENES = "main .product-scene, main .project-showcase, main .guarantee-art, main .contact-art"
+const SCENES = "main .product-scene, main .project-showcase, main .guarantee-art, main .contact-art, main .contact-hero-art, main .service-detail-vector, main .about-vector, main .blog-follow-art"
 export const REVEAL_SELECTOR = `${TEXT}, ${SCENES}, main [data-motion], ${GEO_CARD_SELECTOR}`
 /** Composed scenes animate as one piece; their inner headings and panels do not get their own motion. */
-const OWNERS = ".product-scene, .project-showcase, .guarantee-art, .contact-art"
+const OWNERS = ".product-scene, .project-showcase, .guarantee-art, .contact-art, .contact-hero-art, .service-detail-vector, .about-vector, .blog-follow-art"
+const STABLE = "form, .blog-post-content, [data-motion-static]"
 
 export const supportsScrollTimeline = () => typeof CSS !== "undefined" && !!CSS.supports?.("animation-timeline: view()")
 
@@ -30,7 +31,7 @@ export function useScrollReveal(ref: RefObject<HTMLDivElement | null>, route: st
           const el = entry.target as HTMLElement
           if (entry.isIntersecting) el.dataset.revealState = "shown"
           else if (entry.boundingClientRect.top > 0) el.dataset.revealState = "below"
-          else if (el.dataset.reveal === "both") el.dataset.revealState = "above"
+          else el.dataset.revealState = "above"
         })
       }, { rootMargin: "-9% 0px -6% 0px" })
       : undefined
@@ -39,14 +40,13 @@ export function useScrollReveal(ref: RefObject<HTMLDivElement | null>, route: st
       seen.forEach(el => { if (!root.contains(el)) { observer?.unobserve(el); seen.delete(el) } })
       const fresh: HTMLElement[] = []
       root.querySelectorAll<HTMLElement>(REVEAL_SELECTOR).forEach(el => {
-        if (seen.has(el) || el.classList.contains("geo-layer")) return
+        if (seen.has(el) || el.classList.contains("geo-layer") || el.closest(STABLE)) return
         const parent = el.parentElement
         // A card or scene moves as one piece.
         if (parent?.closest(OWNERS) || parent?.closest(GEO_CARD_SELECTOR) || parent?.closest("[data-reveal]")) return
         fresh.push(el)
       })
       if (!fresh.length) return
-      const scrollY = window.scrollY
       const rects = new Map(fresh.map(el => [el, el.getBoundingClientRect()]))
       fresh.forEach(el => {
         const rect = rects.get(el)!
@@ -60,8 +60,9 @@ export function useScrollReveal(ref: RefObject<HTMLDivElement | null>, route: st
         const order = row.sort((a, b) => (rects.get(a)!.left - rects.get(b)!.left) * (rtl ? -1 : 1)).indexOf(el)
         el.style.setProperty("--ri", String(Math.max(0, Math.min(order, 4))))
         el.dataset.revealKind = el.matches(GEO_CARD_SELECTOR) || el.matches(SCENES) ? "block" : "text"
-        // Content that starts at the very top of the page must not begin half faded-out.
-        el.dataset.reveal = rect.bottom + scrollY < 340 ? "in" : "both"
+        // Already visible content must not jump or fade on mount, restored scroll, or navigation.
+        el.dataset.reveal = rect.top < window.innerHeight && rect.bottom > 76 ? "initial" : "both"
+        if (observer) el.dataset.revealState = rect.top >= window.innerHeight ? "below" : rect.bottom <= 76 ? "above" : "shown"
         seen.add(el)
         observer?.observe(el)
       })

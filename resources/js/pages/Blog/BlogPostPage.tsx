@@ -1,3 +1,4 @@
+import { ReadingProgress } from "@/components/ui/ReadingProgress"
 import { getAvatarUrl } from "@/lib/avatar"
 import "../../../css/blog-cards.css"
 import { BlogArticleCard } from "./BlogArticleCard"
@@ -24,7 +25,6 @@ export function BlogPostPage() {
   const queryClient = useQueryClient()
   const toast = useToast()
 
-  const [scrollProgress, setScrollProgress] = useState(0)
   const [activeHeadingId, setActiveHeadingId] = useState<string>("")
   const [tocOpen, setTocOpen] = useState(false)
 
@@ -33,19 +33,6 @@ export function BlogPostPage() {
   const [commentEmail, setCommentEmail] = useState("")
   const [commentContent, setCommentContent] = useState("")
   const [commentSuccess, setCommentSuccess] = useState(false)
-
-  // Scroll Progress Listener
-  useEffect(() => {
-    const handleScroll = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight
-      if (totalHeight > 0) {
-        const currentProgress = (window.scrollY / totalHeight) * 100
-        setScrollProgress(Math.min(100, Math.max(0, currentProgress)))
-      }
-    }
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
 
   // Fetch Post
   const {
@@ -271,13 +258,7 @@ export function BlogPostPage() {
         noindex={Boolean(post.noindex)}
       />
 
-      {/* Reading Progress Indicator */}
-      <div className="fixed top-0 left-0 right-0 h-1 z-50 bg-black/5">
-        <div
-          className="h-full bg-gradient-to-l from-[var(--color-gold)] to-[var(--color-primary)] transition-all duration-150 ease-out"
-          style={{ width: `${scrollProgress}%` }}
-        />
-      </div>
+      <ReadingProgress key={slug} />
 
       {toast.el}
 

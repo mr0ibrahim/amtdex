@@ -103,19 +103,22 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
 
   useEffect(() => {
     let last = window.scrollY
+    let hidden = false
+    let condensed = window.scrollY > 16
+    const preference = window.matchMedia?.("(prefers-reduced-motion: reduce)")
     let frame = 0
     const onScroll = () => {
       cancelAnimationFrame(frame)
       frame = requestAnimationFrame(() => {
         const y = window.scrollY
-        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        const reduce = preference?.matches ?? false
         const nextCondensed = y > 16
-        let nextHidden = false
+        let nextHidden = hidden
         if (!reduce && !openRef.current && y > last + 6 && y > 80) nextHidden = true
-        if (y < last - 6 || y < 48) nextHidden = false
+        if (reduce || openRef.current || y < last - 6 || y < 48) nextHidden = false
         last = y
-        setCondensed((value) => (value === nextCondensed ? value : nextCondensed))
-        setHidden((value) => (value === nextHidden ? value : nextHidden))
+        if (condensed !== nextCondensed) { condensed = nextCondensed; setCondensed(condensed) }
+        if (hidden !== nextHidden) { hidden = nextHidden; setHidden(hidden) }
       })
     }
     window.addEventListener("scroll", onScroll, { passive: true })
@@ -123,7 +126,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
       cancelAnimationFrame(frame)
       window.removeEventListener("scroll", onScroll)
     }
-  }, [])
+  }, [loc.key])
 
   useEffect(() => {
     if (!open) return
