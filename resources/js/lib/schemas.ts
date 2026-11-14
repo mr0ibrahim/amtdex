@@ -12,7 +12,7 @@ const phoneSchema = z
 export const contactSchema = z.object({
   name: z.string().trim().min(2, "الاسم مطلوب ولا يقل عن حرفين"),
   email: emailSchema,
-  phone: phoneSchema,
+  phone: phoneSchema.refine(value => /^\+?[0-9\s-]+$/.test(value) && value.replace(/\D/g, "").length >= 7, "أدخل رقم جوال يحتوي على 7 أرقام على الأقل"),
   subject: z.string().trim().optional(),
   message: z.string().trim().min(10, "الرسالة يجب ألا تقل عن 10 أحرف"),
 })
