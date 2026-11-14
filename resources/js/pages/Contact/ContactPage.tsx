@@ -1,12 +1,22 @@
 import { useEffect, useRef, useState } from "react"
+import { SearchSelect } from "@/components/ui/SearchSelect"
+import { countryOptions } from "@/data/selectOptions"
 import { Container } from "@/components/layout/Container"
 import { BrandArtwork } from "@/components/ui/BrandArtwork"
 import { Icon, type IconName } from "@/components/ui/Icon"
-import { Input, Textarea, Select } from "@/components/ui/Input"
+import { Input, Textarea } from "@/components/ui/Input"
 import { API } from "@/lib/api"
 import { createContactSchema, zodErrors } from "@/lib/schemas"
-import { phoneCountries, type CountryCode } from "@/lib/phone"
+import { type CountryCode } from "@/lib/phone"
 import { addLead } from "@/lib/leadStore"
+
+const subjectOptions = [
+  { value: "web", label: "موقع أو متجر إلكتروني" },
+  { value: "mobile", label: "تطبيق جوال" },
+  { value: "erp", label: "نظام لإدارة الأعمال" },
+  { value: "consultation", label: "استشارة تقنية" },
+  { value: "other", label: "استفسار آخر" },
+]
 
 export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
   const [phoneCountry, setPhoneCountry] = useState<CountryCode>("YE")
@@ -120,25 +130,19 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
             </div>
             <div className="contact-field-pair">
               <div className="contact-phone-group">
-                <label htmlFor="c-phone-country" className="contact-country-label">الدولة / مفتاح الاتصال</label>
-                <select id="c-phone-country" value={phoneCountry} autoComplete="country" onChange={event => {
-                  const country = event.target.value as CountryCode
+                <SearchSelect id="c-phone-country" label="الدولة / مفتاح الاتصال" labelClassName="contact-country-label" title="اختر الدولة" searchPlaceholder="ابحث باسم الدولة أو مفتاحها" options={countryOptions} value={phoneCountry} onChange={code => {
+                  const country = code as CountryCode
                   setPhoneCountry(country)
                   const field = formRef.current?.elements.namedItem("phone")
                   if (!(field instanceof HTMLInputElement) || !field.value.trim()) return
                   const result = createContactSchema(country).shape.phone.safeParse(field.value)
                   setErrors(previous => { const next = { ...previous }; if (result.success) delete next.phone; else next.phone = result.error.issues[0].message; return next })
                   setValidFields(previous => result.success ? [...new Set([...previous, "phone"])] : previous.filter(name => name !== "phone"))
-                }}>
-                  {phoneCountries.map(country => <option key={country.code} value={country.code}>{country.name} (+{country.callingCode})</option>)}
-                </select>
+                }} />
                 <Input id="c-phone" name="phone" type="tel" inputMode="tel" label="رقم الهاتف" required autoComplete="tel" placeholder="اكتب رقم الهاتف" dir="ltr" error={errors.phone} />
                 <p className="contact-phone-help">أدخل رقمًا محليًا للدولة المختارة، أو رقمًا دوليًا يبدأ بـ + أو 00.</p>
               </div>
-              <Select id="c-subject" name="subject" label="كيف يمكننا مساعدتك؟" defaultValue="" error={errors.subject}>
-                <option value="" disabled>اختر موضوعًا (اختياري)</option>
-                <option value="web">موقع أو متجر إلكتروني</option><option value="mobile">تطبيق جوال</option><option value="erp">نظام لإدارة الأعمال</option><option value="consultation">استشارة تقنية</option><option value="other">استفسار آخر</option>
-              </Select>
+              <SearchSelect id="c-subject" name="subject" label="كيف يمكننا مساعدتك؟" title="كيف يمكننا مساعدتك؟" placeholder="اختر موضوعًا (اختياري)" defaultValue="" error={errors.subject} options={subjectOptions} />
             </div>
             <div className="contact-message-wrap"><Textarea id="c-message" name="message" label="رسالتك" required rows={5} placeholder="ما الذي تريد تطويره؟ أخبرنا بفكرتك أو اكتب سؤالك هنا..." error={errors.message} /><div className="contact-message-hint"><span>10 أحرف على الأقل لتوضيح احتياجك.</span><span>{messageLength} حرفًا</span></div></div>
             <div className="contact-submit-row"><span>الحقول المعلّمة بـ * مطلوبة.</span><button type="submit" disabled={sending} className="contact-submit">{sending ? <>جارٍ الإرسال… <span className="contact-spinner" aria-hidden="true" /></> : <>إرسال الرسالة <Icon name="actionArrow" size={19} /></>}</button></div>

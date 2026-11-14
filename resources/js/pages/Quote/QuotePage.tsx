@@ -1,9 +1,11 @@
 import { BrandArtwork } from "@/components/ui/BrandArtwork"
+import { SearchSelect } from "@/components/ui/SearchSelect"
+import { countryOptions, currencyOptions } from "@/data/selectOptions"
 import { Icon } from "@/components/ui/Icon"
 import { Input, Textarea } from "@/components/ui/Input"
 import { useState, useEffect, useRef } from "react"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
-import { phoneCountries, type CountryCode } from "@/lib/phone"
+import { type CountryCode } from "@/lib/phone"
 import { API } from "@/lib/api"
 import { createQuoteSchema, quoteBudgetSchema, zodErrors } from "@/lib/schemas"
 import { addLead } from "@/lib/leadStore"
@@ -195,9 +197,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
                   const result = quoteBudgetSchema.safeParse(data.budget)
                   if (!result.success) setQuoteErrors(previous => ({ ...previous, budget: result.error.issues[0].message }))
                 }} error={quoteErrors.budget} />
-                <div><label htmlFor="q-currency">العملة</label><select id="q-currency" value={data.budgetCurrency} onChange={event => updateBudget(data.budgetAmount, event.target.value)}>
-                  <option value="SAR">ريال سعودي (SAR)</option><option value="USD">دولار أمريكي (USD)</option><option value="YER">ريال يمني (YER)</option><option value="AED">درهم إماراتي (AED)</option><option value="EUR">يورو (EUR)</option><option value="OMR">ريال عماني (OMR)</option><option value="QAR">ريال قطري (QAR)</option><option value="KWD">دينار كويتي (KWD)</option><option value="BHD">دينار بحريني (BHD)</option><option value="EGP">جنيه مصري (EGP)</option>
-                </select></div>
+                <SearchSelect id="q-currency" label="العملة" title="اختر العملة" searchPlaceholder="ابحث باسم العملة أو رمزها" options={currencyOptions} value={data.budgetCurrency} onChange={currency => updateBudget(data.budgetAmount, currency)} />
               </div>
             </section>
             <div>
@@ -250,14 +250,14 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
             </div>
 
             <div className="quote-phone-row">
-              <div><label htmlFor="q-country">الدولة / مفتاح الاتصال</label><select id="q-country" value={phoneCountry} autoComplete="country" onChange={event => {
-                const country = event.target.value as CountryCode
+              <SearchSelect id="q-country" label="الدولة / مفتاح الاتصال" title="اختر الدولة" searchPlaceholder="ابحث باسم الدولة أو مفتاحها" options={countryOptions} value={phoneCountry} onChange={code => {
+                const country = code as CountryCode
                 setPhoneCountry(country)
                 const phone = formRef.current?.elements.namedItem("phone")
                 if (!(phone instanceof HTMLInputElement) || !phone.value) return
                 const result = createQuoteSchema(country).shape.phone.safeParse(phone.value)
                 setQuoteErrors(previous => { const next = { ...previous }; if (result.success) delete next.phone; else next.phone = result.error.issues[0].message; return next })
-              }}>{phoneCountries.map(country => <option key={country.code} value={country.code}>{country.name} (+{country.callingCode})</option>)}</select></div>
+              }} />
               <Input id="q-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" label="رقم الهاتف / الواتساب" required placeholder="اكتب رقم الهاتف" dir="ltr" defaultValue={data.phone ?? ""} error={quoteErrors.phone} />
               <p>اختر الدولة للرقم المحلي، أو أدخل رقمًا دوليًا يبدأ بـ + أو 00.</p>
             </div>

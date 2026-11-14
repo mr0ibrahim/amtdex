@@ -1,0 +1,86 @@
+/* Searchable select: glass popover on wide screens, bottom sheet on phones.
+   The panel is portalled to <body>, so nothing here depends on page scopes. */
+.ss-field { min-width: 0; }
+.ss-label { display: block; font-size: 14px; font-weight: 700; color: var(--color-ink); margin-bottom: 6px; }
+.ss-trigger {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; min-width: 0; min-height: 52px; padding: 10px 14px;
+  border: 1px solid #ddd4e7; border-radius: 12px;
+  background: linear-gradient(155deg, #ffffff, #fbf7ff);
+  color: var(--color-ink); font: inherit; font-size: 15px; text-align: start; cursor: pointer;
+  box-shadow: 0 2px 3px #31144d05;
+  transition: border-color .2s, box-shadow .2s, background-color .2s;
+}
+.ss-trigger:hover { border-color: #b996e6; }
+.ss-trigger:focus-visible, .ss-trigger[aria-expanded="true"] { outline: none; border-color: #6a2c9f; box-shadow: 0 0 0 4px #6a2c9f1f; }
+.ss-trigger[aria-invalid="true"] { border-color: #b3435e; background: #fffafb; }
+.ss-trigger:disabled { opacity: .6; cursor: not-allowed; }
+.ss-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ss-value.is-placeholder { color: #91849b; }
+.ss-chevron { display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 9px; background: #f2ebfa; color: #6a2c9f; transition: rotate .3s cubic-bezier(.22, 1, .36, 1), background-color .2s, color .2s; }
+.ss-trigger[aria-expanded="true"] .ss-chevron { rotate: 180deg; background: #6a2c9f; color: #fff; }
+
+.ss-option-icon { display: grid; place-items: center; flex: none; min-width: 34px; height: 34px; padding-inline: 6px; border-radius: 10px; background: #f4eefb; color: #6a2c9f; font-size: 17px; font-weight: 700; line-height: 1; }
+.ss-option-hint { flex: none; padding: 3px 8px; border-radius: 8px; background: #f2ebfa; color: #5a2391; font: 600 12.5px/1.4 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .02em; }
+
+/* ── Panel ── */
+.ss-layer { position: fixed; inset: 0; z-index: 200; pointer-events: none; font-family: var(--font-arabic); }
+.ss-panel {
+  position: fixed; display: flex; flex-direction: column; overflow: hidden; pointer-events: auto;
+  border: 1px solid #ffffffe6; border-radius: 18px;
+  background: linear-gradient(160deg, #ffffffeb, #faf5fff2);
+  -webkit-backdrop-filter: blur(22px) saturate(170%); backdrop-filter: blur(22px) saturate(170%);
+  box-shadow: 0 0 0 1px #7a3cc226, 0 30px 70px -24px #31144d80, 0 8px 20px -12px #31144d40;
+  color: var(--color-ink);
+  transform-origin: top center;
+  animation: ss-pop .22s cubic-bezier(.22, 1, .36, 1);
+}
+.ss-panel--above { translate: 0 -100%; transform-origin: bottom center; }
+@keyframes ss-pop { from { opacity: 0; transform: translateY(-6px) scale(.97); } }
+
+.ss-search { position: relative; display: flex; align-items: center; gap: 10px; margin: 10px 10px 6px; padding: 0 12px; min-height: 46px; border: 1px solid #e3d5f4; border-radius: 12px; background: #fff; color: #7a3cc2; transition: border-color .2s, box-shadow .2s; }
+.ss-search:focus-within { border-color: #6a2c9f; box-shadow: 0 0 0 4px #6a2c9f1a; }
+.ss-search input { flex: 1; min-width: 0; height: 44px; border: 0; outline: 0; background: transparent; color: var(--color-ink); font: inherit; font-size: 16px; }
+.ss-search input::placeholder { color: #91849b; }
+.ss-search input::-webkit-search-cancel-button { display: none; }
+.ss-clear, .ss-close { display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; background: #f2ebfa; color: #5a2391; cursor: pointer; }
+.ss-clear:focus-visible, .ss-close:focus-visible { outline: 2px solid #6a2c9f; outline-offset: 2px; }
+
+.ss-list { flex: 1; min-height: 0; margin: 0; padding: 4px 8px 8px; list-style: none; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; outline: none; }
+.ss-option { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 7px 10px; border-radius: 12px; font-size: 15px; cursor: pointer; scroll-margin-block: 6px; transition: background-color .15s; }
+.ss-option.is-active { background: #f1e8fc; }
+.ss-option[aria-selected="true"] { background: linear-gradient(120deg, #6a2c9f, #461667); color: #fff; }
+.ss-option[aria-selected="true"].is-active { background: linear-gradient(120deg, #7a3cc2, #5a2391); }
+.ss-option[aria-selected="true"] :is(.ss-option-icon, .ss-option-hint) { background: #ffffff26; color: #fff; }
+.ss-option-label { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.ss-option-label mark { background: #f5a81c59; color: inherit; border-radius: 3px; padding: 0 1px; }
+.ss-option-check { display: grid; place-items: center; flex: none; width: 18px; }
+.ss-empty { padding: 28px 12px; text-align: center; color: #675777; font-size: 14px; }
+.ss-foot { padding: 8px 14px; border-top: 1px solid #efe6f8; color: #675777; font-size: 12.5px; text-align: start; }
+
+/* ── Phone: bottom sheet ── */
+.ss-dim { position: absolute; inset: 0; pointer-events: auto; background: #1d102e80; -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); animation: ss-fade .25s ease-out; }
+.ss-panel--sheet {
+  inset: auto 0 0 0; width: auto; max-height: min(82dvh, 640px); min-height: 46dvh;
+  border-radius: 24px 24px 0 0; border-bottom: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: linear-gradient(160deg, #fffffff7, #faf5fffa);
+  animation: ss-rise .34s cubic-bezier(.22, 1, .36, 1);
+}
+.ss-sheet-head { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 16px 6px; font-size: 16px; }
+.ss-grip { position: absolute; top: 8px; left: 50%; width: 42px; height: 4px; margin-left: -21px; border-radius: 99px; background: #d9c8ee; }
+.ss-close { width: 36px; height: 36px; }
+.ss-panel--sheet .ss-search { margin: 10px 14px 8px; min-height: 50px; }
+.ss-panel--sheet .ss-list { padding-inline: 10px; }
+.ss-panel--sheet .ss-option { min-height: 54px; font-size: 16px; }
+@keyframes ss-rise { from { transform: translateY(100%); } }
+@keyframes ss-fade { from { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-panel, .ss-dim { animation: none; }
+  .ss-chevron { transition: none; }
+}
+
+/* Form rows that used to size native selects. */
+.contact-phone-group > .ss-field .ss-label.contact-country-label { font-size: 13.5px; font-weight: 600; color: #675777; }
+.quote-phone-row .ss-label, .quote-budget-fields .ss-label { margin-bottom: 6px; }
