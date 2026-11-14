@@ -1,11 +1,11 @@
-import { useMemo, useState } from "react"
+import { lazy, Suspense, useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { BlogAPI } from "@/lib/blogApi"
 import { ApiError } from "@/lib/api"
 import { Button } from "@/components/ui/Button"
 import { getBlogUrl } from "@/lib/subdomain"
 import type { BlogPost } from "@/types/blog"
-import { ArticleEditorModal } from "./editor/ArticleEditorModal"
+const ArticleEditorModal = lazy(() => import("./editor/ArticleEditorModal").then(m => ({ default: m.ArticleEditorModal })))
 
 function formatSeoPublishError(err: unknown): string {
   if (err instanceof ApiError && err.errors) {
@@ -309,6 +309,7 @@ export function PostsManager({ onNotify }: { onNotify: (m: string) => void }) {
       )}
 
       {isEditorOpen && editingPost && (
+        <Suspense fallback={<p role="status">جار تحميل محرر المقال...</p>}>
         <ArticleEditorModal
           initialData={editingPost}
           onClose={() => {
@@ -323,6 +324,7 @@ export function PostsManager({ onNotify }: { onNotify: (m: string) => void }) {
             queryClient.invalidateQueries({ queryKey: ["admin-blog-stats"] })
           }}
         />
+        </Suspense>
       )}
     </div>
   )

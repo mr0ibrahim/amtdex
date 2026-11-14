@@ -1,9 +1,8 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { afterEach, beforeEach, expect, it, vi } from "vitest"
 import { ContactPage } from "@/pages/Contact/ContactPage"
-const state = vi.hoisted(() => ({ contact: vi.fn(), addLead: vi.fn() }))
+const state = vi.hoisted(() => ({ contact: vi.fn() }))
 vi.mock("@/lib/api", () => ({ API: { contact: state.contact } }))
-vi.mock("@/lib/leadStore", () => ({ addLead: state.addLead }))
 afterEach(cleanup)
 beforeEach(() => { vi.clearAllMocks(); state.contact.mockReset() })
 function fill() {
@@ -26,7 +25,6 @@ it("confirms successful submission inline and resets submitted fields", async ()
   fireEvent.click(screen.getByRole("button", { name: /إرسال الرسالة/ }))
   expect(await screen.findByRole("status")).toHaveTextContent("وصلتنا رسالتك بنجاح")
   expect(state.contact).toHaveBeenCalledTimes(1)
-  expect(state.addLead).toHaveBeenCalledTimes(1)
   expect(screen.getByLabelText(/الاسم الكامل/)).toHaveValue("")
 })
 it("retains user input when the request fails and allows retry", async () => {
@@ -36,7 +34,6 @@ it("retains user input when the request fails and allows retry", async () => {
   fireEvent.click(screen.getByRole("button", { name: /إرسال الرسالة/ }))
   expect(await screen.findByRole("alert")).toHaveTextContent("تعذر الاتصال بالخادم")
   expect(screen.getByLabelText(/الاسم الكامل/)).toHaveValue("إبراهيم الشامي")
-  expect(state.addLead).not.toHaveBeenCalled()
   await waitFor(() => expect(screen.getByRole("button", { name: /إرسال الرسالة/ })).toBeEnabled())
 })
 it("validates on blur and clears a corrected field error while typing", () => {
@@ -95,5 +92,4 @@ it("revalidates when changing country and sends a normalized international numbe
   fireEvent.click(screen.getByRole("button", { name: /إرسال الرسالة/ }))
   await screen.findByRole("status")
   expect(state.contact.mock.calls[0][0].get("phone")).toBe("+442079460018")
-  expect(state.addLead.mock.calls[0][0].phone).toBe("+442079460018")
 })

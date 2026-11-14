@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "oxlint",
+    "lint": "oxlint resources/js tests scripts vite.config.ts vitest.config.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "types:check": "tsc -b",
+    "check:unused": "node scripts/check-unused.mjs",
+    "check": "npm run types:check && npm run lint && npm run check:unused"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",

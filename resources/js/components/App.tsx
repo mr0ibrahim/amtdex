@@ -4,13 +4,12 @@
  */
 import { Suspense, lazy, useEffect } from "react"
 import { Route, Routes, useLocation } from "react-router-dom"
+import { dashboardRoutes } from "@/routing/dashboardRoutes"
 import { RouteProgress, useRouteLifecycle } from "@/routing/lifecycle"
 import { PublicPage } from "@/cms/PublicPage"
-import type { Role } from "@/lib/auth"
-import { AuthLayout, MarketingLayout } from "@/components/layout/MarketingLayout"
+import { MarketingLayout } from "@/components/layout/MarketingLayout"
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary"
-import { ForbiddenPage, ProtectedRoute } from "@/components/layout/ProtectedRoute"
-const DashboardLayout = lazy(() => import("@/components/layout/DashboardLayout").then((m) => ({ default: m.DashboardLayout })))
+import { ForbiddenPage } from "@/components/layout/ProtectedRoute"
 import { Seo } from "@/components/Seo"
 import { useToast } from "@/components/ui/Toast"
 import { isBlogSubdomain, isDashboardHost, getMainUrl } from "@/lib/subdomain"
@@ -23,16 +22,6 @@ const ServiceDetailPage = lazy(() => import("@/pages/Services/ServiceDetailPage"
 const PortfolioPage = lazy(() => import("@/pages/Portfolio/PortfolioPage").then((m) => ({ default: m.PortfolioPage })))
 const PortfolioDetailPage = lazy(() => import("@/pages/Portfolio/PortfolioDetailPage").then((m) => ({ default: m.PortfolioDetailPage })))
 const QuotePage = lazy(() => import("@/pages/Quote/QuotePage").then((m) => ({ default: m.QuotePage })))
-const LoginPage = lazy(() => import("@/pages/Auth/LoginPage").then((m) => ({ default: m.LoginPage })))
-const DashboardPageOld = lazy(() => import("@/pages/Dashboard/DashboardPage").then((m) => ({ default: m.DashboardPage })))
-const OverviewPage = lazy(() => import("@/pages/Dashboard/Overview").then((m) => ({ default: m.OverviewPage })))
-const ContentPage = lazy(() => import("@/pages/Dashboard/Content").then((m) => ({ default: m.ContentPage })))
-const LeadsPage = lazy(() => import("@/pages/Dashboard/Leads").then((m) => ({ default: m.LeadsPage })))
-const SeoPage = lazy(() => import("@/pages/Dashboard/Seo").then((m) => ({ default: m.SeoPage })))
-const MediaPage = lazy(() => import("@/pages/Dashboard/Media").then((m) => ({ default: m.MediaPage })))
-const SettingsPage = lazy(() => import("@/pages/Dashboard/Settings").then((m) => ({ default: m.SettingsPage })))
-const UsersPage = lazy(() => import("@/pages/Dashboard/Users").then((m) => ({ default: m.UsersPage })))
-const AuditPage = lazy(() => import("@/pages/Dashboard/Audit").then((m) => ({ default: m.AuditPage })))
 const NotFoundPage = lazy(() => import("@/pages/NotFound/NotFoundPage").then((m) => ({ default: m.NotFoundPage })))
 
 // Blog Pages
@@ -41,8 +30,6 @@ const BlogPostPage = lazy(() => import("@/pages/Blog/BlogPostPage").then((m) => 
 const BlogCategoryPage = lazy(() => import("@/pages/Blog/BlogCategoryPage").then((m) => ({ default: m.BlogCategoryPage })))
 const BlogTagPage = lazy(() => import("@/pages/Blog/BlogTagPage").then((m) => ({ default: m.BlogTagPage })))
 const BlogNotFoundPage = lazy(() => import("@/pages/Blog/BlogNotFoundPage").then((m) => ({ default: m.BlogNotFoundPage })))
-const DashboardBlogPage = lazy(() => import("@/pages/Dashboard/Blog/DashboardBlogPage").then((m) => ({ default: m.DashboardBlogPage })))
-const SiteManagerPage = lazy(() => import("@/pages/Dashboard/Site").then((m) => ({ default: m.SiteManagerPage })))
 
 function PageLoader() {
   return (
@@ -71,23 +58,6 @@ function SubdomainCrossRedirect() {
     </div>
   )
 }
-
-function DashboardFrame({ children, roles }: { children: React.ReactNode; roles: Role[] }) {
-  return (
-    <ProtectedRoute roles={roles}>
-      <Seo title="لوحة التحكم" noindex />
-      <ErrorBoundary>
-        <DashboardLayout>{children}</DashboardLayout>
-      </ErrorBoundary>
-    </ProtectedRoute>
-  )
-}
-
-const STAFF: Role[] = ["admin", "editor", "author", "viewer"]
-const EDITORS: Role[] = ["admin", "editor"]
-const WRITERS: Role[] = ["admin", "editor", "author"]
-const READERS: Role[] = ["admin", "editor", "viewer"]
-const ADMINS: Role[] = ["admin"]
 
 export default function App() {
   const { show, el } = useToast()
@@ -127,22 +97,7 @@ export default function App() {
               </>
             ) : onDashboardHost ? (
               <>
-                <Route element={<AuthLayout />}>
-                  <Route path="/login" element={<><Seo title="تسجيل الدخول" noindex nofollow /><LoginPage /></>} />
-                  <Route path="/403" element={<><Seo title="غير مصرح" noindex nofollow /><ForbiddenPage /></>} />
-                </Route>
-                <Route path="/dashboard" element={<DashboardFrame roles={STAFF}><OverviewPage onToast={show} /></DashboardFrame>} />
-                <Route path="/dashboard/overview" element={<DashboardFrame roles={STAFF}><OverviewPage onToast={show} /></DashboardFrame>} />
-                <Route path="/dashboard/blog" element={<DashboardFrame roles={WRITERS}><DashboardBlogPage onToast={show} /></DashboardFrame>} />
-                <Route path="/dashboard/content" element={<DashboardFrame roles={EDITORS}><ContentPage /></DashboardFrame>} />
-                <Route path="/dashboard/site" element={<DashboardFrame roles={EDITORS}><SiteManagerPage /></DashboardFrame>} />
-                <Route path="/dashboard/leads" element={<DashboardFrame roles={READERS}><LeadsPage /></DashboardFrame>} />
-                <Route path="/dashboard/seo" element={<DashboardFrame roles={EDITORS}><SeoPage /></DashboardFrame>} />
-                <Route path="/dashboard/media" element={<DashboardFrame roles={WRITERS}><MediaPage /></DashboardFrame>} />
-                <Route path="/dashboard/settings" element={<DashboardFrame roles={ADMINS}><SettingsPage /></DashboardFrame>} />
-                <Route path="/dashboard/users" element={<DashboardFrame roles={ADMINS}><UsersPage /></DashboardFrame>} />
-                <Route path="/dashboard/audit" element={<DashboardFrame roles={ADMINS}><AuditPage /></DashboardFrame>} />
-                <Route path="/dashboard/legacy" element={<><Seo title="لوحة التحكم قديم" noindex nofollow /><ProtectedRoute roles={ADMINS}><DashboardPageOld onToast={show} /></ProtectedRoute></>} />
+                {dashboardRoutes(show)}
                 <Route path="*" element={<NotFoundPage />} />
               </>
             ) : (
@@ -171,22 +126,7 @@ export default function App() {
                   </>
                 ) : (
                   <>
-                    <Route element={<AuthLayout />}>
-                      <Route path="/login" element={<><Seo title="تسجيل الدخول" noindex nofollow /><LoginPage /></>} />
-                      <Route path="/403" element={<><Seo title="غير مصرح" noindex nofollow /><ForbiddenPage /></>} />
-                    </Route>
-                    <Route path="/dashboard" element={<DashboardFrame roles={STAFF}><OverviewPage onToast={show} /></DashboardFrame>} />
-                    <Route path="/dashboard/overview" element={<DashboardFrame roles={STAFF}><OverviewPage onToast={show} /></DashboardFrame>} />
-                    <Route path="/dashboard/blog" element={<DashboardFrame roles={WRITERS}><DashboardBlogPage onToast={show} /></DashboardFrame>} />
-                    <Route path="/dashboard/content" element={<DashboardFrame roles={EDITORS}><ContentPage /></DashboardFrame>} />
-                    <Route path="/dashboard/site" element={<DashboardFrame roles={EDITORS}><SiteManagerPage /></DashboardFrame>} />
-                    <Route path="/dashboard/leads" element={<DashboardFrame roles={READERS}><LeadsPage /></DashboardFrame>} />
-                    <Route path="/dashboard/seo" element={<DashboardFrame roles={EDITORS}><SeoPage /></DashboardFrame>} />
-                    <Route path="/dashboard/media" element={<DashboardFrame roles={WRITERS}><MediaPage /></DashboardFrame>} />
-                    <Route path="/dashboard/settings" element={<DashboardFrame roles={ADMINS}><SettingsPage /></DashboardFrame>} />
-                    <Route path="/dashboard/users" element={<DashboardFrame roles={ADMINS}><UsersPage /></DashboardFrame>} />
-                    <Route path="/dashboard/audit" element={<DashboardFrame roles={ADMINS}><AuditPage /></DashboardFrame>} />
-                    <Route path="/dashboard/legacy" element={<><Seo title="لوحة التحكم قديم" noindex nofollow /><ProtectedRoute roles={ADMINS}><DashboardPageOld onToast={show} /></ProtectedRoute></>} />
+                    {dashboardRoutes(show)}
                   </>
                 )}
                 <Route path="*" element={<NotFoundPage />} />

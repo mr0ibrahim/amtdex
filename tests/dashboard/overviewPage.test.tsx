@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { MemoryRouter } from "react-router-dom"
 import { OverviewPage } from "@/pages/Dashboard/Overview"
@@ -18,6 +18,8 @@ function renderWithClient(ui: React.ReactElement) {
 }
 
 describe("OverviewPage (Dashboard)", () => {
+  beforeEach(() => localStorage.setItem("amtdex_session", JSON.stringify({ user: { id: "test-admin", name: "مسؤول الاختبار", email: "admin@example.test", role: "admin" } })))
+  afterEach(() => localStorage.clear())
   it("renders enterprise overview hero, stats, and modules", async () => {
     renderWithClient(<OverviewPage onToast={() => {}} />)
 

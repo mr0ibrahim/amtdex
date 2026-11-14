@@ -13,7 +13,7 @@ export function applyVisibility(remote?: Partial<CmsDocument> | null): CmsDocume
   const pages: CmsPage[] = CMS_DEFAULTS.pages.map((page) => byPath.get(page.path) ?? { ...page, published: false })
   const nav = (source.nav ?? CMS_DEFAULTS.nav).filter((item) => item.visible && pages.some((page) => page.path === item.to && page.published))
   return {
-    copy: { ...CMS_DEFAULTS.copy, ...(source.copy ?? {}) },
+    copy: { ...CMS_DEFAULTS.copy, ...source.copy },
     pages,
     nav,
     homeSections: source.homeSections?.length ? source.homeSections : CMS_DEFAULTS.homeSections,

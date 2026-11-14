@@ -261,7 +261,7 @@ export function sanitizeClassList(value: string): string {
   const seen = new Set<string>()
   for (const token of (value || "").split(/\s+/)) {
     if (!token || token.length > MAX_CLASS_TOKEN || seen.has(token)) continue
-    if (!/^[\p{L}_][\p{L}\p{N}_:\-\[\]%.#()/*,]*$/u.test(token)) continue
+    if (!/^[\p{L}_][\p{L}\p{N}_:\-[\]%.#()/*,]*$/u.test(token)) continue
     if (/javascript|expression|url\s*\(|[<>{}"'\\]/i.test(token)) continue
     const bare = (token.split(":").pop() || token).replace(/^!/, "")
     if (/^(fixed|sticky)$/i.test(bare)) continue

@@ -20,13 +20,10 @@ const preloads: Record<string, () => Promise<unknown>> = {
   "/": () => import("@/pages/Home/HomePage"),
   "/services": () => import("@/pages/Services/ServicesPage"),
   "/portfolio": () => import("@/pages/Portfolio/PortfolioPage"),
-  "/pricing": () => import("@/pages/Pricing/PricingPage"),
   "/about": () => import("@/pages/About/AboutPage"),
   "/contact": () => import("@/pages/Contact/ContactPage"),
   "/quote": () => import("@/pages/Quote/QuotePage"),
   "/blog": () => import("@/pages/Blog/BlogHomePage"),
-  "/login": () => import("@/pages/Auth/LoginPage"),
-  "/dashboard": () => import("@/pages/Dashboard/Overview"),
 }
 
 export function prefetchRoute(path: string) {
@@ -41,8 +38,6 @@ export function prefetchRoute(path: string) {
   if (key.startsWith("/services/")) void import("@/pages/Services/ServiceDetailPage")
   else if (key.startsWith("/portfolio/")) void import("@/pages/Portfolio/PortfolioDetailPage")
   else if (key.startsWith("/blog")) void import("@/pages/Blog/BlogPostPage")
-  else if (key.startsWith("/dashboard/blog")) void import("@/pages/Dashboard/Blog/DashboardBlogPage")
-  else if (key.startsWith("/dashboard")) void import("@/pages/Dashboard/Overview")
 }
 
 export function RouteProgress() {

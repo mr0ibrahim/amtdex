@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useLeadsQuery, useUpdateLeadStatusMutation, useDeleteLeadMutation } from "@/lib/queries"
-import type { LeadStatus } from "@/lib/leadStore"
+import type { LeadStatus } from "@/types/lead"
 
 const STATUSES: LeadStatus[] = ["جديد", "قيد المراجعة", "تم التواصل", "مغلق"]
 

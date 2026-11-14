@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { getSession } from "@/lib/auth"
+import { useSession } from "@/lib/auth"
 import {
   useUsersQuery,
   useCreateUserMutation,
@@ -17,7 +17,7 @@ const ROLES: Array<{ id: "admin" | "editor" | "author" | "viewer"; label: string
 ]
 
 export function UsersPage() {
-  const me = getSession()?.user
+  const me = useSession()?.user
   const { data: users = [], isLoading, error, refetch } = useUsersQuery()
   const createMutation = useCreateUserMutation()
   const updateMutation = useUpdateUserMutation()

@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/Skeleton"
 export function ServiceDetailPage() {
   const { slug } = useParams()
   const { data: apiServices, isLoading } = useServicesQuery()
-  const SERVICES = (apiServices && apiServices.length > 0) ? apiServices : SEED_SERVICES
+  const SERVICES = apiServices ?? SEED_SERVICES
   const s = SERVICES.find((x) => x.slug === slug)
 
   if (isLoading) {

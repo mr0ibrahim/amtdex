@@ -14,29 +14,32 @@ import { useSyncExternalStore } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { API, ApiError } from "./api"
 
-export type Role = "admin" | "editor" | "author" | "viewer"
-
-export type User = {
-  id: string
-  name: string
-  email: string
-  role: Role
-}
-
-export type Session = {
-  user: User
-  token?: string
-}
+import type { Role, Session } from "@/types/auth"
+export type { Role, User, Session } from "@/types/auth"
 
 const STORAGE_KEY = "amtdex_session"
+
+let cachedRaw: string | null | undefined
+let cachedSession: Session | null = null
 
 function readCachedSession(): Session | null {
   if (typeof window === "undefined") return null
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    return JSON.parse(raw) as Session
+    if (raw === cachedRaw) return cachedSession
+    cachedRaw = raw
+    cachedSession = null
+    if (raw) {
+      const value: unknown = JSON.parse(raw)
+      if (typeof value === "object" && value !== null && "user" in value) {
+        const user = (value as Session).user
+        if (user && typeof user.id === "string" && typeof user.name === "string" && typeof user.email === "string"
+          && ["admin", "editor", "author", "viewer"].includes(user.role)) cachedSession = { user }
+      }
+    }
+    return cachedSession
   } catch {
+    cachedSession = null
     return null
   }
 }
@@ -53,7 +56,11 @@ function writeCachedSession(s: Session | null) {
 const listeners = new Set<() => void>()
 function subscribe(cb: () => void) {
   listeners.add(cb)
-  return () => listeners.delete(cb)
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === STORAGE_KEY || event.key === null) cb()
+  }
+  window.addEventListener("storage", onStorage)
+  return () => { listeners.delete(cb); window.removeEventListener("storage", onStorage) }
 }
 
 /**

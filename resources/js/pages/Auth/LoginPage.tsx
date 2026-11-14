@@ -14,7 +14,6 @@ export function LoginPage() {
   const [params] = useSearchParams()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const showDemo = window.__AMTDEX_CONFIG__?.appEnv === "local" || window.__AMTDEX_CONFIG__?.appEnv === "testing"
   const [err, setErr] = useState<string | null>(null)
   const [fieldErrs, setFieldErrs] = useState<Record<string, string>>({})
 
@@ -45,9 +44,6 @@ export function LoginPage() {
           <span className="font-display font-semibold text-[16px] text-[var(--color-ink)]">AMTDEX — تسجيل الدخول</span>
         </div>
         <p className="mt-2 text-[12px] text-[var(--color-text-muted)]">ادخل إلى لوحة التحكم.</p>
-        {showDemo && (
-          <p className="mt-2 text-[12px] text-[var(--color-text-muted)]">للتجربة المحلية: admin@amtdex.ye / Amtdex2026! — الأدوار: admin، editor، viewer.</p>
-        )}
 
         {err && <div role="alert" className="mt-4 bg-[var(--danger-bg)] border border-[var(--danger)] text-[var(--danger)] text-[12px] rounded-xl px-3 py-2">{err}</div>}
 

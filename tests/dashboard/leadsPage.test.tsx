@@ -1,5 +1,6 @@
+import { API } from "@/lib/api"
 import { render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { MemoryRouter } from "react-router-dom"
 import { LeadsPage } from "@/pages/Dashboard/Leads"
@@ -20,7 +21,9 @@ function renderWithClient(ui: React.ReactElement) {
 }
 
 describe("LeadsPage (Dashboard)", () => {
+  afterEach(() => vi.restoreAllMocks())
   it("renders leads management page, export button, and filter controls", async () => {
+    vi.spyOn(API.leads, "list").mockResolvedValue({ data: [{ id: "request-1", name: "عميل الاختبار", email: "client@example.test", message: "طلب موقع", status: "جديد", source: "contact", createdAt: "2026-11-14T12:00:00Z" }] })
     renderWithClient(<LeadsPage />)
 
     expect(screen.getByRole("heading", { name: "الطلبات والتواصل" })).toBeInTheDocument()

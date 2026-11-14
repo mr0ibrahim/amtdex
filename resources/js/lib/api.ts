@@ -1,3 +1,5 @@
+import type { User } from "@/types/auth"
+
 /**
  * Amtdex — Production API Client (Laravel Sanctum & REST Ready)
  *
@@ -8,7 +10,7 @@
  * - Automatic 419 CSRF retry mechanism
  * - Structured ApiError with HTTP 422 Laravel validation mapping
  * - Global 401 / 403 / 429 interceptors
- * - DEV-only fallback mocks when local backend is unreachable; strict error throwing in PROD
+ * - Failed requests remain failures in development and production; tests provide their own fixtures
  */
 
 export interface ApiValidationErrorPayload {
@@ -84,19 +86,10 @@ export async function ensureCsrfToken(force = false): Promise<void> {
       credentials: "include",
       headers: { Accept: "application/json" },
     })
-      .then(() => {
-        csrfPromise = null
+      .then(response => {
+        if (!response.ok) throw new ApiError(response.status, "تعذر تهيئة جلسة آمنة")
       })
-      .catch((err) => {
-        csrfPromise = null
-        // In DEV, if Laravel backend isn't up, log warning rather than crash
-        if (import.meta.env.DEV) {
-          // eslint-disable-next-line no-console
-          console.warn("[Amtdex API] /sanctum/csrf-cookie unavailable in DEV mode. Falling back to mock if needed.", err)
-        } else {
-          throw err
-        }
-      })
+      .finally(() => { csrfPromise = null })
   }
 
   return csrfPromise
@@ -119,17 +112,8 @@ export async function apiClient<T>(
   options: RequestOptions = {},
 ): Promise<T> {
   const isMutating = method !== "GET"
-  const isDev = import.meta.env.DEV
 
-  if (isMutating) {
-    try {
-      await ensureCsrfToken()
-    } catch {
-      if (!isDev) {
-        throw new ApiError(0, "فشل تهيئة رمز حماية CSRF من الخادم.")
-      }
-    }
-  }
+  if (isMutating) await ensureCsrfToken()
 
   const base = getApiBaseUrl()
   const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`
@@ -234,72 +218,11 @@ export async function apiClient<T>(
       throw err
     }
 
-    // In DEV mode, allow fallback if backend is not reachable
-    if (isDev) {
-      const devMock = handleDevFallback<T>(method, cleanEndpoint, body)
-      if (devMock !== undefined) {
-        return devMock
-      }
-    }
-
     throw new ApiError(
       0,
       err instanceof Error ? err.message : "تعذر الاتصال بالخادم، يرجى التحقق من اتصال الشبكة.",
     )
   }
-}
-
-/**
- * DEV Mode Mock Fallback Handler
- * Activated strictly in DEV mode when real Laravel backend is offline.
- */
-function handleDevFallback<T>(method: string, endpoint: string, body?: unknown): T | undefined {
-  // Public form submissions
-  if (method === "POST") {
-    if (endpoint === "/contact") {
-      return { ok: true, message: "تم استلام رسالتك بنجاح (وضع التطوير)" } as T
-    }
-    if (endpoint === "/quotes") {
-      return { ok: true, message: "تم تقديم طلب عرض السعر بنجاح (وضع التطوير)" } as T
-    }
-    if (endpoint === "/newsletter") {
-      return { ok: true, message: "تم الاشتراك في النشرة البريدية بنجاح (وضع التطوير)" } as T
-    }
-    if (endpoint === "/login") {
-      const creds = body as { email?: string; password?: string }
-      if (creds?.email && creds?.password === "Amtdex2026!") {
-        return {
-          user: {
-            id: creds.email,
-            name: creds.email.includes("admin") ? "أحمد الغامدي" : "مستخدم تجريبي",
-            email: creds.email,
-            role: creds.email.includes("admin") ? "admin" : creds.email.includes("editor") ? "editor" : creds.email.includes("author") ? "author" : "viewer",
-          },
-        } as T
-      }
-      throw new ApiError(422, "البيانات المدخلة غير صحيحة", {
-        email: ["البريد الإلكتروني أو كلمة المرور غير صحيحة."],
-      })
-    }
-    if (endpoint === "/logout") {
-      return { ok: true } as T
-    }
-  }
-
-  // Auth me
-  if (method === "GET" && endpoint === "/me") {
-    // If mock session exists in localStorage, return it, else 401
-    try {
-      const raw = localStorage.getItem("amtdex_session")
-      if (raw) {
-        const s = JSON.parse(raw)
-        return { user: s.user } as T
-      }
-    } catch { /* empty */ }
-    throw new ApiError(401, "غير مصرح — يرجى تسجيل الدخول")
-  }
-
-  return undefined
 }
 
 /**
@@ -325,15 +248,21 @@ export const API = {
 
   // Auth Endpoints
   me() {
-    return apiClient<{ user: { id: string; name: string; email: string; role: "admin" | "editor" | "viewer" } }>("/me", "GET")
+    return apiClient<{ user: User }>("/me", "GET")
   },
 
   login(credentials: { email: string; password: string }) {
-    return apiClient<{ user: { id: string; name: string; email: string; role: "admin" | "editor" | "viewer" } }>("/login", "POST", credentials)
+    return apiClient<{ user: User }>("/login", "POST", credentials)
   },
 
   logout() {
     return apiClient<{ ok: boolean }>("/logout", "POST")
+  },
+
+  adminContent: {
+    list<T = unknown>(resource: "services" | "projects" | "testimonials" | "faqs" | "team" | "clients") {
+      return apiClient<{ data: T[] }>(`/admin/content/${resource}`)
+    },
   },
 
   // Dashboard & Content Endpoints
@@ -492,21 +421,6 @@ export const API = {
         contactRequests: { value: number; sub: string }
         quotes: { value: number; sub: string }
       }>("/dashboard/stats", "GET")
-    },
-  },
-
-  pricing: {
-    list() {
-      return apiClient<{ data: Array<any> }>("/pricing", "GET")
-    },
-    create(data: any) {
-      return apiClient<{ ok: boolean; data: any }>("/pricing", "POST", data)
-    },
-    update(id: number | string, data: any) {
-      return apiClient<{ ok: boolean; data: any }>(`/pricing/${id}`, "PUT", data)
-    },
-    delete(id: number | string) {
-      return apiClient<{ ok: boolean }>(`/pricing/${id}`, "DELETE")
     },
   },
 

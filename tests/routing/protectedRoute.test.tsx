@@ -1,11 +1,15 @@
+import { mockAuthApi } from "../helpers/auth"
 import { render, screen } from "@testing-library/react"
 import { MemoryRouter, Route, Routes } from "react-router-dom"
-import { describe, expect, it, beforeEach } from "vitest"
+import { describe, expect, it, beforeEach, afterEach, vi } from "vitest"
 import { ProtectedRoute, ForbiddenPage } from "@/components/layout/ProtectedRoute"
 import { login, logout } from "@/lib/auth"
 
 describe("ProtectedRoute and Authorization", () => {
+  afterEach(() => vi.restoreAllMocks())
+
   beforeEach(async () => {
+    mockAuthApi()
     await logout()
   })
 
@@ -31,7 +35,7 @@ describe("ProtectedRoute and Authorization", () => {
   })
 
   it("renders protected content when user is authenticated with proper role", async () => {
-    await login("admin@amtdex.ye", "Amtdex2026!")
+    await login("admin@amtdex.ye", "test-only-password")
 
     render(
       <MemoryRouter initialEntries={["/dashboard"]}>
@@ -52,7 +56,7 @@ describe("ProtectedRoute and Authorization", () => {
   })
 
   it("redirects to /403 when user lacks required role", async () => {
-    await login("viewer@amtdex.ye", "Amtdex2026!")
+    await login("viewer@amtdex.ye", "test-only-password")
 
     render(
       <MemoryRouter initialEntries={["/dashboard"]}>
