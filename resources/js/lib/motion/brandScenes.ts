@@ -31,16 +31,16 @@ export function mountBrandScenes(root: HTMLElement) {
         const scene = gsap.context(() => {
           if ((el.hasAttribute("data-motion") || automatic) && !initiallyVisible) {
             const type = el.dataset.motion || "rise"
-            const from: gsap.TweenVars = type === "vector" ? { opacity: 0, y: 20, scale: .96 } : type === "bar" ? { scaleY: 0 }
+            const from: gsap.TweenVars = type === "vector" ? { opacity: 0, x: desktop ? -44 : 0, y: 20, scale: .96 } : type === "bar" ? { scaleY: 0 }
               : type === "reveal" ? { opacity: 0, y: 18, clipPath: "inset(0% 0% 100% 0%)" }
               : type === "screen" ? { opacity: 0, y: desktop ? 48 : 24, scale: .97, rotationX: desktop ? 5 : 0, transformPerspective: 1000 }
               : type === "draw" ? { strokeDashoffset: 1, opacity: 0 }
               : type === "signal" ? { opacity: 0, scale: .94 }
-              : type === "fade" ? { opacity: 0 } : { opacity: 0, y: desktop ? 34 : 18 }
+              : type === "fade" ? { opacity: 0 } : { opacity: 0, y: desktop ? 60 : 28 }
             gsap.fromTo(el, from, {
-              opacity: 1, y: 0, scale: 1, rotationX: 0, ...(type === "reveal" ? { clipPath: "inset(0% 0% 0% 0%)" } : {}), ...(type === "draw" ? { strokeDashoffset: 0 } : {}),
-              duration: type === "screen" ? 1 : type === "bar" ? .8 : .85, ease: "power3.out",
-              delay: Math.min(Number(el.dataset.motionDelay || 0) / 1000, .55) * (desktop ? 1 : .6),
+              opacity: 1, x: 0, y: 0, scale: 1, rotationX: 0, ...(type === "reveal" ? { clipPath: "inset(0% 0% 0% 0%)" } : {}), ...(type === "draw" ? { strokeDashoffset: 0 } : {}),
+              duration: type === "screen" ? 1 : type === "bar" ? .8 : 1, ease: "power3.out",
+              delay: Math.min(Number(el.dataset.motionDelay || (automatic ? Math.min(Array.from(el.parentElement?.children || []).indexOf(el) * 100, 500) : 0)) / 1000, .55) * (desktop ? 1 : .6),
               immediateRender: false,
               ...(automatic ? { clearProps: "opacity,transform" } : {}),
               scrollTrigger: { trigger: el, start: "top 92%", once: true },
@@ -107,7 +107,9 @@ export function mountBrandScenes(root: HTMLElement) {
     }
     const update = () => context.ignore(scan)
     update()
-    const observer = new MutationObserver(update)
+    const observer = new MutationObserver(records => {
+      if (records.some(record => [...record.addedNodes, ...record.removedNodes].some(node => node.nodeType === 1))) update()
+    })
     observer.observe(root, { childList: true, subtree: true })
     return () => {
       observer.disconnect()

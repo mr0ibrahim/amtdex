@@ -1,3 +1,5 @@
+import { PointerHalo } from "@/components/ui/PointerHalo"
+import { MotionPlayback } from "@/hooks/useMotionPlayback"
 import { useAmbientMotion } from "@/hooks/useAmbientMotion"
 import { useEffect, useState } from "react"
 import { Icon } from "@/components/ui/Icon"
@@ -18,7 +20,7 @@ export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
   }, [paused])
 
   return (
-    <div ref={motionRef} data-motion-paused={paused} className="reference-motion-scope brand-motion min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] selection:bg-[var(--color-ink)] selection:text-white">
+    <MotionPlayback value={paused}><div ref={motionRef} data-motion-paused={paused} className="reference-motion-scope brand-motion min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] selection:bg-[var(--color-ink)] selection:text-white">
       <a
         href="#main-content"
         className="skip-link sr-only focus:not-sr-only focus:fixed focus:top-3 focus:z-[100] focus:bg-[var(--color-ink)] focus:text-white focus:px-4 focus:py-2 focus:rounded-full focus:text-[13px]"
@@ -30,8 +32,9 @@ export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
         <Outlet />
       </main>
       <Footer onToast={onToast} />
+      <PointerHalo />
       <button type="button" className="reference-motion-toggle" aria-pressed={paused} aria-label={paused ? "تشغيل الحركات" : "إيقاف الحركات"} title={paused ? "تشغيل الحركات" : "إيقاف الحركات"} onClick={() => setPaused(value => !value)}><Icon name={paused ? "play" : "pause"} size={16} /><span>{paused ? "تشغيل الحركة" : "إيقاف الحركة"}</span></button>
-    </div>
+    </div></MotionPlayback>
   )
 }
 

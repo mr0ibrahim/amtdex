@@ -11,7 +11,7 @@ export function useAmbientMotion(ref: RefObject<HTMLDivElement | null>, route: s
     }, { rootMargin: "40px" })
     const scan = () => {
       observed.forEach(element => { if (!root.contains(element)) { observer.unobserve(element); observed.delete(element) } })
-      root.querySelectorAll(".site-header-bar, .da-kicker, .da-hero h1, .brand-page-header h1, .contact-page-hero h1, .quote-page h1, .blog-hero h1, .reference-floating, .reference-ribbon, .contact-eyebrow, .blog-follow-eyebrow").forEach(element => {
+      root.querySelectorAll(".site-header-bar, .da-kicker, .da-hero h1, .brand-page-header h1, .contact-page-hero h1, .quote-page h1, .blog-hero h1, .reference-floating, .reference-ribbon, .reference-platforms, .reference-brief, .product-scene, .reference-stats, .contact-eyebrow, .blog-follow-eyebrow").forEach(element => {
         if (observed.has(element)) return
         observed.add(element)
         observer.observe(element)
@@ -19,7 +19,9 @@ export function useAmbientMotion(ref: RefObject<HTMLDivElement | null>, route: s
     }
     let frame = 0
     const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(scan) }
-    const mutations = new MutationObserver(schedule)
+    const mutations = new MutationObserver(records => {
+      if (records.some(record => [...record.addedNodes, ...record.removedNodes].some(node => node.nodeType === 1))) schedule()
+    })
     mutations.observe(root, { childList: true, subtree: true })
     const visibility = () => { root.dataset.documentHidden = String(document.hidden) }
     document.addEventListener("visibilitychange", visibility)

@@ -1,4 +1,4 @@
-import { CapabilityRibbon, FloatingCapabilities } from "@/components/ui/ReferenceMotion"
+import { CapabilityRibbon, FloatingCapabilities, TechnologyMarquee } from "@/components/ui/ReferenceMotion"
 import { BrandArtwork } from "@/components/ui/BrandArtwork"
 import { type ReactNode } from "react"
 import { PublicLink as Link } from "@/cms/PublicLink"
@@ -25,6 +25,7 @@ export function HomePage(_props: { onToast: (m: string) => void }) {
   return (
     <div className="home-stack">
       {gate("hero", <section data-motion-group className="page-container page-container--wide da-hero">
+        <FloatingCapabilities />
         <div>
           <div className="da-hero-copy">
             <p data-motion="rise" className="da-kicker">{hero.kicker}</p>
@@ -40,10 +41,10 @@ export function HomePage(_props: { onToast: (m: string) => void }) {
                 <Icon name="play" size={14} /> {hero.cta2}
               </Link>
             </div>
-            <FloatingCapabilities />
             <p data-motion="rise" data-motion-delay="560" className="da-proof text-[13px] text-[var(--color-text-muted)]">
               <span className="text-[var(--color-gold)]">★★★★★</span> {hero.proof}
             </p>
+            <TechnologyMarquee />
           </div>
 
           <ProductScene />

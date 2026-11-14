@@ -1,5 +1,7 @@
+import { MotionPlayback, useMotionPlayback } from "@/hooks/useMotionPlayback"
+import { AnimatedBrief } from "@/components/ui/AnimatedBrief"
 import { ScreenImage } from "@/components/ui/ScreenImage"
-import { useEffect, useRef, useState, type KeyboardEvent } from "react"
+import { useContext, useEffect, useRef, useState, type KeyboardEvent } from "react"
 import { Icon, type IconName } from "@/components/ui/Icon"
 import { PublicLink as Link } from "@/cms/PublicLink"
 
@@ -10,11 +12,21 @@ const experiences = [
 ] as const
 
 export function ExperienceStudio() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const paused = useContext(MotionPlayback)
+  const playing = useMotionPlayback(sectionRef)
+  const [hovered, setHovered] = useState(false)
+  const [focused, setFocused] = useState(false)
   const [active, setActive] = useState(0)
   const tabs = useRef<(HTMLButtonElement | null)[]>([])
   const deck = useRef<HTMLDivElement>(null)
   const pointer = useRef<{ x: number; y: number } | null>(null)
   const item = experiences[active]
+  useEffect(() => {
+    if (!playing || hovered || focused) return
+    const timer = window.setTimeout(() => setActive(value => (value + 1) % experiences.length), 5000)
+    return () => window.clearTimeout(timer)
+  }, [active, playing, hovered, focused])
   const move = (step: number) => setActive(value => (value + step + experiences.length) % experiences.length)
   useEffect(() => {
     const root = deck.current
@@ -36,7 +48,7 @@ export function ExperienceStudio() {
           gsap.to(card, {
             x: [0, 46, -34][rank], y: [22, -12, -44][rank], rotation: [-6, 10, -15][rank],
             scale: [1, .94, .87][rank], zIndex: 3 - rank, opacity: 1,
-            duration: reduced.matches ? 0 : .95, ease: "power3.inOut", overwrite: "auto",
+            duration: reduced.matches || paused ? 0 : .95, ease: "power3.inOut", overwrite: "auto",
           })
         })
       })
@@ -52,7 +64,7 @@ export function ExperienceStudio() {
       observer.observe(root)
     } else load()
     return () => { cancelled = true; observer?.disconnect(); stop?.() }
-  }, [active])
+  }, [active, paused])
   const navigate = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     let next = index
     if (event.key === "ArrowLeft") next = (index + 1) % experiences.length
@@ -63,7 +75,7 @@ export function ExperienceStudio() {
     event.preventDefault(); setActive(next); tabs.current[next]?.focus()
   }
   return (
-    <section data-motion-group className="experience-studio motion-showcase page-container page-container--wide page-section" aria-labelledby="studio-title">
+    <section ref={sectionRef} onPointerEnter={event => { if (event.pointerType === "mouse") setHovered(true) }} onPointerLeave={() => setHovered(false)} onFocusCapture={() => setFocused(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false) }} data-motion-group className="experience-studio motion-showcase page-container page-container--wide page-section" aria-labelledby="studio-title">
       <div className="studio-heading">
         <p className="studio-eyebrow"><span /> من الفكرة إلى تجربة حقيقية</p>
         <h2 id="studio-title">ثلاث أفكار.<br /><em>وتجربة تتحرّك معك.</em></h2>
@@ -98,7 +110,8 @@ export function ExperienceStudio() {
               <div className="project-card-bottom"><span>{sample.app}<small>واجهة مصمّمة حول احتياجك</small></span><span className="project-card-seal"><Icon name="check" size={17} /></span></div>
             </div>)}
           </div>
-          <div className="project-deck-controls"><button type="button" aria-label="النموذج السابق" onClick={() => move(-1)}><Icon name="arrowRight" size={20} /></button><span aria-live="polite" aria-atomic="true">0{active + 1} <i>/</i> 03</span><button type="button" aria-label="النموذج التالي" onClick={() => move(1)}><Icon name="arrowLeft" size={20} /></button></div>
+          <AnimatedBrief />
+          <div className="project-deck-controls"><button type="button" aria-label="النموذج السابق" onClick={() => move(-1)}><Icon name="arrowRight" size={20} /></button><span aria-live="off" aria-atomic="true">0{active + 1} <i>/</i> 03</span><button type="button" aria-label="النموذج التالي" onClick={() => move(1)}><Icon name="arrowLeft" size={20} /></button></div>
           <p className="project-swipe-hint">اسحب البطاقات أو استخدم الأسهم</p>
         </div>
       </div>
