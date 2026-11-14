@@ -108,7 +108,7 @@ public pages with local fallback content.
 `resources/css/glass.css` (loaded last): a fixed three-blob aurora (`.glass-aurora`),
 frosted header and footer, translucent glass cards (backdrop blur from 1024px up only),
 and a sheen band (`.geo-sheen`) that crosses a card on arrival, hover and touch focus.
-Motion budget: header border sweep, heading shimmer, kicker halo, floating hero icons,
+Motion budget: heading shimmer, kicker halo, floating hero icons,
 the custom cursor ring and the second marquee are off; the pause control sits under the
 footer. Brand purples are unified (`#6a2c9f` violet, `#31144d` ink), muted text is
 darker (`#675777`), and type below 14px steps up on public pages.
