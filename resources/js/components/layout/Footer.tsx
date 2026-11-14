@@ -48,14 +48,14 @@ export function Footer(_props: { onToast: (m: string) => void }) {
           <div className="footer-contact">
             <h2>بيانات التواصل</h2>
             <address>
-              <div className="footer-contact-row"><span><Icon name="mail" size={15} /> البريد الإلكتروني</span><a href="mailto:Info@amtdex.com" dir="ltr">Info@amtdex.com</a></div>
+              <div className="footer-contact-row"><span><Icon name="mail" size={15} /> البريد الإلكتروني</span><a href="mailto:info@amtdex.com" dir="ltr">info@amtdex.com</a></div>
               <div className="footer-contact-row"><span><Icon name="phone" size={15} /> أرقام التواصل</span><a href="tel:+967784440429" dir="ltr">+967 784 440 429</a><a href="tel:+967784440428" dir="ltr">+967 784 440 428</a></div>
               <div className="footer-contact-row"><span><Icon name="mapPin" size={15} /> مقرّنا</span><p>{city}</p></div>
             </address>
             <a className="footer-whatsapp" href={whatsappUrl()} target="_blank" rel="noreferrer">تواصل عبر واتساب <Icon name="actionArrow" size={16} /></a>
           </div>
         </div>
-        <div className="footer-bottom"><span>© {new Date().getFullYear()} AMTDEX SOFT. جميع الحقوق محفوظة.</span><span>{city}</span></div>
+        <div className="footer-bottom"><span>© {new Date().getFullYear()} AMTDEX SOFT. جميع الحقوق محفوظة.</span><span className="footer-legal">{siteLink("/privacy", "سياسة الخصوصية")}{siteLink("/terms", "شروط الاستخدام")}</span><span>{city}</span></div>
       </div>
     </footer>
   )

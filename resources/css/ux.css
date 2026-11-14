@@ -89,3 +89,29 @@ html { -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%;
 @media (prefers-reduced-motion: reduce) {
   .brand-motion :is(.btn, .brand-cta, .quote-choice, .ss-trigger):active, .whatsapp-float:active, .brand-motion main [data-geo-card]:active { scale: none; }
 }
+
+/* ── Quote confirmation ── */
+.brand-motion main .quote-thanks-card { padding: clamp(28px, 6vw, 52px) clamp(20px, 5vw, 44px); text-align: center; }
+.quote-thanks-mark { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 18px; border-radius: 50%; background: linear-gradient(140deg, #6a2c9f, #461667); color: #fff; box-shadow: 0 16px 30px -14px #461667cc; }
+.quote-thanks h1 { font-size: clamp(24px, 4.6vw, 34px); font-weight: 700; color: #31144d; }
+.quote-thanks-card > p { max-width: 44ch; margin: 10px auto 0; font-size: 15.5px; line-height: 1.9; color: #675777; }
+.quote-thanks dl { display: grid; gap: 10px; max-width: 460px; margin: 24px auto 0; text-align: start; }
+.quote-thanks dl > div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 14px; border: 1px solid #e3d5f4; border-radius: 14px; background: #ffffffb3; }
+.quote-thanks dt { flex: none; font-size: 14px; color: #675777; }
+.quote-thanks dd { font-size: 14.5px; font-weight: 700; color: #31144d; text-align: end; }
+.quote-thanks-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 26px; }
+
+/* ── Privacy and terms ── */
+.legal-page { max-width: 860px; padding-block: clamp(28px, 6vw, 72px); }
+.legal-head h1 { margin-top: 14px; font-size: clamp(30px, 5.4vw, 46px); font-weight: 700; line-height: 1.35; color: #31144d; }
+.legal-updated { margin-top: 8px; font-size: 13.5px; color: #675777; }
+.legal-intro { max-width: 62ch; margin-top: 14px; font-size: 16.5px; line-height: 2; color: #4f4160; }
+.legal-body { display: grid; gap: 14px; margin-top: 30px; }
+.brand-motion main .legal-section { padding: clamp(18px, 3.4vw, 28px); }
+.legal-section h2 { display: flex; align-items: baseline; gap: 12px; font-size: 19px; font-weight: 700; color: #31144d; }
+.legal-section h2 span { font-family: var(--font-display, inherit); font-size: 14px; color: #7a3cc2; }
+.legal-section ul { display: grid; gap: 8px; margin-top: 12px; padding-inline-start: 20px; list-style: disc; font-size: 15.5px; line-height: 1.95; color: #4f4160; }
+.legal-section li::marker { color: #b996e6; }
+.legal-other { margin-top: 22px; font-size: 15px; color: #675777; }
+.legal-other a, .footer-legal a { color: #6a2c9f; text-decoration: underline; text-underline-offset: 3px; }
+.footer-legal { display: inline-flex; flex-wrap: wrap; gap: 6px 18px; }

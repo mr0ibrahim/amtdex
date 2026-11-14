@@ -29,6 +29,18 @@
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ asset('fonts/ibm-plex-sans-arabic.woff2') }}">
     <link rel="ard" type="application/json" href="{{ asset('.well-known/ard.json') }}">
     <meta name="theme-color" content="#461667">
+    {{-- Link previews (WhatsApp, X, Telegram) read the first HTML response and run no JavaScript.
+         data-rh hands these tags to the client SEO component once the page is running. --}}
+    <meta property="og:site_name" content="AMTDEX SOFT" data-rh="true">
+    <meta property="og:type" content="website" data-rh="true">
+    <meta property="og:locale" content="ar_AR" data-rh="true">
+    <meta property="og:title" content="AMTDEX SOFT — هندسة الفكرة قبل برمجتها" data-rh="true">
+    <meta property="og:description" content="امتدكس سوفت للبرمجيات وتقنية المعلومات والأنظمة. من الفكرة إلى التنفيذ." data-rh="true">
+    <meta property="og:image" content="{{ asset('images/og-amtdex.jpg') }}" data-rh="true">
+    <meta property="og:image:width" content="1200" data-rh="true">
+    <meta property="og:image:height" content="630" data-rh="true">
+    <meta name="twitter:card" content="summary_large_image" data-rh="true">
+    <meta name="twitter:image" content="{{ asset('images/og-amtdex.jpg') }}" data-rh="true">
     @if(\App\Support\DashboardHost::matches() || request()->is('dashboard', 'dashboard/*', 'login'))
         <meta name="robots" content="noindex, nofollow">
     @endif

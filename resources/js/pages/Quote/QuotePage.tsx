@@ -4,7 +4,8 @@ import { countryOptions, currencyOptions } from "@/data/selectOptions"
 import { Icon } from "@/components/ui/Icon"
 import { Input, Textarea } from "@/components/ui/Input"
 import { useState, useEffect, useRef } from "react"
-import { Link, useNavigate, useSearchParams } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
+import { whatsappUrl } from "@/lib/site"
 import { type CountryCode } from "@/lib/phone"
 import { API } from "@/lib/api"
 import { createQuoteSchema, zodErrors } from "@/lib/schemas"
@@ -42,7 +43,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
   const [quoteErrors, setQuoteErrors] = useState<Record<string, string>>({})
-  const nav = useNavigate()
+  const [sent, setSent] = useState<{ name: string; service: string; budget: string; timeline: string } | null>(null)
   const service = services.join(", ")
 
   useEffect(() => {
@@ -94,7 +95,8 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
     try {
       await API.quote(parsed.data)
       onToast("تم استلام طلبك. سنعود إليك.")
-      nav("/contact")
+      setSent({ name: parsed.data.name, service: servicesList.filter((item: any) => services.includes(item.slug)).map((item: any) => item.title).join("، ") || service, budget: parsed.data.budget, timeline: parsed.data.timeline })
+      window.scrollTo?.({ top: 0 })
     } catch (err: any) {
       const msg = err?.response?.data?.message || err?.message || "تعذر إرسال الطلب، يرجى التحقق من الاتصال والمحاولة مجدداً."
       setServerError(msg)
@@ -102,6 +104,27 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
       pendingRef.current = false
       setIsSubmitting(false)
     }
+  }
+
+  if (sent) {
+    return (
+      <div className="page-container page-container--narrow quote-page quote-thanks py-8 sm:py-12">
+        <div className="geo-card quote-thanks-card" data-geo="orbit" role="status">
+          <span className="quote-thanks-mark" aria-hidden="true"><Icon name="check" size={30} /></span>
+          <h1>وصلنا طلبك، {sent.name.split(" ")[0]}</h1>
+          <p>سنراجع التفاصيل ونتواصل معك على الهاتف أو البريد الذي أدخلته.</p>
+          <dl>
+            <div><dt>الخدمات</dt><dd>{sent.service}</dd></div>
+            <div><dt>الميزانية</dt><dd><bdi>{sent.budget}</bdi></dd></div>
+            <div><dt>الموعد</dt><dd>{sent.timeline}</dd></div>
+          </dl>
+          <div className="quote-thanks-actions">
+            <a href={whatsappUrl(`مرحبًا، أرسلت طلب عرض سعر باسم ${sent.name}.`)} target="_blank" rel="noreferrer" className="btn btn-ink brand-cta"><Icon name="whatsapp" size={17} />تابع عبر واتساب</a>
+            <Link to="/" className="btn btn-line brand-cta">العودة للرئيسية</Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

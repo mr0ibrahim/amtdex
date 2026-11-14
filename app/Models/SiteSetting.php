@@ -23,7 +23,7 @@ class SiteSetting extends Model
 
         return [
             'siteName' => $settings['siteName'] ?? 'AMTDEX SOFT',
-            'email' => $settings['email'] ?? 'Info@amtdex.com',
+            'email' => $settings['email'] ?? 'info@amtdex.com',
             'phone' => $settings['phone'] ?? '+967 784 440 429',
         ];
     }

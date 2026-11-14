@@ -15,6 +15,7 @@ import { useToast } from "@/components/ui/Toast"
 import { isBlogSubdomain, isDashboardHost, getMainUrl } from "@/lib/subdomain"
 const HomePage = lazy(() => import("@/pages/Home/HomePage").then(m => ({ default: m.HomePage })))
 const ServicesPage = lazy(() => import("@/pages/Services/ServicesPage").then(m => ({ default: m.ServicesPage })))
+const LegalPage = lazy(() => import("@/pages/Legal/LegalPage").then(m => ({ default: m.LegalPage })))
 const AboutPage = lazy(() => import("@/pages/About/AboutPage").then(m => ({ default: m.AboutPage })))
 const ContactPage = lazy(() => import("@/pages/Contact/ContactPage").then(m => ({ default: m.ContactPage })))
 
@@ -106,7 +107,7 @@ export default function App() {
                   <Route path="/" element={<PublicPage path="/"><Seo title="AMTDEX SOFT — امتدكس سوفت" description="هندسة الفكرة قبل برمجتها. من الفكرة إلى التنفيذ." /><HomePage onToast={show} /></PublicPage>} />
                   <Route path="/services" element={<PublicPage path="/services"><Seo title="الخدمات" /><ServicesPage /></PublicPage>} />
                   <Route path="/services/:slug" element={<PublicPage path="/services"><ServiceDetailPage /></PublicPage>} />
-                  <Route path="/portfolio" element={<PublicPage path="/portfolio"><Seo title="اعمالنا" /><PortfolioPage /></PublicPage>} />
+                  <Route path="/portfolio" element={<PublicPage path="/portfolio"><Seo title="أعمالنا" /><PortfolioPage /></PublicPage>} />
                   <Route path="/portfolio/:slug" element={<PublicPage path="/portfolio"><PortfolioDetailPage /></PublicPage>} />
                   <Route path="/pricing" element={<NotFoundPage />} />
                   <Route path="/about" element={<PublicPage path="/about"><Seo title="من نحن" /><AboutPage /></PublicPage>} />
@@ -116,6 +117,8 @@ export default function App() {
                   <Route path="/blog/posts/:slug" element={<PublicPage path="/blog"><BlogPostPage /></PublicPage>} />
                   <Route path="/blog/categories/:slug" element={<PublicPage path="/blog"><BlogCategoryPage /></PublicPage>} />
                   <Route path="/blog/tags/:slug" element={<PublicPage path="/blog"><BlogTagPage /></PublicPage>} />
+                  <Route path="/privacy" element={<LegalPage kind="privacy" />} />
+                  <Route path="/terms" element={<LegalPage kind="terms" />} />
                   {/* Unknown addresses keep the site header, footer and navigation. */}
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>

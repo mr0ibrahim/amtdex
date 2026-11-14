@@ -197,7 +197,7 @@ class BlogJsonLdBuilder
             'name' => self::DEFAULT_ORG_NAME,
             'alternateName' => 'امتدكس سوفت للبرمجيات وتقنية المعلومات والأنظمة',
             'url' => self::DEFAULT_SITE_URL,
-            'email' => 'Info@amtdex.com',
+            'email' => 'info@amtdex.com',
             'telephone' => '+967784440429',
             'address' => [
                 '@type' => 'PostalAddress',

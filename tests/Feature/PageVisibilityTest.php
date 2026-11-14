@@ -97,7 +97,7 @@ class PageVisibilityTest extends TestCase
 
     public function test_unknown_addresses_return_not_found_while_real_pages_stay_ok(): void
     {
-        foreach (['/', '/services', '/services/web', '/portfolio', '/portfolio/any-project', '/about', '/contact', '/quote'] as $path) {
+        foreach (['/', '/services', '/services/web', '/portfolio', '/portfolio/any-project', '/about', '/contact', '/quote', '/privacy', '/terms'] as $path) {
             $this->get($path)->assertOk();
         }
 

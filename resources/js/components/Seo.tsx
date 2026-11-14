@@ -30,7 +30,7 @@ export interface SeoProps {
 }
 
 const DEFAULT_SITE = "https://amtdex.com"
-const DEFAULT_OG = "https://amtdex.com/images/screens/projects.webp"
+const DEFAULT_OG = "https://amtdex.com/images/og-amtdex.jpg"
 
 export function Seo({
   title,

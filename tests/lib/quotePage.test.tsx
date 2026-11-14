@@ -90,4 +90,10 @@ it("lets the visitor ask for several services at once", async () => {
   await waitFor(() => expect(state.quote).toHaveBeenCalledTimes(1))
   expect(state.quote.mock.calls[0][0].service).toBe("web, mobile")
   expect(state.quote.mock.calls[0][0].budget).toBe("لم أحدد بعد")
+  // The visitor stays on the page and sees what was sent, with a way to follow up.
+  const done = await screen.findByRole("status")
+  expect(done).toHaveTextContent("وصلنا طلبك، إبراهيم")
+  expect(done).toHaveTextContent("تطوير المواقع، تطبيقات الجوال")
+  expect(screen.getByRole("link", { name: /تابع عبر واتساب/ })).toHaveAttribute("href", expect.stringContaining("wa.me/"))
+  expect(screen.queryByRole("button", { name: /إرسال طلب عرض السعر/ })).toBeNull()
 })

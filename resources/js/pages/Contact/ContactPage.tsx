@@ -55,7 +55,7 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
     pendingFocusRef.current = null
   }, [sending])
   const contacts: Array<{ label: string; value: string; href?: string; icon: IconName; ltr?: boolean }> = [
-    { label: "البريد الإلكتروني", value: "Info@amtdex.com", href: "mailto:Info@amtdex.com", icon: "mail", ltr: true },
+    { label: "البريد الإلكتروني", value: "info@amtdex.com", href: "mailto:info@amtdex.com", icon: "mail", ltr: true },
     { label: "اتصل بنا", value: "+967 784 440 429", href: "tel:+967784440429", icon: "phone", ltr: true },
     { label: "رقم التواصل الآخر", value: "+967 784 440 428", href: "tel:+967784440428", icon: "phone", ltr: true },
     { label: "إنستغرام", value: "@amtdex", href: "https://www.instagram.com/amtdex/", icon: "instagram", ltr: true },

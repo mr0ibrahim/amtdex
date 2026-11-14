@@ -11,10 +11,10 @@ export const CMS_DEFAULTS: CmsDocument = {
   pages: [
     { path: "/", label: "الرئيسية", published: true, seoTitle: "AMTDEX SOFT — امتدكس سوفت", seoDescription: "هندسة الفكرة قبل برمجتها. من الفكرة إلى التنفيذ." },
     { path: "/services", label: "الخدمات", published: true, seoTitle: "ماذا نقدم؟ — AMTDEX SOFT", seoDescription: "مواقع، تطبيقات، متاجر، أنظمة إدارة، تسويق، هوية بصرية، وحماية المواقع والأنظمة." },
-    { path: "/portfolio", label: "أعمالنا", published: true, seoTitle: "اعمالنا", seoDescription: "نماذج من مشاريع ومنصات رقمية قمنا بتطويرها وإطلاقها بنجاح." },
+    { path: "/portfolio", label: "أعمالنا", published: true, seoTitle: "أعمالنا", seoDescription: "نماذج من مشاريع ومنصات رقمية قمنا بتطويرها وإطلاقها بنجاح." },
     { path: "/blog", label: "المدونة", published: true, seoTitle: "المدونة — AMTDEX SOFT", seoDescription: "ملاحظات وأفكار من امتدكس سوفت." },
     { path: "/about", label: "من نحن", published: true, seoTitle: "من نحن — امتدكس سوفت", seoDescription: "نطوّر الحلول الرقمية ونحوّل الأفكار والمشكلات إلى أنظمة وبرمجيات قابلة للعمل والنمو." },
-    { path: "/contact", label: "تواصل", published: true, seoTitle: "تواصل معنا — AMTDEX SOFT", seoDescription: "اليمن - إب. Info@amtdex.com. +967 784 440 429." },
+    { path: "/contact", label: "تواصل", published: true, seoTitle: "تواصل معنا — AMTDEX SOFT", seoDescription: "اليمن - إب. info@amtdex.com. +967 784 440 429." },
     { path: "/quote", label: "ابدأ مشروعك", published: true, seoTitle: "ابدأ مشروعك — AMTDEX SOFT", seoDescription: "أخبرنا عن فكرتك ونعود إليك." },
   ],
   nav: [
