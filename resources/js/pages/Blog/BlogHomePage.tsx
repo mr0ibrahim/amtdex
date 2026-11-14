@@ -1,7 +1,7 @@
 import "../../../css/blog-cards.css"
-import "../../../css/blog-prose.css"
 import { useEffect, useState, useTransition } from "react"
 import { useDebouncedValue } from "@/routing/search"
+import { getAvatarUrl } from "@/lib/avatar"
 import { BlogArticleCard } from "./BlogArticleCard"
 import { BrandArtwork } from "@/components/ui/BrandArtwork"
 import { Icon } from "@/components/ui/Icon"
@@ -38,7 +38,7 @@ export function BlogHomePage() {
       }),
   })
 
-  const { data: featuredRes } = useQuery({
+  const { data: featuredRes, isPending: featuredPending } = useQuery({
     queryKey: ["blog-featured"],
     queryFn: () => BlogAPI.getPosts({ featured: true, per_page: 1 }),
   })
@@ -102,7 +102,7 @@ export function BlogHomePage() {
   }
 
   // Prefer server-generated Organization + WebSite JSON-LD from Laravel.
-  const blogUrl = getBlogUrl("/")
+  const blogUrl = new URL(getBlogUrl("/"), window.location.origin).href
   const jsonLd =
     settingsRes?.json_ld && settingsRes.json_ld.length > 0
       ? settingsRes.json_ld
@@ -181,12 +181,12 @@ export function BlogHomePage() {
         </section>
 
         {/* Featured Post Hero Card (Only on Page 1 without query filters) */}
-        {page === 1 && !category && !tag && !searchParams.get("q") && featuredPost && (
+        {page === 1 && !category && !tag && !searchParams.get("q") && (featuredPost || featuredPending) && (
           <section className="py-10 bg-[var(--color-bg)]">
             <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
-              <Card hover padding="none" className="blog-featured overflow-hidden border border-[var(--color-border)]">
+              {featuredPost ? <Card hover padding="none" className="blog-featured overflow-hidden border border-[var(--color-border)]">
                 <div className="grid lg:grid-cols-[1.2fr_1fr] items-center">
-                  <div className="p-6 sm:p-10 lg:p-12 flex flex-col justify-between h-full order-2 lg:order-1">
+                  <div className="blog-featured-copy p-6 sm:p-10 lg:p-12 flex flex-col justify-between h-full order-2 lg:order-1">
                     <div>
                       <div className="flex flex-wrap items-center gap-2 mb-4">
                         <Badge variant="warning"><Icon name="star" size={14} /> مقال مميز</Badge>
@@ -200,7 +200,7 @@ export function BlogHomePage() {
                           {featuredPost.reading_time_minutes} دقائق قراءة
                         </span>
                       </div>
-                      <h2 className="text-2xl sm:text-3xl font-extrabold text-[var(--color-ink)] leading-snug hover:text-[var(--color-primary-light)] transition-colors">
+                      <h2 className="line-clamp-3 text-2xl sm:text-3xl font-extrabold text-[var(--color-ink)] leading-snug hover:text-[var(--color-primary-light)] transition-colors">
                         <Link to={`/posts/${featuredPost.slug}`}>{featuredPost.title}</Link>
                       </h2>
                       <p className="mt-3 text-[14px] sm:text-[15px] text-[var(--color-text-muted)] leading-relaxed line-clamp-3">
@@ -212,10 +212,10 @@ export function BlogHomePage() {
                       <div className="flex items-center gap-3">
                         {featuredPost.author?.avatar && (
                           <img
-                            src={featuredPost.author.avatar}
+                            src={getAvatarUrl(featuredPost.author.avatar)}
                             alt={featuredPost.author.name}
                             className="size-10 rounded-full object-cover border border-[var(--color-border)]"
-                            loading="eager"
+                            loading="eager" width={40} height={40} decoding="async"
                           />
                         )}
                         <div>
@@ -231,16 +231,16 @@ export function BlogHomePage() {
                     </div>
                   </div>
 
-                  <div className="relative aspect-[16/10] lg:aspect-auto lg:h-full bg-[var(--color-card-soft)] order-1 lg:order-2">
+                  <div className="blog-featured-cover relative aspect-[16/10] lg:aspect-auto lg:h-full bg-[var(--color-card-soft)] order-1 lg:order-2">
                     <img
                       src={featuredPost.cover_image ?? "https://amtdex.com/images/screens/projects.webp"}
                       alt={featuredPost.cover_image_alt ?? featuredPost.title}
                       className="w-full h-full object-cover"
-                      loading="eager"
+                      loading="eager" fetchPriority="high" decoding="async" width={800} height={500}
                     />
                   </div>
                 </div>
-              </Card>
+              </Card> : <div className="blog-featured blog-featured-skeleton" aria-label="جار تحميل المقال المميز" role="status"><div className="blog-featured-cover" /><div className="blog-featured-copy"><span /><span /><span /></div></div>}
             </div>
           </section>
         )}
@@ -249,8 +249,8 @@ export function BlogHomePage() {
         <section className="py-8">
           <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
             {/* Category Filter Pills */}
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-[var(--color-border)]">
-              <div className="flex flex-wrap items-center gap-2">
+            <div className="blog-filter-bar flex items-center justify-between gap-4 mb-8 pb-4 border-b border-[var(--color-border)]">
+              <div className="blog-filter-scroll flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => handleCategorySelect("")}
@@ -298,14 +298,14 @@ export function BlogHomePage() {
             {isLoading ? (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="animate-pulse bg-white border border-[var(--color-border)] rounded-[24px] p-5 h-96 flex flex-col justify-between">
-                    <div className="bg-gray-200 h-44 rounded-xl mb-4" />
-                    <div className="space-y-2">
-                      <div className="h-4 bg-gray-200 rounded w-1/3" />
-                      <div className="h-6 bg-gray-200 rounded w-5/6" />
+                  <div key={i} className="blog-article-card blog-article-skeleton" aria-hidden="true">
+                    <div className="blog-article-cover" />
+                    <div className="blog-article-copy">
+                      <div className="h-4 bg-gray-200 rounded w-1/3 mb-4" />
+                      <div className="h-6 bg-gray-200 rounded w-5/6 mb-4" />
                       <div className="h-4 bg-gray-200 rounded w-full" />
                     </div>
-                    <div className="h-8 bg-gray-200 rounded mt-4" />
+                    <div className="blog-article-footer" />
                   </div>
                 ))}
               </div>

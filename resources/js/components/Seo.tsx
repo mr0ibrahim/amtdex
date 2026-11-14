@@ -55,7 +55,8 @@ export function Seo({
   jsonLd,
   rssFeedUrl,
 }: SeoProps) {
-  const url = canonical ?? (typeof window !== "undefined" ? window.location.href : DEFAULT_SITE)
+  const baseUrl = typeof window !== "undefined" ? window.location.href : DEFAULT_SITE
+  const url = new URL(canonical ?? baseUrl, baseUrl).href
   const desc = description ?? "Amtdex — شركة حلول برمجية متكاملة: مواقع، تطبيقات، أنظمة ERP، ذكاء اصطناعي وأمن سيبراني."
   const image = ogImage ?? DEFAULT_OG
   const keywordContent = (keywords ?? [])
@@ -83,7 +84,7 @@ export function Seo({
         "@type": "ListItem",
         position: idx + 1,
         name: b.name,
-        item: b.url,
+        item: new URL(b.url, baseUrl).href,
       })),
     })
   }

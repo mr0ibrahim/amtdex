@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/lib/avatar"
 import "../../../css/blog-cards.css"
 import { BlogArticleCard } from "./BlogArticleCard"
 import "../../../css/blog-prose.css"
@@ -356,7 +357,7 @@ export function BlogPostPage() {
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-sm shadow-sm overflow-hidden ring-2 ring-white">
                 {post.author?.avatar ? (
-                  <img src={post.author.avatar} alt={post.author.name} className="w-full h-full object-cover" />
+                  <img src={getAvatarUrl(post.author.avatar)} alt={post.author.name} width={80} height={80} decoding="async" loading="lazy" className="w-full h-full object-cover" />
                 ) : post.author?.name ? (
                   post.author.name.substring(0, 2)
                 ) : (
@@ -534,7 +535,7 @@ export function BlogPostPage() {
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[var(--color-border)] flex flex-col sm:flex-row items-center sm:items-start gap-6">
               <div className="w-20 h-20 rounded-2xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-2xl shrink-0 overflow-hidden shadow-xs">
                 {post.author?.avatar ? (
-                  <img src={post.author.avatar} alt={post.author.name} className="w-full h-full object-cover" />
+                  <img src={getAvatarUrl(post.author.avatar)} alt={post.author.name} width={80} height={80} decoding="async" loading="lazy" className="w-full h-full object-cover" />
                 ) : post.author?.name ? (
                   post.author.name.substring(0, 2)
                 ) : (

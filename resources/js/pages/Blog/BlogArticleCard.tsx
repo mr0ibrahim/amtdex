@@ -1,3 +1,4 @@
+import { getAvatarUrl } from "@/lib/avatar"
 import { Link } from "react-router-dom"
 import { Icon } from "@/components/ui/Icon"
 import { BrandArtwork } from "@/components/ui/BrandArtwork"
@@ -25,7 +26,7 @@ export function BlogArticleCard({ post, query = "" }: { post: BlogPost; query?: 
         {post.summary && <p>{highlightMatch(post.summary, query)}</p>}
       </div>
       <div className="blog-article-footer">
-        <span className="blog-article-author">{post.author?.avatar && <img src={post.author.avatar} alt="" loading="lazy" width={28} height={28} />}{post.author?.name || "مقال تقني"}</span>
+        <span className="blog-article-author">{post.author?.avatar && <img src={getAvatarUrl(post.author.avatar)} alt="" loading="lazy" width={28} height={28} />}{post.author?.name || "مقال تقني"}</span>
         <Link to={href} aria-label={`قراءة المقال: ${post.title}`}>اقرأ المقال <Icon name="arrowUpLeft" size={16} /></Link>
       </div>
     </article>

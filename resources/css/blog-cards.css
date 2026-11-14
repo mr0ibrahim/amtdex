@@ -5,7 +5,7 @@
 .blog-hero .blog-search input {min-height:42px;min-width:0;border-radius:9px;}
 .blog-hero .blog-search button {min-height:42px;border-radius:10px;padding-inline:24px;}
 .blog-surface .blog-featured {border-radius:26px;border-color:#dfd1ee;background:white;box-shadow:0 3px 8px #28184903,0 28px 60px -40px #28184960;}
-.blog-featured>div {min-width:0;}.blog-featured img {min-height:260px;max-height:520px;}.blog-featured h2 {line-height:1.65;}
+.blog-featured>div {min-width:0;}.blog-featured-cover>img {width:100%;height:100%;object-fit:cover;}.blog-featured h2 {line-height:1.65;}
 .blog-article-card {display:flex;flex-direction:column;min-width:0;height:100%;border:1px solid #e5dbef;border-radius:22px;background:#fff;overflow:hidden;box-shadow:0 3px 6px #28184903,0 20px 45px -36px #28184965;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s,border-color .35s;}
 .blog-article-cover {position:relative;display:block;aspect-ratio:16/10;overflow:hidden;background:radial-gradient(ellipse at 30% 30%,#e9ddf7,#f8f4fc);margin:10px 10px 0;border-radius:14px;}
 .blog-article-cover>img {width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.8,.2,1);}
@@ -13,7 +13,7 @@
 .blog-article-category {position:absolute;inset:14px 14px auto auto;max-width:calc(100% - 80px);border:1px solid #ffffff80;background:#fffffff2;color:#56358d;padding:6px 11px;border-radius:8px;font-size:10px;line-height:1.7;font-weight:600;}
 .blog-cover-arrow {position:absolute;inset:auto auto 14px 14px;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#fff;color:#56358d;box-shadow:0 8px 20px #28184915;transition:background .3s,color .3s;}
 .blog-article-copy {padding:24px 24px 20px;flex:1;}
-.blog-article-meta {display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;color:#897396;font-size:10px;line-height:1.8;margin-bottom:12px;}
+.blog-article-meta {display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;color:#705e7d;font-size:10px;line-height:1.8;margin-bottom:12px;}
 .blog-article-meta>span {display:inline-flex;align-items:center;gap:5px;}
 .blog-article-copy h3 {font-size:19px;font-weight:700;line-height:1.75;color:#281849;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
 .blog-article-copy>p {font-size:13px;line-height:1.95;color:#786584;margin-top:10px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
@@ -37,3 +37,32 @@
 @media(prefers-reduced-motion:reduce) {.blog-article-card,.blog-article-cover>img,.blog-cover-arrow {transition:none;}.blog-article-card:hover {transform:none;}.blog-article-card:hover .blog-article-cover>img {transform:none;}}
 .blog-featured-link {display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:10px 16px;border-radius:10px;background:#f0e8f8;color:#56358d;font-size:12px;font-weight:600;}
 .blog-featured-link:focus-visible {outline:2px solid #56358d;outline-offset:4px;}
+
+/* Reserve the exact featured geometry before its API response arrives. */
+.blog-featured>div.grid,.blog-featured-skeleton {display:grid;grid-template-columns:minmax(0,1fr);}
+.blog-featured-copy {height:500px;min-width:0;overflow:hidden;}
+.blog-featured-cover {aspect-ratio:16/10;overflow:hidden;}
+.blog-featured-copy img {width:40px;height:40px;min-width:40px;flex-shrink:0;}
+.blog-featured-skeleton>.blog-featured-cover {background:#eee7f5;}
+.blog-featured-skeleton>.blog-featured-copy {padding:32px;}
+.blog-featured-skeleton span {display:block;height:24px;margin-block:24px;background:#eee7f5;border-radius:8px;}
+.blog-featured-skeleton span:last-child {width:70%;}
+.blog-filter-bar {min-height:57px;}
+.blog-filter-scroll {min-width:0;overflow-x:auto;white-space:nowrap;padding-bottom:2px;}
+.blog-filter-scroll>button {flex-shrink:0;}
+.blog-clear-filters {flex-shrink:0;}
+@media(min-width:1024px) {
+ .blog-featured>div.grid,.blog-featured-skeleton {grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);height:500px;}
+ .blog-featured-cover {height:500px;aspect-ratio:auto;}
+ .blog-featured-skeleton>.blog-featured-cover {order:2;}
+}
+
+.blog-hero h1 {min-height:2.8em;}
+.blog-hero h1+p {min-height:5.25em;}
+@media(min-width:640px) {.blog-hero h1 {min-height:1.4em;} .blog-hero h1+p {min-height:3.5em;}}
+
+.blog-featured-skeleton {border:1px solid #dfd1ee;overflow:hidden;}
+
+.blog-article-copy {min-height:270px;flex:none;}
+.blog-article-footer {min-height:80px;margin-top:auto;}
+.blog-article-skeleton .blog-article-cover {background:#eee7f5;}
