@@ -25,9 +25,13 @@ export const newsletterSchema = z.object({
   email: emailSchema,
 })
 
+export const quoteBudgetSchema = z.string().trim()
+  .regex(/^[0-9]+(?:\.[0-9]{1,2})? [A-Z]{3}$/, "أدخل مبلغ الميزانية واختر العملة")
+  .refine(value => Number(value.split(" ")[0]) > 0, "يجب أن تكون الميزانية أكبر من صفر")
+
 export const createQuoteSchema = (country: CountryCode = "YE") => z.object({
   service: requiredString("الخدمة"),
-  budget: z.string().trim().optional(),
+  budget: quoteBudgetSchema,
   timeline: requiredString("الجدول الزمني"),
   name: z.string().trim().min(2, "الاسم مطلوب ولا يقل عن حرفين"),
   email: emailSchema,

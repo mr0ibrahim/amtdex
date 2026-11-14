@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { phoneCountries, type CountryCode } from "@/lib/phone"
 import { API } from "@/lib/api"
-import { createQuoteSchema, zodErrors } from "@/lib/schemas"
+import { createQuoteSchema, quoteBudgetSchema, zodErrors } from "@/lib/schemas"
 import { addLead } from "@/lib/leadStore"
 import { SERVICES as SEED_SERVICES } from "@/data/services"
 import { useServicesQuery } from "@/lib/queries"
@@ -25,6 +25,8 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
   const [data, setData] = useState<Record<string, string>>({
     service: preselectedService ?? "",
     budget: "",
+    budgetAmount: "",
+    budgetCurrency: "SAR",
     timeline: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -40,8 +42,17 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
     }
   }, [preselectedService])
 
+  const updateBudget = (amount: string, currency: string) => {
+    const normalized = amount.trim().replace(/[٠-٩]/g, digit => String(digit.charCodeAt(0) - 0x660)).replace(/[۰-۹]/g, digit => String(digit.charCodeAt(0) - 0x6f0))
+    const budget = `${normalized} ${currency}`.trim()
+    setData(previous => ({ ...previous, budgetAmount: amount, budgetCurrency: currency, budget }))
+    if (quoteErrors.budget) {
+      const result = quoteBudgetSchema.safeParse(budget)
+      setQuoteErrors(previous => { const next = { ...previous }; if (result.success) delete next.budget; else next.budget = result.error.issues[0].message; return next })
+    }
+  }
   const next = () => setStep((s) => Math.min(3, s + 1))
-  const canNext = step === 1 ? !!data.service : step === 2 ? !!data.timeline : true
+  const canNext = step === 1 ? !!data.service : step === 2 ? !!data.timeline && quoteBudgetSchema.safeParse(data.budget).success : true
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -49,13 +60,15 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
     setServerError(null)
 
     const fd = new FormData(e.currentTarget)
-    const payload: Record<string, unknown> = { ...data, budget: "غير محدد" }
+    const payload: Record<string, unknown> = { ...data }
     fd.forEach((v, k) => (payload[k] = String(v)))
 
     const parsed = quoteSchema.safeParse(payload)
     if (!parsed.success) {
       const errors = zodErrors(parsed)
       setQuoteErrors(errors)
+      if (errors.service) setStep(1)
+      else if (errors.budget || errors.timeline) setStep(2)
       const first = e.currentTarget.elements.namedItem(Object.keys(errors)[0])
       if (first instanceof HTMLElement) first.focus()
       return
@@ -78,7 +91,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
         source: "quote",
         meta: {
           service: String(payload.service ?? ""),
-          budget: String(payload.budget ?? ""),
+          budget: parsed.data.budget,
           timeline: String(payload.timeline ?? ""),
         },
       })
@@ -107,7 +120,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
       </p>
 
       <ol className="quote-steps" aria-label="خطوات طلب عرض السعر">
-        {["نوع الخدمة", "الوقت", "بيانات التواصل"].map((label, index) => {
+        {["نوع الخدمة", "الميزانية والوقت", "بيانات التواصل"].map((label, index) => {
           const number = index + 1
           return <li key={label} className={step === number ? "is-current" : step > number ? "is-complete" : ""} aria-current={step === number ? "step" : undefined}>
             <span className="quote-step-number" aria-hidden="true">{step > number ? <Icon name="check" size={16} /> : number}</span>
@@ -174,6 +187,19 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
         {/* Step 2: Budget & Timeline */}
         {step === 2 && (
           <div className="space-y-7">
+            <section className="quote-budget-section" aria-labelledby="quote-budget-title">
+              <h2 id="quote-budget-title">ما الميزانية التي تضعها لمشروعك؟</h2>
+              <p>اكتب المبلغ المناسب لك واختر عملته. هذه ميزانيتك التقديرية وليست سعرًا نهائيًا للخدمة.</p>
+              <div className="quote-budget-fields">
+                <Input id="q-budget" name="budgetAmount" label="الميزانية المتوقعة" required inputMode="decimal" dir="ltr" placeholder="اكتب المبلغ" value={data.budgetAmount} onChange={event => updateBudget(event.target.value, data.budgetCurrency)} onBlur={() => {
+                  const result = quoteBudgetSchema.safeParse(data.budget)
+                  if (!result.success) setQuoteErrors(previous => ({ ...previous, budget: result.error.issues[0].message }))
+                }} error={quoteErrors.budget} />
+                <div><label htmlFor="q-currency">العملة</label><select id="q-currency" value={data.budgetCurrency} onChange={event => updateBudget(data.budgetAmount, event.target.value)}>
+                  <option value="SAR">ريال سعودي (SAR)</option><option value="USD">دولار أمريكي (USD)</option><option value="YER">ريال يمني (YER)</option><option value="AED">درهم إماراتي (AED)</option><option value="EUR">يورو (EUR)</option><option value="OMR">ريال عماني (OMR)</option><option value="QAR">ريال قطري (QAR)</option><option value="KWD">دينار كويتي (KWD)</option><option value="BHD">دينار بحريني (BHD)</option><option value="EGP">جنيه مصري (EGP)</option>
+                </select></div>
+              </div>
+            </section>
             <div>
               <h2 className="text-[16px] font-bold text-[var(--color-ink)]">الجدول الزمني المستهدف للإطلاق</h2>
               <div className="mt-3.5 grid grid-cols-1 sm:grid-cols-3 gap-2.5">

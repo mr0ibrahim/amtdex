@@ -270,3 +270,7 @@ h1, h2, h3, .font-display {
 @media(hover:hover){.quote-navigation .quote-back:hover {background:#f5f0fa;}.quote-navigation .quote-forward:not(:disabled):hover {background:#56358d;}}
 @media(max-width:639px){.quote-steps {gap:6px;}.quote-steps li {flex-direction:column;text-align:center;gap:8px;padding:12px 4px;}.quote-step-number {flex-basis:30px;width:30px;height:30px;}.quote-step-label {font-size:11px;white-space:nowrap;}.quote-form {border-radius:20px;padding:22px 18px;}.quote-phone-row {grid-template-columns:minmax(0,1fr);}.quote-navigation {flex-wrap:wrap;}.quote-navigation .quote-forward {flex:1 1 180px;}.quote-navigation .quote-back {flex:0 0 auto;}.quote-navigation-spacer {display:none;}.quote-navigation button {padding-inline:16px;font-size:12px;}}
 @media(max-width:359px){.quote-navigation {flex-direction:column-reverse;}.quote-navigation .quote-forward,.quote-navigation .quote-back {flex:auto;width:100%;margin:0;}.quote-step-label {font-size:10px;}}
+.quote-budget-section h2 {font-size:17px;font-weight:700;color:#281849;line-height:1.7;}
+.quote-budget-section>p {font-size:12px;color:#796587;line-height:1.9;margin-top:6px;}
+.quote-budget-fields {display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:16px;margin-top:18px;align-items:start;}.quote-budget-fields>div {min-width:0;}.quote-budget-fields label {font-size:12.5px;font-weight:700;}.quote-budget-fields select {margin-top:6px;}
+@media(max-width:639px){.quote-budget-fields {grid-template-columns:minmax(0,1fr);}.quote-step-label {font-size:10px;}}
