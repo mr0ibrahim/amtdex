@@ -4,19 +4,13 @@
 /* ── Aurora ── */
 .brand-motion { background: #fbf9fe; }
 .glass-aurora { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; contain: strict; }
-.glass-aurora > i { position: absolute; width: 62vmax; aspect-ratio: 1; border-radius: 50%; will-change: transform; animation: glass-drift 38s ease-in-out infinite alternate; }
+.glass-aurora > i { position: absolute; width: 62vmax; aspect-ratio: 1; border-radius: 50%; }
 .glass-aurora > i:nth-child(1) { top: -24vmax; inset-inline-end: -18vmax; background: radial-gradient(circle, #c9a2ff8c 0%, #c9a2ff2e 38%, transparent 66%); }
-.glass-aurora > i:nth-child(2) { top: 26vh; inset-inline-start: -30vmax; background: radial-gradient(circle, #8d4fd452 0%, #8d4fd41f 40%, transparent 66%); animation-duration: 46s; animation-delay: -12s; }
-.glass-aurora > i:nth-child(3) { bottom: -34vmax; inset-inline-end: 6vmax; background: radial-gradient(circle, #e9b8ff66 0%, #e9b8ff21 40%, transparent 66%); animation-duration: 54s; animation-delay: -27s; }
-@keyframes glass-drift {
-  0% { transform: translate3d(0, 0, 0) scale(1); }
-  50% { transform: translate3d(-9vmax, 7vmax, 0) scale(1.14); }
-  100% { transform: translate3d(7vmax, -6vmax, 0) scale(.94); }
-}
-.brand-motion:is([data-motion-paused="true"], [data-document-hidden="true"]) .glass-aurora > i { animation-play-state: paused; }
-.brand-motion > main, /* The light that travels round the header edge stays, brighter against the glass. */
-.reference-motion-scope .site-header-bar::after { background: conic-gradient(from var(--reference-angle), transparent 0deg 225deg, #e2c8ff 255deg, #8d4fd4 285deg, #6a2c9f 300deg, transparent 330deg); padding: 1.5px; }
-.brand-motion > .site-footer { position: relative; z-index: 1; }
+.glass-aurora > i:nth-child(2) { top: 26vh; inset-inline-start: -30vmax; background: radial-gradient(circle, #8d4fd452 0%, #8d4fd41f 40%, transparent 66%); }
+.glass-aurora > i:nth-child(3) { bottom: -34vmax; inset-inline-end: 6vmax; background: radial-gradient(circle, #e9b8ff66 0%, #e9b8ff21 40%, transparent 66%); }
+/* The aurora is a still backdrop. Moving three screen-sized translucent layers forces everything
+   frosted above them to be re-blended on every frame, on every device. */
+.brand-motion > main, .brand-motion > .site-footer { position: relative; z-index: 1; }
 
 /* Sections let the aurora through instead of painting over it. */
 .brand-motion :is(.reference-services-section, .reference-workflow) { background-color: #faf7fd80; }
@@ -27,14 +21,29 @@
   background: linear-gradient(135deg, #ffffffc7, #fbf6ffa8);
   border-color: #ffffffd9;
   box-shadow: 0 0 0 1px #7a3cc21a, 0 14px 40px -22px #31144d59;
-  -webkit-backdrop-filter: blur(20px) saturate(170%);
-  backdrop-filter: blur(20px) saturate(170%);
 }
+/* Frosting re-blurs whatever moves behind it on every frame, so it is kept to the header on wide screens. */
+@media (min-width: 1024px) {
+  .brand-motion .site-header-bar { -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%); }
+}
+@media (max-width: 1023px) {
+  .brand-motion .site-header-bar { background: linear-gradient(135deg, #fffffff2, #fbf6ffeb); }
+}
+/* The light that travels round the header edge: one streak runs along the top, one returns along
+   the bottom. Both move by transform only, so the header is never repainted. */
+.reference-motion-scope .site-header-bar::after { display: none; }
+.site-header-sweep { position: absolute; inset: -1px; border-radius: inherit; overflow: hidden; pointer-events: none; }
+.site-header-sweep > i { position: absolute; left: 0; width: 34%; height: 2px; transform: translateX(-110%); background: linear-gradient(90deg, transparent, #e2c8ff 30%, #8d4fd4 60%, #6a2c9f 80%, transparent); animation: glass-sweep 7s linear infinite; animation-play-state: paused; }
+.site-header-sweep > i:first-child { top: 0; }
+.site-header-sweep > i:last-child { bottom: 0; animation-name: glass-sweep-back; scale: -1 1; }
+.site-header-bar[data-loop-visible="true"] .site-header-sweep > i { animation-play-state: running; will-change: transform; }
+.brand-motion:is([data-motion-paused="true"], [data-document-hidden="true"]) .site-header-sweep > i { animation-play-state: paused; }
+/* One lap every seven seconds, then rest: while the streaks rest, the frosted header is not re-blurred. */
+@keyframes glass-sweep { 0% { transform: translateX(-110%); } 22%, 100% { transform: translateX(400%); } }
+@keyframes glass-sweep-back { 0%, 22% { transform: translateX(400%); } 44%, 100% { transform: translateX(-110%); } }
 .brand-motion > .site-footer {
-  background: linear-gradient(180deg, #ffffffb3, #fbf6ffd9);
+  background: linear-gradient(180deg, #ffffffc7, #fbf6ffeb);
   border-top: 1px solid #ffffffd9;
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  backdrop-filter: blur(18px) saturate(160%);
 }
 
 /* ── Glass cards ── */
@@ -44,10 +53,8 @@
   box-shadow: inset 0 1px 0 #ffffff, inset 0 0 0 1px #ffffff66, 0 0 0 1px #7a3cc21f, 0 28px 56px -38px #5a2391a6;
 }
 .brand-motion main [data-geo-card="dark"] { box-shadow: inset 0 1px 0 #ffffff38, inset 0 0 0 1px #ffffff14, 0 36px 70px -42px #2a0f4ad9; }
-/* Backdrop blur is costly on phones; the aurora is already soft, so translucency is enough there. */
-@media (min-width: 1024px) {
-  .brand-motion main [data-geo-card="light"] { -webkit-backdrop-filter: blur(16px) saturate(170%); backdrop-filter: blur(16px) saturate(170%); }
-}
+/* Cards are translucent over the soft aurora; they do not blur their backdrop, which would be
+   recomputed for every visible card on every frame. */
 @media (hover: hover) and (pointer: fine) {
   .brand-motion main [data-geo-card="light"]:hover { border-color: #ffffff; box-shadow: inset 0 1px 0 #ffffff, inset 0 0 0 1px #ffffff80, 0 0 0 1px #7a3cc252, 0 36px 66px -32px #5a2391cc; }
 }
@@ -63,9 +70,9 @@
   background: linear-gradient(100deg, transparent 0%, #ffffff00 20%, #ffffffb8 50%, #ffffff00 80%, transparent 100%);
   transform: translateX(-160%) skewX(-18deg);
   opacity: 0;
-  mix-blend-mode: soft-light;
 }
-[data-geo-card="light"] > .geo-layer .geo-sheen { mix-blend-mode: normal; background: linear-gradient(100deg, transparent 0%, #ffffff00 20%, #ffffffd9 50%, #ffffff00 80%, transparent 100%); }
+[data-geo-card="dark"] > .geo-layer .geo-sheen { background: linear-gradient(100deg, transparent 0%, #ffffff00 20%, #ffffff33 50%, #ffffff00 80%, transparent 100%); }
+[data-geo-card="light"] > .geo-layer .geo-sheen { background: linear-gradient(100deg, transparent 0%, #ffffff00 20%, #ffffffd9 50%, #ffffff00 80%, transparent 100%); }
 [data-geo-live="true"] > .geo-layer .geo-sheen { animation: glass-sheen 1.5s .35s cubic-bezier(.22, 1, .36, 1) 1 both; }
 @media (hover: hover) and (pointer: fine) {
   [data-geo-card]:hover > .geo-layer .geo-sheen { animation: glass-sheen-again 1.1s cubic-bezier(.22, 1, .36, 1) 1 both; }
@@ -93,7 +100,8 @@
 .reference-motion-scope .reference-motion-toggle span { display: inline; }
 
 @media (prefers-reduced-motion: reduce) {
-  .glass-aurora > i, .geo-sheen { animation: none !important; }
+  .geo-sheen, .site-header-sweep > i { animation: none !important; }
+  .site-header-sweep { display: none; }
 }
 
 /* ── Readable type: utility sizes below 14px step up on public pages ── */
@@ -129,3 +137,12 @@
 }
 .reference-home .reference-stats { padding-block: clamp(40px, 6vw, 72px) 0; }
 .reference-home .guarantee-section { padding-bottom: 20px; }
+
+/* Nine bars pulsing forever is a per-frame style cost for a detail few visitors notice. */
+.product-scene .product-chart i { animation: none; }
+/* Frosted badges over a floating window were re-blurred on every frame of its float. */
+.product-badge { -webkit-backdrop-filter: none; backdrop-filter: none; background: #fffffff5; }
+/* The hero scene already turns with the scroll; its endless floats sat inside a 3D stack and
+   were re-rendered on every frame for as long as the hero was on screen. */
+.product-scene :is(.product-window, .product-badge) { animation: none; }
+.contact-hero-art { animation: none; }

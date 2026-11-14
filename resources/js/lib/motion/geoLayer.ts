@@ -80,38 +80,46 @@ export function polygonPoints(sides: number, radius: number, center = 100, rotat
 const svg = (viewBox: string, body: string, extra = "") =>
   `<svg viewBox="${viewBox}" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" focusable="false" ${extra}>${body}</svg>`
 
-const builders: Record<GeoVariant, () => string> = {
-  orbit: () => svg("0 0 200 200", `
-    <circle cx="100" cy="100" r="92" opacity=".35" stroke-dasharray="2 7"/>
-    <g class="geo-spin"><ellipse cx="100" cy="100" rx="88" ry="38" opacity=".55"/><circle class="geo-node" cx="188" cy="100" r="3.6"/></g>
-    <g class="geo-spin geo-spin--back"><ellipse cx="100" cy="100" rx="88" ry="38" transform="rotate(60 100 100)" opacity=".45"/><circle class="geo-node" cx="56" cy="23.8" r="2.8"/></g>
-    <g class="geo-spin geo-spin--slow"><ellipse cx="100" cy="100" rx="88" ry="38" transform="rotate(120 100 100)" opacity=".4"/><circle class="geo-node" cx="144" cy="23.8" r="2.4"/></g>
-    <circle class="geo-node geo-pulse" cx="100" cy="100" r="5"/>`),
-  wave: () => svg("0 0 600 120", `
-    <g class="geo-drift"><path d="${sinePath(16, 200, 62)}" opacity=".6"/></g>
-    <g class="geo-drift geo-drift--back"><path d="${sinePath(24, 200, 62, Math.PI / 2)}" opacity=".38"/></g>
-    <g class="geo-drift geo-drift--slow"><path d="${sinePath(9, 100, 62, Math.PI)}" opacity=".3" stroke-dasharray="1 6"/></g>`, "preserveAspectRatio=\"none\""),
-  poly: () => svg("0 0 200 200", `
-    <g class="geo-spin geo-spin--slow"><polygon points="${polygonPoints(6, 90)}" opacity=".4"/>${polygonPoints(6, 90).split(" ").map(point => { const [x, y] = point.split(","); return `<circle class="geo-node" cx="${x}" cy="${y}" r="2.2"/>` }).join("")}</g>
-    <g class="geo-spin geo-spin--back"><polygon points="${polygonPoints(3, 68)}" opacity=".55"/><polygon points="${polygonPoints(3, 68, 100, Math.PI / 2)}" opacity=".3"/></g>
-    <g class="geo-spin"><polygon points="${polygonPoints(4, 36)}" opacity=".6"/></g>
-    <circle cx="100" cy="100" r="90" opacity=".22" stroke-dasharray="1 6"/>`),
-  curve: () => svg("0 0 200 200", `
-    <g class="geo-spin geo-spin--slow"><path d="${rosePath(4)}" opacity=".26"/></g>
-    <path class="geo-trace" pathLength="1" d="${lissajousPath(3, 2, Math.PI / 2)}" opacity=".7"/>
-    <line x1="8" y1="100" x2="192" y2="100" opacity=".2" stroke-dasharray="2 6"/><line x1="100" y1="8" x2="100" y2="192" opacity=".2" stroke-dasharray="2 6"/>`),
-  grid: () => svg("0 0 200 200", `
-    <g opacity=".3">${Array.from({ length: 9 }, (_, i) => `<line x1="${20 + i * 20}" y1="10" x2="${20 + i * 20}" y2="190"/><line x1="10" y1="${20 + i * 20}" x2="190" y2="${20 + i * 20}"/>`).join("")}</g>
-    <path class="geo-trace geo-trace--plot" pathLength="1" d="M20 160 C60 160 60 100 100 100 S140 40 180 40" opacity=".8" stroke-width="1.4"/>
-    <g class="geo-blink">${[[20, 160], [100, 100], [180, 40]].map(([x, y]) => `<circle class="geo-node" cx="${x}" cy="${y}" r="3.2"/>`).join("")}</g>
-    <g class="geo-spin"><rect x="72" y="72" width="56" height="56" opacity=".4" transform="rotate(45 100 100)"/></g>`),
+/**
+ * Each figure is two static SVGs. Only their HTML wrappers move (rotate or drift), so the
+ * motion runs on the compositor and never repaints the card.
+ */
+const builders: Record<GeoVariant, () => [back: string, front: string]> = {
+  orbit: () => [
+    svg("0 0 200 200", `<circle cx="100" cy="100" r="92" opacity=".35" stroke-dasharray="2 7"/>
+      <ellipse cx="100" cy="100" rx="88" ry="38" transform="rotate(60 100 100)" opacity=".45"/><circle class="geo-node" cx="56" cy="23.8" r="2.8"/>
+      <ellipse cx="100" cy="100" rx="88" ry="38" transform="rotate(120 100 100)" opacity=".4"/><circle class="geo-node" cx="144" cy="23.8" r="2.4"/>`),
+    svg("0 0 200 200", `<ellipse cx="100" cy="100" rx="88" ry="38" opacity=".55"/><circle class="geo-node" cx="188" cy="100" r="3.6"/><circle class="geo-node" cx="100" cy="100" r="5"/>`),
+  ],
+  wave: () => [
+    svg("0 0 600 120", `<path d="${sinePath(24, 200, 62, Math.PI / 2)}" opacity=".38"/><path d="${sinePath(9, 100, 62, Math.PI)}" opacity=".3" stroke-dasharray="1 6"/>`, "preserveAspectRatio=\"none\""),
+    svg("0 0 600 120", `<path d="${sinePath(16, 200, 62)}" opacity=".6"/>`, "preserveAspectRatio=\"none\""),
+  ],
+  poly: () => [
+    svg("0 0 200 200", `<polygon points="${polygonPoints(6, 90)}" opacity=".4"/>${polygonPoints(6, 90).split(" ").map(point => { const [x, y] = point.split(","); return `<circle class="geo-node" cx="${x}" cy="${y}" r="2.2"/>` }).join("")}
+      <circle cx="100" cy="100" r="90" opacity=".22" stroke-dasharray="1 6"/>`),
+    svg("0 0 200 200", `<polygon points="${polygonPoints(3, 68)}" opacity=".55"/><polygon points="${polygonPoints(3, 68, 100, Math.PI / 2)}" opacity=".3"/><polygon points="${polygonPoints(4, 36)}" opacity=".6"/>`),
+  ],
+  curve: () => [
+    svg("0 0 200 200", `<path d="${rosePath(4)}" opacity=".26"/>`),
+    svg("0 0 200 200", `<path d="${lissajousPath(3, 2, Math.PI / 2)}" opacity=".7"/>`),
+  ],
+  grid: () => [
+    svg("0 0 200 200", `<g opacity=".3">${Array.from({ length: 9 }, (_, i) => `<line x1="${20 + i * 20}" y1="10" x2="${20 + i * 20}" y2="190"/><line x1="10" y1="${20 + i * 20}" x2="190" y2="${20 + i * 20}"/>`).join("")}</g>
+      <path d="M20 160 C60 160 60 100 100 100 S140 40 180 40" opacity=".8" stroke-width="1.4"/>${[[20, 160], [100, 100], [180, 40]].map(([x, y]) => `<circle class="geo-node" cx="${x}" cy="${y}" r="3.2"/>`).join("")}`),
+    svg("0 0 200 200", `<rect x="72" y="72" width="56" height="56" opacity=".45" transform="rotate(45 100 100)"/><rect x="58" y="58" width="84" height="84" opacity=".25"/>`),
+  ],
 }
 
 const cache = new Map<GeoVariant, string>()
 
 export function geoMarkup(variant: GeoVariant) {
   let markup = cache.get(variant)
-  if (!markup) { markup = builders[variant](); cache.set(variant, markup) }
+  if (!markup) {
+    const [back, front] = builders[variant]()
+    markup = `<span class="geo-turn geo-turn--back">${back}</span><span class="geo-turn">${front}</span>`
+    cache.set(variant, markup)
+  }
   return markup
 }
 
@@ -120,7 +128,7 @@ export function createGeoLayer(variant: GeoVariant, ownerDocument: Document = do
   layer.className = "geo-layer"
   layer.dataset.geo = variant
   layer.setAttribute("aria-hidden", "true")
-  layer.innerHTML = `<span class="geo-figure">${geoMarkup(variant)}</span><span class="geo-sheen"></span>`
+  layer.innerHTML = `<span class="geo-line"></span><span class="geo-figure">${geoMarkup(variant)}</span><span class="geo-sheen"></span>`
   return layer
 }
 

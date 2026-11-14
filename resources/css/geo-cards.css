@@ -46,19 +46,9 @@
   color: var(--geo-ink);
   contain: strict;
 }
-/* Animated hairline along the top edge. */
-.geo-layer::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent 0%, var(--geo-violet-soft) 30%, var(--geo-violet) 50%, var(--geo-violet-soft) 70%, transparent 100%);
-  background-size: 220% 100%;
-  opacity: .75;
-  animation: geo-hairline 6s linear infinite;
-  animation-play-state: paused;
-}
+/* A light travels along the top edge. It moves by transform only. */
+.geo-layer::before { content: ""; position: absolute; inset-inline: 0; top: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--geo-violet-soft) 50%, transparent); opacity: .5; }
+.geo-line { position: absolute; top: 0; left: 0; width: 38%; height: 2px; background: linear-gradient(90deg, transparent, var(--geo-violet) 50%, transparent); transform: translateX(-100%); opacity: 0; }
 /* Pointer spotlight. */
 .geo-layer::after {
   content: "";
@@ -75,46 +65,22 @@
   width: clamp(150px, 58%, 300px);
   aspect-ratio: 1;
   opacity: var(--geo-figure-opacity);
-  transition: opacity .5s, scale .8s var(--geo-ease);
-  mask-image: radial-gradient(circle at 50% 50%, #000 35%, transparent 72%);
+  transition: opacity .5s;
 }
-.geo-figure svg { display: block; width: 100%; height: 100%; overflow: visible; transition: scale .8s var(--geo-ease); }
-.geo-layer[data-geo="wave"] .geo-figure {
-  top: auto;
-  bottom: 0;
-  inset-inline: 0;
-  width: auto;
-  height: clamp(54px, 30%, 110px);
-  aspect-ratio: auto;
-  mask-image: linear-gradient(to top, #000 30%, transparent);
-}
+/* Nothing on a card animates on its own. An endless animation on every visible card keeps the
+   browser restyling and re-layering the page on every frame, which is what made scrolling heavy.
+   The figure turns with the scroll position instead (brandScenes), and the edge light and sheen
+   run once when a card arrives or is pointed at. */
+.geo-turn { position: absolute; inset: 0; }
+.geo-turn svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.geo-layer[data-geo="wave"] .geo-figure { top: auto; bottom: 0; inset-inline: 0; width: auto; height: clamp(54px, 30%, 110px); aspect-ratio: auto; }
+.geo-layer[data-geo="wave"] .geo-turn { inset: 0 auto 0 0; width: 300%; }
 .geo-layer[data-geo="grid"] .geo-figure { top: -10%; inset-inline-end: -8%; }
 .geo-layer .geo-node { fill: currentColor; stroke: none; }
 
-.geo-layer :is(.geo-spin, .geo-pulse, .geo-blink) { transform-box: view-box; transform-origin: 100px 100px; }
-.geo-layer .geo-spin { animation: geo-spin 26s linear infinite; }
-.geo-layer .geo-spin--back { animation-duration: 34s; animation-direction: reverse; }
-.geo-layer .geo-spin--slow { animation-duration: 58s; }
-.geo-layer .geo-pulse { animation: geo-pulse 3.2s ease-in-out infinite; }
-.geo-layer .geo-blink { animation: geo-blink 3.6s ease-in-out infinite; }
-.geo-layer .geo-drift { animation: geo-drift 9s linear infinite; }
-.geo-layer .geo-drift--back { animation-duration: 13s; animation-direction: reverse; }
-.geo-layer .geo-drift--slow { animation-duration: 7s; }
-.geo-layer .geo-trace { stroke-dasharray: 1; animation: geo-trace 9s ease-in-out infinite; }
-.geo-layer .geo-trace--plot { animation-duration: 5s; }
-.geo-layer :is(.geo-spin, .geo-pulse, .geo-blink, .geo-drift, .geo-trace) { animation-play-state: paused; }
-
-[data-geo-live="true"] > .geo-layer::before,
-[data-geo-live="true"] > .geo-layer :is(.geo-spin, .geo-pulse, .geo-blink, .geo-drift, .geo-trace) { animation-play-state: running; }
-.brand-motion:is([data-motion-paused="true"], [data-document-hidden="true"]) .geo-layer::before,
-.brand-motion:is([data-motion-paused="true"], [data-document-hidden="true"]) .geo-layer * { animation-play-state: paused !important; }
-
-@keyframes geo-spin { to { transform: rotate(360deg); } }
-@keyframes geo-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.7); opacity: .45; } }
-@keyframes geo-blink { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
-@keyframes geo-drift { to { transform: translateX(-200px); } }
-@keyframes geo-trace { 0% { stroke-dashoffset: 1; } 45%, 60% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -1; } }
-@keyframes geo-hairline { from { background-position: 220% 0; } to { background-position: 0% 0; } }
+[data-geo-live="true"] > .geo-layer .geo-line { animation: geo-line 1.8s .2s cubic-bezier(.4, 0, .2, 1) 1 both; }
+@keyframes geo-line { 0% { transform: translateX(-100%); opacity: 0; } 15%, 85% { opacity: 1; } 100% { transform: translateX(365%); opacity: 0; } }
+@keyframes geo-line-again { 0% { transform: translateX(-100%); opacity: 0; } 15%, 85% { opacity: 1; } 100% { transform: translateX(365%); opacity: 0; } }
 
 /* ── Interaction ── */
 @media (hover: hover) and (pointer: fine) {
@@ -125,8 +91,8 @@
   }
   .brand-motion main [data-geo-card="dark"]:hover { box-shadow: inset 0 1px 0 #ffffff2e, 0 44px 80px -40px #2a0f4a; }
   .brand-motion main [data-geo-card]:hover > .geo-layer::after { opacity: 1; }
+  .brand-motion main [data-geo-card]:hover > .geo-layer .geo-line { animation: geo-line-again 1.4s cubic-bezier(.4, 0, .2, 1) 1 both; }
   .brand-motion main [data-geo-card]:hover > .geo-layer .geo-figure { opacity: calc(var(--geo-figure-opacity) + .3); }
-  .brand-motion main [data-geo-card]:hover > .geo-layer .geo-figure svg { scale: 1.1; }
   /* Service cards flood violet on hover; strokes follow. */
   .brand-motion main :is(.reference-service-card, .service-card, .service-bento-card)[data-geo-card]:hover {
     --geo-ink: #ffffff;
@@ -146,8 +112,8 @@
   box-shadow: inset 0 1px 0 #ffffff, 0 2px 4px #31144d0a, 0 30px 56px -30px #6a2c9fcc;
 }
 .brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-figure { opacity: calc(var(--geo-figure-opacity) + .3); }
-.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-figure svg { scale: 1.1; }
 .brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer::after { opacity: 1; }
+.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-line { animation: geo-line-again 1.4s cubic-bezier(.4, 0, .2, 1) 1 both; }
 .brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card)[data-geo-card]:is([data-geo-active="true"], :active) {
   --geo-ink: #ffffff;
   border-color: #7d43c6;
@@ -201,6 +167,6 @@ html[dir="ltr"] .scroll-progress > i { transform-origin: left center; }
   .geo-figure { width: clamp(130px, 52%, 220px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .geo-layer::before, .geo-layer * { animation: none !important; }
+  .geo-layer * { animation: none !important; }
   .brand-motion main [data-geo-card]:hover { translate: none; }
 }

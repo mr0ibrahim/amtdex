@@ -3,6 +3,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { GEO_CARD_SELECTOR } from "@/lib/motion/geoLayer"
 
 gsap.registerPlugin(ScrollTrigger)
+// The mobile address bar resizes the viewport while scrolling; re-measuring every trigger then causes visible hitches.
+ScrollTrigger.config?.({ ignoreMobileResize: true })
 
 /** Isolated ownership also releases scenes removed by CMS updates or tab changes. */
 export function mountBrandScenes(root: HTMLElement) {
@@ -18,7 +20,7 @@ export function mountBrandScenes(root: HTMLElement) {
     const textTargets = "main h1, main h2, main h3, main :is(h1, h2) + p, main .eyebrow, main .da-kicker, main .reference-section-label, main .reference-section-heading > p, main .brand-page-header-art, main .da-filters, main .hero-actions, main .quote-choice, .site-footer .footer-grid > *, .site-footer .footer-bottom"
     const automaticTargets = `${textTargets}, ${GEO_CARD_SELECTOR}`
     const owners = "[data-motion], [data-tilt], [data-stack], [data-scroll-composition], [data-process-viewport], .project-showcase, .product-scene"
-    const CLEAR = "transform,translate,rotate,scale,transformOrigin,opacity,filter"
+    const CLEAR = "transform,translate,rotate,scale,transformOrigin,opacity"
     /** The state an element leaves to past the top edge: its entry state mirrored vertically. */
     const mirror = (below: gsap.TweenVars): gsap.TweenVars => ({
       ...below,
@@ -71,30 +73,28 @@ export function mountBrandScenes(root: HTMLElement) {
             // Cards fan in from their own side of the page; in a single column they alternate.
             const centre = rect.left + rect.width / 2 - window.innerWidth / 2
             const side = Math.abs(centre) < window.innerWidth * .12 ? (desktop ? 0 : index % 2 ? 1 : -1) : Math.sign(centre)
-            const blur = desktop ? { filter: "blur(10px)" } : {}
             const below: gsap.TweenVars = type === "vector" ? { opacity: 0, x: desktop ? -44 : 0, y: 20, scale: .96 } : type === "bar" ? { scaleY: 0 }
               : type === "reveal" ? { opacity: 0, y: 18, clipPath: "inset(0% 0% 100% 0%)" }
               : type === "screen" ? { opacity: 0, y: desktop ? 48 : 24, scale: .97, rotationX: desktop ? 5 : 0, transformPerspective: 1000 }
               : type === "draw" ? { strokeDashoffset: 1, opacity: 0 }
               : type === "signal" ? { opacity: 0, scale: .94 }
               : type === "fade" ? { opacity: 0 }
-              : type === "text" ? { opacity: 0, y: desktop ? 48 : 34, skewY: desktop ? 3 : 2, ...blur }
-              : card ? { opacity: 0, x: side * (desktop ? 56 : 0), y: desktop ? 104 : 64, scale: desktop ? .84 : .88, rotationX: desktop ? 18 : 14, rotation: side * (desktop ? 2.4 : 1.6), transformPerspective: 900, ...blur }
+              : type === "text" ? { opacity: 0, y: desktop ? 48 : 34, skewY: desktop ? 3 : 2 }
+              : card ? { opacity: 0, x: side * (desktop ? 56 : 0), y: desktop ? 104 : 64, scale: desktop ? .84 : .88, rotationX: desktop ? 18 : 14, rotation: side * (desktop ? 2.4 : 1.6), transformPerspective: 900 }
               : { opacity: 0, y: desktop ? 60 : 28 }
             const delay = Math.min(Number(el.dataset.motionDelay || (automatic ? Math.min(index * 90, 450) : 0)) / 1000, .55) * (desktop ? 1 : .6)
             inOut(el, el, below, {
               opacity: 1, x: 0, y: 0, scale: 1, rotationX: 0, rotation: 0, skewY: 0,
-              ...(below.filter ? { filter: "blur(0px)" } : {}),
               ...(type === "reveal" ? { clipPath: "inset(0% 0% 0% 0%)" } : {}), ...(type === "draw" ? { strokeDashoffset: 0 } : {}), ...(type === "bar" ? { scaleY: 1 } : {}),
               duration: type === "text" ? .9 : card ? 1.15 : 1, ease: card ? "expo.out" : "power3.out", delay,
             }, initiallyVisible, automatic)
-            // The geometric figure drifts and turns with the scroll position.
-            const figure = card ? el.querySelector<HTMLElement>(":scope > .geo-layer .geo-figure") : null
-            if (figure) {
-              const wave = figure.parentElement?.dataset.geo === "wave"
-              gsap.fromTo(figure, { yPercent: wave ? 30 : 16, rotation: wave ? 0 : -24 }, {
-                yPercent: wave ? -10 : -16, rotation: wave ? 0 : 24, ease: "none",
-                scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: .6 },
+            // The geometric figure turns and drifts with the scroll position; it never animates on its own.
+            const turn = card ? el.querySelector<HTMLElement>(":scope > .geo-layer .geo-turn:not(.geo-turn--back)") : null
+            if (turn) {
+              const wave = turn.closest<HTMLElement>(".geo-layer")?.dataset.geo === "wave"
+              gsap.fromTo(turn, wave ? { xPercent: 0 } : { rotation: -70 }, {
+                ...(wave ? { xPercent: -33.333 } : { rotation: 70 }), ease: "none",
+                scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: desktop ? .5 : true },
               })
             }
           }

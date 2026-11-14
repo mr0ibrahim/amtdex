@@ -195,6 +195,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
           <span>امتدكس سوفت — من الفكرة إلى التنفيذ</span>
         </div>
         <div className="site-header-bar">
+          <span className="site-header-sweep" aria-hidden="true"><i /><i /></span>
           <span className="site-header-shimmer" aria-hidden />
           <SiteLink to="/" className="site-brand">
             <span className="site-brand-mark" aria-hidden />

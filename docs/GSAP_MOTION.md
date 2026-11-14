@@ -119,3 +119,27 @@ Seven blocks: hero (now carrying the product scene, two columns from 1024px), st
 services, project showcase, workflow, testimonials, and a closing pair (guarantee +
 contact). The separate intro block and the second screenshot gallery are no longer
 rendered on the home page; the `intro` visibility switch now controls the hero scene.
+
+### Performance pass
+
+Measured with Chrome tracing (style, paint and task time per second while idle and while
+scrolling, 4x CPU slowdown). ScrollTrigger keeps a `requestAnimationFrame` loop alive, so
+every running CSS animation is restyled on the main thread each frame; endless animations
+on every visible card were the main cost.
+
+- Cards no longer animate on their own. The figure turns with scroll (one scrubbed tween
+  per card); the edge light and sheen run once on arrival, hover or touch focus.
+- Figures are two static SVGs in HTML wrappers; only the wrapper transforms.
+- Header light: two streaks moved by transform, one lap every 7s, instead of an animated
+  conic gradient under a mask (which repainted the header every frame).
+- Backdrop blur only on the header from 1024px up. Cards, footer, hero badges and the
+  select backdrop are translucent without blur. The aurora is a still backdrop.
+- Entry tweens no longer animate `filter: blur`. `ignoreMobileResize` is on.
+- Endless floats in the hero scene, its chart bars and the contact artwork are off.
+
+Idle main-thread load under 4x slowdown: phone home 93% -> 18%, phone services 57% -> 13%,
+desktop home 52% -> 23% (30 fps -> 60 fps).
+
+Fixed in the same pass: a comment had been inserted inside the selector list
+`.brand-motion > main, .brand-motion > .site-footer`, so `main` lost its stacking position
+and picked up the header-sweep declarations.
