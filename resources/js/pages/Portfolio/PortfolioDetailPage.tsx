@@ -202,7 +202,7 @@ export function PortfolioDetailPage() {
               </div>
             </div>
 
-            <div className="bg-[var(--color-ink)] text-white rounded-2xl p-6 text-center shadow-md">
+            <div className="geo-card bg-[var(--color-ink)] text-white rounded-2xl p-6 text-center shadow-md">
               <h4 className="text-[16px] font-bold">هل لديك فكرة مشروع مشابه؟</h4>
               <p className="text-[12.5px] text-white/70 mt-2 leading-relaxed">
                 دعنا ندرس متطلباتك ونقدم لك عرضاً فنياً ومالياً مخصصاً لمشروعك.

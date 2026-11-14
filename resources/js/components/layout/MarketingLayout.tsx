@@ -7,6 +7,7 @@ import { Outlet, useLocation } from "react-router-dom"
 import { Footer } from "@/components/layout/Footer"
 import { Header } from "@/components/layout/Header"
 import { useBrandMotion } from "@/hooks/useBrandMotion"
+import { useGeoCards } from "@/hooks/useGeoCards"
 
 export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
   const { pathname } = useLocation()
@@ -15,6 +16,7 @@ export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
   })
   const motionRef = useBrandMotion(pathname, paused)
   useAmbientMotion(motionRef, pathname)
+  useGeoCards(motionRef, pathname)
   useEffect(() => {
     try { localStorage.setItem("amtdex-motion-paused", String(paused)) } catch { /* Motion preferences work without storage. */ }
   }, [paused])

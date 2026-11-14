@@ -1,0 +1,176 @@
+/* Violet card system with geometric motion: orbits, sine waves, polygons, curves and grids.
+   [data-geo-card] is set by useGeoCards on every public card; the value is the surface tone. */
+
+.brand-motion {
+  --geo-violet: #6d3fc0;
+  --geo-violet-deep: #461667;
+  --geo-violet-soft: #b996e6;
+  --geo-ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+:where([data-geo-card]) { position: relative; }
+.brand-motion main [data-geo-card] {
+  --geo-ink: var(--geo-violet);
+  --geo-figure-opacity: .5;
+  isolation: isolate;
+  transition: translate .5s var(--geo-ease), box-shadow .5s var(--geo-ease), border-color .35s, background-color .35s, color .35s;
+}
+
+/* ── Light surface ── */
+.brand-motion main [data-geo-card="light"] {
+  border: 1px solid #e3d5f4;
+  border-radius: 22px;
+  background: linear-gradient(155deg, #ffffff 0%, #fcf9ff 48%, #f2e9fc 100%);
+  box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #28184908, 0 28px 56px -40px #56358d80;
+}
+/* ── Dark surface ── */
+.brand-motion main [data-geo-card="dark"] {
+  --geo-ink: #e2ccff;
+  --geo-figure-opacity: .5;
+  border-radius: 24px;
+  box-shadow: inset 0 1px 0 #ffffff1f, 0 36px 70px -42px #2a0f4ad9;
+}
+
+/* Utility card for content that had no surface of its own. */
+.brand-motion main .geo-card { display: block; min-width: 0; padding: clamp(18px, 2.2vw, 26px); }
+.brand-motion main .geo-card--tight { padding: 16px 18px; }
+
+/* ── Geometric layer ── */
+.geo-layer {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  color: var(--geo-ink);
+  contain: strict;
+}
+/* Animated hairline along the top edge. */
+.geo-layer::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--geo-violet-soft) 30%, var(--geo-violet) 50%, var(--geo-violet-soft) 70%, transparent 100%);
+  background-size: 220% 100%;
+  opacity: .75;
+  animation: geo-hairline 6s linear infinite;
+  animation-play-state: paused;
+}
+/* Pointer spotlight. */
+.geo-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 0%), color-mix(in srgb, var(--geo-ink) 20%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity .4s;
+}
+.geo-figure {
+  position: absolute;
+  top: -18%;
+  inset-inline-end: -14%;
+  width: clamp(150px, 58%, 300px);
+  aspect-ratio: 1;
+  opacity: var(--geo-figure-opacity);
+  transition: opacity .5s, scale .8s var(--geo-ease);
+  mask-image: radial-gradient(circle at 50% 50%, #000 35%, transparent 72%);
+}
+.geo-figure svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.geo-layer[data-geo="wave"] .geo-figure {
+  top: auto;
+  bottom: 0;
+  inset-inline: 0;
+  width: auto;
+  height: clamp(54px, 30%, 110px);
+  aspect-ratio: auto;
+  mask-image: linear-gradient(to top, #000 30%, transparent);
+}
+.geo-layer[data-geo="grid"] .geo-figure { top: -10%; inset-inline-end: -8%; }
+.geo-layer .geo-node { fill: currentColor; stroke: none; }
+
+.geo-layer :is(.geo-spin, .geo-pulse, .geo-blink) { transform-box: view-box; transform-origin: 100px 100px; }
+.geo-layer .geo-spin { animation: geo-spin 26s linear infinite; }
+.geo-layer .geo-spin--back { animation-duration: 34s; animation-direction: reverse; }
+.geo-layer .geo-spin--slow { animation-duration: 58s; }
+.geo-layer .geo-pulse { animation: geo-pulse 3.2s ease-in-out infinite; }
+.geo-layer .geo-blink { animation: geo-blink 3.6s ease-in-out infinite; }
+.geo-layer .geo-drift { animation: geo-drift 9s linear infinite; }
+.geo-layer .geo-drift--back { animation-duration: 13s; animation-direction: reverse; }
+.geo-layer .geo-drift--slow { animation-duration: 7s; }
+.geo-layer .geo-trace { stroke-dasharray: 1; animation: geo-trace 9s ease-in-out infinite; }
+.geo-layer .geo-trace--plot { animation-duration: 5s; }
+.geo-layer :is(.geo-spin, .geo-pulse, .geo-blink, .geo-drift, .geo-trace) { animation-play-state: paused; }
+
+[data-geo-live="true"] > .geo-layer::before,
+[data-geo-live="true"] > .geo-layer :is(.geo-spin, .geo-pulse, .geo-blink, .geo-drift, .geo-trace) { animation-play-state: running; }
+.brand-motion:is([data-motion-paused="true"], [data-document-hidden="true"]) .geo-layer::before,
+.brand-motion:is([data-motion-paused="true"], [data-document-hidden="true"]) .geo-layer * { animation-play-state: paused !important; }
+
+@keyframes geo-spin { to { transform: rotate(360deg); } }
+@keyframes geo-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.7); opacity: .45; } }
+@keyframes geo-blink { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes geo-drift { to { transform: translateX(-200px); } }
+@keyframes geo-trace { 0% { stroke-dashoffset: 1; } 45%, 60% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -1; } }
+@keyframes geo-hairline { from { background-position: 220% 0; } to { background-position: 0% 0; } }
+
+/* ── Interaction ── */
+@media (hover: hover) and (pointer: fine) {
+  .brand-motion main [data-geo-card]:hover { transform: none; translate: 0 -6px; }
+  .brand-motion main [data-geo-card="light"]:hover {
+    border-color: var(--geo-violet-soft);
+    box-shadow: inset 0 1px 0 #ffffff, 0 2px 4px #2818490a, 0 34px 64px -34px #56358db3;
+  }
+  .brand-motion main [data-geo-card="dark"]:hover { box-shadow: inset 0 1px 0 #ffffff2e, 0 44px 80px -40px #2a0f4a; }
+  .brand-motion main [data-geo-card]:hover > .geo-layer::after { opacity: 1; }
+  .brand-motion main [data-geo-card]:hover > .geo-layer .geo-figure { opacity: calc(var(--geo-figure-opacity) + .3); scale: 1.08; }
+  /* Service cards flood violet on hover; strokes follow. */
+  .brand-motion main :is(.reference-service-card, .service-card, .service-bento-card)[data-geo-card]:hover {
+    --geo-ink: #ffffff;
+    border-color: #7a4fc4;
+    background: radial-gradient(ellipse at 15% 0%, #8a56d6 0%, transparent 62%), linear-gradient(155deg, #5b3597, #3a1a63);
+    box-shadow: inset 0 1px 0 #ffffff33, 0 34px 64px -30px #461667cc;
+  }
+  /* Large containers and forms keep their place. */
+  .brand-motion main :is([data-geo-size="lg"], .about-values-card, .contact-whatsapp-card):hover { translate: none; }
+}
+.brand-motion main [data-geo-card]:focus-visible { outline: 2px solid var(--geo-violet); outline-offset: 4px; }
+
+/* ── Per-surface adjustments ── */
+.brand-motion main .service-card-featured[data-geo-card] { --geo-ink: #e2ccff; }
+.brand-motion main :is(.quote-form, .contact-form-card) > .geo-layer .geo-figure { --geo-figure-opacity: .22; width: clamp(180px, 34%, 300px); }
+.brand-motion main .screen-gallery-card > .geo-layer .geo-figure,
+.brand-motion main .da-works > a > .geo-layer .geo-figure { top: auto; bottom: -22%; }
+.brand-motion main .reference-stats-inner > .geo-layer .geo-figure { width: clamp(200px, 30%, 340px); }
+.brand-motion main .da-works > a { padding: 14px; }
+.brand-motion main .about-values-card { border: 1px solid #6b4b8b; background: radial-gradient(ellipse at 12% 0, #7a45b8, transparent 62%), #2c1147; }
+
+/* About: figures, team and questions as cards. */
+.brand-motion main .about-stat { border-top: 0; }
+.brand-motion main .about-member { border-top: 0; text-align: center; }
+.brand-motion main .about-member > :is(img, span:first-child) { margin-inline: auto; border-radius: 14px; }
+.brand-motion main .da-faq.geo-card { padding: 0 20px; }
+.brand-motion main .da-faq.geo-card > div { padding-inline: 0; }
+
+/* Workflow steps become cards on a shared rail. */
+.brand-motion main .reference-workflow-grid { gap: 16px; }
+.brand-motion main .reference-workflow-grid li.geo-card { padding: 26px 16px 22px; }
+.brand-motion main .reference-workflow-grid li.geo-card::before { display: none; }
+.brand-motion main .reference-workflow-grid li.geo-card .reference-workflow-number {
+  border-color: transparent;
+  background: linear-gradient(140deg, var(--geo-violet), var(--geo-violet-deep));
+  color: #fff;
+  box-shadow: 0 12px 22px -12px #56358dcc;
+}
+
+@media (max-width: 639px) {
+  .brand-motion main [data-geo-card="light"] { border-radius: 18px; }
+  .brand-motion main [data-geo-card="dark"] { border-radius: 20px; }
+  .geo-figure { width: clamp(130px, 52%, 220px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .geo-layer::before, .geo-layer * { animation: none !important; }
+  .brand-motion main [data-geo-card]:hover { translate: none; }
+}

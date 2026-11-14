@@ -12,6 +12,7 @@
 @import "./project-motion.css";
 @import "./reference-motion.css";
 @import "./reference-layout.css";
+@import "./geo-cards.css";
 @import "./responsive.css";
 
 @font-face {

@@ -58,7 +58,7 @@ export function AboutPage() {
                 { v: "+120", l: "مشروع" },
                 { v: "12", l: "عضو فريق" },
               ].map((x) => (
-                <div key={x.l} className="border-t border-[var(--color-ink)] pt-3">
+                <div key={x.l} data-geo="grid" className="about-stat geo-card geo-card--tight">
                   <div className="text-[20px] font-bold text-[var(--color-ink)]">{x.v}</div>
                   <div className="text-[11px] text-[var(--color-text-faint)] mt-1">{x.l}</div>
                 </div>
@@ -94,7 +94,7 @@ export function AboutPage() {
           <p className="text-[12px] text-[var(--color-text-faint)] mt-1">فريق صغير، خبرة كبيرة — نعمل كامتداد لفريقك.</p>
           <div className="da-people mt-6">
             {team.map((m: any) => (
-              <div key={m.n} className="border-t border-[var(--color-ink)] pt-4">
+              <div key={m.n} className="about-member geo-card">
                 {m.avatar ? (
                   <img src={m.avatar} alt={m.n} className="size-12 object-cover border border-[var(--color-border)]" />
                 ) : (
@@ -128,7 +128,7 @@ export function AboutPage() {
             const btnId = `faq-btn-${i}`
             const isOpen = open === i
             return (
-              <div key={f.q} className="da-faq">
+              <div key={f.q} data-geo="wave" className="da-faq geo-card">
                 <button
                   id={btnId}
                   onClick={() => setOpen(isOpen ? null : i)}

@@ -15,7 +15,7 @@ const paddingMap = {
 export function Card({ hover = false, padding = "md", className = "", ...props }: CardProps) {
   return (
     <div
-      className={`bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-card)] ${paddingMap[padding]} ${hover ? "hover:shadow-[var(--shadow-card)] hover:-translate-y-1 transition-all duration-300" : ""} ${className}`}
+      className={`ui-card bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-card)] ${paddingMap[padding]} ${hover ? "hover:shadow-[var(--shadow-card)] hover:-translate-y-1 transition-all duration-300" : ""} ${className}`}
       {...props}
     />
   )

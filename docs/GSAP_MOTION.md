@@ -64,3 +64,28 @@ and desktop. Mobile screenshot cards expand vertically on selection. Testimonial
 changes animate the incoming quote. These are interaction/scroll changes rather than
 additional generic fade-ins. Validation: 86 tests pass; production build and diff
 checks pass. Live visual verification should follow deployment.
+
+## Violet geometric cards and two-way scroll motion
+
+Every public card now shares one skin and carries a geometric layer; every heading,
+card and footer column animates in on scroll and leaves by running the same tween
+backwards.
+
+- `resources/css/geo-cards.css`: light and dark violet card surfaces, animated top
+  hairline, pointer spotlight, hover lift, and the layer animations.
+- `resources/js/lib/motion/geoLayer.ts`: `GEO_CARD_SELECTOR` (the list of card
+  surfaces) and five SVG figures built from their equations: orbits, sine waves,
+  nested polygons, Lissajous/rose curves and a plotted grid.
+- `resources/js/hooks/useGeoCards.ts`: tags cards with `data-geo-card="light|dark"`,
+  appends the decorative layer, runs it only while the card is on screen
+  (`data-geo-live`) and tracks fine pointers. Add class `geo-card` to turn any block
+  into a card; `data-geo="orbit|wave|poly|curve|grid"` picks the figure.
+- `brandScenes.ts`: reveals are no longer `once`. `inOut()` plays a paused tween on
+  `onEnter`/`onEnterBack` and reverses it (1.7x) on `onLeave`/`onLeaveBack`. Content
+  in the first viewport starts at its end state, so nothing flashes on load. Cards
+  fan in from their own side of the page on desktop and rise straight on touch.
+
+Reduced motion and the pause toggle keep all content visible and static; the layer
+is `aria-hidden` and ignores pointer events. Validation: 122 tests, type-check and
+production build pass; desktop (1440px) and phone (390px) checked in Chrome on all
+public pages with local fallback content.
