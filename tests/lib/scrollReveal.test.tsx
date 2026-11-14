@@ -37,6 +37,17 @@ describe("scroll reveals", () => {
     expect(card.hasAttribute("data-reveal-state")).toBe(false)
   })
 
+  it("leaves forms and article content stable while revealing other page sections", () => {
+    vi.stubGlobal("CSS", { supports: () => true })
+    const { root, ref } = fixture()
+    const stable = document.createElement("div")
+    stable.innerHTML = '<form class="quote-form"><h2>Quote</h2><input /><div data-motion="rise">Field</div></form><div class="blog-post-content"><h2>Article</h2><div class="geo-card">Article card</div></div>'
+    root.querySelector("main")!.append(stable)
+    renderHook(() => useScrollReveal(ref, "/quote"))
+    expect(root.querySelector("h1")!.hasAttribute("data-reveal")).toBe(true)
+    expect(stable.querySelector("[data-reveal]")).toBeNull()
+  })
+
   it("uses the native timeline without creating visibility observers", () => {
     vi.stubGlobal("CSS", { supports: () => true })
     const observer = vi.fn()

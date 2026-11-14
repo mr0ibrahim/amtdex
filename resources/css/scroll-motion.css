@@ -48,3 +48,19 @@
   .brand-motion .site-header-bar::after,
   .brand-motion :is(.da-hero h1, .brand-page-header h1, .contact-page-hero h1, .quote-page h1, .blog-hero h1) { animation: none; }
 }
+
+/* The same scroll treatment applies to contact, service details, portfolio and blog pages. */
+.brand-motion .contact-channels > :is(a, section),
+.brand-motion .contact-form-card { animation: none; }
+.brand-motion main form,
+.brand-motion main .blog-post-content { opacity: 1; }
+.brand-motion main form > .geo-layer { display: none; }
+.brand-motion main form[data-geo-card]:is(:hover, [data-geo-active="true"]) { translate: none; scale: none; }
+.brand-motion [data-reveal]:focus-within { animation: none !important; opacity: 1 !important; transform: none !important; }
+
+.reading-progress { position: fixed; top: 0; inset-inline: 0; height: 3px; z-index: 50; pointer-events: none; background: #0000000d; }
+.reading-progress > div { height: 100%; background: linear-gradient(270deg, #461667, #8b3fd9); transform: scaleX(0); transform-origin: right center; }
+html[dir="ltr"] .reading-progress > div { transform-origin: left center; }
+@supports (animation-timeline: scroll()) {
+  .reading-progress > div { animation: page-progress linear both; animation-timeline: scroll(root block); }
+}

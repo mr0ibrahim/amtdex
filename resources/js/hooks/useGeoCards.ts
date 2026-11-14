@@ -77,7 +77,7 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
       })
       let index = cards.size
       root.querySelectorAll<HTMLElement>(GEO_CARD_SELECTOR).forEach(card => {
-        if (cards.has(card)) return
+        if (cards.has(card) || card.closest("form, .blog-post-content, [data-motion-static]")) return
         const rect = card.getBoundingClientRect()
         // Explicit .geo-card elements are always cards; inferred ones must be large enough to read as one.
         if (!card.classList.contains("geo-card") && (rect.width < MIN_WIDTH || rect.height < MIN_HEIGHT)) return

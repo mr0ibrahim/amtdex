@@ -2,10 +2,11 @@ import { useEffect, type RefObject } from "react"
 import { GEO_CARD_SELECTOR } from "@/lib/motion/geoLayer"
 
 const TEXT = "main h1, main h2, main h3, main :is(h1, h2) + p, main .eyebrow, main .da-kicker, main .reference-section-label, main .reference-section-heading > p, main .brand-page-header-art, main .da-filters, main .hero-actions, main .reference-platforms, main .quote-choice, main .reference-section-action, .site-footer .footer-grid > *, .site-footer .footer-bottom"
-const SCENES = "main .product-scene, main .project-showcase, main .guarantee-art, main .contact-art"
+const SCENES = "main .product-scene, main .project-showcase, main .guarantee-art, main .contact-art, main .contact-hero-art, main .service-detail-vector, main .about-vector, main .blog-follow-art"
 export const REVEAL_SELECTOR = `${TEXT}, ${SCENES}, main [data-motion], ${GEO_CARD_SELECTOR}`
 /** Composed scenes animate as one piece; their inner headings and panels do not get their own motion. */
-const OWNERS = ".product-scene, .project-showcase, .guarantee-art, .contact-art"
+const OWNERS = ".product-scene, .project-showcase, .guarantee-art, .contact-art, .contact-hero-art, .service-detail-vector, .about-vector, .blog-follow-art"
+const STABLE = "form, .blog-post-content, [data-motion-static]"
 
 export const supportsScrollTimeline = () => typeof CSS !== "undefined" && !!CSS.supports?.("animation-timeline: view()")
 
@@ -39,7 +40,7 @@ export function useScrollReveal(ref: RefObject<HTMLDivElement | null>, route: st
       seen.forEach(el => { if (!root.contains(el)) { observer?.unobserve(el); seen.delete(el) } })
       const fresh: HTMLElement[] = []
       root.querySelectorAll<HTMLElement>(REVEAL_SELECTOR).forEach(el => {
-        if (seen.has(el) || el.classList.contains("geo-layer")) return
+        if (seen.has(el) || el.classList.contains("geo-layer") || el.closest(STABLE)) return
         const parent = el.parentElement
         // A card or scene moves as one piece.
         if (parent?.closest(OWNERS) || parent?.closest(GEO_CARD_SELECTOR) || parent?.closest("[data-reveal]")) return
