@@ -1,4 +1,3 @@
-import { PointerHalo } from "@/components/ui/PointerHalo"
 import { MotionPlayback } from "@/hooks/useMotionPlayback"
 import { useAmbientMotion } from "@/hooks/useAmbientMotion"
 import { useEffect, useState } from "react"
@@ -29,13 +28,13 @@ export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
       >
         تخطي إلى المحتوى
       </a>
+      <div className="glass-aurora" aria-hidden="true"><i /><i /><i /></div>
       <div className="scroll-progress" aria-hidden="true"><i data-scroll-progress /></div>
       <Header onToast={onToast} />
       <main id="main-content" tabIndex={-1}>
         <Outlet />
       </main>
       <Footer onToast={onToast} />
-      <PointerHalo />
       <button type="button" className="reference-motion-toggle" aria-pressed={paused} aria-label={paused ? "تشغيل الحركات" : "إيقاف الحركات"} title={paused ? "تشغيل الحركات" : "إيقاف الحركات"} onClick={() => setPaused(value => !value)}><Icon name={paused ? "play" : "pause"} size={16} /><span>{paused ? "تشغيل الحركة" : "إيقاف الحركة"}</span></button>
     </div></MotionPlayback>
   )

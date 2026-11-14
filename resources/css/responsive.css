@@ -96,7 +96,7 @@
  .reference-design-scope .project-showcase {padding:18px 12px;}
  .reference-design-scope .project-tabs {grid-template-columns:minmax(0,1fr);}
  .reference-design-scope .project-tabs>button {flex-direction:row;text-align:start;justify-content:start;min-height:48px;padding:8px 12px;}
- .reference-design-scope .project-tabs>button>span:nth-child(2) {font-size:12px;}
+ .reference-design-scope .project-tabs>button>span:nth-child(2) {font-size:13.5px;}
  .reference-design-scope .project-card-screen {height:160px;}
 }
 .reference-design-scope main :is(input,select,textarea,[id]) {scroll-margin-block-start:112px;}

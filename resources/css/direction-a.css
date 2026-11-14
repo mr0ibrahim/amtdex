@@ -8,7 +8,7 @@
 .da-avatars b {
   width: 28px; height: 28px; margin-inline-start: -8px; border-radius: 50%;
   display: grid; place-items: center; background: #461667; color: #F8F2FB;
-  border: 2px solid #F6EEFA; font-size: 10px;
+  border: 2px solid #F6EEFA; font-size:12px;
 }
 .da-avatars b:first-child { margin-inline-start: 0; }
 .da-app {
@@ -26,17 +26,17 @@
   padding: 16px 18px; border-radius: 12px; background: #FBF7FD;
   border: 1px solid #DCC8EA; text-decoration: none; color: inherit;
 }
-.da-svc small { display: block; margin-top: 4px; color: #5A3D72; font-size: 12px; line-height: 1.7; }
+.da-svc small { display: block; margin-top: 4px; color: #5A3D72; font-size:13.5px; line-height: 1.7; }
 .da-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 22px; }
 .da-step { padding: 18px; border-radius: 12px; background: #FBF7FD; border: 1px solid #DCC8EA; }
-.da-step .num { font-family: var(--font-mono); color: #461667; font-size: 12px; }
+.da-step .num { font-family: var(--font-mono); color: #461667; font-size:13.5px; }
 .da-step p { margin-top: 8px; color: #5A3D72; font-size: 14px; line-height: 1.7; }
 .da-band { background: #461667; color: #F8F2FB; border-block: 1px solid #461667; }
 .da-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-.da-chips li { padding: 8px 12px; border-radius: 999px; border: 1px solid rgb(255 255 255 / 14%); font-family: var(--font-mono); font-size: 13px; }
+.da-chips li { padding: 8px 12px; border-radius: 999px; border: 1px solid rgb(255 255 255 / 14%); font-family: var(--font-mono); font-size:14px; }
 
 .da-page { width: min(1180px, calc(100% - 36px)); margin-inline: auto; padding-block: 28px 64px; }
-.da-kicker { color: #461667; font-size: 13px; font-weight: 600; }
+.da-kicker { color: #461667; font-size:14px; font-weight: 600; }
 .da-title { margin-top: 12px; font-size: clamp(32px, 5vw, 56px); line-height: 1.15; font-weight: 600; max-width: 16ch; }
 .da-lede { margin-top: 14px; color: #5A3D72; font-size: 16px; line-height: 1.85; max-width: 40rem; }
 .da-panel { background: #FBF7FD; border: 1px solid #DCC8EA; border-radius: 16px; padding: 20px; }

@@ -1,0 +1,109 @@
+/* Glass pass: one slow aurora behind the page, frosted header, footer and cards,
+   a light sheen across cards, and a quieter motion budget. Loaded last on purpose. */
+
+/* ── Aurora ── */
+.brand-motion { background: #fbf9fe; }
+.glass-aurora { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; contain: strict; }
+.glass-aurora > i { position: absolute; width: 62vmax; aspect-ratio: 1; border-radius: 50%; will-change: transform; animation: glass-drift 38s ease-in-out infinite alternate; }
+.glass-aurora > i:nth-child(1) { top: -24vmax; inset-inline-end: -18vmax; background: radial-gradient(circle, #c9a2ff8c 0%, #c9a2ff2e 38%, transparent 66%); }
+.glass-aurora > i:nth-child(2) { top: 26vh; inset-inline-start: -30vmax; background: radial-gradient(circle, #8d4fd452 0%, #8d4fd41f 40%, transparent 66%); animation-duration: 46s; animation-delay: -12s; }
+.glass-aurora > i:nth-child(3) { bottom: -34vmax; inset-inline-end: 6vmax; background: radial-gradient(circle, #e9b8ff66 0%, #e9b8ff21 40%, transparent 66%); animation-duration: 54s; animation-delay: -27s; }
+@keyframes glass-drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-9vmax, 7vmax, 0) scale(1.14); }
+  100% { transform: translate3d(7vmax, -6vmax, 0) scale(.94); }
+}
+.brand-motion:is([data-motion-paused="true"], [data-document-hidden="true"]) .glass-aurora > i { animation-play-state: paused; }
+.brand-motion > main, .brand-motion > .site-footer { position: relative; z-index: 1; }
+
+/* Sections let the aurora through instead of painting over it. */
+.brand-motion :is(.reference-services-section, .reference-workflow) { background-color: #faf7fd80; }
+.brand-motion :is(.screen-gallery, .blog-surface, .blog-hero), .home-stack .screen-gallery { background-color: transparent; }
+
+/* ── Frosted chrome ── */
+.brand-motion .site-header-bar {
+  background: linear-gradient(135deg, #ffffffc7, #fbf6ffa8);
+  border-color: #ffffffd9;
+  box-shadow: 0 0 0 1px #7a3cc21a, 0 14px 40px -22px #31144d59;
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  backdrop-filter: blur(20px) saturate(170%);
+}
+.brand-motion > .site-footer {
+  background: linear-gradient(180deg, #ffffffb3, #fbf6ffd9);
+  border-top: 1px solid #ffffffd9;
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+}
+
+/* ── Glass cards ── */
+.brand-motion main [data-geo-card="light"] {
+  background: linear-gradient(155deg, #ffffffd1 0%, #fcf8ffad 46%, #f1e6fc94 100%);
+  border-color: #ffffffe0;
+  box-shadow: inset 0 1px 0 #ffffff, inset 0 0 0 1px #ffffff66, 0 0 0 1px #7a3cc21f, 0 28px 56px -38px #5a2391a6;
+}
+.brand-motion main [data-geo-card="dark"] { box-shadow: inset 0 1px 0 #ffffff38, inset 0 0 0 1px #ffffff14, 0 36px 70px -42px #2a0f4ad9; }
+/* Backdrop blur is costly on phones; the aurora is already soft, so translucency is enough there. */
+@media (min-width: 1024px) {
+  .brand-motion main [data-geo-card="light"] { -webkit-backdrop-filter: blur(16px) saturate(170%); backdrop-filter: blur(16px) saturate(170%); }
+}
+@media (hover: hover) and (pointer: fine) {
+  .brand-motion main [data-geo-card="light"]:hover { border-color: #ffffff; box-shadow: inset 0 1px 0 #ffffff, inset 0 0 0 1px #ffffff80, 0 0 0 1px #7a3cc252, 0 36px 66px -32px #5a2391cc; }
+}
+.brand-motion[data-geo-touch="true"] main [data-geo-card="light"][data-geo-active="true"] { border-color: #ffffff; box-shadow: inset 0 1px 0 #ffffff, inset 0 0 0 1px #ffffff80, 0 0 0 1px #7a3cc252, 0 32px 58px -30px #5a2391cc; }
+
+/* ── Sheen: a band of light crosses the glass when a card arrives and when it is pointed at ── */
+.geo-sheen {
+  position: absolute;
+  top: -25%;
+  left: 0;
+  width: 42%;
+  height: 150%;
+  background: linear-gradient(100deg, transparent 0%, #ffffff00 20%, #ffffffb8 50%, #ffffff00 80%, transparent 100%);
+  transform: translateX(-160%) skewX(-18deg);
+  opacity: 0;
+  mix-blend-mode: soft-light;
+}
+[data-geo-card="light"] > .geo-layer .geo-sheen { mix-blend-mode: normal; background: linear-gradient(100deg, transparent 0%, #ffffff00 20%, #ffffffd9 50%, #ffffff00 80%, transparent 100%); }
+[data-geo-live="true"] > .geo-layer .geo-sheen { animation: glass-sheen 1.5s .35s cubic-bezier(.22, 1, .36, 1) 1 both; }
+@media (hover: hover) and (pointer: fine) {
+  [data-geo-card]:hover > .geo-layer .geo-sheen { animation: glass-sheen-again 1.1s cubic-bezier(.22, 1, .36, 1) 1 both; }
+}
+.brand-motion[data-geo-touch="true"] [data-geo-active="true"] > .geo-layer .geo-sheen { animation: glass-sheen-again 1.1s cubic-bezier(.22, 1, .36, 1) 1 both; }
+@keyframes glass-sheen { 0% { transform: translateX(-160%) skewX(-18deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(400%) skewX(-18deg); opacity: 0; } }
+@keyframes glass-sheen-again { 0% { transform: translateX(-160%) skewX(-18deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(400%) skewX(-18deg); opacity: 0; } }
+
+/* ── Motion budget: scroll motion, geometric cards, one ribbon. The rest stands still. ── */
+.reference-motion-scope .site-header-bar::after,
+.reference-motion-scope :is(.da-kicker, .contact-eyebrow, .blog-follow-eyebrow)::after,
+.reference-motion-scope .reference-floating { display: none; }
+.reference-motion-scope :is(.da-hero h1, .brand-page-header h1, .contact-page-hero h1, .quote-page h1, .blog-hero h1) {
+  animation: none;
+  background: linear-gradient(120deg, #31144d 0%, #461667 45%, #7a3cc2 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.reference-motion-scope .reference-platforms { mask-image: none; }
+.reference-motion-scope .reference-platform-track { animation: none; width: 100%; }
+.reference-motion-scope .reference-platform-track > div { flex-wrap: wrap; justify-content: center; }
+.reference-motion-scope .reference-platform-track > div + div { display: none; }
+/* The pause control sits under the footer instead of floating over content. */
+.reference-motion-scope .reference-motion-toggle { position: relative; inset: auto; z-index: 1; width: auto; margin: 0 auto; box-shadow: none; border-color: #7a3cc233; background: #ffffff99; transform: none; translate: 0 -14px; display: flex; }
+.reference-motion-scope .reference-motion-toggle span { display: inline; }
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-aurora > i, .geo-sheen { animation: none !important; }
+}
+
+/* ── Readable type: utility sizes below 14px step up on public pages ── */
+.brand-motion :is(main, .site-footer) [class*="text-[10px]"] { font-size: 12px; }
+.brand-motion :is(main, .site-footer) [class*="text-[11px]"] { font-size: 12.5px; }
+.brand-motion :is(main, .site-footer) [class*="text-[11.5px]"] { font-size: 13px; }
+.brand-motion :is(main, .site-footer) [class*="text-[12px]"] { font-size: 13.5px; }
+.brand-motion :is(main, .site-footer) [class*="text-[12.5px]"] { font-size: 14px; }
+.brand-motion :is(main, .site-footer) [class*="text-[13px]"] { font-size: 14px; }
+.brand-motion :is(main, .site-footer) [class*="text-[var(--color-text-faint)]"] { color: var(--color-text-muted); }
+
+/* Heroes sit directly on the aurora: no boxed backdrop, and the grid fades out on every side. */
+.brand-motion :is(.da-hero, .contact-page-hero), .home-stack .da-hero { background: none; }
+.reference-motion-scope .da-hero::before { background: linear-gradient(#6a2c9f0a 1px, transparent 1px), linear-gradient(90deg, #6a2c9f0a 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(ellipse at 50% 42%, #000 20%, transparent 70%); }

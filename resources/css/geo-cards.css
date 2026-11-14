@@ -2,7 +2,7 @@
    [data-geo-card] is set by useGeoCards on every public card; the value is the surface tone. */
 
 .brand-motion {
-  --geo-violet: #6d3fc0;
+  --geo-violet: #7a3cc2;
   --geo-violet-deep: #461667;
   --geo-violet-soft: #b996e6;
   --geo-ease: cubic-bezier(.22, 1, .36, 1);
@@ -21,7 +21,7 @@
   border: 1px solid #e3d5f4;
   border-radius: 22px;
   background: linear-gradient(155deg, #ffffff 0%, #fcf9ff 48%, #f2e9fc 100%);
-  box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #28184908, 0 28px 56px -40px #56358d80;
+  box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px #31144d08, 0 28px 56px -40px #6a2c9f80;
 }
 /* ── Dark surface ── */
 .brand-motion main [data-geo-card="dark"] {
@@ -121,7 +121,7 @@
   .brand-motion main [data-geo-card]:hover { transform: none; translate: 0 -6px; }
   .brand-motion main [data-geo-card="light"]:hover {
     border-color: var(--geo-violet-soft);
-    box-shadow: inset 0 1px 0 #ffffff, 0 2px 4px #2818490a, 0 34px 64px -34px #56358db3;
+    box-shadow: inset 0 1px 0 #ffffff, 0 2px 4px #31144d0a, 0 34px 64px -34px #6a2c9fb3;
   }
   .brand-motion main [data-geo-card="dark"]:hover { box-shadow: inset 0 1px 0 #ffffff2e, 0 44px 80px -40px #2a0f4a; }
   .brand-motion main [data-geo-card]:hover > .geo-layer::after { opacity: 1; }
@@ -130,8 +130,8 @@
   /* Service cards flood violet on hover; strokes follow. */
   .brand-motion main :is(.reference-service-card, .service-card, .service-bento-card)[data-geo-card]:hover {
     --geo-ink: #ffffff;
-    border-color: #7a4fc4;
-    background: radial-gradient(ellipse at 15% 0%, #8a56d6 0%, transparent 62%), linear-gradient(155deg, #5b3597, #3a1a63);
+    border-color: #7d43c6;
+    background: radial-gradient(ellipse at 15% 0%, #8d4fd4 0%, transparent 62%), linear-gradient(155deg, #5f2599, #3a1259);
     box-shadow: inset 0 1px 0 #ffffff33, 0 34px 64px -30px #461667cc;
   }
   /* Large containers and forms keep their place. */
@@ -143,21 +143,21 @@
 .brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] { translate: 0 -6px; }
 .brand-motion[data-geo-touch="true"] main [data-geo-card="light"][data-geo-active="true"] {
   border-color: var(--geo-violet-soft);
-  box-shadow: inset 0 1px 0 #ffffff, 0 2px 4px #2818490a, 0 30px 56px -30px #56358dcc;
+  box-shadow: inset 0 1px 0 #ffffff, 0 2px 4px #31144d0a, 0 30px 56px -30px #6a2c9fcc;
 }
 .brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-figure { opacity: calc(var(--geo-figure-opacity) + .3); }
 .brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-figure svg { scale: 1.1; }
 .brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer::after { opacity: 1; }
 .brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card)[data-geo-card]:is([data-geo-active="true"], :active) {
   --geo-ink: #ffffff;
-  border-color: #7a4fc4;
-  background: radial-gradient(ellipse at 15% 0%, #8a56d6 0%, transparent 62%), linear-gradient(155deg, #5b3597, #3a1a63);
+  border-color: #7d43c6;
+  background: radial-gradient(ellipse at 15% 0%, #8d4fd4 0%, transparent 62%), linear-gradient(155deg, #5f2599, #3a1259);
   box-shadow: inset 0 1px 0 #ffffff33, 0 30px 56px -28px #461667cc;
   color: #fff;
 }
 .brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(h2, h3) { color: #fff; }
 .brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(p, li, .reference-service-link, .service-card-footer) { color: #eee4f8; border-color: #ffffff25; }
-.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(.reference-service-icon, .service-card-icon, .service-card-arrow) { background: #fff; color: #56358d; }
+.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(.reference-service-icon, .service-card-icon, .service-card-arrow) { background: #fff; color: #6a2c9f; }
 .brand-motion[data-geo-touch="true"] main [data-geo-card]:not([data-geo-size="lg"]):active { scale: .98; }
 .brand-motion[data-geo-touch="true"] main [data-geo-card] { transition: translate .5s var(--geo-ease), scale .25s, box-shadow .5s var(--geo-ease), border-color .35s, background-color .35s, color .35s; }
 
@@ -192,7 +192,7 @@ html[dir="ltr"] .scroll-progress > i { transform-origin: left center; }
   border-color: transparent;
   background: linear-gradient(140deg, var(--geo-violet), var(--geo-violet-deep));
   color: #fff;
-  box-shadow: 0 12px 22px -12px #56358dcc;
+  box-shadow: 0 12px 22px -12px #6a2c9fcc;
 }
 
 @media (max-width: 639px) {
