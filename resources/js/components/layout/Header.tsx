@@ -27,7 +27,7 @@ function SiteNavLink({
     )
   }
   return (
-    <NavLink to={to} onClick={onClick} onMouseEnter={onIntent} onFocus={onIntent} className={className}>
+    <NavLink end={to === "/"} to={to} onClick={onClick} onMouseEnter={onIntent} onFocus={onIntent} className={className}>
       {children}
     </NavLink>
   )
@@ -75,7 +75,9 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
   const openRef = useRef(open)
   const onBlog = isBlogSubdomain()
   const { nav, pages } = useCms()
-  const menu = nav.filter((item) => item.visible && pageIsListed(pages, item.to, false))
+  const menu = nav.filter((item, index) => item.visible && pageIsListed(pages, item.to, false)
+    && nav.findIndex((candidate) => candidate.visible && candidate.to === item.to) === index)
+  const mobile = menu.filter((item) => item.to !== "/" && item.id !== "quote")
   const desktop = menu.filter((item) => !["contact", "quote", "pricing"].includes(item.id))
   const homeListed = pageIsListed(pages, "/", false)
   const contactListed = pageIsListed(pages, "/contact", false)
@@ -186,7 +188,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
 
   return (
     <>
-      <header className={`site-header is-in${condensed ? " is-condensed" : ""}${hidden ? " is-hidden" : ""}`}>
+      <header className={`site-header is-in${condensed ? " is-condensed" : ""}${hidden && !open ? " is-hidden" : ""}${open ? " is-menu-open" : ""}`}>
         <div className="site-header-stack">
         <div className="site-header-utility">
           <span>امتدكس سوفت — من الفكرة إلى التنفيذ</span>
@@ -212,7 +214,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
               </SiteLink>
             )}
             {quoteListed && (
-              <SiteLink to="/contact" className="btn btn-ink brand-cta site-header-cta">
+              <SiteLink to="/quote" className="btn btn-ink brand-cta site-header-cta">
                 <span className="hidden sm:inline">ابدأ مشروعك</span>
                 <span className="sm:hidden">ابدأ</span>
               </SiteLink>
@@ -245,7 +247,11 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
                 الرئيسية
               </SiteNavLink>
             )}
-            {menu.map((item) => renderItem(item, () => setOpen(false)))}
+            <div className="site-menu-heading"><span>اكتشف امتدكس</span><span className="site-menu-caption">من الفكرة إلى التنفيذ</span></div>
+            <nav className="site-menu-links" aria-label="التنقل على الهاتف">
+              {mobile.map((item) => renderItem(item, () => setOpen(false)))}
+            </nav>
+            {quoteListed && <SiteLink to="/quote" className="site-menu-cta" onClick={() => setOpen(false)}>ابدأ مشروعك <span aria-hidden="true">↗</span></SiteLink>}
           </div>
         </>
       )}
