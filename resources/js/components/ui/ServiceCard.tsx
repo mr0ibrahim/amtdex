@@ -14,7 +14,7 @@ export function ServiceCard({ service, detailed = false }: { service: Service; d
       <p>{service.desc}</p>
       {detailed && <ul>{service.bullets.map(item => <li key={item}><Icon name="check" size={15} /><span>{item}</span></li>)}</ul>}
       <div className="service-card-footer">
-        <span>اكتشف الخدمة</span><span className="service-card-arrow"><Icon name="arrowUpLeft" size={19} /></span>
+        <span>اكتشف الخدمة</span><span className="service-card-arrow"><Icon name="actionArrow" size={19} /></span>
       </div>
     </Link>
   )

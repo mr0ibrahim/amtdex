@@ -78,13 +78,13 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
               </Select>
             </div>
             <Textarea id="c-message" name="message" label="رسالتك" required rows={5} placeholder="ما الذي تريد تطويره؟ أخبرنا بفكرتك أو اكتب سؤالك هنا..." error={errors.message} />
-            <div className="contact-submit-row"><span>الحقول المعلّمة بـ * مطلوبة.</span><button type="submit" disabled={sending} className="contact-submit">{sending ? <>جارٍ الإرسال… <span className="contact-spinner" aria-hidden="true" /></> : <>إرسال الرسالة <Icon name="arrowUpLeft" size={19} /></>}</button></div>
+            <div className="contact-submit-row"><span>الحقول المعلّمة بـ * مطلوبة.</span><button type="submit" disabled={sending} className="contact-submit">{sending ? <>جارٍ الإرسال… <span className="contact-spinner" aria-hidden="true" /></> : <>إرسال الرسالة <Icon name="actionArrow" size={19} /></>}</button></div>
           </div>
         </form>
         <aside className="contact-channels" aria-label="وسائل التواصل المباشر">
-          <a href="https://wa.me/967784440429" target="_blank" rel="noreferrer" className="contact-whatsapp-card"><span className="contact-channel-icon"><Icon name="phone" size={24} /></span><div><small>تفضّل محادثة مباشرة؟</small><strong>تحدث معنا عبر واتساب</strong><span>أخبرنا بفكرتك وابدأ الحوار.</span></div><Icon name="arrowUpLeft" size={20} /></a>
+          <a href="https://wa.me/967784440429" target="_blank" rel="noreferrer" className="contact-whatsapp-card"><span className="contact-channel-icon"><Icon name="phone" size={24} /></span><div><small>تفضّل محادثة مباشرة؟</small><strong>تحدث معنا عبر واتساب</strong><span>أخبرنا بفكرتك وابدأ الحوار.</span></div><Icon name="actionArrow" size={20} /></a>
           <section className="contact-details-card"><h2>اختر طريقتك للتواصل</h2><div className="contact-method-list">{contacts.map(item => {
-            const content = <><span className="contact-method-icon"><Icon name={item.icon} size={19} /></span><span className="contact-method-copy"><small>{item.label}</small><strong dir={item.ltr ? "ltr" : undefined}>{item.value}</strong></span>{item.href && <Icon name="arrowUpLeft" size={15} />}</>
+            const content = <><span className="contact-method-icon"><Icon name={item.icon} size={19} /></span><span className="contact-method-copy"><small>{item.label}</small><strong dir={item.ltr ? "ltr" : undefined}>{item.value}</strong></span>{item.href && <Icon name="actionArrow" size={15} />}</>
             return item.href ? <a key={item.label} href={item.href} target={item.href.startsWith("https:") ? "_blank" : undefined} rel={item.href.startsWith("https:") ? "noreferrer" : undefined} className="contact-method">{content}</a> : <div key={item.label} className="contact-method">{content}</div>
           })}</div></section>
           <section className="contact-hours"><Icon name="clock" size={19} /><div><h2>ساعات العمل والرد</h2><p>السبت — الخميس<br /><bdi>9:00 ص — 6:00 م</bdi> · توقيت مكة</p><small>خارج ساعات العمل، اترك رسالتك وسنراجعها عند عودتنا.</small></div></section>

@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/Icon"
 import { useEffect, useRef, useState } from "react"
 import { Link, NavLink, useLocation } from "react-router-dom"
 import { getBlogUrl, getMainUrl, isBlogSubdomain } from "@/lib/subdomain"
@@ -251,7 +252,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
             <nav className="site-menu-links" aria-label="التنقل على الهاتف">
               {mobile.map((item) => renderItem(item, () => setOpen(false)))}
             </nav>
-            {quoteListed && <SiteLink to="/quote" className="site-menu-cta" onClick={() => setOpen(false)}>ابدأ مشروعك <span aria-hidden="true">↗</span></SiteLink>}
+            {quoteListed && <SiteLink to="/quote" className="site-menu-cta" onClick={() => setOpen(false)}>ابدأ مشروعك <Icon name="actionArrow" size={18} /></SiteLink>}
           </div>
         </>
       )}

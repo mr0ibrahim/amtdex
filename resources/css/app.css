@@ -234,3 +234,13 @@ h1, h2, h3, .font-display {
 @media(prefers-reduced-motion:reduce){.site-menu,.site-menu-dim{animation:none}.site-nav-burger span,.site-header .site-nav,.site-menu .site-nav{transition:none}}
 
 .screen-picture { display: contents; }
+
+/* Consistent action symbols across the public site and blog. */
+.ui-action-arrow { display:inline-block; flex:0 0 30px; width:30px; height:30px; padding:6px; box-sizing:border-box; border-radius:9px; background:color-mix(in srgb,currentColor 8%,transparent); vertical-align:middle; stroke-width:1.8; transition:transform 180ms ease,background-color 180ms ease; }
+:is(.service-card-arrow,.blog-cover-arrow,.testimonial-link-icon) > .ui-action-arrow { width:20px; height:20px; padding:0; background:transparent; border-radius:0; flex-basis:20px; }
+:is(.blog-follow-actions > a,.footer-social,.footer-whatsapp,.contact-news-primary,.contact-news-secondary,.guarantee-action,.project-quote-link,.site-menu-cta) { gap:12px; }
+.blog-follow-actions > a { justify-content:space-between; text-align:start; min-width:220px; }
+.footer-social { gap:12px; }
+@media(max-width:639px) { .blog-follow-actions { flex-direction:column; align-items:stretch; } .blog-follow-actions > a { width:100%; min-width:0; padding:12px 16px; } }
+@media(hover:hover) and (pointer:fine) { :is(a,button):hover > .ui-action-arrow { transform:translateX(-3px); background:color-mix(in srgb,currentColor 13%,transparent); } }
+@media(prefers-reduced-motion:reduce) { .ui-action-arrow { transition:none; } :is(a,button):hover > .ui-action-arrow { transform:none; } }

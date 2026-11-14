@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/Icon"
 import { ScreenImage } from "@/components/ui/ScreenImage"
 import { useState } from "react"
 const screens = [
@@ -31,7 +32,7 @@ export function ScreenGallery() {
                   fetchPriority="low"
                 />
               </div>
-              <span className="screen-caption"><span>0{index + 1}</span>{screen.title}<span aria-hidden="true">↗</span></span>
+              <span className="screen-caption"><span>0{index + 1}</span>{screen.title}<Icon name="actionArrow" size={18} /></span>
               </button>
             </figure>
           ))}

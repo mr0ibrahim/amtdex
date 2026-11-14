@@ -66,8 +66,8 @@ export function HomePage(_props: { onToast: (m: string) => void }) {
               من الفكرة إلى التنفيذ. أخبرنا عن مشروعك وسنناقش معك الخطوة التالية.
             </p>
             <div data-motion="rise" data-motion-delay="260" className="contact-news-actions">
-              <Link to="/quote" className="contact-news-primary brand-cta">ابدأ مشروعك <Icon name="arrowUpLeft" size={18} /></Link>
-              <Link to="/contact" className="contact-news-secondary">تحدث معنا <Icon name="arrowUpLeft" size={18} /></Link>
+              <Link to="/quote" className="contact-news-primary brand-cta">ابدأ مشروعك <Icon name="actionArrow" size={18} /></Link>
+              <Link to="/contact" className="contact-news-secondary">تحدث معنا <Icon name="actionArrow" size={18} /></Link>
             </div>
             <ul className="contact-news-proof" aria-label="مزايا التواصل"><li>رد خلال ساعات</li><li>استشارة مجانية</li><li>عقد واضح</li></ul>
           </div>

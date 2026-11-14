@@ -11,6 +11,7 @@ const paths = {
   check: "m5 12 4 4L19 6",
   arrowLeft: "M20 12H4m6-6-6 6 6 6",
   arrowRight: "M4 12h16m-6-6 6 6-6 6",
+  actionArrow: "M19 12H5m6-6-6 6 6 6",
   arrowUpLeft: "M18 18 6 6m0 9V6h9",
   quote: "M4 6h6v7H6c0 3-1 4-3 5m11-12h6v7h-4c0 3-1 4-3 5",
   star: "m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z",
@@ -46,7 +47,7 @@ const paths = {
 
 export type IconName = keyof typeof paths
 
-export function Icon({ name, size = 24, ...props }: Omit<SVGProps<SVGSVGElement>, "name"> & { name: IconName; size?: number }) {
+export function Icon({ name, size = 24, className = "", ...props }: Omit<SVGProps<SVGSVGElement>, "name"> & { name: IconName; size?: number }) {
   const pathD = paths[name] || paths.settings
   const accent = ({ web: "M4 4h16v4H4Z", mobile: "M8 2h8v3H8Z", erp: "M3 3h7v7H3Zm11 11h7v7h-7Z", ai: "M7 7h10v10H7Z", shield: "M12 2 3 6v6c0 5 5 8 9 10V2Z", security: "M12 2 3 6v6c0 5 5 8 9 10V2Z", mail: "m3 5 9 7 9-7Z", cloud: "M7 18H6a4 4 0 0 1-.5-8A6.5 6.5 0 0 1 18 8.5a4.8 4.8 0 0 1 .5 9.5Z", folder: "M3 7h18v12H3Z", layers: "M12 2 2 7l10 5 10-5Z" } as Partial<Record<IconName,string>>)[name]
   return (
@@ -61,7 +62,7 @@ export function Icon({ name, size = 24, ...props }: Omit<SVGProps<SVGSVGElement>
       strokeLinejoin="round"
       aria-hidden="true"
       focusable="false"
-      className="ui-icon"
+      className={`ui-icon${name === "actionArrow" ? " ui-action-arrow" : ""} ${className}`}
       {...props}
     >
       {accent && <path d={accent} fill="currentColor" fillOpacity=".12" stroke="none" />}

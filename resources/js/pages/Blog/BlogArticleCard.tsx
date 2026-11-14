@@ -15,7 +15,7 @@ export function BlogArticleCard({ post, query = "" }: { post: BlogPost; query?: 
       <Link to={href} className="blog-article-cover" aria-label={`اقرأ ${post.title}`} tabIndex={-1}>
         {post.cover_image ? <img src={post.cover_image} alt={post.cover_image_alt || post.title} loading="lazy" decoding="async" width={640} height={400} /> : <BrandArtwork kind="web" />}
         {post.category && <span className="blog-article-category">{post.category.name}</span>}
-        <span className="blog-cover-arrow" aria-hidden="true"><Icon name="arrowUpLeft" size={19} /></span>
+        <span className="blog-cover-arrow" aria-hidden="true"><Icon name="actionArrow" size={19} /></span>
       </Link>
       <div className="blog-article-copy">
         <div className="blog-article-meta">
@@ -27,7 +27,7 @@ export function BlogArticleCard({ post, query = "" }: { post: BlogPost; query?: 
       </div>
       <div className="blog-article-footer">
         <span className="blog-article-author">{post.author?.avatar && <img src={getAvatarUrl(post.author.avatar)} alt="" loading="lazy" width={28} height={28} />}{post.author?.name || "مقال تقني"}</span>
-        <Link to={href} aria-label={`قراءة المقال: ${post.title}`}>اقرأ المقال <Icon name="arrowUpLeft" size={16} /></Link>
+        <Link to={href} aria-label={`قراءة المقال: ${post.title}`}>اقرأ المقال <Icon name="actionArrow" size={16} /></Link>
       </div>
     </article>
   )

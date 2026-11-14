@@ -13,7 +13,7 @@ export function GuaranteeBanner() {
           <p>إذا لم نسلّم حسب الاتفاق، نعيد الدفعة الأخيرة كاملة.</p>
           <span className="guarantee-note">مكتوب في العقد. ثقة نبنيها بالأفعال، لا الشعارات.</span>
         </div>
-        <Link to="/contact" className="guarantee-action brand-cta">تواصل معنا <Icon name="arrowUpLeft" size={18} /></Link>
+        <Link to="/contact" className="guarantee-action brand-cta">تواصل معنا <Icon name="actionArrow" size={18} /></Link>
       </div>
     </section>
   )

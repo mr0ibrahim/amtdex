@@ -227,7 +227,7 @@ export function BlogHomePage() {
                           </div>
                         </div>
                       </div>
-                      <Link to={`/posts/${featuredPost.slug}`} className="blog-featured-link">اقرأ المقال <Icon name="arrowUpLeft" size={17} /></Link>
+                      <Link to={`/posts/${featuredPost.slug}`} className="blog-featured-link">اقرأ المقال <Icon name="actionArrow" size={17} /></Link>
                     </div>
                   </div>
 
@@ -387,8 +387,8 @@ export function BlogHomePage() {
               <h2 id="blog-follow-title">تابع جديد التحليلات الهندسية</h2>
               <p>دراسات حالة وأدلة برمجية عملية تساعدك على فهم التقنية واتخاذ قرارات أوضح لمشروعك.</p>
               <div className="blog-follow-actions">
-                <a href="/feed" target="_blank" rel="noopener noreferrer" className="blog-follow-primary">تابع جديد المقالات <Icon name="arrowUpLeft" size={18} /></a>
-                <a href={getMainUrl("/contact")} className="blog-follow-secondary">استشارة هندسية لمشروعك <Icon name="arrowUpLeft" size={18} /></a>
+                <a href="/feed" target="_blank" rel="noopener noreferrer" className="blog-follow-primary">تابع جديد المقالات <Icon name="actionArrow" size={18} /></a>
+                <a href={getMainUrl("/contact")} className="blog-follow-secondary">استشارة هندسية لمشروعك <Icon name="actionArrow" size={18} /></a>
               </div>
             </div>
           </div>
