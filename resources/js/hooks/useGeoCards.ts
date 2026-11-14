@@ -26,37 +26,35 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
     const inBand = new Set<HTMLElement>()
     const applyFocus = () => {
       const on = root.dataset.geoTouch === "true"
-      // Of the cards in the middle band, only the row nearest the centre is highlighted.
-      const middle = window.innerHeight / 2
-      let nearest = Infinity
-      const distance = new Map<HTMLElement, number>()
-      if (on) inBand.forEach(card => {
-        const rect = card.getBoundingClientRect()
-        const gap = Math.abs(rect.top + rect.height / 2 - middle)
-        distance.set(card, gap)
-        nearest = Math.min(nearest, gap)
-      })
+      // IntersectionObserver owns the focus band. Do not measure or repaint every card on scroll.
       cards.forEach((_, card) => {
-        if (on && (distance.get(card) ?? Infinity) <= nearest + 8) card.dataset.geoActive = "true"; else delete card.dataset.geoActive
+        const active = on && inBand.has(card)
+        if (active && card.dataset.geoActive !== "true") card.dataset.geoActive = "true"
+        else if (!active && card.dataset.geoActive) delete card.dataset.geoActive
       })
-    }
-    let focusFrame = 0
-    const onScroll = () => {
-      if (root.dataset.geoTouch !== "true" || !inBand.size) return
-      cancelAnimationFrame(focusFrame)
-      focusFrame = requestAnimationFrame(applyFocus)
     }
     const setTouch = (value: boolean) => {
       if (root.dataset.geoTouch === String(value)) return
       root.dataset.geoTouch = String(value)
       applyFocus()
     }
-    const focus = typeof IntersectionObserver === "function"
-      ? new IntersectionObserver(entries => {
-        entries.forEach(entry => { if (entry.isIntersecting) inBand.add(entry.target as HTMLElement); else inBand.delete(entry.target as HTMLElement) })
-        applyFocus()
-      }, { rootMargin: "-36% 0px -36% 0px" })
-      : undefined
+    let focus: IntersectionObserver | undefined
+    const observeFocus = () => {
+      focus?.disconnect()
+      inBand.clear()
+      if (typeof IntersectionObserver === "function") {
+        // Observer percentage margins use viewport width, so calculate the vertical band in pixels.
+        const inset = Math.round(window.innerHeight * .4)
+        focus = new IntersectionObserver(entries => {
+          entries.forEach(entry => { if (entry.isIntersecting) inBand.add(entry.target as HTMLElement); else inBand.delete(entry.target as HTMLElement) })
+          applyFocus()
+        }, { rootMargin: `-${inset}px 0px -${inset}px 0px` })
+        cards.forEach((_, card) => focus?.observe(card))
+      }
+      applyFocus()
+    }
+    observeFocus()
+    window.addEventListener("resize", observeFocus, { passive: true })
     const onTouch = () => setTouch(true)
 
     const release = (card: HTMLElement, layer: HTMLElement) => {
@@ -125,7 +123,6 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
     }
     root.addEventListener("pointermove", pointer, { passive: true })
     root.addEventListener("touchstart", onTouch, { passive: true })
-    window.addEventListener("scroll", onScroll, { passive: true })
     setTouch(navigator.maxTouchPoints > 0 && !!window.matchMedia?.("(any-pointer: coarse)").matches)
     scan()
 
@@ -135,10 +132,9 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
       mutations.disconnect()
       observer?.disconnect()
       focus?.disconnect()
+      window.removeEventListener("resize", observeFocus)
       root.removeEventListener("pointermove", pointer)
       root.removeEventListener("touchstart", onTouch)
-      window.removeEventListener("scroll", onScroll)
-      cancelAnimationFrame(focusFrame)
       delete root.dataset.geoTouch
       inBand.clear()
       cards.forEach((layer, card) => release(card, layer))

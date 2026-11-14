@@ -1,47 +1,50 @@
-/* Scroll motion. One rule for the whole site: things rise in from below as they enter, hold while
-   they are read, and rise out through the top as they leave — in step with the scroll position.
-   [data-reveal] is set once by useScrollReveal; --ri is the element's place in its row. */
-
+/* Short entrances, a long readable hold, then an exit beneath the fixed header.
+   One timeline owns each reveal: entrance and exit never compete for transform/opacity. */
 @media (prefers-reduced-motion: no-preference) {
-  /* ── Browsers with scroll-driven animations: runs on the compositor, no JavaScript per frame ── */
   @supports (animation-timeline: view()) {
     .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) [data-reveal] {
-      --reveal-rise: 40px;
-      animation: reveal-in linear backwards, reveal-out linear forwards;
-      /* The top inset is the fixed header: an element has "left" once it is under it. */
-      animation-timeline: view(block 76px 0px), view(block 76px 0px);
-      animation-range: cover calc(var(--ri, 0) * 34px) cover calc(230px + var(--ri, 0) * 34px), cover calc(100% - 190px) cover 100%;
-    }
-    .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) [data-reveal="in"] {
-      animation: reveal-in linear backwards;
+      --reveal-rise: 24px;
+      animation: reveal-scroll linear both;
       animation-timeline: view(block 76px 0px);
-      animation-range: cover calc(var(--ri, 0) * 34px) cover calc(230px + var(--ri, 0) * 34px);
+      animation-range: cover calc(var(--ri, 0) * 12px) cover 100%;
     }
-    .brand-motion[data-reveal-mode="timeline"] [data-reveal-kind="block"] { --reveal-rise: 64px; --reveal-scale: .96; }
+    .brand-motion[data-reveal-mode="timeline"] [data-reveal-kind="block"] { --reveal-rise: 32px; }
+    .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) [data-reveal="initial"] { animation-name: reveal-initial; }
 
-    /* The card figure turns as the card crosses the screen. */
+    /* Decoration follows its card without separate JavaScript scroll work. */
     .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) .geo-turn:not(.geo-turn--back) { animation: geo-turn linear both; animation-timeline: view(); }
     .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) .geo-layer[data-geo="wave"] .geo-turn:not(.geo-turn--back) { animation-name: geo-slide; }
-
-    /* The hero scene leans away as it leaves. */
-    .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) .product-scene .product-stack { animation: scene-lean linear both; animation-timeline: view(); animation-range: cover 45% cover 100%; }
-
-    /* Page progress. */
     .brand-motion:not([data-motion-paused="true"]) .scroll-progress > i { animation: page-progress linear both; animation-timeline: scroll(root block); }
   }
 
-  /* ── Other browsers: the same motion, switched by an IntersectionObserver ── */
+  /* Native scrolling is untouched. Browsers without view timelines use visibility changes. */
   .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal] {
-    transition: opacity .6s ease, transform .7s cubic-bezier(.22, 1, .36, 1), translate .5s cubic-bezier(.22, 1, .36, 1), box-shadow .5s, border-color .35s, background-color .35s, color .35s;
-    transition-delay: calc(var(--ri, 0) * 70ms), calc(var(--ri, 0) * 70ms), 0s, 0s, 0s, 0s, 0s;
+    transition: opacity .28s ease-out, transform .38s cubic-bezier(.22, 1, .36, 1), translate .25s ease-out, border-color .25s, background-color .25s, color .25s;
+    transition-delay: calc(var(--ri, 0) * 35ms), calc(var(--ri, 0) * 35ms), 0s, 0s, 0s, 0s;
   }
-  .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal-state="below"] { opacity: 0; transform: translate3d(0, 44px, 0); }
-  .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal-state="above"] { opacity: 0; transform: translate3d(0, -32px, 0); }
+  .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal-state="below"] { opacity: 0; transform: translate3d(0, 24px, 0); }
+  .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal-state="above"] { opacity: 0; transform: translate3d(0, -16px, 0); transition-delay: 0s; }
 }
 
-@keyframes reveal-in { from { opacity: 0; transform: translate3d(0, var(--reveal-rise, 40px), 0) scale(var(--reveal-scale, 1)); } }
-@keyframes reveal-out { to { opacity: 0; transform: translate3d(0, calc(var(--reveal-rise, 40px) * -.7), 0) scale(var(--reveal-scale, 1)); } }
-@keyframes geo-turn { from { transform: rotate(-60deg); } to { transform: rotate(60deg); } }
-@keyframes geo-slide { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
-@keyframes scene-lean { from { transform: rotate(-5deg); } to { transform: translateY(-56px) rotate(7deg) scale(.93); } }
+@keyframes reveal-scroll {
+  0% { opacity: 0; transform: translate3d(0, var(--reveal-rise, 24px), 0); }
+  14%, 92% { opacity: 1; transform: translate3d(0, 0, 0); }
+  100% { opacity: 0; transform: translate3d(0, -16px, 0); }
+}
+@keyframes reveal-initial {
+  0%, 92% { opacity: 1; transform: translate3d(0, 0, 0); }
+  100% { opacity: 0; transform: translate3d(0, -16px, 0); }
+}
+@keyframes geo-turn { from { transform: rotate(-24deg); } to { transform: rotate(24deg); } }
+@keyframes geo-slide { from { transform: translateX(0); } to { transform: translateX(-16%); } }
 @keyframes page-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Touch scrolling has no hover phase. Keep the focus treatment composited and stable. */
+@media (hover: none), (pointer: coarse) {
+  .brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] { translate: none; }
+  .brand-motion[data-geo-touch="true"] main [data-geo-card] { transition: scale .2s, border-color .2s, color .2s; }
+  .brand-motion[data-geo-touch="true"] main [data-geo-card="light"][data-geo-active="true"] { box-shadow: inset 0 1px 0 #fff, 0 1px 2px #31144d08, 0 28px 56px -40px #6a2c9f80; }
+  .brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer::after { opacity: 0; }
+  .brand-motion .site-header-bar::after,
+  .brand-motion :is(.da-hero h1, .brand-page-header h1, .contact-page-hero h1, .quote-page h1, .blog-hero h1) { animation: none; }
+}

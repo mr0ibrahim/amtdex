@@ -30,7 +30,7 @@ export function useScrollReveal(ref: RefObject<HTMLDivElement | null>, route: st
           const el = entry.target as HTMLElement
           if (entry.isIntersecting) el.dataset.revealState = "shown"
           else if (entry.boundingClientRect.top > 0) el.dataset.revealState = "below"
-          else if (el.dataset.reveal === "both") el.dataset.revealState = "above"
+          else el.dataset.revealState = "above"
         })
       }, { rootMargin: "-9% 0px -6% 0px" })
       : undefined
@@ -46,7 +46,6 @@ export function useScrollReveal(ref: RefObject<HTMLDivElement | null>, route: st
         fresh.push(el)
       })
       if (!fresh.length) return
-      const scrollY = window.scrollY
       const rects = new Map(fresh.map(el => [el, el.getBoundingClientRect()]))
       fresh.forEach(el => {
         const rect = rects.get(el)!
@@ -60,8 +59,9 @@ export function useScrollReveal(ref: RefObject<HTMLDivElement | null>, route: st
         const order = row.sort((a, b) => (rects.get(a)!.left - rects.get(b)!.left) * (rtl ? -1 : 1)).indexOf(el)
         el.style.setProperty("--ri", String(Math.max(0, Math.min(order, 4))))
         el.dataset.revealKind = el.matches(GEO_CARD_SELECTOR) || el.matches(SCENES) ? "block" : "text"
-        // Content that starts at the very top of the page must not begin half faded-out.
-        el.dataset.reveal = rect.bottom + scrollY < 340 ? "in" : "both"
+        // Already visible content must not jump or fade on mount, restored scroll, or navigation.
+        el.dataset.reveal = rect.top < window.innerHeight && rect.bottom > 76 ? "initial" : "both"
+        if (observer) el.dataset.revealState = rect.top >= window.innerHeight ? "below" : rect.bottom <= 76 ? "above" : "shown"
         seen.add(el)
         observer?.observe(el)
       })
