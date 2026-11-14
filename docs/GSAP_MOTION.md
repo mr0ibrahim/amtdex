@@ -89,3 +89,16 @@ Reduced motion and the pause toggle keep all content visible and static; the lay
 is `aria-hidden` and ignores pointer events. Validation: 122 tests, type-check and
 production build pass; desktop (1440px) and phone (390px) checked in Chrome on all
 public pages with local fallback content.
+
+### Direction-aware pass, touch focus and phone hero fix
+
+- `inOut()` no longer reverses one tween. Elements enter from below when scrolling
+  down and from above when scrolling up, and leave in the direction of travel
+  (`mirror()` derives the upper state). Cards add depth, tilt and, on desktop, blur;
+  their geometric figure drifts and turns with a scrubbed ScrollTrigger.
+- A fixed scroll progress line (`[data-scroll-progress]`) is scrubbed to page scroll.
+- Touch screens have no hover: `useGeoCards` marks the card crossing the middle of the
+  screen with `data-geo-active`, which takes the hover look; `:active` gives press feedback.
+- Phone layout: the home hero grid track could not shrink below the platform marquee's
+  710px track, pushing the hero off-screen. The track is now `minmax(0,1fr)`.
+  All public pages were scanned at 360px and 412px for elements wider than the viewport.

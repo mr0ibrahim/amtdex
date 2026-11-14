@@ -20,8 +20,22 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
       }, { rootMargin: "60px" })
       : undefined
 
+    // Touch screens have no hover: the card crossing the middle of the screen takes the hover look.
+    const touch = window.matchMedia?.("(hover: none)")
+    const focus = typeof IntersectionObserver === "function"
+      ? new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          const card = entry.target as HTMLElement
+          if (entry.isIntersecting && touch?.matches) card.dataset.geoActive = "true"
+          else delete card.dataset.geoActive
+        })
+      }, { rootMargin: "-40% 0px -40% 0px" })
+      : undefined
+
     const release = (card: HTMLElement, layer: HTMLElement) => {
       observer?.unobserve(card)
+      focus?.unobserve(card)
+      delete card.dataset.geoActive
       layer.remove()
       delete card.dataset.geoCard
       delete card.dataset.geoLive
@@ -32,7 +46,7 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
 
     const scan = () => {
       cards.forEach((layer, card) => {
-        if (!root.contains(card)) { observer?.unobserve(card); cards.delete(card) }
+        if (!root.contains(card)) { observer?.unobserve(card); focus?.unobserve(card); cards.delete(card) }
         // React may replace a card's children (text updates); restore the layer.
         else if (layer.parentElement !== card) card.append(layer)
       })
@@ -53,6 +67,8 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
         card.append(layer)
         cards.set(card, layer)
         if (observer) observer.observe(card); else card.dataset.geoLive = "true"
+        // Only cards that fit inside the focus band can be singled out.
+        if (rect.height < window.innerHeight * .75) focus?.observe(card)
       })
     }
 
@@ -86,6 +102,7 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
       cancelAnimationFrame(pointerFrame)
       mutations.disconnect()
       observer?.disconnect()
+      focus?.disconnect()
       root.removeEventListener("pointermove", pointer)
       cards.forEach((layer, card) => release(card, layer))
       cards.clear()

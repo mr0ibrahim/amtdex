@@ -14,19 +14,41 @@ export function mountBrandScenes(root: HTMLElement) {
     if (!context.conditions?.motion) return
     const desktop = context.conditions.desktop
     const scenes = new Map<Element, { context: gsap.Context; dispose?: () => void }>()
-    // Everything a visitor reads enters on scroll and leaves the same way.
+    // Everything a visitor reads enters on scroll and leaves again in the direction of travel.
     const textTargets = "main h1, main h2, main h3, main :is(h1, h2) + p, main .eyebrow, main .da-kicker, main .reference-section-label, main .reference-section-heading > p, main .brand-page-header-art, main .da-filters, main .hero-actions, main .quote-choice, .site-footer .footer-grid > *, .site-footer .footer-bottom"
     const automaticTargets = `${textTargets}, ${GEO_CARD_SELECTOR}`
     const owners = "[data-motion], [data-tilt], [data-stack], [data-scroll-composition], [data-process-viewport], .project-showcase, .product-scene"
-    /** Play forward on entry from either edge, run the same tween backwards on exit. */
-    const inOut = (trigger: Element, tween: gsap.core.Animation, visible: boolean) => {
-      if (visible) tween.progress(1)
+    const CLEAR = "transform,translate,rotate,scale,transformOrigin,opacity,filter"
+    /** The state an element leaves to past the top edge: its entry state mirrored vertically. */
+    const mirror = (below: gsap.TweenVars): gsap.TweenVars => ({
+      ...below,
+      ...(typeof below.y === "number" ? { y: -below.y * .8 } : {}),
+      ...(typeof below.rotationX === "number" ? { rotationX: -below.rotationX } : {}),
+      ...(typeof below.rotation === "number" ? { rotation: -below.rotation } : {}),
+      ...(typeof below.skewY === "number" ? { skewY: -below.skewY } : {}),
+    })
+    /**
+     * Direction-aware scroll motion: enter from below when scrolling down and from above
+     * when scrolling up; leave upward past the top edge and downward past the bottom edge.
+     */
+    const inOut = (trigger: Element, targets: gsap.TweenTarget, below: gsap.TweenVars, rest: gsap.TweenVars, visible: boolean, clear = false) => {
+      const above = mirror(below)
+      // Content already on screen at load stays put; it only animates after it has left once.
+      let settled = visible
+      const enter = (from: gsap.TweenVars) => {
+        if (settled) { settled = false; return }
+        gsap.fromTo(targets, from, { ...rest, overwrite: true, ...(clear ? { onComplete: () => { gsap.set(targets, { clearProps: CLEAR }) } } : {}) })
+      }
+      const leave = (to: gsap.TweenVars) => { settled = false; gsap.to(targets, { ...to, duration: .5, ease: "power2.in", overwrite: true }) }
+      if (!visible) gsap.set(targets, below)
       ScrollTrigger.create({
-        trigger, start: "top 94%", end: "bottom 7%",
-        onEnter: () => tween.timeScale(1).play(), onEnterBack: () => tween.timeScale(1).play(),
-        onLeave: () => tween.timeScale(1.7).reverse(), onLeaveBack: () => tween.timeScale(1.7).reverse(),
+        trigger, start: "top 93%", end: "bottom 7%",
+        onEnter: () => enter(below), onEnterBack: () => enter(above),
+        onLeave: () => leave(above), onLeaveBack: () => leave(below),
       })
     }
+    const progress = root.querySelector<HTMLElement>("[data-scroll-progress]")
+    if (progress) gsap.fromTo(progress, { scaleX: 0 }, { scaleX: 1, ease: "none", scrollTrigger: { start: 0, end: "max", scrub: .3 } })
     let initialScan = true
     const scan = () => {
       scenes.forEach((scene, el) => {
@@ -45,31 +67,36 @@ export function mountBrandScenes(root: HTMLElement) {
         const scene = gsap.context(() => {
           if (el.hasAttribute("data-motion") || automatic) {
             const type = el.dataset.motion || (automatic && !card ? "text" : "rise")
-            // Cards fan in from their own side of the page; single columns rise straight.
+            const index = Math.max(0, Array.from(el.parentElement?.children || []).indexOf(el))
+            // Cards fan in from their own side of the page; in a single column they alternate.
             const centre = rect.left + rect.width / 2 - window.innerWidth / 2
-            const side = Math.abs(centre) < window.innerWidth * .12 ? 0 : Math.sign(centre)
-            const from: gsap.TweenVars = type === "vector" ? { opacity: 0, x: desktop ? -44 : 0, y: 20, scale: .96 } : type === "bar" ? { scaleY: 0 }
+            const side = Math.abs(centre) < window.innerWidth * .12 ? (desktop ? 0 : index % 2 ? 1 : -1) : Math.sign(centre)
+            const blur = desktop ? { filter: "blur(10px)" } : {}
+            const below: gsap.TweenVars = type === "vector" ? { opacity: 0, x: desktop ? -44 : 0, y: 20, scale: .96 } : type === "bar" ? { scaleY: 0 }
               : type === "reveal" ? { opacity: 0, y: 18, clipPath: "inset(0% 0% 100% 0%)" }
               : type === "screen" ? { opacity: 0, y: desktop ? 48 : 24, scale: .97, rotationX: desktop ? 5 : 0, transformPerspective: 1000 }
               : type === "draw" ? { strokeDashoffset: 1, opacity: 0 }
               : type === "signal" ? { opacity: 0, scale: .94 }
               : type === "fade" ? { opacity: 0 }
-              : type === "text" ? { opacity: 0, y: desktop ? 34 : 22 }
-              : card ? { opacity: 0, x: side * (desktop ? 46 : 0), y: desktop ? 72 : 36, scale: desktop ? .92 : .96, rotationX: desktop ? 10 : 0, rotation: side * (desktop ? 1.6 : 0), transformPerspective: 900, transformOrigin: "50% 100%" }
+              : type === "text" ? { opacity: 0, y: desktop ? 48 : 34, skewY: desktop ? 3 : 2, ...blur }
+              : card ? { opacity: 0, x: side * (desktop ? 56 : 0), y: desktop ? 104 : 64, scale: desktop ? .84 : .88, rotationX: desktop ? 18 : 14, rotation: side * (desktop ? 2.4 : 1.6), transformPerspective: 900, ...blur }
               : { opacity: 0, y: desktop ? 60 : 28 }
-            const tween = gsap.fromTo(el, from, {
-              opacity: 1, x: 0, y: 0, scale: 1, rotationX: 0, rotation: 0, ...(type === "reveal" ? { clipPath: "inset(0% 0% 0% 0%)" } : {}), ...(type === "draw" ? { strokeDashoffset: 0 } : {}),
-              ...(type === "bar" ? { scaleY: 1 } : {}),
-              duration: type === "text" ? .8 : type === "bar" ? .8 : 1, ease: "power3.out",
-              delay: Math.min(Number(el.dataset.motionDelay || (automatic ? Math.min(Array.from(el.parentElement?.children || []).indexOf(el) * 90, 450) : 0)) / 1000, .55) * (desktop ? 1 : .6),
-              paused: true,
-              // Hover lift on cards uses CSS transforms, so release inline values once the card has settled.
-              ...(card ? { onComplete: () => { gsap.set(el, { clearProps: "transform,translate,rotate,scale,transformOrigin,opacity" }) } } : {}),
-              // The start state must be recorded for the way out; inOut() jumps visible content
-              // to its end state in the same frame, so above-the-fold content never flashes.
-            })
-            inOut(el, tween, initiallyVisible)
-            if (card && initiallyVisible) gsap.set(el, { clearProps: "transform,translate,rotate,scale,transformOrigin,opacity" })
+            const delay = Math.min(Number(el.dataset.motionDelay || (automatic ? Math.min(index * 90, 450) : 0)) / 1000, .55) * (desktop ? 1 : .6)
+            inOut(el, el, below, {
+              opacity: 1, x: 0, y: 0, scale: 1, rotationX: 0, rotation: 0, skewY: 0,
+              ...(below.filter ? { filter: "blur(0px)" } : {}),
+              ...(type === "reveal" ? { clipPath: "inset(0% 0% 0% 0%)" } : {}), ...(type === "draw" ? { strokeDashoffset: 0 } : {}), ...(type === "bar" ? { scaleY: 1 } : {}),
+              duration: type === "text" ? .9 : card ? 1.15 : 1, ease: card ? "expo.out" : "power3.out", delay,
+            }, initiallyVisible, automatic)
+            // The geometric figure drifts and turns with the scroll position.
+            const figure = card ? el.querySelector<HTMLElement>(":scope > .geo-layer .geo-figure") : null
+            if (figure) {
+              const wave = figure.parentElement?.dataset.geo === "wave"
+              gsap.fromTo(figure, { yPercent: wave ? 30 : 16, rotation: wave ? 0 : -24 }, {
+                yPercent: wave ? -10 : -16, rotation: wave ? 0 : 24, ease: "none",
+                scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: .6 },
+              })
+            }
           }
           if (el.dataset.motion === "vector") {
             const strokes = el.querySelectorAll<SVGPathElement>(".vector-trace")
@@ -87,9 +114,7 @@ export function mountBrandScenes(root: HTMLElement) {
           }
           if (el.hasAttribute("data-stack")) {
             const layers = el.querySelectorAll<HTMLElement>("[data-stack-layer]")
-            if (layers.length) inOut(el, gsap.fromTo(layers, { y: 70, opacity: 0 }, {
-              y: 0, opacity: 1, stagger: .13, duration: 1.15, ease: "power3.out", paused: true,
-            }), initiallyVisible)
+            if (layers.length) inOut(el, layers, { y: 70, opacity: 0 }, { y: 0, opacity: 1, stagger: .13, duration: 1.15, ease: "power3.out" }, initiallyVisible)
           }
           if (desktop && el.hasAttribute("data-process-viewport")) {
             const track = el.querySelector<HTMLElement>("[data-process-track]")

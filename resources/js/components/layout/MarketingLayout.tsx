@@ -29,6 +29,7 @@ export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
       >
         تخطي إلى المحتوى
       </a>
+      <div className="scroll-progress" aria-hidden="true"><i data-scroll-progress /></div>
       <Header onToast={onToast} />
       <main id="main-content" tabIndex={-1}>
         <Outlet />

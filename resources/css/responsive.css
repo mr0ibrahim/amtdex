@@ -101,3 +101,7 @@
 }
 .reference-design-scope main :is(input,select,textarea,[id]) {scroll-margin-block-start:112px;}
 .reference-design-scope :is(.da-grid-2,.da-grid-4,.da-feature,.da-people,.da-trust,.da-post-skel,.brand-page-header)>* {min-width:0;max-width:100%;}
+/* A grid item sizes to its widest unbreakable child unless its track may shrink: the
+   platform marquee (max-content track) was stretching the home hero to 710px on phones. */
+.reference-design-scope .reference-home .reference-hero {grid-template-columns:minmax(0,1fr);}
+.reference-design-scope .reference-home .reference-hero>div {min-width:0;max-width:100%;}
