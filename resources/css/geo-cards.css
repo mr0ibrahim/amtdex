@@ -99,6 +99,28 @@
   /* Large containers and forms keep their place. */
   .brand-motion main :is([data-geo-size="lg"], .about-values-card, .contact-whatsapp-card):hover { translate: none; }
 }
+/* ── Touch: no hover exists, so the card crossing the middle of the screen takes the hover look,
+   and a press gives immediate feedback. [data-geo-touch] is set from real touch input because
+   some Android phones report (hover: hover). ── */
+.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] { translate: 0 -6px; }
+.brand-motion[data-geo-touch="true"] main [data-geo-card="light"][data-geo-active="true"] {
+  border-color: var(--geo-violet-soft);
+  box-shadow: inset 0 1px 0 #ffffff, 0 2px 4px #31144d0a, 0 30px 56px -30px #6a2c9fcc;
+}
+.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-figure { opacity: calc(var(--geo-figure-opacity) + .3); }
+.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer::after { opacity: 1; }
+
+.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card)[data-geo-card]:is([data-geo-active="true"], :active) {
+  --geo-ink: #ffffff;
+  border-color: #7d43c6;
+  background: radial-gradient(ellipse at 15% 0%, #8d4fd4 0%, transparent 62%), linear-gradient(155deg, #5f2599, #3a1259);
+  box-shadow: inset 0 1px 0 #ffffff33, 0 30px 56px -28px #461667cc;
+  color: #fff;
+}
+.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(h2, h3) { color: #fff; }
+.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(p, li, .reference-service-link, .service-card-footer) { color: #eee4f8; border-color: #ffffff25; }
+.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(.reference-service-icon, .service-card-icon, .service-card-arrow) { background: #fff; color: #6a2c9f; }
+.brand-motion[data-geo-touch="true"] main [data-geo-card]:not([data-geo-size="lg"]):active { scale: .98; }
 
 /* ── Scroll progress ── */
 .scroll-progress { position: fixed; inset-inline: 0; top: 0; z-index: 60; height: 3px; pointer-events: none; }

@@ -6,7 +6,7 @@ const MIN_HEIGHT = 84
 
 /**
  * Give every public card the shared violet skin and a geometric layer.
- * The figure turns with the scroll position (CSS); a pointer spotlight follows fine pointers.
+ * The layer animates only while its card is on screen; a pointer spotlight follows fine pointers.
  * Cards stay fully readable if this hook never runs.
  */
 export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string) {
@@ -14,7 +14,46 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
     const root = ref.current
     if (!root) return
     const cards = new Map<HTMLElement, HTMLElement>()
+    // Touch screens have no hover: the card crossing the middle of the screen takes the hover look.
+    // Touch is detected from real input, not from the (hover) media query, which several
+    // Android phones answer as if they had a mouse.
+    const inBand = new Set<HTMLElement>()
+    const applyFocus = () => {
+      const on = root.dataset.geoTouch === "true"
+      // IntersectionObserver owns the focus band. Do not measure or repaint every card on scroll.
+      cards.forEach((_, card) => {
+        const active = on && inBand.has(card)
+        if (active && card.dataset.geoActive !== "true") card.dataset.geoActive = "true"
+        else if (!active && card.dataset.geoActive) delete card.dataset.geoActive
+      })
+    }
+    const setTouch = (value: boolean) => {
+      if (root.dataset.geoTouch === String(value)) return
+      root.dataset.geoTouch = String(value)
+      applyFocus()
+    }
+    let focus: IntersectionObserver | undefined
+    const observeFocus = () => {
+      focus?.disconnect()
+      inBand.clear()
+      if (typeof IntersectionObserver === "function") {
+        // Observer percentage margins use viewport width, so calculate the vertical band in pixels.
+        const inset = Math.round(window.innerHeight * .4)
+        focus = new IntersectionObserver(entries => {
+          entries.forEach(entry => { if (entry.isIntersecting) inBand.add(entry.target as HTMLElement); else inBand.delete(entry.target as HTMLElement) })
+          applyFocus()
+        }, { rootMargin: `-${inset}px 0px -${inset}px 0px` })
+        cards.forEach((_, card) => focus?.observe(card))
+      }
+      applyFocus()
+    }
+    observeFocus()
+    window.addEventListener("resize", observeFocus, { passive: true })
+    const onTouch = () => setTouch(true)
+
     const release = (card: HTMLElement, layer: HTMLElement) => {
+      focus?.unobserve(card)
+      delete card.dataset.geoActive
       layer.remove()
       delete card.dataset.geoCard
       delete card.dataset.geoSize
@@ -24,7 +63,7 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
 
     const scan = () => {
       cards.forEach((layer, card) => {
-        if (!root.contains(card)) cards.delete(card)
+        if (!root.contains(card)) { focus?.unobserve(card); inBand.delete(card); cards.delete(card) }
         // React may replace a card's children (text updates); restore the layer.
         else if (layer.parentElement !== card) card.append(layer)
       })
@@ -44,6 +83,8 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
         const layer = createGeoLayer(variant)
         card.append(layer)
         cards.set(card, layer)
+        // Only cards that fit inside the focus band can be singled out.
+        if (rect.height < window.innerHeight * .75) focus?.observe(card)
       })
     }
 
@@ -59,6 +100,8 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
     const fine = window.matchMedia?.("(hover: hover) and (pointer: fine)")
     let pointerFrame = 0
     const pointer = (event: PointerEvent) => {
+      // A real mouse hands the hover look back to :hover.
+      if (event.pointerType === "mouse") setTouch(false)
       if (!fine?.matches) return
       const card = (event.target as Element | null)?.closest?.<HTMLElement>("[data-geo-card]")
       if (!card) return
@@ -70,13 +113,20 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
       })
     }
     root.addEventListener("pointermove", pointer, { passive: true })
+    root.addEventListener("touchstart", onTouch, { passive: true })
+    setTouch(navigator.maxTouchPoints > 0 && !!window.matchMedia?.("(any-pointer: coarse)").matches)
     scan()
 
     return () => {
       cancelAnimationFrame(frame)
       cancelAnimationFrame(pointerFrame)
       mutations.disconnect()
+      focus?.disconnect()
+      window.removeEventListener("resize", observeFocus)
       root.removeEventListener("pointermove", pointer)
+      root.removeEventListener("touchstart", onTouch)
+      delete root.dataset.geoTouch
+      inBand.clear()
       cards.forEach((layer, card) => release(card, layer))
       cards.clear()
     }
