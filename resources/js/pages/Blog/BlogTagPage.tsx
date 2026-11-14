@@ -1,3 +1,4 @@
+import "../../../css/blog-cards.css"
 import { BlogArticleCard } from "./BlogArticleCard"
 import { useEffect, useTransition } from "react"
 import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom"

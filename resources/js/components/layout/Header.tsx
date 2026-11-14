@@ -67,7 +67,7 @@ function SiteLink({
 export function Header({ onToast }: { onToast: (m: string) => void }) {
   void onToast
   const [open, setOpen] = useState(false)
-  const [entered, setEntered] = useState(false)
+  const [entered, setEntered] = useState(true)
   const [condensed, setCondensed] = useState(false)
   const [hidden, setHidden] = useState(false)
   const [pill, setPill] = useState({ x: 0, w: 0, on: false })

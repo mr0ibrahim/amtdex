@@ -27,6 +27,7 @@
     @endif
 
     <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ asset('fonts/ibm-plex-sans-arabic.woff2') }}">
+    <link rel="ard" type="application/json" href="{{ asset('.well-known/ard.json') }}">
     <meta name="theme-color" content="#461667">
     @if(\App\Support\DashboardHost::matches() || request()->is('dashboard', 'dashboard/*', 'login'))
         <meta name="robots" content="noindex, nofollow">
@@ -64,6 +65,28 @@
         @if($cssFile)
             <link rel="stylesheet" href="{{ asset('build/' . $cssFile) }}">
         @endif
+        @php
+            // Preload the active route and shared imports in parallel with the entry.
+            $preloads = [];
+            $collectImports = function ($key) use (&$collectImports, &$preloads, $manifest) {
+                if (!isset($manifest[$key]) || isset($preloads[$key])) return;
+                $preloads[$key] = $manifest[$key]['file'];
+                foreach ($manifest[$key]['imports'] ?? [] as $import) $collectImports($import);
+            };
+            foreach ($manifest['resources/js/app.tsx']['imports'] ?? [] as $import) $collectImports($import);
+            $routeEntries = [
+                '/' => str_starts_with(request()->getHost(), 'blog.') ? 'Blog/BlogHomePage' : 'Home/HomePage',
+                '/services' => 'Services/ServicesPage', '/about' => 'About/AboutPage',
+                '/contact' => 'Contact/ContactPage', '/portfolio' => 'Portfolio/PortfolioPage',
+            ];
+            $routeEntry = $routeEntries['/' . trim(request()->path(), '/')] ?? null;
+            if ($routeEntry) $collectImports('resources/js/pages/' . $routeEntry . '.tsx');
+        @endphp
+        @foreach(array_unique($preloads) as $preload)
+            @if(str_ends_with($preload, '.js'))
+                <link rel="modulepreload" href="{{ asset('build/' . $preload) }}">
+            @endif
+        @endforeach
         @if($jsFile)
             <script type="module" src="{{ asset('build/' . $jsFile) }}"></script>
         @endif

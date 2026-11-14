@@ -1,3 +1,4 @@
+import { ScreenImage } from "@/components/ui/ScreenImage"
 import { useState } from "react"
 const screens = [
   { id: "projects", title: "إدارة المشاريع والمهام", alt: "نموذج تطبيق إدارة المشاريع: نسب الإنجاز ومهام الفريق" },
@@ -20,16 +21,14 @@ export function ScreenGallery() {
             <figure data-motion="screen" data-motion-delay={index * 120} className="screen-gallery-card" data-active={active === index} key={screen.id}>
               <button type="button" className="screen-select" aria-pressed={active === index} aria-label={`عرض ${screen.title}`} onClick={() => setActive(index)} onPointerEnter={event => { if (event.pointerType === "mouse") setActive(index) }}>
               <div className="screen-gallery-image">
-                <img
-                  src={`/images/screens/${screen.id}.webp`}
-                  srcSet={`/images/screens/${screen.id}-480.webp 480w, /images/screens/${screen.id}.webp 960w`}
-                  sizes="(max-width: 700px) 82vw, (max-width: 1024px) 42vw, 33vw"
+                <ScreenImage
+                  screen={screen.id}
+                  sizes="(max-width: 639px) 85vw, (max-width: 1023px) 42vw, 45vw"
                   alt={screen.alt}
                   width={960}
                   height={2027}
                   loading="lazy"
                   fetchPriority="low"
-                  decoding="async"
                 />
               </div>
               <span className="screen-caption"><span>0{index + 1}</span>{screen.title}<span aria-hidden="true">↗</span></span>

@@ -1,3 +1,4 @@
+import { ScreenImage } from "@/components/ui/ScreenImage"
 import { useEffect, useRef, useState, type KeyboardEvent } from "react"
 import { Icon, type IconName } from "@/components/ui/Icon"
 import { PublicLink as Link } from "@/cms/PublicLink"
@@ -21,7 +22,12 @@ export function ExperienceStudio() {
     let cancelled = false
     let stop: (() => void) | undefined
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)")
-    void import("gsap").then(({ gsap }) => {
+    let started = false
+    let observer: IntersectionObserver | undefined
+    const load = () => {
+      if (started || cancelled) return
+      started = true
+      void import("gsap").then(({ gsap }) => {
       if (cancelled) return
       const ctx = gsap.context(() => {})
       const animate = () => ctx.add(() => {
@@ -37,8 +43,15 @@ export function ExperienceStudio() {
       animate()
       reduced.addEventListener("change", animate)
       stop = () => { reduced.removeEventListener("change", animate); ctx.kill(false) }
-    }).catch(() => { /* Native controls and readable cards remain available. */ })
-    return () => { cancelled = true; stop?.() }
+      }).catch(() => { /* Native controls and readable cards remain available. */ })
+    }
+    if (typeof IntersectionObserver === "function") {
+      observer = new IntersectionObserver(entries => {
+        if (entries.some(entry => entry.isIntersecting)) { observer?.disconnect(); load() }
+      }, { rootMargin: "160px 0px" })
+      observer.observe(root)
+    } else load()
+    return () => { cancelled = true; observer?.disconnect(); stop?.() }
   }, [active])
   const navigate = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     let next = index
@@ -60,11 +73,11 @@ export function ExperienceStudio() {
         <div className="project-showcase-copy">
           <span className="project-showcase-label">AMTDEX / DIGITAL EXPERIENCES</span>
           <div className="project-tabs" role="tablist" aria-label="استكشف نوع الحل" aria-orientation="horizontal">
-            {experiences.map((tab, index) => <button key={tab.id} ref={el => { tabs.current[index] = el }} id={`studio-tab-${tab.id}`} role="tab" type="button" aria-selected={active === index} aria-controls={`studio-panel-${tab.id}`} tabIndex={active === index ? 0 : -1} onClick={() => setActive(index)} onKeyDown={event => navigate(event, index)}>
+            {experiences.map((tab, index) => <button key={tab.id} ref={el => { tabs.current[index] = el }} id={`studio-tab-${tab.id}`} role="tab" type="button" aria-selected={active === index} aria-controls="studio-panel" tabIndex={active === index ? 0 : -1} onClick={() => setActive(index)} onKeyDown={event => navigate(event, index)}>
               <span className="project-tab-icon"><Icon name={tab.icon as IconName} size={20} /></span><span>{tab.label}</span><small>0{index + 1}</small><span className="project-tab-line" aria-hidden="true" />
             </button>)}
           </div>
-          <div key={item.id} id={`studio-panel-${item.id}`} role="tabpanel" aria-labelledby={`studio-tab-${item.id}`} tabIndex={0} className="project-copy-panel">
+          <div key={item.id} id="studio-panel" role="tabpanel" aria-labelledby={`studio-tab-${item.id}`} tabIndex={0} className="project-copy-panel">
             <h3>{item.title}</h3><p>{item.description}</p>
             <div className="project-sample-metric"><span>{item.metric}</span><strong>{item.value}<small>{item.unit}</small></strong></div>
             <Link to="/quote" className="project-quote-link">لنصمّم مشروعك <Icon name="arrowUpLeft" size={19} /></Link>
@@ -72,7 +85,7 @@ export function ExperienceStudio() {
           </div>
         </div>
         <div className="project-showcase-visual">
-          <div ref={deck} className="project-deck-stage" aria-label="معرض بطاقات المشاريع، اسحب أفقيًا لتبديل النموذج" onPointerDown={event => { pointer.current = { x: event.clientX, y: event.clientY } }} onPointerCancel={() => { pointer.current = null }} onPointerUp={event => {
+          <div ref={deck} className="project-deck-stage" role="group" aria-label="معرض بطاقات المشاريع، اسحب أفقيًا لتبديل النموذج" onPointerDown={event => { pointer.current = { x: event.clientX, y: event.clientY } }} onPointerCancel={() => { pointer.current = null }} onPointerUp={event => {
             const start = pointer.current; pointer.current = null
             if (!start) return
             const dx = event.clientX - start.x, dy = event.clientY - start.y
@@ -81,7 +94,7 @@ export function ExperienceStudio() {
             <div className="project-deck-orbit" aria-hidden="true" />
             {experiences.map((sample, index) => <div key={sample.id} data-project-card className={`project-deck-card project-deck-card-${sample.id}`} data-active={index === active} aria-hidden="true">
               <div className="project-card-top"><span><Icon name={sample.icon as IconName} size={18} />{sample.label}</span><span>AMTDEX</span></div>
-              <div className="project-card-screen"><img src={`/images/screens/${sample.screen}-480.webp`} alt="" width={480} height={1014} loading="lazy" draggable={false} /></div>
+              <div className="project-card-screen"><ScreenImage screen={sample.screen} sizes="(max-width: 639px) 64vw, (max-width: 1023px) 370px, 30vw" alt="" width={480} height={1014} loading="lazy" draggable={false} /></div>
               <div className="project-card-bottom"><span>{sample.app}<small>واجهة مصمّمة حول احتياجك</small></span><span className="project-card-seal"><Icon name="check" size={17} /></span></div>
             </div>)}
           </div>

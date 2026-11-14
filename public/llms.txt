@@ -1,0 +1,19 @@
+# AMTDEX SOFT
+
+> AMTDEX SOFT is a software and information technology company based in Ibb, Yemen. This website describes its services, project portfolio and technical articles.
+
+## Website
+
+- [Home](https://amtdex.com/): Company introduction and product interface demonstrations.
+- [Services](https://amtdex.com/services): Software, websites, mobile applications and business systems.
+- [Portfolio](https://amtdex.com/portfolio): Published project information.
+- [About](https://amtdex.com/about): Company information and frequently asked questions.
+- [Contact](https://amtdex.com/contact): Official contact options and enquiry form.
+- [Technical blog](https://blog.amtdex.com/): Published technical articles.
+
+## Discovery
+
+- [Sitemap](https://amtdex.com/sitemap.xml): Current public URLs.
+- [Blog feed](https://blog.amtdex.com/feed): Published article feed.
+
+Product interface demonstrations may contain illustrative data. Consult each page for current information. This site does not currently publish an AI tool API; the discovery catalog therefore contains no tool entries.

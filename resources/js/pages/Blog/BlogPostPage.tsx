@@ -1,3 +1,4 @@
+import "../../../css/blog-cards.css"
 import { BlogArticleCard } from "./BlogArticleCard"
 import "../../../css/blog-prose.css"
 import { useEffect, useMemo, useState } from "react"

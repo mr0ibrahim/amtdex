@@ -13,6 +13,7 @@ export function mountBrandScenes(root: HTMLElement) {
     if (!context.conditions?.motion) return
     const desktop = context.conditions.desktop
     const scenes = new Map<Element, { context: gsap.Context; dispose?: () => void }>()
+    let initialScan = true
     const scan = () => {
       scenes.forEach((scene, el) => {
         if (!root.contains(el)) { scene.dispose?.(); scene.context.revert(); scenes.delete(el) }
@@ -20,10 +21,12 @@ export function mountBrandScenes(root: HTMLElement) {
       root.querySelectorAll<HTMLElement | SVGElement>("[data-motion-group] [data-motion], [data-motion=\"vector\"], [data-parallax], [data-tilt], [data-progress], [data-stack], [data-process-viewport], [data-scroll-composition]").forEach(el => {
         if (scenes.has(el)) return
         if (!el.hasAttribute("data-motion") && !el.hasAttribute("data-progress") && !el.hasAttribute("data-stack") && !el.hasAttribute("data-scroll-composition") && !desktop) return
+        const rect = el.getBoundingClientRect()
+        const initiallyVisible = (initialScan || window.scrollY === 0) && rect.top < window.innerHeight && rect.bottom > 0
         let dispose: (() => void) | undefined
         // Own contexts explicitly so repeated tab changes don't retain detached nodes.
         const scene = gsap.context(() => {
-          if (el.hasAttribute("data-motion")) {
+          if (el.hasAttribute("data-motion") && !initiallyVisible) {
             const type = el.dataset.motion
             const from: gsap.TweenVars = type === "vector" ? { opacity: 0, y: 20, scale: .96 } : type === "bar" ? { scaleY: 0 }
               : type === "reveal" ? { opacity: 0, y: 18, clipPath: "inset(0% 0% 100% 0%)" }
@@ -53,7 +56,7 @@ export function mountBrandScenes(root: HTMLElement) {
               scrollTrigger: { trigger: el, start: "top top+=120", end: "bottom top", scrub: .8 },
             })
           }
-          if (el.hasAttribute("data-stack")) {
+          if (el.hasAttribute("data-stack") && !initiallyVisible) {
             const layers = el.querySelectorAll<HTMLElement>("[data-stack-layer]")
             gsap.fromTo(layers, { y: 70, opacity: 0 }, {
               y: 0, opacity: 1, stagger: .13, duration: 1.15, ease: "power3.out",
@@ -96,6 +99,7 @@ export function mountBrandScenes(root: HTMLElement) {
         })
         scenes.set(el, { context: scene, dispose })
       })
+      initialScan = false
     }
     const update = () => context.ignore(scan)
     update()

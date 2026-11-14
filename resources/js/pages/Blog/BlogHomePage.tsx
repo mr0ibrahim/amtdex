@@ -1,3 +1,4 @@
+import "../../../css/blog-cards.css"
 import "../../../css/blog-prose.css"
 import { useEffect, useState, useTransition } from "react"
 import { useDebouncedValue } from "@/routing/search"

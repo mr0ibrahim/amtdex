@@ -69,3 +69,19 @@ it("does not pin the process rail on touch-sized layouts", () => {
   expect(state.fromTo).not.toHaveBeenCalled()
   stop()
 })
+
+it("does not hide first-viewport copy when it is inserted after the initial scan", async () => {
+  const root = document.createElement("div")
+  root.innerHTML = '<section data-motion-group></section>'
+  document.body.append(root)
+  const stop = mountBrandScenes(root)
+  const headline = document.createElement("h1")
+  headline.dataset.motion = "reveal"
+  headline.textContent = "Ready immediately"
+  headline.getBoundingClientRect = () => ({ top: 40, bottom: 100, left: 0, right: 300, width: 300, height: 60, x: 0, y: 40, toJSON() {} })
+  root.querySelector("section")!.append(headline)
+  await new Promise(resolve => setTimeout(resolve, 0))
+  expect(state.fromTo).not.toHaveBeenCalled()
+  expect(headline.style.opacity).toBe("")
+  stop()
+})

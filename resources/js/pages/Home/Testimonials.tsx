@@ -27,7 +27,7 @@ export function Testimonials() {
         <div className="testimonial-author"><span className="testimonial-avatar" aria-hidden="true">{quote?.avatar}</span><div><strong>{quote?.name}</strong></div></div>
       </div>
       <div className="testimonial-navigation">
-        <div className="testimonial-dots" aria-label="اختيار رأي العميل">{list.map((item: any, position: number) => <button key={item.name} type="button" aria-label={`عرض رأي ${item.name}`} aria-pressed={position === safeIndex} onClick={() => setIndex(position)}><span /></button>)}</div>
+        <div className="testimonial-dots" role="group" aria-label="اختيار رأي العميل">{list.map((item: any, position: number) => <button key={item.name} type="button" aria-label={`عرض رأي ${item.name}`} aria-pressed={position === safeIndex} onClick={() => setIndex(position)}><span /></button>)}</div>
         <div className="testimonial-arrows"><button type="button" onClick={() => move(-1)} aria-label="الرأي السابق"><Icon name="arrowRight" size={19} /></button><button type="button" onClick={() => move(1)} aria-label="الرأي التالي"><Icon name="arrowLeft" size={19} /></button></div>
       </div>
       <Link className="testimonial-link" to="/portfolio"><span><small>من الثقة إلى النتيجة</small><strong>تعرّف على أعمالنا</strong></span><span className="testimonial-link-icon"><Icon name="arrowUpLeft" size={20} /></span></Link>

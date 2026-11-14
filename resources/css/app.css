@@ -8,7 +8,6 @@
 @import "./experience.css";
 @import "./reference-cards.css";
 @import "./vector-system.css";
-@import "./blog-cards.css";
 @import "./contact-page.css";
 @import "./project-motion.css";
 
@@ -418,3 +417,5 @@ h1, h2, h3, .font-display {
   .site-header.is-hidden .site-header-utility { pointer-events: auto; }
   .site-nav-burger span { transition: none; }
 }
+
+.screen-picture { display: contents; }

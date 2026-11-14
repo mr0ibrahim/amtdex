@@ -14,10 +14,10 @@ const DashboardLayout = lazy(() => import("@/components/layout/DashboardLayout")
 import { Seo } from "@/components/Seo"
 import { useToast } from "@/components/ui/Toast"
 import { isBlogSubdomain, isDashboardHost, getMainUrl } from "@/lib/subdomain"
-import { HomePage } from "@/pages/Home/HomePage"
-import { ServicesPage } from "@/pages/Services/ServicesPage"
-import { AboutPage } from "@/pages/About/AboutPage"
-import { ContactPage } from "@/pages/Contact/ContactPage"
+const HomePage = lazy(() => import("@/pages/Home/HomePage").then(m => ({ default: m.HomePage })))
+const ServicesPage = lazy(() => import("@/pages/Services/ServicesPage").then(m => ({ default: m.ServicesPage })))
+const AboutPage = lazy(() => import("@/pages/About/AboutPage").then(m => ({ default: m.AboutPage })))
+const ContactPage = lazy(() => import("@/pages/Contact/ContactPage").then(m => ({ default: m.ContactPage })))
 
 const ServiceDetailPage = lazy(() => import("@/pages/Services/ServiceDetailPage").then((m) => ({ default: m.ServiceDetailPage })))
 const PortfolioPage = lazy(() => import("@/pages/Portfolio/PortfolioPage").then((m) => ({ default: m.PortfolioPage })))
