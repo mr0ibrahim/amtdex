@@ -24,7 +24,7 @@ it("releases the menu scroll lock when resizing to desktop", () => {
   const previousWidth = window.innerWidth
   render(<MemoryRouter><Header onToast={() => {}} /></MemoryRouter>)
   fireEvent.click(screen.getByRole("button", { name: "فتح القائمة" }))
-  Object.defineProperty(window, "innerWidth", { configurable: true, value: 1280 })
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: 1440 })
   fireEvent(window, new Event("resize"))
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
   expect(document.body.style.overflow).not.toBe("hidden")

@@ -43,10 +43,12 @@ export function ExperienceStudio() {
       if (cancelled) return
       const ctx = gsap.context(() => {})
       const animate = () => ctx.add(() => {
+        const compact = root.clientWidth < 400
+        const shift = Math.min(46, root.clientWidth * .075)
         root.querySelectorAll<HTMLElement>("[data-project-card]").forEach((card, index) => {
           const rank = (index - active + experiences.length) % experiences.length
           gsap.to(card, {
-            x: [0, 46, -34][rank], y: [22, -12, -44][rank], rotation: [-6, 10, -15][rank],
+            x: [0, shift, -shift * .74][rank], y: (compact ? [10, -8, -20] : [22, -12, -44])[rank], rotation: (compact ? [-3, 5, -7] : [-6, 10, -15])[rank],
             scale: [1, .94, .87][rank], zIndex: 3 - rank, opacity: 1,
             duration: reduced.matches || paused ? 0 : .95, ease: "power3.inOut", overwrite: "auto",
           })
@@ -54,7 +56,9 @@ export function ExperienceStudio() {
       })
       animate()
       reduced.addEventListener("change", animate)
-      stop = () => { reduced.removeEventListener("change", animate); ctx.kill(false) }
+      const resize = typeof ResizeObserver === "function" ? new ResizeObserver(animate) : undefined
+      resize?.observe(root)
+      stop = () => { resize?.disconnect(); reduced.removeEventListener("change", animate); ctx.kill(false) }
       }).catch(() => { /* Native controls and readable cards remain available. */ })
     }
     if (typeof IntersectionObserver === "function") {

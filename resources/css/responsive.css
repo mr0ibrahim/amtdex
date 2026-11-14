@@ -1,0 +1,103 @@
+/* Content must fit its container; decorative motion owns its own viewport. */
+.reference-design-scope {width:100%;min-width:0;}
+.reference-design-scope :is(main,.page-container,.da-page,.reference-home,.reference-home>div,.reference-intro>*,.project-showcase>*,.project-showcase-visual,.footer-grid>*,.quote-phone-row>*,.quote-budget-fields>*,.contact-page-grid>*) {min-width:0;}
+.reference-design-scope :is(h1,h2,h3,p,li,label,blockquote,address,.reference-service-card,.footer-nav a,.contact-method-copy) {overflow-wrap:anywhere;}
+.reference-design-scope :is(img,video,canvas) {max-width:100%;}
+.reference-design-scope :is(.brand-artwork,.reference-intro-copy,.da-hero-copy,.contact-news-copy,.blog-follow-copy,.blog-featured-copy,.testimonial-panel) {max-width:100%;min-width:0;}
+.reference-design-scope :is(input,textarea,select) {min-width:0;max-width:100%;}
+.reference-design-scope select {text-overflow:ellipsis;}
+.reference-design-scope :is(.project-tabs>button,.hero-actions>a,.contact-news-actions>a,.quote-navigation>button,.blog-follow-actions>a) {min-width:0;max-width:100%;white-space:normal;}
+.reference-design-scope .project-tabs>button>span:nth-child(2) {min-width:0;overflow-wrap:anywhere;}
+.reference-design-scope .project-tab-icon {flex:none;}
+.reference-design-scope .project-showcase {gap:clamp(20px,3vw,40px);padding:clamp(18px,3vw,42px);}
+.reference-design-scope .project-deck-stage {overflow:clip;}
+.reference-design-scope .project-card-top>span,.reference-design-scope .project-card-bottom>span {min-width:0;}
+.reference-design-scope .reference-brief-typing {overflow-wrap:anywhere;}
+.reference-design-scope .reference-home .reference-service-grid {grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));}
+.reference-design-scope .reference-service-card {height:100%;}
+.reference-design-scope .reference-home .screen-gallery-window {max-width:100%;min-width:0;}
+.reference-design-scope .reference-home .screen-gallery-stage {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;max-width:1280px;min-width:0;align-items:start;}
+.reference-design-scope .reference-home .screen-gallery-card {min-width:0;max-width:100%;width:100%;}
+.reference-design-scope .reference-home .screen-caption {display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;overflow-wrap:anywhere;}
+.reference-design-scope .reference-home .screen-caption svg {width:28px;height:28px;}
+.reference-design-scope .footer-nav a {max-width:100%;}
+.reference-design-scope .footer-contact-row>a {display:block;overflow-wrap:anywhere;white-space:normal;}
+.reference-design-scope .blog-featured>div.grid {height:auto;}
+.reference-design-scope .blog-featured-copy {height:auto;min-height:440px;overflow:visible;}
+.reference-design-scope .blog-reader :is(pre,table) {max-width:100%;}
+.reference-design-scope .blog-reader pre {overflow-x:auto;white-space:pre;}
+.reference-design-scope .blog-reader table {display:block;overflow-x:auto;}
+.reference-design-scope .reference-home .reference-hero {min-height:0;padding-block:clamp(44px,6vw,82px) clamp(32px,4vw,54px);}
+.reference-design-scope .reference-home .reference-hero h1 {font-size:clamp(30px,4.8vw + 12px,68px);}
+.reference-design-scope .product-badge>div {min-width:0;}
+.reference-design-scope .reference-intro .product-stack {max-width:76%;}
+@media(max-width:1359px) {
+ .reference-design-scope .site-nav-track,.reference-design-scope .site-header .site-nav-quiet {display:none;}
+ .reference-design-scope .site-nav-burger {display:block;}
+ .reference-design-scope .site-header-actions {margin-inline-start:auto;}
+ .reference-design-scope .site-menu {display:flex;}
+ .reference-design-scope .site-menu-dim {display:block;}
+}
+@media(min-width:640px) and (max-width:1099px) {
+ .reference-design-scope .reference-workflow-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 20px;}
+ .reference-design-scope .reference-workflow-grid li::before {display:none;}
+ .reference-design-scope .reference-workflow-number {margin-bottom:16px;}
+ .reference-design-scope .reference-home .screen-gallery-stage {grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;}
+ .reference-design-scope .reference-home .screen-gallery-card:last-child {grid-column:1/-1;width:min(100%,420px);justify-self:center;}
+ .reference-design-scope .reference-home .guarantee-card {grid-template-columns:minmax(160px,.7fr) minmax(0,1.3fr);padding:28px;gap:24px;}
+ .reference-design-scope .guarantee-art {min-width:0;}
+ .reference-design-scope .guarantee-art>.brand-artwork {max-width:100%;}
+}
+@media(max-width:900px) {
+ .reference-design-scope .reference-intro {grid-template-columns:minmax(0,1fr);gap:28px;}
+ .reference-design-scope .reference-intro-copy {max-width:680px;margin-inline:auto;width:100%;}
+ .reference-design-scope .reference-intro .product-scene {max-width:480px;min-height:430px;}
+ .reference-design-scope .reference-home .project-showcase {grid-template-columns:minmax(0,1fr);}
+ .reference-design-scope .reference-home .experience-studio {padding-inline:clamp(16px,3vw,24px);}
+}
+@media(max-width:639px) {
+ .reference-design-scope .page-container {padding-inline:clamp(14px,4.3vw,22px);}
+ .reference-design-scope .reference-home .reference-hero .hero-actions {display:flex;flex-wrap:wrap;align-items:stretch;}
+ .reference-design-scope .reference-home .reference-hero .hero-actions>a {flex:1 1 120px;padding-inline:12px;}
+ .reference-design-scope .reference-home .reference-service-grid,.reference-design-scope .reference-service-grid {grid-template-columns:minmax(0,1fr);}
+ .reference-design-scope .reference-service-card {min-height:0;padding:24px;}
+ .reference-design-scope .reference-service-card>p {margin-bottom:20px;}
+ .reference-design-scope .reference-home .screen-gallery-stage {grid-template-columns:minmax(0,1fr);max-width:440px;padding-inline:clamp(14px,4.3vw,22px);gap:20px;}
+ .reference-design-scope .project-deck-stage {min-height:350px;}
+ .reference-design-scope .project-deck-card {width:76%;max-width:300px;}
+ .reference-design-scope .project-deck-card:nth-of-type(3) {transform:translate(16px,-8px) rotate(5deg) scale(.93);}
+ .reference-design-scope .project-deck-card:nth-of-type(4) {transform:translate(-12px,-20px) rotate(-7deg) scale(.86);}
+ .reference-design-scope .project-card-top>span:last-child {display:none;}
+ .reference-design-scope .project-sample-metric {flex-wrap:wrap;gap:8px;}
+ .reference-design-scope .project-copy-panel {padding-inline:0;}
+ .reference-design-scope .reference-home .reference-section-heading h2,.reference-design-scope .reference-intro h2 {font-size:clamp(26px,7.6vw,34px);}
+ .reference-design-scope .quote-step-label {white-space:normal;overflow-wrap:anywhere;line-height:1.6;text-align:center;}
+ .reference-design-scope .quote-steps li {min-height:92px;}
+ .reference-design-scope .footer-grid {grid-template-columns:minmax(0,1fr);gap:28px;}
+ .reference-design-scope .footer-brand,.reference-design-scope .footer-contact {grid-column:auto;}
+ .reference-design-scope .blog-featured-copy {min-height:0;}
+ .reference-design-scope .blog-follow-card {padding:26px 20px;}
+ .reference-design-scope .blog-follow-card .blog-follow-actions>a {width:100%;justify-content:space-between;}
+}
+@media(max-width:479px) {
+ .reference-design-scope .quote-navigation {display:grid;grid-template-columns:minmax(0,1fr);gap:10px;}
+ .reference-design-scope .quote-navigation .quote-forward {grid-row:1;width:100%;margin:0;}
+ .reference-design-scope .quote-navigation .quote-back {grid-row:2;width:100%;}
+ .reference-design-scope .reference-intro .product-scene {min-height:380px;}
+ .reference-design-scope .reference-intro .product-window-content {padding:16px;}
+ .reference-design-scope .reference-intro .product-window h2 {font-size:22px;}
+ .reference-design-scope .product-badge {max-width:78%;padding:9px;gap:7px;}
+ .reference-design-scope .product-badge strong {font-size:10px;line-height:1.7;}
+ .reference-design-scope .product-badge small {font-size:9px;line-height:1.6;}
+}
+@media(max-width:359px) {
+ .reference-design-scope .site-brand-sub {display:none;}
+ .reference-design-scope .reference-home .reference-hero .hero-actions {display:grid;grid-template-columns:minmax(0,1fr);}
+ .reference-design-scope .project-showcase {padding:18px 12px;}
+ .reference-design-scope .project-tabs {grid-template-columns:minmax(0,1fr);}
+ .reference-design-scope .project-tabs>button {flex-direction:row;text-align:start;justify-content:start;min-height:48px;padding:8px 12px;}
+ .reference-design-scope .project-tabs>button>span:nth-child(2) {font-size:12px;}
+ .reference-design-scope .project-card-screen {height:160px;}
+}
+.reference-design-scope main :is(input,select,textarea,[id]) {scroll-margin-block-start:112px;}
+.reference-design-scope :is(.da-grid-2,.da-grid-4,.da-feature,.da-people,.da-trust,.da-post-skel,.brand-page-header)>* {min-width:0;max-width:100%;}

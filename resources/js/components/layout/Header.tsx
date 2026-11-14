@@ -96,7 +96,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
   }, [loc.key])
 
   useEffect(() => {
-    const closeOnDesktop = () => { if (window.innerWidth >= 1200) setOpen(false) }
+    const closeOnDesktop = () => { if (window.innerWidth >= 1360) setOpen(false) }
     window.addEventListener("resize", closeOnDesktop)
     return () => window.removeEventListener("resize", closeOnDesktop)
   }, [])
