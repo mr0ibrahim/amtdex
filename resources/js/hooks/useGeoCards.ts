@@ -21,16 +21,43 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
       : undefined
 
     // Touch screens have no hover: the card crossing the middle of the screen takes the hover look.
-    const touch = window.matchMedia?.("(hover: none)")
+    // Touch is detected from real input, not from the (hover) media query, which several
+    // Android phones answer as if they had a mouse.
+    const inBand = new Set<HTMLElement>()
+    const applyFocus = () => {
+      const on = root.dataset.geoTouch === "true"
+      // Of the cards in the middle band, only the row nearest the centre is highlighted.
+      const middle = window.innerHeight / 2
+      let nearest = Infinity
+      const distance = new Map<HTMLElement, number>()
+      if (on) inBand.forEach(card => {
+        const rect = card.getBoundingClientRect()
+        const gap = Math.abs(rect.top + rect.height / 2 - middle)
+        distance.set(card, gap)
+        nearest = Math.min(nearest, gap)
+      })
+      cards.forEach((_, card) => {
+        if (on && (distance.get(card) ?? Infinity) <= nearest + 8) card.dataset.geoActive = "true"; else delete card.dataset.geoActive
+      })
+    }
+    let focusFrame = 0
+    const onScroll = () => {
+      if (root.dataset.geoTouch !== "true" || !inBand.size) return
+      cancelAnimationFrame(focusFrame)
+      focusFrame = requestAnimationFrame(applyFocus)
+    }
+    const setTouch = (value: boolean) => {
+      if (root.dataset.geoTouch === String(value)) return
+      root.dataset.geoTouch = String(value)
+      applyFocus()
+    }
     const focus = typeof IntersectionObserver === "function"
       ? new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          const card = entry.target as HTMLElement
-          if (entry.isIntersecting && touch?.matches) card.dataset.geoActive = "true"
-          else delete card.dataset.geoActive
-        })
-      }, { rootMargin: "-40% 0px -40% 0px" })
+        entries.forEach(entry => { if (entry.isIntersecting) inBand.add(entry.target as HTMLElement); else inBand.delete(entry.target as HTMLElement) })
+        applyFocus()
+      }, { rootMargin: "-36% 0px -36% 0px" })
       : undefined
+    const onTouch = () => setTouch(true)
 
     const release = (card: HTMLElement, layer: HTMLElement) => {
       observer?.unobserve(card)
@@ -46,7 +73,7 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
 
     const scan = () => {
       cards.forEach((layer, card) => {
-        if (!root.contains(card)) { observer?.unobserve(card); focus?.unobserve(card); cards.delete(card) }
+        if (!root.contains(card)) { observer?.unobserve(card); focus?.unobserve(card); inBand.delete(card); cards.delete(card) }
         // React may replace a card's children (text updates); restore the layer.
         else if (layer.parentElement !== card) card.append(layer)
       })
@@ -84,6 +111,8 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
     const fine = window.matchMedia?.("(hover: hover) and (pointer: fine)")
     let pointerFrame = 0
     const pointer = (event: PointerEvent) => {
+      // A real mouse hands the hover look back to :hover.
+      if (event.pointerType === "mouse") setTouch(false)
       if (!fine?.matches) return
       const card = (event.target as Element | null)?.closest?.<HTMLElement>("[data-geo-card]")
       if (!card) return
@@ -95,6 +124,9 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
       })
     }
     root.addEventListener("pointermove", pointer, { passive: true })
+    root.addEventListener("touchstart", onTouch, { passive: true })
+    window.addEventListener("scroll", onScroll, { passive: true })
+    setTouch(navigator.maxTouchPoints > 0 && !!window.matchMedia?.("(any-pointer: coarse)").matches)
     scan()
 
     return () => {
@@ -104,6 +136,11 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
       observer?.disconnect()
       focus?.disconnect()
       root.removeEventListener("pointermove", pointer)
+      root.removeEventListener("touchstart", onTouch)
+      window.removeEventListener("scroll", onScroll)
+      cancelAnimationFrame(focusFrame)
+      delete root.dataset.geoTouch
+      inBand.clear()
       cards.forEach((layer, card) => release(card, layer))
       cards.clear()
     }

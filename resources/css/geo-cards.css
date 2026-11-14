@@ -138,29 +138,28 @@
   .brand-motion main :is([data-geo-size="lg"], .about-values-card, .contact-whatsapp-card):hover { translate: none; }
 }
 /* ── Touch: no hover exists, so the card crossing the middle of the screen takes the hover look,
-   and a press gives immediate feedback. ── */
-@media (hover: none) {
-  .brand-motion main [data-geo-card][data-geo-active="true"] { translate: 0 -6px; }
-  .brand-motion main [data-geo-card="light"][data-geo-active="true"] {
-    border-color: var(--geo-violet-soft);
-    box-shadow: inset 0 1px 0 #ffffff, 0 2px 4px #2818490a, 0 30px 56px -30px #56358dcc;
-  }
-  .brand-motion main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-figure { opacity: calc(var(--geo-figure-opacity) + .3); }
-  .brand-motion main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-figure svg { scale: 1.1; }
-  .brand-motion main [data-geo-card][data-geo-active="true"] > .geo-layer::after { opacity: 1; }
-  .brand-motion main :is(.reference-service-card, .service-card, .service-bento-card)[data-geo-card]:is([data-geo-active="true"], :active) {
-    --geo-ink: #ffffff;
-    border-color: #7a4fc4;
-    background: radial-gradient(ellipse at 15% 0%, #8a56d6 0%, transparent 62%), linear-gradient(155deg, #5b3597, #3a1a63);
-    box-shadow: inset 0 1px 0 #ffffff33, 0 30px 56px -28px #461667cc;
-    color: #fff;
-  }
-  .brand-motion main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(h2, h3) { color: #fff; }
-  .brand-motion main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(p, li, .reference-service-link, .service-card-footer) { color: #eee4f8; border-color: #ffffff25; }
-  .brand-motion main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(.reference-service-icon, .service-card-icon, .service-card-arrow) { background: #fff; color: #56358d; }
-  .brand-motion main [data-geo-card]:not([data-geo-size="lg"]):active { scale: .98; }
-  .brand-motion main [data-geo-card] { transition: translate .5s var(--geo-ease), scale .25s, box-shadow .5s var(--geo-ease), border-color .35s, background-color .35s, color .35s; }
+   and a press gives immediate feedback. [data-geo-touch] is set from real touch input because
+   some Android phones report (hover: hover). ── */
+.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] { translate: 0 -6px; }
+.brand-motion[data-geo-touch="true"] main [data-geo-card="light"][data-geo-active="true"] {
+  border-color: var(--geo-violet-soft);
+  box-shadow: inset 0 1px 0 #ffffff, 0 2px 4px #2818490a, 0 30px 56px -30px #56358dcc;
 }
+.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-figure { opacity: calc(var(--geo-figure-opacity) + .3); }
+.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-figure svg { scale: 1.1; }
+.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer::after { opacity: 1; }
+.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card)[data-geo-card]:is([data-geo-active="true"], :active) {
+  --geo-ink: #ffffff;
+  border-color: #7a4fc4;
+  background: radial-gradient(ellipse at 15% 0%, #8a56d6 0%, transparent 62%), linear-gradient(155deg, #5b3597, #3a1a63);
+  box-shadow: inset 0 1px 0 #ffffff33, 0 30px 56px -28px #461667cc;
+  color: #fff;
+}
+.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(h2, h3) { color: #fff; }
+.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(p, li, .reference-service-link, .service-card-footer) { color: #eee4f8; border-color: #ffffff25; }
+.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(.reference-service-icon, .service-card-icon, .service-card-arrow) { background: #fff; color: #56358d; }
+.brand-motion[data-geo-touch="true"] main [data-geo-card]:not([data-geo-size="lg"]):active { scale: .98; }
+.brand-motion[data-geo-touch="true"] main [data-geo-card] { transition: translate .5s var(--geo-ease), scale .25s, box-shadow .5s var(--geo-ease), border-color .35s, background-color .35s, color .35s; }
 
 /* ── Scroll progress ── */
 .scroll-progress { position: fixed; inset-inline: 0; top: 0; z-index: 60; height: 3px; pointer-events: none; }
