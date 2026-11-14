@@ -1,4 +1,5 @@
-import { lazy, Suspense, useMemo, useState } from "react"
+import { QueryError } from "@/components/ui/QueryError"
+import { lazy, Suspense, useEffect, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { BlogAPI } from "@/lib/blogApi"
 import { ApiError } from "@/lib/api"
@@ -34,14 +35,16 @@ function statusClass(status?: string) {
 export function PostsManager({ onNotify }: { onNotify: (m: string) => void }) {
   const queryClient = useQueryClient()
   const [search, setSearch] = useState("")
+  const [page, setPage] = useState(1)
   const [status, setStatus] = useState("all")
   const [editingPost, setEditingPost] = useState<Partial<BlogPost> | null>(null)
   const [isEditorOpen, setIsEditorOpen] = useState(false)
 
-  const { data: postsRes, isLoading } = useQuery({
-    queryKey: ["admin-posts", { search, status }],
+  const { data: postsRes, isLoading, error: postsError, refetch } = useQuery({
+    queryKey: ["admin-posts", { search, status, page }],
     queryFn: () =>
       BlogAPI.getAdminPosts({
+        page,
         search: search || undefined,
         status: status !== "all" ? status : undefined,
       }),
@@ -99,27 +102,30 @@ export function PostsManager({ onNotify }: { onNotify: (m: string) => void }) {
     setIsEditorOpen(true)
   }
 
-  const counts = useMemo(() => {
-    const all = posts.length
-    const published = posts.filter((p) => p.status === "published").length
-    const drafts = posts.filter((p) => p.status === "draft").length
-    return { all, published, drafts }
-  }, [posts])
+  const counts = {
+    all: postsRes?.counts?.all ?? postsRes?.meta?.total ?? posts.length,
+    published: postsRes?.counts?.published ?? posts.filter(post => post.status === "published").length,
+    drafts: postsRes?.counts?.draft ?? posts.filter(post => post.status === "draft").length,
+  }
+  const lastPage = postsRes?.meta?.last_page ?? 1
+  useEffect(() => { if (postsRes && page > lastPage) setPage(lastPage) }, [postsRes, page, lastPage])
 
   return (
-    <div className="space-y-4">
+    <div className="dash-posts-manager space-y-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 w-full lg:max-w-2xl">
           <input
             type="search"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+            aria-label="بحث المقالات"
             placeholder="ابحث بالعنوان أو الرابط..."
             className="px-3.5 py-2.5 rounded-xl border border-[var(--color-border)] text-xs w-full focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
           />
           <select
             value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            aria-label="فلترة المقالات حسب الحالة"
+            onChange={(e) => { setStatus(e.target.value); setPage(1) }}
             className="px-3 py-2.5 rounded-xl border border-[var(--color-border)] text-xs bg-white focus:outline-none"
           >
             <option value="all">كل الحالات ({counts.all})</option>
@@ -146,7 +152,9 @@ export function PostsManager({ onNotify }: { onNotify: (m: string) => void }) {
         <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 font-bold">مسودة: {counts.drafts}</span>
       </div>
 
-      {isLoading ? (
+      {postsError ? (
+        <QueryError error={postsError} onRetry={() => { void refetch() }} />
+      ) : isLoading ? (
         <div className="py-12 text-center text-xs text-[var(--color-text-faint)]">جارٍ تحميل المقالات...</div>
       ) : posts.length === 0 ? (
         <div className="py-12 text-center bg-[var(--color-bg-subtle)] rounded-2xl border border-[var(--color-border)] text-xs text-[var(--color-text-muted)] space-y-3">
@@ -157,30 +165,30 @@ export function PostsManager({ onNotify }: { onNotify: (m: string) => void }) {
         </div>
       ) : (
         <>
-          <div className="dash-mobile-cards">
+          <div className="dash-mobile-cards dash-post-list">
             {posts.map((p) => (
-              <article key={p.id} className="dash-post-card">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h3 className="text-[13px] font-bold text-[var(--color-ink)] leading-snug">{p.title}</h3>
-                    <p className="mt-1 text-[11px] text-[var(--color-text-faint)] font-mono truncate">/posts/{p.slug}</p>
+              <article key={p.id} className="dash-post-card dash-article-card">
+                <div className="dash-post-heading">
+                  <div className="dash-post-title-block">
+                    <h3 className="dash-post-title">{p.title}</h3>
+                    <p className="dash-post-slug" dir="ltr" title={`/posts/${p.slug}`}>/posts/{p.slug}</p>
                   </div>
                   <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold ${statusClass(p.status)}`}>
                     {statusLabel(p.status)}
                   </span>
                 </div>
 
-                <div className="flex flex-wrap gap-2 text-[11px] text-[var(--color-text-muted)]">
+                <div className="dash-post-meta">
                   {p.category && (
                     <span className="px-2 py-0.5 rounded-full bg-[var(--color-lavender)] text-[var(--color-primary)] font-semibold">
                       {p.category.name}
                     </span>
                   )}
-                  <span>{p.views_count.toLocaleString("ar-EG")} مشاهدة</span>
+                  <span>{Number(p.views_count ?? 0).toLocaleString("ar-EG")} مشاهدة</span>
                   <span>{p.published_at ? new Date(p.published_at).toLocaleDateString("ar-SA") : "غير منشور"}</span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="dash-post-actions">
                   <button
                     type="button"
                     onClick={() => {
@@ -256,7 +264,7 @@ export function PostsManager({ onNotify }: { onNotify: (m: string) => void }) {
                         {statusLabel(p.status)}
                       </span>
                     </td>
-                    <td className="py-3 px-4 font-mono">{p.views_count.toLocaleString("ar-EG")}</td>
+                    <td className="py-3 px-4 font-mono">{Number(p.views_count ?? 0).toLocaleString("ar-EG")}</td>
                     <td className="py-3 px-4 text-[var(--color-text-muted)]">
                       {p.published_at ? new Date(p.published_at).toLocaleDateString("ar-SA") : "—"}
                     </td>
@@ -307,6 +315,12 @@ export function PostsManager({ onNotify }: { onNotify: (m: string) => void }) {
           </div>
         </>
       )}
+
+      {!postsError && lastPage > 1 && <nav className="dash-post-pagination" aria-label="صفحات المقالات">
+        <button type="button" disabled={page <= 1 || isLoading} onClick={() => setPage(value => Math.max(1, value - 1))}>السابق</button>
+        <span aria-live="polite">صفحة {page} من {lastPage}</span>
+        <button type="button" disabled={page >= lastPage || isLoading} onClick={() => setPage(value => Math.min(lastPage, value + 1))}>التالي</button>
+      </nav>}
 
       {isEditorOpen && editingPost && (
         <Suspense fallback={<p role="status">جار تحميل محرر المقال...</p>}>

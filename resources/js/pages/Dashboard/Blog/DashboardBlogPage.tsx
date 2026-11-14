@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { BlogAPI } from "@/lib/blogApi"
+import { QueryError } from "@/components/ui/QueryError"
 import { Badge } from "@/components/ui/Badge"
 import { useToast } from "@/components/ui/Toast"
 import { getBlogUrl } from "@/lib/subdomain"
@@ -23,12 +24,13 @@ export function DashboardBlogPage({ onToast }: { onToast?: (m: string) => void }
     else toast.show(msg)
   }
 
-  const { data: statsRes } = useQuery({
+  const { data: statsRes, error: statsError, refetch: refetchStats } = useQuery({
     queryKey: ["admin-blog-stats"],
     queryFn: () => BlogAPI.getAdminStats(),
   })
 
   const stats = statsRes?.stats
+  const count = (value: number | undefined) => value == null ? "—" : Number(value).toLocaleString("ar-EG")
 
   const tabs: Array<{ id: BlogTab; label: string; count?: number | string }> = [
     { id: "posts", label: "المقالات", count: stats?.total_posts },
@@ -44,7 +46,7 @@ export function DashboardBlogPage({ onToast }: { onToast?: (m: string) => void }
   ]
 
   return (
-    <div className="space-y-5">
+    <div className="dash-blog-page space-y-5">
       {toast.el}
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -79,14 +81,15 @@ export function DashboardBlogPage({ onToast }: { onToast?: (m: string) => void }
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+      <QueryError error={statsError} onRetry={() => { void refetchStats() }} />
+      <div className="dash-blog-stats grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
         {[
-          { label: "إجمالي المقالات", value: stats?.total_posts ?? 0, sub: `${stats?.published_posts ?? 0} منشور` },
-          { label: "المشاهدات", value: (stats?.total_views ?? 0).toLocaleString("ar-EG"), sub: "تحديث حي" },
-          { label: "تعليقات معلّقة", value: stats?.pending_comments ?? 0, sub: "تتطلب مراجعة" },
+          { label: "إجمالي المقالات", value: count(stats?.total_posts), sub: `${count(stats?.published_posts)} منشور` },
+          { label: "المشاهدات", value: count(stats?.total_views), sub: "تحديث حي" },
+          { label: "تعليقات معلّقة", value: count(stats?.pending_comments), sub: "تتطلب مراجعة" },
           {
             label: "تصنيفات / وسوم",
-            value: `${stats?.categories_count ?? 0} / ${stats?.tags_count ?? 0}`,
+            value: `${count(stats?.categories_count)} / ${count(stats?.tags_count)}`,
             sub: "هيكل المحتوى",
           },
         ].map((card) => (

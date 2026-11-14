@@ -633,6 +633,8 @@ class AdminBlogController extends Controller
             'published_posts' => BlogPost::where('status', 'published')->count(),
             'total_views' => BlogPost::sum('views_count'),
             'pending_comments' => BlogComment::where('status', 'pending')->count(),
+            'categories_count' => BlogCategory::count(),
+            'tags_count' => BlogTag::count(),
             'top_posts' => BlogPost::published()->orderBy('views_count', 'desc')->limit(5)->get(['id', 'title', 'slug', 'views_count', 'published_at']),
             'recent_comments' => BlogComment::with('post:id,title,slug')->latest()->limit(5)->get(),
         ]);
