@@ -20,7 +20,7 @@
 .da-hero-copy > p:not(.da-kicker) { max-width: 38rem; }
 .hero-actions { margin-top: 28px; gap: 12px; }
 .hero-product-scene { min-width: 0; padding: clamp(16px, 2vw, 26px); background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 24px; }
-.hero-product-label { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-bottom: 14px; font-size: 11px; color: var(--color-text-muted); }
+.hero-product-label { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-bottom: 14px; font-size:12px; color: var(--color-text-muted); }
 .hero-product-label > span:first-child { height: 6px; width: 6px; border-radius: 50%; background: var(--success); }
 .hero-product-label > span:last-child { margin-inline-start: auto; font: 9px var(--font-mono); }
 .brand-motion .da-app { margin-top: 0; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; box-shadow: 0 16px 42px -28px var(--color-brand); }

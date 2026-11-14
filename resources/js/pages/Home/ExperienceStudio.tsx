@@ -96,7 +96,7 @@ export function ExperienceStudio() {
           <div key={item.id} id="studio-panel" role="tabpanel" aria-labelledby={`studio-tab-${item.id}`} tabIndex={0} className="project-copy-panel">
             <h3>{item.title}</h3><p>{item.description}</p>
             <div className="project-sample-metric"><span>{item.metric}</span><strong>{item.value}<small>{item.unit}</small></strong></div>
-            <Link to="/quote" className="project-quote-link">لنصمّم مشروعك <Icon name="actionArrow" size={19} /></Link>
+            <Link to="/quote" className="project-quote-link">ابدأ مشروعك <Icon name="actionArrow" size={19} /></Link>
             <small>نماذج واجهات ببيانات توضيحية</small>
           </div>
         </div>

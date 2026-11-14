@@ -21,8 +21,8 @@ export function BlogNotFoundPage() {
   return (
     <div className="min-h-screen bg-[var(--color-bg-subtle)] text-[var(--color-ink)] flex items-center justify-center p-4">
       <Seo
-        title="الصفحة غير موجودة 404 | مدونة Amtdex"
-        description="الصفحة المطلوبة في مدونة Amtdex غير موجودة أو تم نقلها."
+        title="الصفحة غير موجودة 404 | مدونة AMTDEX SOFT"
+        description="الصفحة المطلوبة في مدونة AMTDEX SOFT غير موجودة أو تم نقلها."
         noindex={true}
         nofollow={true}
       />
@@ -77,7 +77,7 @@ export function BlogNotFoundPage() {
             href={getMainUrl("/")}
             className="w-full sm:w-auto inline-flex items-center justify-center text-xs font-semibold px-6 py-2.5 rounded-xl border border-[var(--color-border)] hover:bg-[var(--color-bg-subtle)] text-[var(--color-ink)] transition-colors"
           >
-            الموقع الرئيسي Amtdex
+            الموقع الرئيسي AMTDEX SOFT
           </a>
         </div>
       </div>

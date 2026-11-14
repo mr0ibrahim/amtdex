@@ -102,5 +102,11 @@ Route::get('/{any?}', function (?string $any = null) {
         return response()->view('app', [], 404);
     }
 
+    // The SPA draws its own "not found" screen for anything else; the status must say so too,
+    // or search engines index every mistyped address as a real page.
+    if (! preg_match('#^/(|services(/[^/]+)?|portfolio(/[^/]+)?|about|contact|quote|403)$#', $path)) {
+        return response()->view('app', [], 404);
+    }
+
     return view('app');
 })->where('any', $spaExclude);

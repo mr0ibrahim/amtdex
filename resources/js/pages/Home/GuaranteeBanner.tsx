@@ -9,11 +9,11 @@ export function GuaranteeBanner() {
         <div className="guarantee-art" data-motion="vector"><BrandArtwork kind="shield" /></div>
         <div className="guarantee-copy">
           <span className="guarantee-label">التزام موثّق في العقد</span>
-          <h2 id="guarantee-title">ضمان AMTDEX</h2>
+          <h2 id="guarantee-title">ضمان AMTDEX SOFT</h2>
           <p>إذا لم نسلّم حسب الاتفاق، نعيد الدفعة الأخيرة كاملة.</p>
           <span className="guarantee-note">مكتوب في العقد. ثقة نبنيها بالأفعال، لا الشعارات.</span>
         </div>
-        <Link to="/contact" className="guarantee-action brand-cta">تواصل معنا <Icon name="actionArrow" size={18} /></Link>
+        <Link to="/quote" className="guarantee-action brand-cta">ابدأ مشروعك <Icon name="actionArrow" size={18} /></Link>
       </div>
     </section>
   )

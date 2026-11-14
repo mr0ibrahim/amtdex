@@ -8,7 +8,8 @@ import { CardSkeleton } from "@/components/ui/Skeleton"
 
 export function PortfolioPage() {
   const { data: apiProjects, isLoading } = useProjectsQuery()
-  const PROJECTS = apiProjects ?? SEED_PROJECTS
+  // An empty collection from the CMS must not leave the page blank.
+  const PROJECTS = apiProjects?.length ? apiProjects : SEED_PROJECTS
   const [filter, setFilter] = useState<string>("الكل")
 
   const cats = useMemo(() => ["الكل", ...Array.from(new Set(PROJECTS.map((p) => p.cat)))], [PROJECTS])

@@ -94,4 +94,15 @@ class PageVisibilityTest extends TestCase
         $this->assertFalse(PageVisibility::isPublished('/services/web'));
         $this->get('/services/web')->assertNotFound();
     }
+
+    public function test_unknown_addresses_return_not_found_while_real_pages_stay_ok(): void
+    {
+        foreach (['/', '/services', '/services/web', '/portfolio', '/portfolio/any-project', '/about', '/contact', '/quote'] as $path) {
+            $this->get($path)->assertOk();
+        }
+
+        foreach (['/no-such-page', '/services/web/extra', '/about/team', '/pricing'] as $path) {
+            $this->get($path)->assertNotFound()->assertViewIs('app');
+        }
+    }
 }

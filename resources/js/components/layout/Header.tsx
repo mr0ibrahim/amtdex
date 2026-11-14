@@ -220,8 +220,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
             )}
             {quoteListed && (
               <SiteLink to="/quote" className="btn btn-ink brand-cta site-header-cta">
-                <span className="hidden sm:inline">ابدأ مشروعك</span>
-                <span className="sm:hidden">ابدأ</span>
+                <span>ابدأ مشروعك</span>
               </SiteLink>
             )}
             <button
@@ -252,7 +251,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
                 الرئيسية
               </SiteNavLink>
             )}
-            <div className="site-menu-heading"><span>اكتشف امتدكس</span><span className="site-menu-caption">من الفكرة إلى التنفيذ</span></div>
+            <div className="site-menu-heading"><span>اكتشف امتدكس سوفت</span><span className="site-menu-caption">من الفكرة إلى التنفيذ</span></div>
             <nav className="site-menu-links" aria-label="التنقل على الهاتف">
               {mobile.map((item) => renderItem(item, () => setOpen(false)))}
             </nav>

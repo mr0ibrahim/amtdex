@@ -1,0 +1,64 @@
+/* Fixes from the user-experience review. Loaded last. */
+
+/* White text on a white button in the project showcase. */
+.reference-home .experience-studio .project-quote-link,
+.project-quote-link { background: #fff; color: #31144d; border: 1px solid #ffffff; }
+.project-quote-link:hover { background: #f1e8fc; }
+
+/* Six services read as two rows of three, not four and two. */
+.reference-design-scope .reference-home .reference-service-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1023px) { .reference-design-scope .reference-home .reference-service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 639px) { .reference-design-scope .reference-home .reference-service-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Remaining small utility sizes on public pages. */
+.brand-motion :is(main, .site-footer) [class*="text-[9px]"] { font-size: 12px; }
+.brand-motion :is(main, .site-footer) [class*="text-[10.5px]"] { font-size: 12.5px; }
+
+/* ── Quote form ── */
+.quote-service .quote-check { display: grid; place-items: center; flex: none; width: 22px; height: 22px; border: 1.5px solid #cdbbe2; border-radius: 7px; background: #fff; color: #31144d; }
+.quote-service[aria-pressed="true"] .quote-check { border-color: #fff; }
+.quote-selected-count { margin-top: 12px; font-size: 13.5px; font-weight: 600; color: #6a2c9f; }
+.quote-currency { display: inline-flex; gap: 4px; margin-top: 16px; padding: 4px; border: 1px solid #e3d5f4; border-radius: 14px; background: #f7f1fc; }
+.quote-currency button { min-height: 40px; padding: 6px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; color: #675777; cursor: pointer; transition: background-color .2s, color .2s, box-shadow .2s; }
+.quote-currency button[aria-pressed="true"] { background: #fff; color: #31144d; box-shadow: 0 2px 8px -3px #31144d59; }
+.quote-currency button:focus-visible { outline: 2px solid #6a2c9f; outline-offset: 2px; }
+.quote-ranges { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.quote-ranges .quote-choice { padding: 12px 10px; border: 1px solid #ddd4e7; background: #fff; color: #31144d; font-size: 14.5px; font-weight: 700; cursor: pointer; transition: border-color .2s, background-color .2s, color .2s; }
+.quote-ranges .quote-choice:hover { border-color: #b996e6; }
+@media (max-width: 639px) { .quote-ranges { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ── Floating WhatsApp ── */
+.whatsapp-float { position: fixed; z-index: 45; bottom: max(18px, env(safe-area-inset-bottom)); left: 18px; display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 18px 0 16px; border-radius: 999px; background: #1faa53; color: #fff; font-size: 14.5px; font-weight: 700; box-shadow: 0 14px 30px -12px #0f6b33cc, 0 0 0 1px #ffffff40 inset; transition: translate .3s cubic-bezier(.22, 1, .36, 1), background-color .2s; }
+.whatsapp-float:hover { background: #17924a; translate: 0 -3px; }
+.whatsapp-float:focus-visible { outline: 3px solid #31144d; outline-offset: 3px; }
+@media (max-width: 639px) {
+  .whatsapp-float { left: 14px; width: 54px; min-height: 54px; padding: 0; justify-content: center; }
+  .whatsapp-float span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+}
+@media print { .whatsapp-float { display: none; } }
+
+/* ── Header on phones: the full call to action fits ── */
+@media (max-width: 639px) {
+  .reference-design-scope .site-header-cta { padding-inline: 14px; font-size: 13.5px; white-space: nowrap; }
+  .reference-design-scope .site-header-bar { gap: 8px; }
+  .reference-design-scope .site-brand-name { font-size: 15px; white-space: nowrap; }
+}
+@media (max-width: 380px) {
+  .reference-design-scope .site-header-cta { padding-inline: 11px; font-size: 13px; }
+  .reference-design-scope .site-brand-name { font-size: 13.5px; }
+}
+
+/* ── 404 ── (also rendered outside the marketing layout, so it styles itself) */
+.not-found { padding-block: clamp(32px, 7vw, 88px); max-width: 880px; margin-inline: auto; }
+.not-found-card { padding: clamp(28px, 6vw, 56px) clamp(20px, 5vw, 48px); text-align: center; border: 1px solid #e3d5f4; border-radius: 22px; background: linear-gradient(155deg, #ffffffd1, #f1e6fc94); }
+.brand-motion main .not-found-card { padding: clamp(28px, 6vw, 56px) clamp(20px, 5vw, 48px); }
+.not-found-code { font-family: var(--font-display, inherit); font-size: clamp(72px, 16vw, 132px); font-weight: 700; line-height: 1; letter-spacing: -.04em; background: linear-gradient(120deg, #31144d, #6a2c9f 55%, #b996e6); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.not-found h1 { margin-top: 10px; font-size: clamp(24px, 4.4vw, 34px); font-weight: 700; color: #31144d; }
+.not-found-text { max-width: 46ch; margin: 12px auto 0; font-size: 15.5px; line-height: 1.9; color: #675777; }
+.not-found-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 26px; }
+.not-found-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+.not-found-links > a, .brand-motion main .not-found-links > a { display: grid; gap: 4px; padding: 18px; color: #31144d; border: 1px solid #e3d5f4; border-radius: 18px; background: #ffffffc7; }
+.not-found-links strong { font-size: 16px; }
+.not-found-links a > span:last-child { font-size: 13.5px; color: #675777; }
+.not-found-icon { display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 8px; border-radius: 12px; background: #f1e8fc; color: #6a2c9f; }
+@media (max-width: 639px) { .not-found-links { grid-template-columns: minmax(0, 1fr); } }

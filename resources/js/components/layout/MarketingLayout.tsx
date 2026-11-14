@@ -7,6 +7,7 @@ import { Footer } from "@/components/layout/Footer"
 import { Header } from "@/components/layout/Header"
 import { useScrollReveal } from "@/hooks/useScrollReveal"
 import { useGeoCards } from "@/hooks/useGeoCards"
+import { WhatsAppButton } from "@/components/ui/WhatsAppButton"
 
 export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
   const { pathname } = useLocation()
@@ -36,6 +37,7 @@ export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
         <Outlet />
       </main>
       <Footer onToast={onToast} />
+      <WhatsAppButton />
       <button type="button" className="reference-motion-toggle" aria-pressed={paused} aria-label={paused ? "تشغيل الحركات" : "إيقاف الحركات"} title={paused ? "تشغيل الحركات" : "إيقاف الحركات"} onClick={() => setPaused(value => !value)}><Icon name={paused ? "play" : "pause"} size={16} /><span>{paused ? "تشغيل الحركة" : "إيقاف الحركة"}</span></button>
     </div></MotionPlayback>
   )

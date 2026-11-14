@@ -7,9 +7,16 @@ import { useState, useEffect, useRef } from "react"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { type CountryCode } from "@/lib/phone"
 import { API } from "@/lib/api"
-import { createQuoteSchema, quoteBudgetSchema, zodErrors } from "@/lib/schemas"
+import { createQuoteSchema, zodErrors } from "@/lib/schemas"
 import { SERVICES as SEED_SERVICES } from "@/data/services"
 import { useServicesQuery } from "@/lib/queries"
+
+/** Ready ranges exist where prices are normally quoted; any other currency uses an exact amount. */
+const BUDGET_RANGES: Record<string, string[]> = {
+  SAR: ["أقل من 5,000", "5,000 – 15,000", "15,000 – 40,000", "أكثر من 40,000"],
+  USD: ["أقل من 1,500", "1,500 – 4,000", "4,000 – 10,000", "أكثر من 10,000"],
+}
+const BUDGET_OPEN = "لم أحدد بعد"
 
 export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
   const [searchParams] = useSearchParams()
@@ -23,9 +30,11 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
   const [phoneCountry, setPhoneCountry] = useState<CountryCode>("YE")
   const quoteSchema = createQuoteSchema(phoneCountry)
   const [step, setStep] = useState(1)
+  // Several services can be requested together (a website and an app, say).
+  const [services, setServices] = useState<string[]>(preselectedService ? [preselectedService] : [])
   const [data, setData] = useState<Record<string, string>>({
-    service: preselectedService ?? "",
     budget: "",
+    budgetChoice: "",
     budgetAmount: "",
     budgetCurrency: "SAR",
     timeline: "",
@@ -34,26 +43,29 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
   const [serverError, setServerError] = useState<string | null>(null)
   const [quoteErrors, setQuoteErrors] = useState<Record<string, string>>({})
   const nav = useNavigate()
+  const service = services.join(", ")
 
   useEffect(() => {
-    if (preselectedService && !data.service) {
-      setData((prev) => ({ ...prev, service: preselectedService }))
-      // If service is preselected from pricing or service card, auto advance to budget step
-      setStep(2)
-    }
+    // Arriving from a service card: that service is already chosen, so start at the budget step.
+    if (preselectedService) setStep(2)
   }, [preselectedService])
 
-  const updateBudget = (amount: string, currency: string) => {
-    const normalized = amount.trim().replace(/[٠-٩]/g, digit => String(digit.charCodeAt(0) - 0x660)).replace(/[۰-۹]/g, digit => String(digit.charCodeAt(0) - 0x6f0))
-    const budget = `${normalized} ${currency}`.trim()
-    setData(previous => ({ ...previous, budgetAmount: amount, budgetCurrency: currency, budget }))
-    if (quoteErrors.budget) {
-      const result = quoteBudgetSchema.safeParse(budget)
-      setQuoteErrors(previous => { const next = { ...previous }; if (result.success) delete next.budget; else next.budget = result.error.issues[0].message; return next })
-    }
+  const toggleService = (slug: string) => {
+    setServices(current => current.includes(slug) ? current.filter(item => item !== slug) : [...current, slug])
+    setQuoteErrors(previous => { const next = { ...previous }; delete next.service; return next })
+  }
+  /** A range, "not sure yet", or an exact amount. The amount field only ever holds digits. */
+  const setBudget = (choice: string, currency = data.budgetCurrency, amount = data.budgetAmount) => {
+    const digits = amount.replace(/[٠-٩]/g, digit => String(digit.charCodeAt(0) - 0x660)).replace(/[۰-۹]/g, digit => String(digit.charCodeAt(0) - 0x6f0)).replace(/[^0-9]/g, "").slice(0, 9)
+    const ranged = BUDGET_RANGES[currency]
+    // A range only exists in the currencies it was written for.
+    const valid = choice === "custom" || choice === "open" || (ranged && ranged.includes(choice)) ? choice : ""
+    const budget = valid === "custom" ? (Number(digits) > 0 ? `${digits} ${currency}` : "") : valid === "open" ? BUDGET_OPEN : valid ? `${valid} ${currency}` : ""
+    setData(previous => ({ ...previous, budgetChoice: valid, budgetCurrency: currency, budgetAmount: digits, budget }))
+    setQuoteErrors(previous => { const next = { ...previous }; delete next.budget; return next })
   }
   const next = () => setStep((s) => Math.min(3, s + 1))
-  const canNext = step === 1 ? !!data.service : step === 2 ? !!data.timeline && quoteBudgetSchema.safeParse(data.budget).success : true
+  const canNext = step === 1 ? services.length > 0 : step === 2 ? !!data.timeline && !!data.budget : true
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -61,7 +73,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
     setServerError(null)
 
     const fd = new FormData(e.currentTarget)
-    const payload: Record<string, unknown> = { ...data }
+    const payload: Record<string, unknown> = { ...data, service }
     fd.forEach((v, k) => (payload[k] = String(v)))
 
     const parsed = quoteSchema.safeParse(payload)
@@ -137,36 +149,37 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
         {/* Step 1: Services */}
         {step === 1 && (
           <div>
-            <h2 className="text-[16px] font-bold text-[var(--color-ink)]">ما نوع الخدمة أو المنظومة التي تحتاجها؟</h2>
+            <h2 className="text-[16px] font-bold text-[var(--color-ink)]">ما الخدمات التي تحتاجها؟</h2>
             <p className="text-[12px] text-[var(--color-text-muted)] mt-1">
-              اختر الخدمة الأقرب لاحتياجك — يمكنك توضيح كافة التفاصيل الإضافية في الخطوة الأخيرة
+              يمكنك اختيار أكثر من خدمة، مثل موقع وتطبيق معًا. التفاصيل تكتبها في الخطوة الأخيرة.
             </p>
-            <div className="mt-5 grid sm:grid-cols-2 gap-3.5">
+            <div className="mt-5 grid sm:grid-cols-2 gap-3.5" role="group" aria-label="الخدمات المطلوبة">
               {servicesList.map((s: any) => {
-                const isSelected = data.service === s.slug || data.service === s.title
-                const descText = s.desc || s.description || ""
+                const isSelected = services.includes(s.slug) || services.includes(s.title)
                 return (
                   <button
                     key={s.slug}
                     type="button"
-                    onClick={() => setData((d) => ({ ...d, service: s.slug }))}
+                    onClick={() => toggleService(s.slug)}
                     aria-pressed={isSelected}
-                    className={`quote-choice text-right p-4 rounded-2xl border text-[13px] transition-all ${
+                    className={`quote-choice quote-service text-right p-4 rounded-2xl border text-[13px] transition-all ${
                       isSelected
                         ? "bg-[var(--color-ink)] text-white border-[var(--color-primary-light)] ring-2 ring-[var(--color-primary-light)]/30 shadow-md"
                         : "bg-white border-[var(--color-border)] hover:border-[var(--color-primary-light)]/40 hover:bg-[var(--color-card-soft)]/20"
                     }`}
                   >
                     <span className="font-bold flex items-center gap-3">
-                      <Icon name={s.icon} size={22} /> {s.title}
+                      <Icon name={s.icon} size={22} /> <span className="flex-1">{s.title}</span>
+                      <span className="quote-check" aria-hidden="true">{isSelected && <Icon name="check" size={14} />}</span>
                     </span>
                     <span className={`block text-[11.5px] mt-1.5 leading-relaxed ${isSelected ? "text-slate-300" : "text-[var(--color-text-muted)]"}`}>
-                      {descText.slice(0, 65)}...
+                      {s.desc || s.description || ""}
                     </span>
                   </button>
                 )
               })}
             </div>
+            {services.length > 1 && <p className="quote-selected-count" aria-live="polite">اخترت {services.length} خدمات</p>}
           </div>
         )}
 
@@ -174,15 +187,33 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
         {step === 2 && (
           <div className="space-y-7">
             <section className="quote-budget-section" aria-labelledby="quote-budget-title">
-              <h2 id="quote-budget-title">ما الميزانية التي تضعها لمشروعك؟</h2>
-              <p>اكتب المبلغ المناسب لك واختر عملته. هذه ميزانيتك التقديرية وليست سعرًا نهائيًا للخدمة.</p>
-              <div className="quote-budget-fields">
-                <Input id="q-budget" name="budgetAmount" label="الميزانية المتوقعة" required inputMode="decimal" dir="ltr" placeholder="اكتب المبلغ" value={data.budgetAmount} onChange={event => updateBudget(event.target.value, data.budgetCurrency)} onBlur={() => {
-                  const result = quoteBudgetSchema.safeParse(data.budget)
-                  if (!result.success) setQuoteErrors(previous => ({ ...previous, budget: result.error.issues[0].message }))
-                }} error={quoteErrors.budget} />
-                <SearchSelect id="q-currency" label="العملة" title="اختر العملة" searchPlaceholder="ابحث باسم العملة أو رمزها" options={currencyOptions} value={data.budgetCurrency} onChange={currency => updateBudget(data.budgetAmount, currency)} />
+              <h2 id="quote-budget-title">ما الميزانية التقريبية لمشروعك؟</h2>
+              <p>اختر النطاق الأقرب. هذه ميزانيتك التقديرية وليست سعرًا نهائيًا للخدمة.</p>
+              <div className="quote-currency" role="group" aria-label="عملة الميزانية">
+                {Object.keys(BUDGET_RANGES).map(code => (
+                  <button key={code} type="button" aria-pressed={data.budgetCurrency === code && data.budgetChoice !== "custom"} onClick={() => setBudget(data.budgetChoice === "custom" ? "" : data.budgetChoice, code)}>
+                    {currencyOptions.find(option => option.value === code)?.label ?? code}
+                  </button>
+                ))}
               </div>
+              <div className="quote-ranges" role="group" aria-label="نطاق الميزانية">
+                {(BUDGET_RANGES[data.budgetCurrency] ?? BUDGET_RANGES.SAR).map(range => (
+                  <button key={range} type="button" className="quote-choice" aria-pressed={data.budgetChoice === range} onClick={() => setBudget(range, BUDGET_RANGES[data.budgetCurrency] ? data.budgetCurrency : "SAR")}>
+                    <bdi>{range}</bdi>
+                  </button>
+                ))}
+                <button type="button" className="quote-choice" aria-pressed={data.budgetChoice === "open"} onClick={() => setBudget("open")}>{BUDGET_OPEN}</button>
+                <button type="button" className="quote-choice" aria-pressed={data.budgetChoice === "custom"} onClick={() => setBudget("custom")}>مبلغ آخر</button>
+              </div>
+              {data.budgetChoice === "custom" && (
+                <div className="quote-budget-fields">
+                  <Input id="q-budget" label="المبلغ" inputMode="numeric" pattern="[0-9]*" autoComplete="off" dir="ltr" placeholder="مثال: 7500" value={data.budgetAmount}
+                    onChange={event => setBudget("custom", data.budgetCurrency, event.target.value)}
+                    // Only a filled-in amount can be wrong; an untouched field is not an error.
+                    error={data.budgetAmount && !data.budget ? "يجب أن يكون المبلغ أكبر من صفر" : undefined} />
+                  <SearchSelect id="q-currency" label="العملة" title="اختر العملة" searchPlaceholder="ابحث باسم العملة أو رمزها" options={currencyOptions} value={data.budgetCurrency} onChange={currency => setBudget("custom", currency)} />
+                </div>
+              )}
             </section>
             <div>
               <h2 className="text-[16px] font-bold text-[var(--color-ink)]">الجدول الزمني المستهدف للإطلاق</h2>
@@ -257,7 +288,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
               error={quoteErrors.details}
             />
 
-            <input type="hidden" name="service" value={data.service} />
+            <input type="hidden" name="service" value={service} />
             <input type="hidden" name="budget" value={data.budget} />
             <input type="hidden" name="timeline" value={data.timeline} />
           </div>
@@ -280,6 +311,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
 
           {step < 3 ? (
             <button
+              key="next"
               type="button"
               onClick={next}
               disabled={!canNext}
@@ -289,6 +321,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
             </button>
           ) : (
             <button
+              key="submit"
               type="submit"
               disabled={isSubmitting}
               className="quote-forward"

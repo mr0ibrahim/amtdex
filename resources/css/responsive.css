@@ -87,8 +87,8 @@
  .reference-design-scope .reference-intro .product-window-content {padding:16px;}
  .reference-design-scope .reference-intro .product-window h2 {font-size:22px;}
  .reference-design-scope .product-badge {max-width:78%;padding:9px;gap:7px;}
- .reference-design-scope .product-badge strong {font-size:10px;line-height:1.7;}
- .reference-design-scope .product-badge small {font-size:9px;line-height:1.6;}
+ .reference-design-scope .product-badge strong {font-size:11px;line-height:1.7;}
+ .reference-design-scope .product-badge small {font-size:10.5px;line-height:1.6;}
 }
 @media(max-width:359px) {
  .reference-design-scope .site-brand-sub {display:none;}

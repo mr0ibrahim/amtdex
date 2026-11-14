@@ -57,7 +57,7 @@ export function Seo({
 }: SeoProps) {
   const baseUrl = typeof window !== "undefined" ? window.location.href : DEFAULT_SITE
   const url = new URL(canonical ?? baseUrl, baseUrl).href
-  const desc = description ?? "Amtdex — شركة حلول برمجية متكاملة: مواقع، تطبيقات، أنظمة ERP، ذكاء اصطناعي وأمن سيبراني."
+  const desc = description ?? "AMTDEX SOFT — شركة حلول برمجية متكاملة: مواقع، تطبيقات، أنظمة ERP، ذكاء اصطناعي وأمن سيبراني."
   const image = ogImage ?? DEFAULT_OG
   const keywordContent = (keywords ?? [])
     .map((keyword) => keyword.trim())
@@ -104,7 +104,7 @@ export function Seo({
   return (
     <Helmet>
       {/* Title & Core Metadata */}
-      <title>{title.includes("AMTDEX") || title.includes("Amtdex") ? title : `${title} | AMTDEX SOFT`}</title>
+      <title>{title.includes("AMTDEX") || title.includes("AMTDEX SOFT") ? title : `${title} | AMTDEX SOFT`}</title>
       <meta name="description" content={desc} />
       {keywordContent ? <meta name="keywords" content={keywordContent} /> : null}
       {noindex ? null : <link rel="canonical" href={url} />}

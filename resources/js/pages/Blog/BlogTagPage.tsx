@@ -47,14 +47,14 @@ export function BlogTagPage() {
   const tagDesc =
     currentTag?.meta_description ||
     currentTag?.description ||
-    `تصفح كافة المقالات والدروس التقنية المرتبطة بوسم #${tagName} على مدونة Amtdex.`
+    `تصفح كافة المقالات والدروس التقنية المرتبطة بوسم #${tagName} على مدونة AMTDEX SOFT.`
   const canonicalUrl = getBlogUrl(`/tags/${currentTag?.slug || slug}`)
   const schema = tagRes?.json_ld
 
   return (
     <div data-motion-group className="blog-surface min-h-screen bg-[var(--color-bg-subtle)] text-[var(--color-ink)]">
       <Seo
-        title={`${tagTitle} | مدونة Amtdex`}
+        title={`${tagTitle} | مدونة AMTDEX SOFT`}
         description={tagDesc}
         canonical={canonicalUrl}
         jsonLd={schema}

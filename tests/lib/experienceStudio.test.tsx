@@ -20,7 +20,7 @@ it("switches sample products and supports RTL keyboard navigation", async () => 
   expect(screen.getByRole("tabpanel")).toHaveTextContent("المواعيد هذا الأسبوع")
   await user.keyboard("{Home}")
   expect(screen.getByRole("tab", { name: /متجر إلكتروني/ })).toHaveAttribute("aria-selected", "true")
-  expect(screen.getByRole("link", { name: /لنصمّم مشروعك/ })).toHaveAttribute("href", "/quote")
+  expect(screen.getByRole("link", { name: /ابدأ مشروعك/ })).toHaveAttribute("href", "/quote")
 })
 
 

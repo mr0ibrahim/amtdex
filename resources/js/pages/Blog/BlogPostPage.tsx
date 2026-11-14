@@ -225,11 +225,11 @@ export function BlogPostPage() {
       },
       author: {
         "@type": "Person",
-        name: post.author?.name || "فريق Amtdex التقني",
+        name: post.author?.name || "فريق AMTDEX SOFT التقني",
       },
       publisher: {
         "@type": "Organization",
-        name: "Amtdex",
+        name: "AMTDEX SOFT",
         logo: { "@type": "ImageObject", url: "https://amtdex.com/logo.png" },
       },
     },
@@ -241,7 +241,7 @@ export function BlogPostPage() {
     <div data-motion-group className="blog-reader min-h-screen bg-[var(--color-bg-subtle)] text-[var(--color-ink)] relative selection:bg-[var(--color-gold)] selection:text-[var(--color-ink)]">
       {/* Dynamic SEO Tags */}
       <Seo
-        title={`${post.meta_title || post.title} | مدونة Amtdex`}
+        title={`${post.meta_title || post.title} | مدونة AMTDEX SOFT`}
         description={post.meta_description || post.summary || post.title}
         canonical={postCanonical}
         ogImage={shareImage}
@@ -347,7 +347,7 @@ export function BlogPostPage() {
               </div>
               <div>
                 <p className="text-sm font-bold text-[var(--color-ink)] leading-tight">
-                  {post.author?.name || "فريق Amtdex التقني"}
+                  {post.author?.name || "فريق AMTDEX SOFT التقني"}
                 </p>
                 <p className="text-xs text-[var(--color-text-muted)]">
                   {post.author?.bio || "هندسة البرمجيات والحلول الرقمية المتطورة"}
@@ -526,7 +526,7 @@ export function BlogPostPage() {
               <div className="space-y-2 text-center sm:text-right flex-1">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <h3 className="text-lg font-bold text-[var(--color-ink)] font-heading">
-                    عن الكاتب: {post.author?.name || "فريق Amtdex التقني"}
+                    عن الكاتب: {post.author?.name || "فريق AMTDEX SOFT التقني"}
                   </h3>
                   {post.author?.social_links && (
                     <div className="flex items-center justify-center sm:justify-end gap-2">
@@ -570,7 +570,7 @@ export function BlogPostPage() {
                   )}
                 </div>
                 <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
-                  {post.author?.bio || "مهندس في Amtdex متخصص في هندسة التطبيقات الحديثة، الحلول السحابية، واستراتيجيات الـ SEO التقنية المتقدمة."}
+                  {post.author?.bio || "مهندس في AMTDEX SOFT متخصص في هندسة التطبيقات الحديثة، الحلول السحابية، واستراتيجيات الـ SEO التقنية المتقدمة."}
                 </p>
               </div>
             </div>
@@ -725,7 +725,7 @@ export function BlogPostPage() {
               <p className="text-xs text-white/80 leading-relaxed">
                 انضم إلى نخبة المهندسين والتقنيين ليصلك أحدث المقالات والتحليلات المتعمقة مباشرةً إلى بريدك.
               </p>
-              <form onSubmit={(e) => { e.preventDefault(); toast.show("شكراً لاشتراكك في نشرة Amtdex!"); }} className="space-y-2">
+              <form onSubmit={(e) => { e.preventDefault(); toast.show("شكراً لاشتراكك في نشرة AMTDEX SOFT!"); }} className="space-y-2">
                 <input
                   type="email"
                   required

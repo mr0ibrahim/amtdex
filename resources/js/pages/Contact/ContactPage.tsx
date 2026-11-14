@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { whatsappUrl } from "@/lib/site"
 import { SearchSelect } from "@/components/ui/SearchSelect"
 import { countryOptions } from "@/data/selectOptions"
 import { Container } from "@/components/layout/Container"
@@ -106,7 +107,7 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
     <Container className="contact-page">
       <header data-motion-group className="contact-page-hero">
         <div>
-          <span className="contact-eyebrow"><span /> تواصل مع AMTDEX</span>
+          <span className="contact-eyebrow"><span /> تواصل مع AMTDEX SOFT</span>
           <h1 data-motion="rise">لنتحدث عن<br />مشروعك القادم.</h1>
           <div className="contact-hero-tag">فكرتك تبدأ بمحادثة <Icon name="sparkles" size={16} /></div>
           <p>لديك فكرة أو سؤال؟ اكتب لنا ما تحتاجه، أو اختر وسيلة التواصل التي تناسبك. سنساعدك على تحديد الخطوة التالية بوضوح.</p>
@@ -148,7 +149,7 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
           <p className="contact-privacy"><Icon name="shield" size={16} /> نستخدم بياناتك للتواصل بشأن رسالتك.</p>
         </form>
         <aside className="contact-channels" aria-label="وسائل التواصل المباشر">
-          <a href="https://wa.me/967784440429" target="_blank" rel="noreferrer" className="contact-whatsapp-card"><span className="contact-channel-icon"><Icon name="phone" size={24} /></span><div><small>تفضّل محادثة مباشرة؟</small><strong>تحدث معنا عبر واتساب</strong><span>أخبرنا بفكرتك وابدأ الحوار.</span></div><Icon name="actionArrow" size={20} /></a>
+          <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="contact-whatsapp-card"><span className="contact-channel-icon"><Icon name="phone" size={24} /></span><div><small>تفضّل محادثة مباشرة؟</small><strong>تحدث معنا عبر واتساب</strong><span>أخبرنا بفكرتك وابدأ الحوار.</span></div><Icon name="actionArrow" size={20} /></a>
           <section className="contact-details-card"><span className="contact-card-kicker">نبقى على تواصل</span><h2>اختر طريقتك للتواصل</h2><div className="contact-method-list">{contacts.map(item => {
             const content = <><span className="contact-method-icon"><Icon name={item.icon} size={19} /></span><span className="contact-method-copy"><small>{item.label}</small><strong dir={item.ltr ? "ltr" : undefined}>{item.value}</strong></span>{item.href && <Icon name="actionArrow" size={15} />}</>
             return item.href ? <a key={item.label} href={item.href} target={item.href.startsWith("https:") ? "_blank" : undefined} rel={item.href.startsWith("https:") ? "noreferrer" : undefined} className="contact-method">{content}</a> : <div key={item.label} className="contact-method">{content}</div>

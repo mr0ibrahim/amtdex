@@ -55,7 +55,7 @@ export function BlogCategoryPage() {
   return (
     <div data-motion-group className="blog-surface min-h-screen bg-[var(--color-bg-subtle)] text-[var(--color-ink)]">
       <Seo
-        title={`${categoryTitle} | مدونة Amtdex`}
+        title={`${categoryTitle} | مدونة AMTDEX SOFT`}
         description={categoryDesc}
         canonical={canonicalUrl}
         jsonLd={schema}

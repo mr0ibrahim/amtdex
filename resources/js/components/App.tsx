@@ -116,6 +116,8 @@ export default function App() {
                   <Route path="/blog/posts/:slug" element={<PublicPage path="/blog"><BlogPostPage /></PublicPage>} />
                   <Route path="/blog/categories/:slug" element={<PublicPage path="/blog"><BlogCategoryPage /></PublicPage>} />
                   <Route path="/blog/tags/:slug" element={<PublicPage path="/blog"><BlogTagPage /></PublicPage>} />
+                  {/* Unknown addresses keep the site header, footer and navigation. */}
+                  <Route path="*" element={<NotFoundPage />} />
                 </Route>
                 {dashboardElsewhere ? (
                   <>

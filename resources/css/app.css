@@ -17,6 +17,7 @@
 @import "./glass.css";
 @import "./search-select.css";
 @import "./scroll-motion.css";
+@import "./ux.css";
 
 @font-face {
   font-family: "IBM Plex Sans Arabic";
@@ -205,7 +206,7 @@ h1, h2, h3, .font-display {
 .site-brand-mark{width:10px;height:10px;flex:none;border-radius:3px;background:#6a2c9f;transform:rotate(-12deg)}
 .site-brand-text{display:flex;flex-direction:column;gap:4px;line-height:1.2}
 .site-brand-name{font-size:18px;font-weight:700;letter-spacing:-.03em;white-space:nowrap}
-.site-brand-sub{font-size:10px;color:#68577c}
+.site-brand-sub{font-size:11px;color:#68577c}
 .site-nav-track{display:none;align-items:center;gap:4px;margin-inline:auto;min-width:0}
 .site-header .site-nav,.site-menu .site-nav{display:flex;align-items:center;position:relative;min-height:44px;padding:10px 14px;border-radius:12px;color:#68577c;font-size:14px;font-weight:500;line-height:1.5;text-decoration:none;transition:background-color 160ms ease,color 160ms ease;-webkit-tap-highlight-color:transparent}
 .site-header .site-nav{white-space:nowrap;flex-shrink:0}
@@ -236,7 +237,7 @@ h1, h2, h3, .font-display {
 .site-menu-cta{display:flex;align-items:center;justify-content:space-between;min-height:48px;margin-top:10px;padding:12px 16px;border-radius:12px;background:#31144d;color:#fff;text-decoration:none;font-size:14px;font-weight:600}
 @keyframes site-menu-fade{from{opacity:0}to{opacity:1}}
 @keyframes site-menu-enter{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:399px){.site-header{padding:10px 10px 0}.site-header-bar{padding:10px;gap:8px}.site-brand-name{font-size:15px}.site-brand-sub{font-size:9px}.site-header .site-header-cta{padding-inline:12px}.site-menu{inset-inline:10px}.site-menu-caption{display:none}}
+@media(max-width:399px){.site-header{padding:10px 10px 0}.site-header-bar{padding:10px;gap:8px}.site-brand-name{font-size:15px}.site-brand-sub{font-size:10.5px}.site-header .site-header-cta{padding-inline:12px}.site-menu{inset-inline:10px}.site-menu-caption{display:none}}
 @media(min-width:1200px){.site-nav-track{display:flex}.site-header .site-nav-quiet{display:flex}.site-nav-burger,.site-menu,.site-menu-dim{display:none}.site-header-bar{gap:12px}.site-header-actions{margin-inline-start:0}}
 @media(prefers-reduced-motion:reduce){.site-menu,.site-menu-dim{animation:none}.site-nav-burger span,.site-header .site-nav,.site-menu .site-nav{transition:none}}
 

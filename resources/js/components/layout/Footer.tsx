@@ -1,4 +1,5 @@
 import { Icon } from "@/components/ui/Icon"
+import { whatsappUrl } from "@/lib/site"
 import { Link } from "react-router-dom"
 import { SERVICES as SEED_SERVICES } from "@/data/services"
 import { useServicesQuery } from "@/lib/queries"
@@ -15,7 +16,7 @@ export function Footer(_props: { onToast: (m: string) => void }) {
   const services = apiServices?.length ? apiServices : SEED_SERVICES
   const columns = [
     { title: "خدماتنا", links: shown("/services") ? services.map(s => ({ label: s.title, to: `/services/${s.slug}` })) : [] },
-    { title: "اكتشف AMTDEX", links: [
+    { title: "اكتشف امتدكس سوفت", links: [
       { label: "من نحن", to: "/about" },
       { label: "أعمالنا", to: "/portfolio" },
       { label: "ابدأ مشروعك", to: "/quote" },
@@ -51,7 +52,7 @@ export function Footer(_props: { onToast: (m: string) => void }) {
               <div className="footer-contact-row"><span><Icon name="phone" size={15} /> أرقام التواصل</span><a href="tel:+967784440429" dir="ltr">+967 784 440 429</a><a href="tel:+967784440428" dir="ltr">+967 784 440 428</a></div>
               <div className="footer-contact-row"><span><Icon name="mapPin" size={15} /> مقرّنا</span><p>{city}</p></div>
             </address>
-            <a className="footer-whatsapp" href="https://wa.me/967784440429" target="_blank" rel="noreferrer">تواصل عبر واتساب <Icon name="actionArrow" size={16} /></a>
+            <a className="footer-whatsapp" href={whatsappUrl()} target="_blank" rel="noreferrer">تواصل عبر واتساب <Icon name="actionArrow" size={16} /></a>
           </div>
         </div>
         <div className="footer-bottom"><span>© {new Date().getFullYear()} AMTDEX SOFT. جميع الحقوق محفوظة.</span><span>{city}</span></div>

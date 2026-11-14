@@ -4,6 +4,7 @@ import { type ReactNode } from "react"
 import { PublicLink as Link } from "@/cms/PublicLink"
 import { ProductScene } from "./ProductScene"
 import { Icon } from "@/components/ui/Icon"
+import { whatsappUrl } from "@/lib/site"
 import { ServiceCollection } from "@/components/ui/ServiceCollection"
 import { Testimonials } from "./Testimonials"
 import { GuaranteeBanner } from "@/pages/Home/GuaranteeBanner"
@@ -33,8 +34,8 @@ export function HomePage(_props: { onToast: (m: string) => void }) {
           <h1>{hero.title.split("\n").map((line, index) => <span key={line}>{index > 0 && <br />}{line}</span>)}</h1>
           <p className="reference-hero-description">{hero.lede}</p>
           <div className="hero-actions">
-            <Link to="/contact" className="btn btn-ink brand-cta">{hero.cta}<Icon name="launch" size={17} /></Link>
-            <Link to="/portfolio" className="btn btn-line brand-cta"><Icon name="play" size={15} />{hero.cta2}</Link>
+            <Link to="/quote" className="btn btn-ink brand-cta">ابدأ مشروعك<Icon name="launch" size={17} /></Link>
+            <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="btn btn-line brand-cta"><Icon name="whatsapp" size={17} />واتساب</a>
           </div>
           <TechnologyMarquee />
         </div>{scene && <ProductScene />}</div>
@@ -56,7 +57,7 @@ export function HomePage(_props: { onToast: (m: string) => void }) {
     {gate("contact", <section data-motion-group className="page-container page-container--wide contact-news-section" aria-labelledby="contact-news-title">
       <div className="contact-news-card contact-only-card">
         <div className="contact-art" data-motion="vector"><BrandArtwork kind="contact" /></div>
-        <div className="contact-news-copy"><span className="contact-news-eyebrow">خطوتك القادمة تبدأ هنا</span><h2 id="contact-news-title" data-motion="rise">عندك فكرة؟<br />لنحوّلها إلى مشروع.</h2><p className="contact-news-lede">أخبرنا بما تحتاجه، ولنناقش معًا الخطوة التالية.</p><div className="contact-news-actions"><Link to="/quote" className="contact-news-primary brand-cta">ابدأ مشروعك<Icon name="actionArrow" size={18} /></Link><Link to="/contact" className="contact-news-secondary">تحدث معنا<Icon name="actionArrow" size={18} /></Link></div></div>
+        <div className="contact-news-copy"><span className="contact-news-eyebrow">خطوتك القادمة تبدأ هنا</span><h2 id="contact-news-title" data-motion="rise">عندك فكرة؟<br />لنحوّلها إلى مشروع.</h2><p className="contact-news-lede">أخبرنا بما تحتاجه، ولنناقش معًا الخطوة التالية.</p><div className="contact-news-actions"><Link to="/quote" className="contact-news-primary brand-cta">ابدأ مشروعك<Icon name="actionArrow" size={18} /></Link><a href={whatsappUrl()} target="_blank" rel="noreferrer" className="contact-news-secondary"><Icon name="whatsapp" size={18} />واتساب</a></div></div>
       </div>
     </section>)}
   </div>

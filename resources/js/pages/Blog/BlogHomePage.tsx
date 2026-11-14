@@ -109,13 +109,13 @@ export function BlogHomePage() {
       : {
           "@context": "https://schema.org",
           "@type": "WebSite",
-          name: settings?.blog_title ?? "المدونة التقنية — Amtdex",
+          name: settings?.blog_title ?? "المدونة التقنية — AMTDEX SOFT",
           description:
             settings?.blog_description ?? "مقالات وأدلة عملية في هندسة البرمجيات والذكاء الاصطناعي.",
           url: blogUrl,
           publisher: {
             "@type": "Organization",
-            name: "Amtdex",
+            name: "AMTDEX SOFT",
             url: "https://amtdex.com",
             logo: { "@type": "ImageObject", url: "https://amtdex.com/logo.png" },
           },
@@ -148,7 +148,7 @@ export function BlogHomePage() {
             <div className="max-w-3xl">
               <span className="eyebrow">رؤى وأدلة تقنية متقدمة</span>
               <h1 data-motion="rise" data-motion-delay="120" className="mt-4 text-3xl sm:text-5xl font-semibold text-[var(--color-ink)] leading-[1.2]">
-                {settings?.blog_title ?? "مدونة Amtdex التقنية"}
+                {settings?.blog_title ?? "مدونة AMTDEX SOFT التقنية"}
               </h1>
               <p className="mt-4 text-[15px] sm:text-[17px] text-[var(--color-text-muted)] leading-relaxed">
                 {settings?.blog_description ?? "أفكار عملية وتجارب حية في هندسة البرمجيات، الذكاء الاصطناعي، والأنظمة السحابية — من واقع مشاريعنا الحقيقية."}
