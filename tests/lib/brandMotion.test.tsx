@@ -6,8 +6,8 @@ import { useBrandMotion } from "@/hooks/useBrandMotion"
 const { mount, revert } = vi.hoisted(() => ({ mount: vi.fn(), revert: vi.fn() }))
 vi.mock("@/lib/motion/brandScenes", () => ({ mountBrandScenes: mount }))
 
-function Scene({ route = "/" }: { route?: string }) {
-  const ref = useBrandMotion(route)
+function Scene({ route = "/", paused = false }: { route?: string; paused?: boolean }) {
+  const ref = useBrandMotion(route, paused)
   return <div ref={ref}><section data-motion-group><div data-motion="rise">Content</div></section></div>
 }
 afterEach(() => { cleanup(); vi.resetAllMocks() })
@@ -30,4 +30,15 @@ it("does not mount a stale async scene after StrictMode cleanup", async () => {
   expect(view.getByText("Content")).toBeVisible()
   view.unmount()
   expect(revert).toHaveBeenCalledTimes(1)
+})
+
+it("reverts active scenes when paused and restores them on resume", async () => {
+  mount.mockReturnValue(revert)
+  const view = render(<Scene />)
+  await waitFor(() => expect(mount).toHaveBeenCalledTimes(1))
+  view.rerender(<Scene paused />)
+  expect(revert).toHaveBeenCalledTimes(1)
+  expect(view.getByText("Content")).toBeVisible()
+  view.rerender(<Scene />)
+  await waitFor(() => expect(mount).toHaveBeenCalledTimes(2))
 })

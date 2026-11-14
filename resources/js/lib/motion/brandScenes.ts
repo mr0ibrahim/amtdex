@@ -13,21 +13,24 @@ export function mountBrandScenes(root: HTMLElement) {
     if (!context.conditions?.motion) return
     const desktop = context.conditions.desktop
     const scenes = new Map<Element, { context: gsap.Context; dispose?: () => void }>()
+    const automaticTargets = "main h2, main .service-bento-card, main .service-card, main .blog-article-card, main .da-card, main .contact-details-card, main .contact-next-card, main .contact-hours, main .quote-choice, main .portfolio-card, main .da-works > a"
     let initialScan = true
     const scan = () => {
       scenes.forEach((scene, el) => {
         if (!root.contains(el)) { scene.dispose?.(); scene.context.revert(); scenes.delete(el) }
       })
-      root.querySelectorAll<HTMLElement | SVGElement>("[data-motion-group] [data-motion], [data-motion=\"vector\"], [data-parallax], [data-tilt], [data-progress], [data-stack], [data-process-viewport], [data-scroll-composition]").forEach(el => {
+      root.querySelectorAll<HTMLElement | SVGElement>("[data-motion-group] [data-motion], [data-motion=\"vector\"], [data-parallax], [data-tilt], [data-progress], [data-stack], [data-process-viewport], [data-scroll-composition], " + automaticTargets).forEach(el => {
         if (scenes.has(el)) return
-        if (!el.hasAttribute("data-motion") && !el.hasAttribute("data-progress") && !el.hasAttribute("data-stack") && !el.hasAttribute("data-scroll-composition") && !desktop) return
+        const automatic = el.matches(automaticTargets) && !el.hasAttribute("data-motion")
+        if (automatic && el.closest("[data-motion], [data-tilt], [data-stack]")) return
+        if (!el.hasAttribute("data-motion") && !el.hasAttribute("data-progress") && !el.hasAttribute("data-stack") && !el.hasAttribute("data-scroll-composition") && !automatic && !desktop) return
         const rect = el.getBoundingClientRect()
         const initiallyVisible = (initialScan || window.scrollY === 0) && rect.top < window.innerHeight && rect.bottom > 0
         let dispose: (() => void) | undefined
         // Own contexts explicitly so repeated tab changes don't retain detached nodes.
         const scene = gsap.context(() => {
-          if (el.hasAttribute("data-motion") && !initiallyVisible) {
-            const type = el.dataset.motion
+          if ((el.hasAttribute("data-motion") || automatic) && !initiallyVisible) {
+            const type = el.dataset.motion || "rise"
             const from: gsap.TweenVars = type === "vector" ? { opacity: 0, y: 20, scale: .96 } : type === "bar" ? { scaleY: 0 }
               : type === "reveal" ? { opacity: 0, y: 18, clipPath: "inset(0% 0% 100% 0%)" }
               : type === "screen" ? { opacity: 0, y: desktop ? 48 : 24, scale: .97, rotationX: desktop ? 5 : 0, transformPerspective: 1000 }
@@ -36,9 +39,10 @@ export function mountBrandScenes(root: HTMLElement) {
               : type === "fade" ? { opacity: 0 } : { opacity: 0, y: desktop ? 34 : 18 }
             gsap.fromTo(el, from, {
               opacity: 1, y: 0, scale: 1, rotationX: 0, ...(type === "reveal" ? { clipPath: "inset(0% 0% 0% 0%)" } : {}), ...(type === "draw" ? { strokeDashoffset: 0 } : {}),
-              duration: type === "screen" ? 1 : type === "bar" ? .8 : .7, ease: "power3.out",
+              duration: type === "screen" ? 1 : type === "bar" ? .8 : .85, ease: "power3.out",
               delay: Math.min(Number(el.dataset.motionDelay || 0) / 1000, .55) * (desktop ? 1 : .6),
               immediateRender: false,
+              ...(automatic ? { clearProps: "opacity,transform" } : {}),
               scrollTrigger: { trigger: el, start: "top 92%", once: true },
             })
           }

@@ -3,11 +3,11 @@ import { useEffect, useRef } from "react"
 let scenes: Promise<typeof import("@/lib/motion/brandScenes")> | undefined
 
 /** Load motion only inside the public layout; leave readable HTML on failure. */
-export function useBrandMotion(routeKey = "") {
+export function useBrandMotion(routeKey = "", paused = false) {
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const root = ref.current
-    if (!root) return
+    if (!root || paused) return
     let disposed = false
     let revert: (() => void) | undefined
     const start = () => {
@@ -24,6 +24,6 @@ export function useBrandMotion(routeKey = "") {
       if (idle) window.cancelIdleCallback(job); else window.clearTimeout(job)
       revert?.()
     }
-  }, [routeKey])
+  }, [routeKey, paused])
   return ref
 }

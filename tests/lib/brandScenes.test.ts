@@ -85,3 +85,13 @@ it("does not hide first-viewport copy when it is inserted after the initial scan
   expect(headline.style.opacity).toBe("")
   stop()
 })
+
+it("reveals public cards without explicit motion markers and avoids nested scene ownership", () => {
+  const root = document.createElement("div")
+  root.innerHTML = '<main><article class="blog-article-card">Public card</article><div data-stack><h2>Owned by stack</h2></div></main>'
+  const stop = mountBrandScenes(root)
+  expect(state.fromTo).toHaveBeenCalledTimes(2)
+  const cardCall = state.fromTo.mock.calls.find(call => call[0] === root.querySelector("article"))
+  expect(cardCall?.[2].clearProps).toBe("opacity,transform")
+  stop()
+})
