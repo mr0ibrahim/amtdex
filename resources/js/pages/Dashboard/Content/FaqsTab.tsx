@@ -1,3 +1,6 @@
+import { QueryError } from "@/components/ui/QueryError"
+import type { FaqData } from "@/types/content"
+import { Modal } from "@/components/ui/Modal"
 import { useState } from "react"
 import {
   useFaqsQuery,
@@ -6,17 +9,10 @@ import {
   useDeleteFaqMutation,
 } from "@/lib/queries"
 
-interface FaqData {
-  id?: number | string
-  question: string
-  answer: string
-  category: string
-  sort_order: number
-  is_published: boolean
-}
+
 
 export function FaqsTab() {
-  const { data: faqs = [], isLoading } = useFaqsQuery()
+  const { data: faqs = [], isLoading, error: loadError, refetch } = useFaqsQuery({ fallback: false })
   const createMutation = useCreateFaqMutation()
   const updateMutation = useUpdateFaqMutation()
   const deleteMutation = useDeleteFaqMutation()
@@ -94,6 +90,7 @@ export function FaqsTab() {
 
   return (
     <div className="bg-white border border-[var(--color-border)] rounded-2xl p-5 space-y-4">
+      <QueryError error={loadError ?? deleteMutation.error} onRetry={() => { void refetch() }} />
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-[15px] font-bold text-[var(--color-ink)]">الأسئلة الشائعة ({faqs.length})</h2>
@@ -158,7 +155,7 @@ export function FaqsTab() {
 
       {/* FAQ Modal */}
       {editingFaq && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-center p-4 overflow-y-auto">
+        <Modal label="محرر السؤال" onClose={() => setEditingFaq(null)}>
           <div className="bg-white rounded-2xl max-w-[500px] w-full p-6 space-y-4 shadow-2xl border border-[var(--color-border)] my-8">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
               <h3 className="text-[15px] font-bold text-[var(--color-ink)]">
@@ -259,7 +256,7 @@ export function FaqsTab() {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   )

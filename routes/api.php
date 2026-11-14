@@ -1,6 +1,7 @@
 
 <?php
 
+use App\Http\Controllers\Api\V1\AdminContentController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AuditLogController;
 use App\Http\Controllers\Api\V1\Blog\AdminBlogController;
@@ -69,6 +70,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/leads', [LeadController::class, 'index'])->middleware('role:admin,editor,viewer');
         Route::patch('/leads/{id}/status', [LeadController::class, 'updateStatus'])->middleware('role:admin,editor');
         Route::delete('/leads/{id}', [LeadController::class, 'destroy'])->middleware('role:admin');
+
+        // Staff collections are independent of public visibility and publication filters.
+        Route::get('/admin/content/{resource}', [AdminContentController::class, 'index'])
+            ->where('resource', 'services|projects|testimonials|faqs|team|clients')
+            ->middleware('role:admin,editor');
 
         // Content Management: Services
         Route::post('/services', [ContentController::class, 'storeService'])->middleware('role:admin,editor');

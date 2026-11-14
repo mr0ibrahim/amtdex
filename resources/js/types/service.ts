@@ -15,3 +15,6 @@ export type Service = {
   sort_order?: number
   is_published?: boolean
 }
+
+/** Editing keeps the original URL until a successful rename. */
+export type ServiceDraft = Service & { originalSlug?: string }

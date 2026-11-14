@@ -8,7 +8,6 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { type CountryCode } from "@/lib/phone"
 import { API } from "@/lib/api"
 import { createQuoteSchema, quoteBudgetSchema, zodErrors } from "@/lib/schemas"
-import { addLead } from "@/lib/leadStore"
 import { SERVICES as SEED_SERVICES } from "@/data/services"
 import { useServicesQuery } from "@/lib/queries"
 
@@ -82,21 +81,6 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
 
     try {
       await API.quote(parsed.data)
-      addLead({
-        id: Date.now().toString(),
-        name: String(payload.name ?? ""),
-        email: String(payload.email ?? ""),
-        phone: parsed.data.phone,
-        message: String(payload.details ?? payload.message ?? "—"),
-        status: "جديد",
-        createdAt: new Date().toISOString(),
-        source: "quote",
-        meta: {
-          service: String(payload.service ?? ""),
-          budget: parsed.data.budget,
-          timeline: String(payload.timeline ?? ""),
-        },
-      })
       onToast("تم استلام طلبك. سنعود إليك.")
       nav("/contact")
     } catch (err: any) {

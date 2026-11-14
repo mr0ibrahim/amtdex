@@ -6,7 +6,7 @@ import { useTestimonialsQuery } from "@/lib/queries"
 
 export function Testimonials() {
   const { data: dbData } = useTestimonialsQuery()
-  const rawList = dbData && dbData.length > 0 ? dbData : TESTIMONIALS
+  const rawList = dbData ?? TESTIMONIALS
   const list = rawList.map((item: any) => ({
     name: item.author || item.name,
     text: item.content || item.text,
@@ -17,6 +17,8 @@ export function Testimonials() {
   const safeIndex = index < list.length ? index : 0
   const quote = list[safeIndex] || list[0]
   const move = (direction: number) => setIndex(current => (current + direction + list.length) % list.length)
+
+  if (!list.length) return null
 
   return (
     <section className="testimonial-panel" aria-label="آراء العملاء">

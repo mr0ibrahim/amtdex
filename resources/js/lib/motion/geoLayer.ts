@@ -18,7 +18,6 @@ export const GEO_CARD_SELECTOR = [
   ".process-card",
   ".guarantee-card",
   ".testimonial-panel",
-  ".screen-gallery-card",
   ".reference-stats-inner",
   ".blog-article-card",
   ".blog-follow-card",

@@ -8,7 +8,6 @@ import { Input, Textarea } from "@/components/ui/Input"
 import { API } from "@/lib/api"
 import { createContactSchema, zodErrors } from "@/lib/schemas"
 import { type CountryCode } from "@/lib/phone"
-import { addLead } from "@/lib/leadStore"
 
 const subjectOptions = [
   { value: "web", label: "موقع أو متجر إلكتروني" },
@@ -84,7 +83,6 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
     Object.entries(parsed.data).forEach(([key, value]) => fd.set(key, value ?? ""))
     try {
       await API.contact(fd)
-      addLead({ id: Date.now().toString(), name: vals.name, email: vals.email, phone: parsed.data.phone, subject: vals.subject, message: vals.message, status: "جديد", createdAt: new Date().toISOString(), source: "contact", meta: {} })
       setSuccess(true)
       onToast("تم إرسال رسالتك بنجاح — سنرد عليك خلال ساعات العمل")
       form.reset()

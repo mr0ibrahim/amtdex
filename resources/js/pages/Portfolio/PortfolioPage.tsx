@@ -8,7 +8,7 @@ import { CardSkeleton } from "@/components/ui/Skeleton"
 
 export function PortfolioPage() {
   const { data: apiProjects, isLoading } = useProjectsQuery()
-  const PROJECTS = apiProjects && apiProjects.length > 0 ? apiProjects : SEED_PROJECTS
+  const PROJECTS = apiProjects ?? SEED_PROJECTS
   const [filter, setFilter] = useState<string>("الكل")
 
   const cats = useMemo(() => ["الكل", ...Array.from(new Set(PROJECTS.map((p) => p.cat)))], [PROJECTS])

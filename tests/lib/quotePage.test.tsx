@@ -4,7 +4,6 @@ import { MemoryRouter } from "react-router-dom"
 import { QuotePage } from "@/pages/Quote/QuotePage"
 const state = vi.hoisted(() => ({ quote: vi.fn() }))
 vi.mock("@/lib/api", () => ({ API: { quote: state.quote } }))
-vi.mock("@/lib/leadStore", () => ({ addLead: vi.fn() }))
 vi.mock("@/lib/queries", () => ({ useServicesQuery: () => ({ data: [{ slug: "web", title: "تطوير المواقع", icon: "web", description: "تصميم وتطوير المواقع" }] }) }))
 afterEach(cleanup)
 beforeEach(() => state.quote.mockReset())

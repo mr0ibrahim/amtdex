@@ -1,108 +1,38 @@
-import * as React from "react"
-import { Icon } from "./Icon"
+import { useEffect, useRef, type ReactNode } from "react"
+import { createPortal } from "react-dom"
 
-export interface ModalProps {
-  isOpen: boolean
-  onClose: () => void
-  title?: React.ReactNode
-  description?: React.ReactNode
-  children: React.ReactNode
-  footer?: React.ReactNode
-  maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl"
-}
+const FOCUSABLE = 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]'
 
-const maxWidthMap = {
-  sm: "max-w-sm",
-  md: "max-w-md",
-  lg: "max-w-lg",
-  xl: "max-w-xl",
-  "2xl": "max-w-2xl",
-}
-
-export function Modal({
-  isOpen,
-  onClose,
-  title,
-  description,
-  children,
-  footer,
-  maxWidth = "lg",
-}: ModalProps) {
-  // Handle ESC key press
-  React.useEffect(() => {
-    if (!isOpen) return
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose()
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
+/** Shared editor shell: focus stays in the dialog and returns to its trigger on close. */
+export function Modal({ label, onClose, children }: { label: string; onClose: () => void; children: ReactNode }) {
+  const panel = useRef<HTMLDivElement>(null)
+  const close = useRef(onClose)
+  useEffect(() => { close.current = onClose }, [onClose])
+  useEffect(() => {
+    const previousFocus = document.activeElement as HTMLElement | null
+    const previousOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown)
-      document.body.style.overflow = ""
+    const node = panel.current!
+    const elements = () => Array.from(node.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(el => !el.closest('[hidden], [aria-hidden="true"]'))
+    ;(elements()[0] ?? node).focus()
+    const keydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { event.preventDefault(); close.current(); return }
+      if (event.key !== "Tab") return
+      const items = elements()
+      const first = items[0], last = items.at(-1)
+      if (!first) { event.preventDefault(); node.focus(); return }
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === node)) { event.preventDefault(); last?.focus() }
+      else if (!event.shiftKey && (document.activeElement === last || document.activeElement === node)) { event.preventDefault(); first.focus() }
     }
-  }, [isOpen, onClose])
-
-  if (!isOpen) return null
-
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
-    >
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        className="fixed inset-0 bg-[#461667]/50 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in"
-      />
-
-      {/* Dialog Card */}
-      <div
-        className={`relative w-full ${maxWidthMap[maxWidth]} bg-white rounded-[24px] border border-[var(--color-border)] p-6 sm:p-8 shadow-[var(--shadow-modal)] z-10 transition-all duration-300 transform scale-100 animate-in zoom-in-95`}
-      >
-        {/* Close Button */}
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="إغلاق النافذة"
-          className="absolute top-5 left-5 size-8 rounded-full bg-[var(--color-lavender)]/50 hover:bg-[var(--color-lavender)] text-[var(--color-ink)] flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
-        >
-          <Icon name="x" size={16} />
-        </button>
-
-        {/* Header */}
-        {(title || description) && (
-          <div className="mb-5 pe-8">
-            {title && (
-              <h3 className="text-[20px] font-bold text-[var(--color-ink)] leading-snug">
-                {title}
-              </h3>
-            )}
-            {description && (
-              <p className="mt-1.5 text-[13px] text-[var(--color-text-muted)] leading-relaxed">
-                {description}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Content Body */}
-        <div className="text-[14px] text-[var(--color-ink)]">
-          {children}
-        </div>
-
-        {/* Footer */}
-        {footer && (
-          <div className="mt-6 pt-4 border-t border-[var(--color-border)] flex items-center justify-end gap-3">
-            {footer}
-          </div>
-        )}
-      </div>
-    </div>
-  )
+    node.addEventListener("keydown", keydown)
+    return () => {
+      node.removeEventListener("keydown", keydown)
+      document.body.style.overflow = previousOverflow
+      if (previousFocus?.isConnected) previousFocus.focus()
+    }
+  }, [])
+  return createPortal(<div className="fixed inset-0 z-50 bg-black/50 grid place-items-center p-4 overflow-y-auto"
+    onMouseDown={event => { if (event.target === event.currentTarget) close.current() }}>
+    <div ref={panel} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} className="w-full flex justify-center outline-none">{children}</div>
+  </div>, document.body)
 }

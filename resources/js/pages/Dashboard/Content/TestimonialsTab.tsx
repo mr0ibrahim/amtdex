@@ -1,3 +1,6 @@
+import { QueryError } from "@/components/ui/QueryError"
+import type { TestimonialData } from "@/types/content"
+import { Modal } from "@/components/ui/Modal"
 import { useState } from "react"
 import {
   useTestimonialsQuery,
@@ -7,20 +10,10 @@ import {
   useUploadMediaMutation,
 } from "@/lib/queries"
 
-interface TestimonialData {
-  id?: number | string
-  author: string
-  role: string
-  company: string
-  content: string
-  avatar?: string
-  rating: number
-  sort_order: number
-  is_active: boolean
-}
+
 
 export function TestimonialsTab() {
-  const { data: testimonials = [], isLoading } = useTestimonialsQuery()
+  const { data: testimonials = [], isLoading, error: loadError, refetch } = useTestimonialsQuery({ fallback: false })
   const createMutation = useCreateTestimonialMutation()
   const updateMutation = useUpdateTestimonialMutation()
   const deleteMutation = useDeleteTestimonialMutation()
@@ -130,6 +123,7 @@ export function TestimonialsTab() {
 
   return (
     <div className="bg-white border border-[var(--color-border)] rounded-2xl p-5 space-y-4">
+      <QueryError error={loadError ?? deleteMutation.error} onRetry={() => { void refetch() }} />
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-[15px] font-bold text-[var(--color-ink)]">آراء وتقييمات العملاء ({testimonials.length})</h2>
@@ -218,7 +212,7 @@ export function TestimonialsTab() {
 
       {/* Testimonial Modal */}
       {editingItem && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-center p-4 overflow-y-auto">
+        <Modal label="محرر رأي العميل" onClose={() => setEditingItem(null)}>
           <div className="bg-white rounded-2xl max-w-[500px] w-full p-6 space-y-4 shadow-2xl border border-[var(--color-border)] my-8">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
               <h3 className="text-[15px] font-bold text-[var(--color-ink)]">
@@ -369,7 +363,7 @@ export function TestimonialsTab() {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   )

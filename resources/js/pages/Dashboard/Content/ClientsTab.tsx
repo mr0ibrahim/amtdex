@@ -1,3 +1,6 @@
+import { QueryError } from "@/components/ui/QueryError"
+import type { ClientData } from "@/types/content"
+import { Modal } from "@/components/ui/Modal"
 import { useState } from "react"
 import {
   useClientsQuery,
@@ -7,17 +10,10 @@ import {
   useUploadMediaMutation,
 } from "@/lib/queries"
 
-interface ClientData {
-  id?: number | string
-  name: string
-  logo: string
-  url?: string
-  sort_order: number
-  is_active: boolean
-}
+
 
 export function ClientsTab() {
-  const { data: clients = [], isLoading } = useClientsQuery()
+  const { data: clients = [], isLoading, error: loadError, refetch } = useClientsQuery({ fallback: false })
   const createMutation = useCreateClientMutation()
   const updateMutation = useUpdateClientMutation()
   const deleteMutation = useDeleteClientMutation()
@@ -118,6 +114,7 @@ export function ClientsTab() {
 
   return (
     <div className="bg-white border border-[var(--color-border)] rounded-2xl p-5 space-y-4">
+      <QueryError error={loadError ?? deleteMutation.error} onRetry={() => { void refetch() }} />
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-[15px] font-bold text-[var(--color-ink)]">الشركاء والعملاء ({clients.length})</h2>
@@ -187,7 +184,7 @@ export function ClientsTab() {
 
       {/* Client Modal */}
       {editingClient && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-center p-4 overflow-y-auto">
+        <Modal label="محرر العميل" onClose={() => setEditingClient(null)}>
           <div className="bg-white rounded-2xl max-w-[460px] w-full p-6 space-y-4 shadow-2xl border border-[var(--color-border)] my-8">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
               <h3 className="text-[15px] font-bold text-[var(--color-ink)]">
@@ -306,7 +303,7 @@ export function ClientsTab() {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   )

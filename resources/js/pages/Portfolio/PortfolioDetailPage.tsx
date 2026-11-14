@@ -21,7 +21,7 @@ const DEFAULT_METRICS = [
 export function PortfolioDetailPage() {
   const { slug } = useParams()
   const { data: apiProjects, isLoading } = useProjectsQuery()
-  const PROJECTS = (apiProjects && apiProjects.length > 0) ? apiProjects : SEED_PROJECTS
+  const PROJECTS = apiProjects ?? SEED_PROJECTS
   const p = PROJECTS.find((x) => x.slug === slug)
 
   if (isLoading) {

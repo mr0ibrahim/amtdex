@@ -3,7 +3,8 @@ import { useMemo, useState } from "react"
 import { createSearchIndex, useDebouncedValue } from "@/routing/search"
 import { Icon, type IconName } from "@/components/ui/Icon"
 import { useDashboardStatsQuery } from "@/lib/queries"
-import { getSession } from "@/lib/auth"
+import { dashboardNavigation } from "@/routing/dashboard"
+import { useSession } from "@/lib/auth"
 
 type ModuleCard = {
   to: string
@@ -39,24 +40,23 @@ const MODULE_GROUPS: Array<{ title: string; items: ModuleCard[] }> = [
   },
 ]
 
-const RECENT = [
-  { title: "مراجعة طلب تواصل جديد", meta: "وصل حديثاً", to: "/dashboard/leads", icon: "mail" as IconName },
-  { title: "تحديث مقال المدونة", meta: "قبل ساعة", to: "/dashboard/blog", icon: "pen" as IconName },
-  { title: "ضبط بيانات SEO للخدمات", meta: "اليوم", to: "/dashboard/seo", icon: "globe" as IconName },
-]
-
 export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
   void onToast
-  const session = getSession()
+  const session = useSession()
   const navigate = useNavigate()
   const [query, setQuery] = useState("")
   const debouncedQuery = useDebouncedValue(query, 160)
+  const groups = useMemo(() => {
+    const allowed = new Set(dashboardNavigation(session?.user.role).flatMap(group => group.items.map(item => item.to)))
+    return MODULE_GROUPS.map(group => ({ ...group, items: group.items.filter(item => item.to === "/" || allowed.has(item.to)) })).filter(group => group.items.length > 0)
+  }, [session?.user.role])
+  const shortcuts = groups.flatMap(group => group.items).filter(item => item.to !== "/").slice(0, 3)
   const moduleIndex = useMemo(
     () => createSearchIndex(
-      MODULE_GROUPS.flatMap((group) => group.items.map((item) => ({ ...item, group: group.title }))),
+      groups.flatMap((group) => group.items.map((item) => ({ ...item, group: group.title }))),
       (item) => `${item.title} ${item.desc} ${item.group}`,
     ),
-    [],
+    [groups],
   )
   const moduleHits = moduleIndex(debouncedQuery)
   const { data: stats, isLoading, error, refetch } = useDashboardStatsQuery()
@@ -145,7 +145,7 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
         <div className="space-y-3">
           {error && (
             <div className="dash-panel flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-[var(--color-gold)]/30 bg-[rgb(255_191_8_/_8%)]">
-              <p className="text-[12px] text-[var(--color-ink)]">تعذر مزامنة الإحصائيات الحية — عرض آخر قيم محفوظة.</p>
+              <p className="text-[12px] text-[var(--color-ink)]">تعذر تحميل الإحصائيات الحية. أعد المحاولة.</p>
               <button
                 type="button"
                 onClick={() => refetch()}
@@ -193,7 +193,7 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
 
       <div className="grid xl:grid-cols-[minmax(0,1fr)_300px] gap-5 items-start">
         <div className="space-y-6">
-          {MODULE_GROUPS.map((group) => ({
+          {groups.map((group) => ({
             ...group,
             items: debouncedQuery.trim()
               ? group.items.filter((item) => moduleHits.some((hit) => hit.to === item.to && hit.title === item.title))
@@ -225,11 +225,11 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-[14px] font-bold text-[var(--color-ink)]">تابع من حيث توقفت</h2>
             <span className="text-[10px] font-bold text-[var(--color-primary)] bg-[var(--color-card-soft)] px-2 py-1 rounded-full">
-              حديث
+              اختصارات
             </span>
           </div>
           <div className="mt-4 grid gap-3">
-            {RECENT.map((item) => (
+            {shortcuts.map((item) => (
               <div key={item.title} className="dash-recent-card">
                 <div className="flex items-start gap-3">
                   <span className="dash-module-ico !size-10 !rounded-xl">
@@ -237,7 +237,7 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
                   </span>
                   <div className="min-w-0">
                     <div className="text-[13px] font-bold text-[var(--color-ink)] leading-snug">{item.title}</div>
-                    <div className="text-[11px] text-[var(--color-text-faint)] mt-1">{item.meta}</div>
+                    <div className="text-[11px] text-[var(--color-text-faint)] mt-1">{item.desc}</div>
                   </div>
                 </div>
                 <Link

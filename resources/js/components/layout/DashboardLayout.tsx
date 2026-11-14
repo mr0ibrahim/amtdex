@@ -2,35 +2,10 @@ import "../../../css/dashboard.css"
 import { useEffect, useMemo, useState } from "react"
 import { useDebouncedValue } from "@/routing/search"
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
-import { Icon, type IconName } from "@/components/ui/Icon"
-import { getSession, logout } from "@/lib/auth"
+import { Icon } from "@/components/ui/Icon"
+import { useSession, logout } from "@/lib/auth"
+import { dashboardNavigation } from "@/routing/dashboard"
 import { getMainUrl } from "@/lib/subdomain"
-
-type NavItem = { to: string; label: string; icon: IconName; end?: boolean }
-type NavGroup = { label: string; items: NavItem[] }
-
-const NAV_GROUPS: NavGroup[] = [
-  {
-    label: "مساحة العمل",
-    items: [
-      { to: "/dashboard", label: "الرئيسية", icon: "home", end: true },
-      { to: "/dashboard/blog", label: "المدونة", icon: "pen" },
-      { to: "/dashboard/content", label: "المحتوى", icon: "layers" },
-      { to: "/dashboard/site", label: "الموقع", icon: "layers" },
-      { to: "/dashboard/leads", label: "الطلبات", icon: "mail" },
-      { to: "/dashboard/media", label: "الوسائط", icon: "image" },
-    ],
-  },
-  {
-    label: "النمو والتشغيل",
-    items: [
-      { to: "/dashboard/seo", label: "تحسين الظهور", icon: "globe" },
-      { to: "/dashboard/users", label: "المستخدمون", icon: "users" },
-      { to: "/dashboard/audit", label: "سجل النشاط", icon: "history" },
-      { to: "/dashboard/settings", label: "الإعدادات", icon: "settings" },
-    ],
-  },
-]
 
 function SidebarContent({
   filter,
@@ -45,16 +20,9 @@ function SidebarContent({
   searchValue?: string
   onSearch?: (value: string) => void
 }) {
-  const session = getSession()
+  const session = useSession()
   const nav = useNavigate()
-  const groups = useMemo(() => {
-    const q = filter.trim()
-    if (!q) return NAV_GROUPS
-    return NAV_GROUPS.map((g) => ({
-      ...g,
-      items: g.items.filter((i) => i.label.includes(q)),
-    })).filter((g) => g.items.length > 0)
-  }, [filter])
+  const groups = useMemo(() => dashboardNavigation(session?.user.role, filter), [session?.user.role, filter])
 
   const handleLogout = () => {
     logout()
@@ -137,7 +105,7 @@ function SidebarContent({
         </div>
         <div className="dash-status">
           <span className="dash-status-dot" aria-hidden />
-          محرك النظام متصل — جاهز للعمل
+          مساحة إدارة الموقع
         </div>
         <a
           href={getMainUrl("/")}
@@ -155,7 +123,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [navQuery, setNavQuery] = useState("")
   const navFilter = useDebouncedValue(navQuery, 120)
-  const session = getSession()
+  const session = useSession()
   const location = useLocation()
   const isOverview = location.pathname === "/dashboard" || location.pathname === "/dashboard/overview"
   const content = children ?? <Outlet />

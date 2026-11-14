@@ -6,7 +6,7 @@ import { Icon } from "./Icon"
 /** One card system for the homepage preview and the full service catalogue. */
 export function ServiceCollection({ limit }: { limit?: number }) {
   const { data } = useServicesQuery()
-  const services = data?.length ? data : SERVICES
+  const services = data ?? SERVICES
   return <div className="reference-service-grid">
     {services.slice(0, limit).map(service => <Link key={service.slug} to={`/services/${service.slug}`} className="reference-service-card">
       <span className="reference-service-icon"><Icon name={service.icon} size={28} /></span>
