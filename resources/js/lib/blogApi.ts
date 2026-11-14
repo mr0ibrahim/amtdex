@@ -20,6 +20,9 @@ export interface PaginatedResult<T> {
   }
 }
 
+export type AdminPostCounts = Record<"all" | "published" | "draft" | "scheduled" | "archived", number>
+export interface AdminPostsResult extends PaginatedResult<BlogPost> { counts?: AdminPostCounts }
+
 export type JsonLdNode = Record<string, unknown>
 
 export interface PostDetailResponse {
@@ -129,7 +132,8 @@ export const BlogAPI = {
 
   // ── Admin API ──
   getAdminStats: async () => {
-    return apiClient<{ stats: BlogStats }>("/admin/blog/stats", "GET")
+    const response = await apiClient<BlogStats | { stats: BlogStats }>("/admin/blog/stats", "GET")
+    return "stats" in response ? response : { stats: response }
   },
 
   getAdminPosts: async (params?: {
@@ -146,12 +150,12 @@ export const BlogAPI = {
     if (params?.status) q.set("status", params.status)
     if (params?.category_id) q.set("category_id", String(params.category_id))
     if (params?.author_id) q.set("author_id", String(params.author_id))
-    if (params?.search) q.set("search", params.search)
+    if (params?.search) q.set("q", params.search)
     if (params?.sort_by) q.set("sort_by", params.sort_by)
     if (params?.sort_dir) q.set("sort_dir", params.sort_dir)
 
     const url = `/admin/blog/posts${q.toString() ? `?${q.toString()}` : ""}`
-    return apiClient<PaginatedResult<BlogPost>>(url, "GET")
+    return apiClient<AdminPostsResult>(url, "GET")
   },
 
   getAdminPost: async (id: number) => {
