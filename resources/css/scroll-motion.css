@@ -6,7 +6,7 @@
       --reveal-rise: 24px;
       animation: reveal-scroll linear both;
       animation-timeline: view(block 76px 0px);
-      animation-range: cover calc(var(--ri, 0) * 12px) cover 100%;
+      animation-range: cover calc(var(--rd, 0) * 1px) cover 100%;
     }
     .brand-motion[data-reveal-mode="timeline"] [data-reveal-kind="block"] { --reveal-rise: 32px; }
     .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) [data-reveal="initial"] { animation-name: reveal-initial; }
@@ -19,8 +19,8 @@
 
   /* Native scrolling is untouched. Browsers without view timelines use visibility changes. */
   .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal] {
-    transition: opacity .28s ease-out, transform .38s cubic-bezier(.22, 1, .36, 1), translate .25s ease-out, border-color .25s, background-color .25s, color .25s;
-    transition-delay: calc(var(--ri, 0) * 35ms), calc(var(--ri, 0) * 35ms), 0s, 0s, 0s, 0s;
+    transition: opacity 280ms var(--ease-out), transform 380ms var(--ease-out), translate var(--hover) var(--ease-out), scale var(--press) var(--ease-out), border-color var(--hover) ease, background-color var(--hover) ease, color var(--hover) ease;
+    transition-delay: calc(var(--rd, 0) * 3ms), calc(var(--rd, 0) * 3ms), 0s, 0s, 0s, 0s, 0s;
   }
   .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal-state="below"] { opacity: 0; transform: translate3d(0, 24px, 0); }
   .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal-state="above"] { opacity: 0; transform: translate3d(0, -16px, 0); transition-delay: 0s; }
@@ -64,3 +64,17 @@ html[dir="ltr"] .reading-progress > div { transform-origin: left center; }
 @supports (animation-timeline: scroll()) {
   .reading-progress > div { animation: page-progress linear both; animation-timeline: scroll(root block); }
 }
+
+/* Reduced motion means gentler, not absent: elements still fade with the scroll, nothing moves. */
+@media (prefers-reduced-motion: reduce) {
+  @supports (animation-timeline: view()) {
+    .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) [data-reveal] {
+      animation: reveal-fade linear both !important;
+      animation-timeline: view(block 76px 0px) !important;
+      animation-range: cover 0% cover 100% !important;
+    }
+    .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) [data-reveal="initial"] { animation-name: reveal-fade-initial !important; }
+  }
+}
+@keyframes reveal-fade { 0% { opacity: 0; } 12%, 94% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes reveal-fade-initial { 0%, 94% { opacity: 1; } 100% { opacity: 0; } }

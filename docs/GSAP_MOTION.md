@@ -161,3 +161,22 @@ rise out through the top, tied to the scroll position.
   play the same motion.
 
 GSAP remains only for the project showcase card interaction, loaded on demand.
+
+### Motion standards pass
+
+Applied the rules from Emil Kowalski's animation skills (github.com/emilkowalski/skill):
+
+- Shared tokens in `tokens.css`: `--ease-out`, `--ease-in-out`, `--ease-drawer`, `--press`
+  (160ms), `--hover` (200ms). The newer stylesheets use them instead of one-off curves.
+- Press feedback (`scale: .97`) on every button-like control, on pointer-down.
+- Hover timing on cards is 200ms (was 500ms). Hover motion is gated to hover-capable pointers.
+- One entrance per card: the scroll reveal. Sheen and edge light answer hover/touch focus only.
+- Row stagger is non-uniform (`--rd`: 0, 14, 25, 33, 38).
+- Dropdown grows from its field (`transform-origin`), opens instantly from the keyboard,
+  and the phone sheet uses the drawer curve at 400ms.
+- Reduced motion keeps an opacity-only reveal instead of removing motion entirely.
+- Touch baseline: no tap highlight, `touch-action: manipulation`, 16px form fields (no iOS
+  zoom), `viewport-fit=cover` and `interactive-widget=resizes-content`.
+
+Kept against the skill's advice, at the owner's request: reveals replay in both directions
+instead of firing once.

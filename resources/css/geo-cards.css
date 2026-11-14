@@ -5,7 +5,7 @@
   --geo-violet: #7a3cc2;
   --geo-violet-deep: #461667;
   --geo-violet-soft: #b996e6;
-  --geo-ease: cubic-bezier(.22, 1, .36, 1);
+  --geo-ease: var(--ease-out);
 }
 
 :where([data-geo-card]) { position: relative; }
@@ -13,7 +13,7 @@
   --geo-ink: var(--geo-violet);
   --geo-figure-opacity: .5;
   isolation: isolate;
-  transition: translate .5s var(--geo-ease), box-shadow .5s var(--geo-ease), border-color .35s, background-color .35s, color .35s;
+  transition: translate var(--hover) var(--ease-out), scale var(--press) var(--ease-out), box-shadow var(--hover) ease, border-color var(--hover) ease, background-color var(--hover) ease, color var(--hover) ease;
 }
 
 /* ── Light surface ── */
@@ -56,7 +56,7 @@
   inset: 0;
   background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 0%), color-mix(in srgb, var(--geo-ink) 20%, transparent), transparent 70%);
   opacity: 0;
-  transition: opacity .4s;
+  transition: opacity var(--hover) ease;
 }
 .geo-figure {
   position: absolute;
@@ -65,7 +65,7 @@
   width: clamp(150px, 58%, 300px);
   aspect-ratio: 1;
   opacity: var(--geo-figure-opacity);
-  transition: opacity .5s;
+  transition: opacity var(--hover) ease;
 }
 /* Nothing on a card animates on its own. An endless animation on every visible card keeps the
    browser restyling and re-layering the page on every frame, which is what made scrolling heavy.
@@ -78,7 +78,6 @@
 .geo-layer[data-geo="grid"] .geo-figure { top: -10%; inset-inline-end: -8%; }
 .geo-layer .geo-node { fill: currentColor; stroke: none; }
 
-[data-geo-live="true"] > .geo-layer .geo-line { animation: geo-line 1.8s .2s cubic-bezier(.4, 0, .2, 1) 1 both; }
 @keyframes geo-line { 0% { transform: translateX(-100%); opacity: 0; } 15%, 85% { opacity: 1; } 100% { transform: translateX(365%); opacity: 0; } }
 @keyframes geo-line-again { 0% { transform: translateX(-100%); opacity: 0; } 15%, 85% { opacity: 1; } 100% { transform: translateX(365%); opacity: 0; } }
 
@@ -91,7 +90,7 @@
   }
   .brand-motion main [data-geo-card="dark"]:hover { box-shadow: inset 0 1px 0 #ffffff2e, 0 44px 80px -40px #2a0f4a; }
   .brand-motion main [data-geo-card]:hover > .geo-layer::after { opacity: 1; }
-  .brand-motion main [data-geo-card]:hover > .geo-layer .geo-line { animation: geo-line-again 1.4s cubic-bezier(.4, 0, .2, 1) 1 both; }
+  .brand-motion main [data-geo-card]:hover > .geo-layer .geo-line { animation: geo-line-again 1.4s var(--ease-in-out) 1 both; }
   .brand-motion main [data-geo-card]:hover > .geo-layer .geo-figure { opacity: calc(var(--geo-figure-opacity) + .3); }
   /* Service cards flood violet on hover; strokes follow. */
   .brand-motion main :is(.reference-service-card, .service-card, .service-bento-card)[data-geo-card]:hover {
@@ -113,7 +112,7 @@
 }
 .brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-figure { opacity: calc(var(--geo-figure-opacity) + .3); }
 .brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer::after { opacity: 1; }
-.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-line { animation: geo-line-again 1.4s cubic-bezier(.4, 0, .2, 1) 1 both; }
+.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-line { animation: geo-line-again 1.4s var(--ease-in-out) 1 both; }
 .brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card)[data-geo-card]:is([data-geo-active="true"], :active) {
   --geo-ink: #ffffff;
   border-color: #7d43c6;
@@ -125,7 +124,6 @@
 .brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(p, li, .reference-service-link, .service-card-footer) { color: #eee4f8; border-color: #ffffff25; }
 .brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(.reference-service-icon, .service-card-icon, .service-card-arrow) { background: #fff; color: #6a2c9f; }
 .brand-motion[data-geo-touch="true"] main [data-geo-card]:not([data-geo-size="lg"]):active { scale: .98; }
-.brand-motion[data-geo-touch="true"] main [data-geo-card] { transition: translate .5s var(--geo-ease), scale .25s, box-shadow .5s var(--geo-ease), border-color .35s, background-color .35s, color .35s; }
 
 /* ── Scroll progress ── */
 .scroll-progress { position: fixed; inset-inline: 0; top: 0; z-index: 60; height: 3px; pointer-events: none; }

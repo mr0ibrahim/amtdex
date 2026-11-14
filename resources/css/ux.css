@@ -28,8 +28,8 @@
 @media (max-width: 639px) { .quote-ranges { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* ── Floating WhatsApp ── */
-.whatsapp-float { position: fixed; z-index: 45; bottom: max(18px, env(safe-area-inset-bottom)); left: 18px; display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 18px 0 16px; border-radius: 999px; background: #1faa53; color: #fff; font-size: 14.5px; font-weight: 700; box-shadow: 0 14px 30px -12px #0f6b33cc, 0 0 0 1px #ffffff40 inset; transition: translate .3s cubic-bezier(.22, 1, .36, 1), background-color .2s; }
-.whatsapp-float:hover { background: #17924a; translate: 0 -3px; }
+.whatsapp-float { position: fixed; z-index: 45; bottom: max(18px, env(safe-area-inset-bottom)); left: 18px; display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 18px 0 16px; border-radius: 999px; background: #1faa53; color: #fff; font-size: 14.5px; font-weight: 700; box-shadow: 0 14px 30px -12px #0f6b33cc, 0 0 0 1px #ffffff40 inset; transition: translate var(--hover) var(--ease-out), scale var(--press) var(--ease-out), background-color var(--hover) ease; }
+@media (hover: hover) and (pointer: fine) { .whatsapp-float:hover { background: #17924a; translate: 0 -3px; } }
 .whatsapp-float:focus-visible { outline: 3px solid #31144d; outline-offset: 3px; }
 @media (max-width: 639px) {
   .whatsapp-float { left: 14px; width: 54px; min-height: 54px; padding: 0; justify-content: center; }
@@ -62,3 +62,30 @@
 .not-found-links a > span:last-child { font-size: 13.5px; color: #675777; }
 .not-found-icon { display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 8px; border-radius: 12px; background: #f1e8fc; color: #6a2c9f; }
 @media (max-width: 639px) { .not-found-links { grid-template-columns: minmax(0, 1fr); } }
+
+/* ── Motion and touch baseline (after Emil Kowalski's animation standards) ── */
+
+/* Every pressable thing answers the press itself, on pointer-down, not on release. */
+.brand-motion :is(.btn, .brand-cta, .site-header-cta, .site-menu-cta, .quote-forward, .quote-back, .quote-choice, .quote-currency button, .da-filters button, .ss-trigger, .ss-option, .project-quote-link, .guarantee-action, .contact-news-primary, .contact-news-secondary, .footer-whatsapp),
+.whatsapp-float { transition: scale var(--press) var(--ease-out), translate var(--hover) var(--ease-out), transform var(--hover) var(--ease-out), background-color var(--hover) ease, color var(--hover) ease, border-color var(--hover) ease, box-shadow var(--hover) ease; }
+.brand-motion :is(.btn, .brand-cta, .site-header-cta, .site-menu-cta, .quote-forward, .quote-back, .quote-choice, .quote-currency button, .da-filters button, .ss-trigger, .project-quote-link, .guarantee-action, .contact-news-primary, .contact-news-secondary, .footer-whatsapp):active,
+.whatsapp-float:active { scale: .97; }
+.brand-motion main [data-geo-card]:not([data-geo-size="lg"]):active { scale: .985; }
+
+/* Touch: no grey flash on tap, no double-tap delay, no accidental text selection on controls. */
+html { -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
+:is(a, button, [role="button"], [role="option"]) { touch-action: manipulation; }
+:is(button, [role="button"], [role="option"]) { -webkit-user-select: none; user-select: none; }
+
+/* A field under 16px makes iOS zoom the whole page when it is focused. */
+.brand-motion :is(main, .site-footer) :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]) { font-size: 16px; }
+
+/* Hover motion belongs to devices that hover; on touch it sticks after a tap. */
+@media (hover: none) {
+  .site-nav:hover::after { transform: scaleX(0); }
+  .site-nav.is-active:hover::after { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-motion :is(.btn, .brand-cta, .quote-choice, .ss-trigger):active, .whatsapp-float:active, .brand-motion main [data-geo-card]:active { scale: none; }
+}

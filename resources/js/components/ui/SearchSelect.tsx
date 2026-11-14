@@ -52,7 +52,8 @@ export function SearchSelect({
   const [query, setQuery] = useState("")
   const [active, setActive] = useState(0)
   const [sheet, setSheet] = useState(() => typeof window !== "undefined" && !!window.matchMedia?.(SHEET_QUERY).matches)
-  const [place, setPlace] = useState<{ top: number; left: number; width: number; maxHeight: number; above: boolean }>()
+  const [place, setPlace] = useState<{ top: number; left: number; width: number; maxHeight: number; above: boolean; origin: string }>()
+  const [instant, setInstant] = useState(false)
   const trigger = useRef<HTMLButtonElement>(null)
   const hidden = useRef<HTMLInputElement>(null)
   const panel = useRef<HTMLDivElement>(null)
@@ -80,8 +81,9 @@ export function SearchSelect({
     onChange?.(next)
     close()
   }
-  const show = () => {
+  const show = (fromKeyboard = false) => {
     if (disabled) return
+    setInstant(fromKeyboard)
     setActive(Math.max(0, options.findIndex(option => option.value === current)))
     setOpen(true)
   }
@@ -115,7 +117,8 @@ export function SearchSelect({
       const flip = below < 260 && above > below
       const width = Math.min(Math.max(rect.width, 300), window.innerWidth - 24)
       const left = Math.min(Math.max(12, rect.right - width), window.innerWidth - width - 12)
-      setPlace({ top: flip ? rect.top - 8 : rect.bottom + 8, left, width, maxHeight: Math.max(220, Math.min(420, flip ? above : below)), above: flip })
+      // The panel grows out of the field that opened it, not out of its own centre.
+      setPlace({ top: flip ? rect.top - 8 : rect.bottom + 8, left, width, maxHeight: Math.max(220, Math.min(420, flip ? above : below)), above: flip, origin: `${Math.round(rect.left + rect.width / 2 - left)}px ${flip ? "100%" : "0%"}` })
     }
     const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(measure) }
     measure()
@@ -164,7 +167,8 @@ export function SearchSelect({
         className={`ss-panel${sheet ? " ss-panel--sheet" : place?.above ? " ss-panel--above" : ""}`}
         role="dialog"
         aria-label={title ?? label ?? placeholder}
-        style={sheet || !place ? undefined : { top: place.top, left: place.left, width: place.width, maxHeight: place.maxHeight }}
+        data-instant={instant}
+        style={sheet || !place ? undefined : { top: place.top, left: place.left, width: place.width, maxHeight: place.maxHeight, transformOrigin: place.origin }}
       >
         {sheet && <div className="ss-sheet-head"><span className="ss-grip" aria-hidden="true" /><strong>{title ?? label ?? placeholder}</strong><button type="button" className="ss-close" onClick={() => close()} aria-label="إغلاق"><Icon name="close" size={18} /></button></div>}
         {withSearch && (
@@ -241,8 +245,8 @@ export function SearchSelect({
         aria-describedby={errorId}
         data-value={current}
         disabled={disabled}
-        onClick={() => (open ? close() : show())}
-        onKeyDown={event => { if (!open && (event.key === "ArrowDown" || event.key === "ArrowUp")) { event.preventDefault(); show() } }}
+        onClick={event => (open ? close() : show(event.detail === 0))}
+        onKeyDown={event => { if (!open && (event.key === "ArrowDown" || event.key === "ArrowUp")) { event.preventDefault(); show(true) } }}
       >
         {selected?.icon && <span className="ss-option-icon" aria-hidden="true">{selected.icon}</span>}
         <span className={`ss-value${selected ? "" : " is-placeholder"}`}>{selected?.label ?? placeholder}</span>

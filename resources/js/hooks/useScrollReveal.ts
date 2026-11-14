@@ -18,6 +18,9 @@ export const supportsScrollTimeline = () => typeof CSS !== "undefined" && !!CSS.
  * only labels elements once (no scroll listeners, no animation frames). Elsewhere an
  * IntersectionObserver switches a state attribute and CSS transitions do the rest.
  */
+/** Stagger steps for places 0-4 in a row, as unitless multipliers (px of scroll, or ×3 ms). */
+const STAGGER = [0, 14, 25, 33, 38]
+
 export function useScrollReveal(ref: RefObject<HTMLDivElement | null>, route: string) {
   useEffect(() => {
     const root = ref.current
@@ -58,7 +61,10 @@ export function useScrollReveal(ref: RefObject<HTMLDivElement | null>, route: st
         }) as HTMLElement[]
         const rtl = getComputedStyle(el).direction === "rtl"
         const order = row.sort((a, b) => (rects.get(a)!.left - rects.get(b)!.left) * (rtl ? -1 : 1)).indexOf(el)
-        el.style.setProperty("--ri", String(Math.max(0, Math.min(order, 4))))
+        const place = Math.max(0, Math.min(order, 4))
+        el.style.setProperty("--ri", String(place))
+        // The gap between neighbours shrinks along the row; an even beat reads as a metronome.
+        el.style.setProperty("--rd", String(STAGGER[place]))
         el.dataset.revealKind = el.matches(GEO_CARD_SELECTOR) || el.matches(SCENES) ? "block" : "text"
         // Already visible content must not jump or fade on mount, restored scroll, or navigation.
         el.dataset.reveal = rect.top < window.innerHeight && rect.bottom > 76 ? "initial" : "both"
@@ -80,7 +86,7 @@ export function useScrollReveal(ref: RefObject<HTMLDivElement | null>, route: st
       cancelAnimationFrame(frame)
       mutations.disconnect()
       observer?.disconnect()
-      seen.forEach(el => { delete el.dataset.reveal; delete el.dataset.revealKind; delete el.dataset.revealState; el.style.removeProperty("--ri") })
+      seen.forEach(el => { delete el.dataset.reveal; delete el.dataset.revealKind; delete el.dataset.revealState; el.style.removeProperty("--ri"); el.style.removeProperty("--rd") })
       seen.clear()
       delete root.dataset.revealMode
     }
