@@ -55,7 +55,7 @@ export function CategoriesTab({ onNotify }: { onNotify: (m: string) => void }) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <QueryError error={loadError} onRetry={() => { void refetch() }} />
+      <QueryError className="md:col-span-3" error={loadError} onRetry={() => { void refetch() }} />
       {/* Create form */}
       <form onSubmit={handleCreate} className="bg-white p-5 rounded-2xl border border-[var(--color-border)] space-y-3 h-fit">
         <h3 className="font-bold text-xs text-[var(--color-ink)]">إضافة تصنيف جديد</h3>

@@ -213,8 +213,8 @@ export function TestimonialsTab() {
       {/* Testimonial Modal */}
       {editingItem && (
         <Modal label="محرر رأي العميل" onClose={() => setEditingItem(null)}>
-          <div className="bg-white rounded-2xl max-w-[500px] w-full p-6 space-y-4 shadow-2xl border border-[var(--color-border)] my-8">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
+          <div className="dash-dialog-card bg-white rounded-2xl max-w-[500px] w-full p-6 space-y-4 shadow-2xl border border-[var(--color-border)] my-8">
+            <div className="dash-dialog-head flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
               <h3 className="text-[15px] font-bold text-[var(--color-ink)]">
                 {editingItem.id ? `تعديل رأي: ${editingItem.author}` : "إضافة رأي عميل جديد"}
               </h3>
@@ -345,7 +345,7 @@ export function TestimonialsTab() {
               <span className="text-[var(--color-ink)] font-medium">عرض في الموقع الرئيسي</span>
             </label>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-[var(--color-border)]">
+            <div className="dash-dialog-actions flex justify-end gap-2 pt-3 border-t border-[var(--color-border)]">
               <button
                 type="button"
                 onClick={() => setEditingItem(null)}

@@ -1,3 +1,4 @@
+import { Modal } from "@/components/ui/Modal"
 import { useState } from "react"
 import {
   useDeleteSeoMutation,
@@ -396,9 +397,9 @@ export function SeoPage() {
       </div>
 
       {editing && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-end sm:place-items-center p-0 sm:p-4">
-          <div className="bg-white rounded-t-3xl sm:rounded-2xl max-w-[540px] w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-[var(--color-border)] max-h-[92vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-2 border-b border-[var(--color-border)]">
+        <Modal label="محرر إعدادات الظهور" onClose={() => setEditing(null)}>
+          <div className="dash-dialog-card bg-white rounded-t-3xl sm:rounded-2xl max-w-[540px] w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-[var(--color-border)] max-h-[92vh] overflow-y-auto">
+            <div className="dash-dialog-head flex items-center justify-between pb-2 border-b border-[var(--color-border)]">
               <h3 className="text-[15px] font-bold text-[var(--color-ink)]">
                 {editing.path ? "تعديل إعدادات SEO للمسار" : "إضافة مسار جديد لمحركات البحث"}
               </h3>
@@ -502,7 +503,7 @@ export function SeoPage() {
               <span>تفعيل noindex (حجب الصفحة عن الأرشفة في محركات البحث)</span>
             </label>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-[var(--color-border)]">
+            <div className="dash-dialog-actions flex justify-end gap-2 pt-3 border-t border-[var(--color-border)]">
               <button
                 type="button"
                 onClick={() => setEditing(null)}
@@ -524,7 +525,7 @@ export function SeoPage() {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   )

@@ -132,7 +132,7 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
       </section>
 
       {isLoading ? (
-        <div className="grid sm:grid-cols-3 gap-3">
+        <div className="dash-stat-grid grid sm:grid-cols-3 gap-3">
           {[1, 2, 3].map((i) => (
             <div key={i} className="dash-panel animate-pulse">
               <div className="h-3 bg-[var(--color-border)] rounded w-1/3" />
@@ -155,7 +155,7 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
               </button>
             </div>
           )}
-          <div className="grid sm:grid-cols-3 gap-3">
+          <div className="dash-stat-grid grid sm:grid-cols-3 gap-3">
             {[
               {
                 k: "المشاريع النشطة",
@@ -176,13 +176,13 @@ export function OverviewPage({ onToast }: { onToast: (m: string) => void }) {
                 icon: "invoice" as IconName,
               },
             ].map((c) => (
-              <div key={c.k} className="dash-panel flex items-start gap-3">
+              <div key={c.k} className="dash-stat-card dash-panel flex items-start gap-3">
                 <span className="dash-module-ico shrink-0">
                   <Icon name={c.icon} size={18} />
                 </span>
                 <div className="min-w-0">
                   <div className="text-[11px] text-[var(--color-text-faint)]">{c.k}</div>
-                  <div className="text-[26px] font-extrabold text-[var(--color-ink)] leading-none mt-1"><bdi className="dash-bidi" dir="ltr">{c.v}</bdi></div>
+                  <div className="dash-stat-value text-[26px] font-extrabold text-[var(--color-ink)] leading-none mt-1"><bdi className="dash-bidi" dir="ltr">{c.v}</bdi></div>
                   <div className="text-[11px] text-[var(--color-text-muted)] mt-2">{c.sub}</div>
                 </div>
               </div>

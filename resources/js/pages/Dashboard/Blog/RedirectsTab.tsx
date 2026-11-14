@@ -93,8 +93,8 @@ export function RedirectsTab({ onNotify }: { onNotify: (m: string) => void }) {
           </div>
         ) : (
           redirects.map((r: BlogRedirect) => (
-            <div key={r.id} className="p-3 bg-white border rounded-xl flex items-center justify-between text-xs font-mono">
-              <div className="flex items-center gap-2">
+            <div key={r.id} className="dash-redirect-row p-3 bg-white border rounded-xl text-xs font-mono">
+              <div className="dash-redirect-paths" dir="ltr">
                 <span className="text-red-500">{r.source_path}</span>
                 <span className="text-gray-400">→</span>
                 <span className="text-emerald-600 font-bold">{r.target_path}</span>

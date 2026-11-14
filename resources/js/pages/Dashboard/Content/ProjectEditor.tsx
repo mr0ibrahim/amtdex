@@ -7,8 +7,8 @@ export function ProjectEditor({ editor }: { editor: ProjectEditorState }) {
   return <>
       {editingProject && (
         <Modal label="محرر المشروع" onClose={closeProject}>
-          <div className="bg-white rounded-2xl max-w-[720px] w-full p-6 space-y-4 shadow-2xl my-8 max-h-[92vh] overflow-y-auto border border-[var(--color-border)]">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
+          <div className="dash-dialog-card bg-white rounded-2xl max-w-[720px] w-full p-6 space-y-4 shadow-2xl my-8 max-h-[92vh] overflow-y-auto border border-[var(--color-border)]">
+            <div className="dash-dialog-head flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
               <h3 className="text-[16px] font-bold text-[var(--color-ink)]">
                 {editingProject.slug ? `تعديل مشروع: ${editingProject.title}` : "إضافة مشروع جديد إلى معرض الأعمال"}
               </h3>
@@ -469,7 +469,7 @@ export function ProjectEditor({ editor }: { editor: ProjectEditorState }) {
               </span>
             </label>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-[var(--color-border)]">
+            <div className="dash-dialog-actions flex justify-end gap-2 pt-3 border-t border-[var(--color-border)]">
               <button
                 type="button"
                 onClick={closeProject}

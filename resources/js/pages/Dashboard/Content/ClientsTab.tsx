@@ -185,8 +185,8 @@ export function ClientsTab() {
       {/* Client Modal */}
       {editingClient && (
         <Modal label="محرر العميل" onClose={() => setEditingClient(null)}>
-          <div className="bg-white rounded-2xl max-w-[460px] w-full p-6 space-y-4 shadow-2xl border border-[var(--color-border)] my-8">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
+          <div className="dash-dialog-card bg-white rounded-2xl max-w-[460px] w-full p-6 space-y-4 shadow-2xl border border-[var(--color-border)] my-8">
+            <div className="dash-dialog-head flex items-center justify-between pb-3 border-b border-[var(--color-border)]">
               <h3 className="text-[15px] font-bold text-[var(--color-ink)]">
                 {editingClient.id ? `تعديل: ${editingClient.name}` : "إضافة شريك أو عميل جديد"}
               </h3>
@@ -285,7 +285,7 @@ export function ClientsTab() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-[var(--color-border)]">
+            <div className="dash-dialog-actions flex justify-end gap-2 pt-3 border-t border-[var(--color-border)]">
               <button
                 type="button"
                 onClick={() => setEditingClient(null)}
