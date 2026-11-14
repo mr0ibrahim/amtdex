@@ -82,3 +82,9 @@
 @media(max-width:1023px) {.contact-page-grid {grid-template-columns:minmax(0,1fr);}.contact-details-card {grid-column:auto;grid-row:auto;}.contact-channels {grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;}.contact-whatsapp-card {min-height:160px;}.contact-details-card {grid-row:span 2;}}
 @media(max-width:639px) {.contact-page-hero {border-radius:22px;padding:24px;gap:24px;grid-template-columns:minmax(0,1fr);}.contact-hero-art {grid-row:auto;justify-self:center;max-width:200px;}.contact-page-hero h1 {font-size:clamp(30px,8vw,40px);}.contact-form-card {padding:24px 20px;}.contact-form-heading h2 {font-size:20px;}.contact-form-symbol {width:44px;height:44px;border-radius:13px;}.contact-fields {gap:24px;}.contact-channels {grid-template-columns:minmax(0,1fr);}.contact-details-card {grid-row:auto;}.contact-submit {width:100%;}.contact-message-hint {flex-wrap:wrap;}.contact-submit-row {flex-direction:column-reverse;gap:12px;}.contact-whatsapp-card,.contact-details-card,.contact-next-card {padding:22px;}.contact-privacy {font-size:10px;}}
 @media(prefers-reduced-motion:reduce) {.contact-page * {animation:none!important;transition:none!important;}}
+.contact-phone-group {display:grid;align-content:start;gap:8px;min-width:0;}
+.contact-form-card .contact-country-label {font-size:11px;color:#796587;}
+.contact-phone-group>select {margin:0;max-width:100%;min-height:44px;font-size:13px;padding-block:10px;}
+.contact-phone-group>div {margin-top:5px;min-width:0;}
+.contact-phone-help {font-size:10px;line-height:1.9;color:#7b6988;}
+@media(max-width:639px) {.contact-phone-group>select {font-size:16px;}}

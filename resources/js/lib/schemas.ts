@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { parseValidPhone, type CountryCode } from "./phone"
 
 // Shared helpers
 const requiredString = (label: string) => z.string().trim().min(1, `${label} مطلوب`)
@@ -9,13 +10,22 @@ const phoneSchema = z
   .min(1, "رقم الجوال مطلوب")
   .regex(/^[0-9+\s-]{7,20}$/, "رقم الجوال غير صحيح (7 إلى 20 رقماً)")
 
-export const contactSchema = z.object({
+export const createContactSchema = (country: CountryCode = "YE") => z.object({
   name: z.string().trim().min(2, "الاسم مطلوب ولا يقل عن حرفين"),
   email: emailSchema,
-  phone: phoneSchema.refine(value => /^\+?[0-9\s-]+$/.test(value) && value.replace(/\D/g, "").length >= 7, "أدخل رقم جوال يحتوي على 7 أرقام على الأقل"),
+  phone: z.string().trim().min(1, "رقم الهاتف مطلوب").transform((value, ctx) => {
+    const phone = parseValidPhone(value, country)
+    if (!phone) {
+      ctx.addIssue({ code: "custom", message: "رقم الهاتف غير صالح. اختر الدولة الصحيحة أو أدخل الرقم مع مفتاحه الدولي." })
+      return z.NEVER
+    }
+    return String(phone.number)
+  }),
   subject: z.string().trim().optional(),
   message: z.string().trim().min(10, "الرسالة يجب ألا تقل عن 10 أحرف"),
 })
+
+export const contactSchema = createContactSchema()
 
 export const newsletterSchema = z.object({
   email: emailSchema,

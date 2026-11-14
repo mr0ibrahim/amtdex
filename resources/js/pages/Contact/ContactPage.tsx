@@ -4,10 +4,13 @@ import { BrandArtwork } from "@/components/ui/BrandArtwork"
 import { Icon, type IconName } from "@/components/ui/Icon"
 import { Input, Textarea, Select } from "@/components/ui/Input"
 import { API } from "@/lib/api"
-import { contactSchema, zodErrors } from "@/lib/schemas"
+import { createContactSchema, zodErrors } from "@/lib/schemas"
+import { phoneCountries, type CountryCode } from "@/lib/phone"
 import { addLead } from "@/lib/leadStore"
 
 export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
+  const [phoneCountry, setPhoneCountry] = useState<CountryCode>("YE")
+  const contactSchema = createContactSchema(phoneCountry)
   const formRef = useRef<HTMLFormElement>(null)
   const requestRef = useRef(false)
   const pendingFocusRef = useRef<string | null>(null)
@@ -71,12 +74,13 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
     Object.entries(parsed.data).forEach(([key, value]) => fd.set(key, value ?? ""))
     try {
       await API.contact(fd)
-      addLead({ id: Date.now().toString(), name: vals.name, email: vals.email, phone: vals.phone, subject: vals.subject, message: vals.message, status: "جديد", createdAt: new Date().toISOString(), source: "contact", meta: {} })
+      addLead({ id: Date.now().toString(), name: vals.name, email: vals.email, phone: parsed.data.phone, subject: vals.subject, message: vals.message, status: "جديد", createdAt: new Date().toISOString(), source: "contact", meta: {} })
       setSuccess(true)
       onToast("تم إرسال رسالتك بنجاح — سنرد عليك خلال ساعات العمل")
       form.reset()
       setValidFields([])
       setMessageLength(0)
+      setPhoneCountry("YE")
     } catch (err: unknown) {
       const failure = err as { errors?: Record<string, string[]>; message?: string }
       if (failure.errors) {
@@ -115,7 +119,22 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
               <Input id="c-email" name="email" type="email" inputMode="email" label="البريد الإلكتروني" required autoComplete="email" placeholder="you@example.com" dir="ltr" error={errors.email} />
             </div>
             <div className="contact-field-pair">
-              <Input id="c-phone" name="phone" type="tel" inputMode="tel" label="رقم الجوال" required autoComplete="tel" placeholder="+967 7XX XXX XXX" dir="ltr" error={errors.phone} />
+              <div className="contact-phone-group">
+                <label htmlFor="c-phone-country" className="contact-country-label">الدولة / مفتاح الاتصال</label>
+                <select id="c-phone-country" value={phoneCountry} autoComplete="country" onChange={event => {
+                  const country = event.target.value as CountryCode
+                  setPhoneCountry(country)
+                  const field = formRef.current?.elements.namedItem("phone")
+                  if (!(field instanceof HTMLInputElement) || !field.value.trim()) return
+                  const result = createContactSchema(country).shape.phone.safeParse(field.value)
+                  setErrors(previous => { const next = { ...previous }; if (result.success) delete next.phone; else next.phone = result.error.issues[0].message; return next })
+                  setValidFields(previous => result.success ? [...new Set([...previous, "phone"])] : previous.filter(name => name !== "phone"))
+                }}>
+                  {phoneCountries.map(country => <option key={country.code} value={country.code}>{country.name} (+{country.callingCode})</option>)}
+                </select>
+                <Input id="c-phone" name="phone" type="tel" inputMode="tel" label="رقم الهاتف" required autoComplete="tel" placeholder="اكتب رقم الهاتف" dir="ltr" error={errors.phone} />
+                <p className="contact-phone-help">أدخل رقمًا محليًا للدولة المختارة، أو رقمًا دوليًا يبدأ بـ + أو 00.</p>
+              </div>
               <Select id="c-subject" name="subject" label="كيف يمكننا مساعدتك؟" defaultValue="" error={errors.subject}>
                 <option value="" disabled>اختر موضوعًا (اختياري)</option>
                 <option value="web">موقع أو متجر إلكتروني</option><option value="mobile">تطبيق جوال</option><option value="erp">نظام لإدارة الأعمال</option><option value="consultation">استشارة تقنية</option><option value="other">استفسار آخر</option>
