@@ -16,6 +16,7 @@
 @import "./responsive.css";
 @import "./glass.css";
 @import "./search-select.css";
+@import "./scroll-motion.css";
 
 @font-face {
   font-family: "IBM Plex Sans Arabic";

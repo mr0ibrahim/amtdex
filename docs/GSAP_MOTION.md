@@ -143,3 +143,21 @@ desktop home 52% -> 23% (30 fps -> 60 fps).
 Fixed in the same pass: a comment had been inserted inside the selector list
 `.brand-motion > main, .brand-motion > .site-footer`, so `main` lost its stacking position
 and picked up the header-sweep declarations.
+
+### Scroll motion without a JavaScript engine
+
+The GSAP/ScrollTrigger scene engine (`brandScenes.ts`, `useBrandMotion.ts`) is removed.
+ScrollTrigger kept an animation-frame loop running at all times, and mixed entry styles
+(side fans, tilts, skews, per-type variants) read as random.
+
+`useScrollReveal` labels elements once (`data-reveal`, `--ri` for the place in a row) and
+`resources/css/scroll-motion.css` does the rest with one motion: rise in on entry, hold,
+rise out through the top, tied to the scroll position.
+
+- Browsers with scroll-driven animations (`animation-timeline: view()`): compositor only,
+  no scroll listeners. The card figure turn, hero scene lean and page progress line use the
+  same mechanism.
+- Other browsers: an IntersectionObserver switches `data-reveal-state` and CSS transitions
+  play the same motion.
+
+GSAP remains only for the project showcase card interaction, loaded on demand.

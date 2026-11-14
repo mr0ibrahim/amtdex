@@ -1,0 +1,47 @@
+/* Scroll motion. One rule for the whole site: things rise in from below as they enter, hold while
+   they are read, and rise out through the top as they leave — in step with the scroll position.
+   [data-reveal] is set once by useScrollReveal; --ri is the element's place in its row. */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ── Browsers with scroll-driven animations: runs on the compositor, no JavaScript per frame ── */
+  @supports (animation-timeline: view()) {
+    .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) [data-reveal] {
+      --reveal-rise: 40px;
+      animation: reveal-in linear backwards, reveal-out linear forwards;
+      /* The top inset is the fixed header: an element has "left" once it is under it. */
+      animation-timeline: view(block 76px 0px), view(block 76px 0px);
+      animation-range: cover calc(var(--ri, 0) * 34px) cover calc(230px + var(--ri, 0) * 34px), cover calc(100% - 190px) cover 100%;
+    }
+    .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) [data-reveal="in"] {
+      animation: reveal-in linear backwards;
+      animation-timeline: view(block 76px 0px);
+      animation-range: cover calc(var(--ri, 0) * 34px) cover calc(230px + var(--ri, 0) * 34px);
+    }
+    .brand-motion[data-reveal-mode="timeline"] [data-reveal-kind="block"] { --reveal-rise: 64px; --reveal-scale: .96; }
+
+    /* The card figure turns as the card crosses the screen. */
+    .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) .geo-turn:not(.geo-turn--back) { animation: geo-turn linear both; animation-timeline: view(); }
+    .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) .geo-layer[data-geo="wave"] .geo-turn:not(.geo-turn--back) { animation-name: geo-slide; }
+
+    /* The hero scene leans away as it leaves. */
+    .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) .product-scene .product-stack { animation: scene-lean linear both; animation-timeline: view(); animation-range: cover 45% cover 100%; }
+
+    /* Page progress. */
+    .brand-motion:not([data-motion-paused="true"]) .scroll-progress > i { animation: page-progress linear both; animation-timeline: scroll(root block); }
+  }
+
+  /* ── Other browsers: the same motion, switched by an IntersectionObserver ── */
+  .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal] {
+    transition: opacity .6s ease, transform .7s cubic-bezier(.22, 1, .36, 1), translate .5s cubic-bezier(.22, 1, .36, 1), box-shadow .5s, border-color .35s, background-color .35s, color .35s;
+    transition-delay: calc(var(--ri, 0) * 70ms), calc(var(--ri, 0) * 70ms), 0s, 0s, 0s, 0s, 0s;
+  }
+  .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal-state="below"] { opacity: 0; transform: translate3d(0, 44px, 0); }
+  .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal-state="above"] { opacity: 0; transform: translate3d(0, -32px, 0); }
+}
+
+@keyframes reveal-in { from { opacity: 0; transform: translate3d(0, var(--reveal-rise, 40px), 0) scale(var(--reveal-scale, 1)); } }
+@keyframes reveal-out { to { opacity: 0; transform: translate3d(0, calc(var(--reveal-rise, 40px) * -.7), 0) scale(var(--reveal-scale, 1)); } }
+@keyframes geo-turn { from { transform: rotate(-60deg); } to { transform: rotate(60deg); } }
+@keyframes geo-slide { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
+@keyframes scene-lean { from { transform: rotate(-5deg); } to { transform: translateY(-56px) rotate(7deg) scale(.93); } }
+@keyframes page-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }

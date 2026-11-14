@@ -1,11 +1,11 @@
 import { MotionPlayback } from "@/hooks/useMotionPlayback"
 import { useAmbientMotion } from "@/hooks/useAmbientMotion"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Icon } from "@/components/ui/Icon"
 import { Outlet, useLocation } from "react-router-dom"
 import { Footer } from "@/components/layout/Footer"
 import { Header } from "@/components/layout/Header"
-import { useBrandMotion } from "@/hooks/useBrandMotion"
+import { useScrollReveal } from "@/hooks/useScrollReveal"
 import { useGeoCards } from "@/hooks/useGeoCards"
 
 export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
@@ -13,7 +13,8 @@ export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
   const [paused, setPaused] = useState(() => {
     try { return localStorage.getItem("amtdex-motion-paused") === "true" } catch { return false }
   })
-  const motionRef = useBrandMotion(pathname, paused)
+  const motionRef = useRef<HTMLDivElement>(null)
+  useScrollReveal(motionRef, pathname)
   useAmbientMotion(motionRef, pathname)
   useGeoCards(motionRef, pathname)
   useEffect(() => {
@@ -29,7 +30,7 @@ export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
         تخطي إلى المحتوى
       </a>
       <div className="glass-aurora" aria-hidden="true"><i /><i /><i /></div>
-      <div className="scroll-progress" aria-hidden="true"><i data-scroll-progress /></div>
+      <div className="scroll-progress" aria-hidden="true"><i /></div>
       <Header onToast={onToast} />
       <main id="main-content" tabIndex={-1}>
         <Outlet />
