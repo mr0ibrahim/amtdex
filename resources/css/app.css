@@ -244,3 +244,29 @@ h1, h2, h3, .font-display {
 @media(max-width:639px) { .blog-follow-actions { flex-direction:column; align-items:stretch; } .blog-follow-actions > a { width:100%; min-width:0; padding:12px 16px; } }
 @media(hover:hover) and (pointer:fine) { :is(a,button):hover > .ui-action-arrow { transform:translateX(-3px); background:color-mix(in srgb,currentColor 13%,transparent); } }
 @media(prefers-reduced-motion:reduce) { .ui-action-arrow { transition:none; } :is(a,button):hover > .ui-action-arrow { transform:none; } }
+
+/* Quote wizard: stable RTL steps and actions at every viewport. */
+.quote-page {padding-bottom:64px;}
+.quote-steps {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:32px 0 24px;padding:0;list-style:none;}
+.quote-steps li {display:flex;align-items:center;gap:10px;min-width:0;padding:12px;border:1px solid #e7dfef;border-radius:14px;background:#fcfaff;}
+.quote-step-number {display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;border:1px solid #e4dbed;border-radius:10px;background:#fff;color:#776482;font-size:13px;font-weight:700;}
+.quote-step-label {font-size:12px;font-weight:600;color:#756383;line-height:1.5;}
+.quote-steps .is-current {background:#f0e9f8;border-color:#c4aedb;}.quote-steps .is-current .quote-step-number {background:#281849;color:#fff;border-color:#281849;}.quote-steps .is-current .quote-step-label {color:#281849;}
+.quote-steps .is-complete .quote-step-number {background:#ede7f6;color:#56358d;border-color:#d8cae8;}
+.quote-form {min-width:0;border:1px solid #e5dcee;border-radius:24px;background:#fff;padding:clamp(20px,4vw,36px);box-shadow:0 18px 48px -32px #28184940;}
+.quote-choice {min-height:56px;min-width:0;border-radius:16px;}.quote-choice[aria-pressed="true"] {background:#281849;color:#fff;border-color:#56358d;}.quote-choice>span:first-child {line-height:1.6;}.quote-choice .ui-icon {flex:none;}
+.quote-form :is(input:not([type="hidden"]),textarea,select) {width:100%;min-width:0;min-height:52px;padding:13px 14px;border:1px solid #ddd3e8;border-radius:12px;background:#fff;font-size:16px;font-weight:400;color:#281849;line-height:1.6;}
+.quote-form :is(input,textarea)::placeholder {font-weight:400;color:#998ca3;}
+.quote-form :is(input,textarea,select):focus {outline:none;border-color:#56358d;box-shadow:0 0 0 4px #56358d12;}
+.quote-form [aria-invalid="true"] {border-color:#b3435e!important;background:#fffafb!important;}
+.quote-form [role="alert"] {line-height:1.8;}
+.quote-phone-row {display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:12px;align-items:start;}.quote-phone-row>div {min-width:0;}.quote-phone-row label {display:block;font-size:12.5px;font-weight:700;color:#493357;}.quote-phone-row select {margin-top:6px;}.quote-phone-row>p {grid-column:1/-1;font-size:11px;color:#7c688a;line-height:1.8;}
+.quote-navigation {display:flex;align-items:stretch;justify-content:space-between;gap:12px;margin-top:28px;padding-top:24px;border-top:1px solid #ece4f3;}
+.quote-navigation button {display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;max-width:100%;padding:13px 20px;border:1px solid transparent;border-radius:12px;font-size:13px;font-weight:600;line-height:1.6;cursor:pointer;}
+.quote-navigation button svg {flex:none;}.quote-navigation button span {min-width:0;}
+.quote-navigation .quote-back {background:#fff;color:#56358d;border-color:#dfd5e9;flex:none;}
+.quote-navigation .quote-forward {background:#281849;color:#fff;margin-inline-start:auto;}
+.quote-navigation button:disabled {opacity:.5;cursor:not-allowed;}.quote-navigation button:focus-visible,.quote-choice:focus-visible {outline:2px solid #56358d;outline-offset:3px;}
+@media(hover:hover){.quote-navigation .quote-back:hover {background:#f5f0fa;}.quote-navigation .quote-forward:not(:disabled):hover {background:#56358d;}}
+@media(max-width:639px){.quote-steps {gap:6px;}.quote-steps li {flex-direction:column;text-align:center;gap:8px;padding:12px 4px;}.quote-step-number {flex-basis:30px;width:30px;height:30px;}.quote-step-label {font-size:11px;white-space:nowrap;}.quote-form {border-radius:20px;padding:22px 18px;}.quote-phone-row {grid-template-columns:minmax(0,1fr);}.quote-navigation {flex-wrap:wrap;}.quote-navigation .quote-forward {flex:1 1 180px;}.quote-navigation .quote-back {flex:0 0 auto;}.quote-navigation-spacer {display:none;}.quote-navigation button {padding-inline:16px;font-size:12px;}}
+@media(max-width:359px){.quote-navigation {flex-direction:column-reverse;}.quote-navigation .quote-forward,.quote-navigation .quote-back {flex:auto;width:100%;margin:0;}.quote-step-label {font-size:10px;}}

@@ -4,12 +4,6 @@ import { parseValidPhone, type CountryCode } from "./phone"
 // Shared helpers
 const requiredString = (label: string) => z.string().trim().min(1, `${label} مطلوب`)
 const emailSchema = z.string().trim().email("يرجى إدخال بريد إلكتروني صالح")
-const phoneSchema = z
-  .string()
-  .trim()
-  .min(1, "رقم الجوال مطلوب")
-  .regex(/^[0-9+\s-]{7,20}$/, "رقم الجوال غير صحيح (7 إلى 20 رقماً)")
-
 export const createContactSchema = (country: CountryCode = "YE") => z.object({
   name: z.string().trim().min(2, "الاسم مطلوب ولا يقل عن حرفين"),
   email: emailSchema,
@@ -31,15 +25,17 @@ export const newsletterSchema = z.object({
   email: emailSchema,
 })
 
-export const quoteSchema = z.object({
+export const createQuoteSchema = (country: CountryCode = "YE") => z.object({
   service: requiredString("الخدمة"),
   budget: z.string().trim().optional(),
   timeline: requiredString("الجدول الزمني"),
   name: z.string().trim().min(2, "الاسم مطلوب ولا يقل عن حرفين"),
   email: emailSchema,
-  phone: phoneSchema,
+  phone: createContactSchema(country).shape.phone,
   details: z.string().trim().min(10, "يرجى كتابة تفاصيل المشروع (10 أحرف على الأقل)"),
 })
+
+export const quoteSchema = createQuoteSchema()
 
 export type ContactInput = z.infer<typeof contactSchema>
 export type NewsletterInput = z.infer<typeof newsletterSchema>
