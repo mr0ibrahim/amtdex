@@ -263,6 +263,8 @@ h1, h2, h3, .font-display {
   to { transform: translateX(280%); }
 }
 .site-brand {
+  flex-shrink: 0;
+  white-space: nowrap;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -288,21 +290,12 @@ h1, h2, h3, .font-display {
   min-width: 0;
   margin-inline-start: 8px;
 }
-.site-nav-pill {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
-  inset-inline-start: 0;
-  width: 1px;
-  border-radius: 999px;
-  background: #E6D6F0;
-  transform-origin: left center;
-  pointer-events: none;
-  transition: transform 280ms ease, opacity 200ms ease;
-}
 .site-header .site-nav {
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
   display: inline-flex;
   align-items: center;
   min-height: 44px;
@@ -314,10 +307,11 @@ h1, h2, h3, .font-display {
   text-decoration: none;
 }
 .site-header .site-nav::after { bottom: 8px; inset-inline: 12px; }
-.site-header .site-nav:hover { color: #461667; }
-.site-header .site-nav.is-active { color: #461667; }
+.site-header .site-nav:hover { color: #461667; background: #f4eef9; }
+.site-header .site-nav.is-active { color: #461667; background: #eee5f6; box-shadow: inset 0 0 0 1px #dfd0ec; }
+.site-header .site-nav.is-active::after { transform: scaleX(0); }
 .site-header .site-nav-quiet { display: none; }
-.site-header-actions { display: flex; align-items: center; gap: 8px; margin-inline-start: auto; }
+.site-header-actions { flex-shrink: 0; display: flex; align-items: center; gap: 8px; margin-inline-start: auto; }
 .site-header-cta { min-height: 44px; padding-inline: 14px; font-size: 13px; }
 .site-nav-burger {
   position: relative;
@@ -392,7 +386,11 @@ h1, h2, h3, .font-display {
   .site-header-utility { display: flex; }
   .site-menu { top: 124px; }
 }
-@media (min-width: 1024px) {
+@media (max-width: 399px) {
+  .site-brand-name { font-size: 15px; }
+  .site-brand-sub { font-size: 9px; }
+}
+@media (min-width: 1200px) {
   .site-nav-track { display: flex; }
   .site-header .site-nav-quiet { display: inline-flex; }
   .site-nav-burger { display: none; }
@@ -403,10 +401,10 @@ h1, h2, h3, .font-display {
   .site-header-utility,
   .site-header.is-in .site-header-bar,
   .site-header.is-hidden .site-header-stack,
-  .site-nav-pill,
   .site-menu,
   .site-menu-dim,
   .site-menu .site-nav,
+  .site-header .site-nav,
   .site-header-shimmer {
     animation: none;
     transition: none;

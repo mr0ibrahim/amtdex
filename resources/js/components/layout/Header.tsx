@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link, NavLink, useLocation } from "react-router-dom"
 import { getBlogUrl, getMainUrl, isBlogSubdomain } from "@/lib/subdomain"
 import { prefetchRoute } from "@/routing/lifecycle"
@@ -67,15 +67,11 @@ function SiteLink({
 export function Header({ onToast }: { onToast: (m: string) => void }) {
   void onToast
   const [open, setOpen] = useState(false)
-  const [entered, setEntered] = useState(true)
   const [condensed, setCondensed] = useState(false)
   const [hidden, setHidden] = useState(false)
-  const [pill, setPill] = useState({ x: 0, w: 0, on: false })
   const loc = useLocation()
-  const prevPath = useRef(loc.pathname)
   const menuRef = useRef<HTMLDivElement>(null)
   const toggleRef = useRef<HTMLButtonElement>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
   const openRef = useRef(open)
   const onBlog = isBlogSubdomain()
   const { nav, pages } = useCms()
@@ -91,16 +87,16 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
   }, [open])
 
   useEffect(() => {
-    const id = requestAnimationFrame(() => setEntered(true))
-    return () => cancelAnimationFrame(id)
-  }, [])
+    setOpen(false)
+    setHidden(false)
+    setCondensed(window.scrollY > 16)
+  }, [loc.key])
 
   useEffect(() => {
-    if (prevPath.current !== loc.pathname) {
-      prevPath.current = loc.pathname
-      setOpen(false)
-    }
-  }, [loc.pathname])
+    const closeOnDesktop = () => { if (window.innerWidth >= 1200) setOpen(false) }
+    window.addEventListener("resize", closeOnDesktop)
+    return () => window.removeEventListener("resize", closeOnDesktop)
+  }, [])
 
   useEffect(() => {
     let last = window.scrollY
@@ -125,24 +121,6 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
       window.removeEventListener("scroll", onScroll)
     }
   }, [])
-
-  useLayoutEffect(() => {
-    const track = trackRef.current
-    if (!track) return
-    const place = () => {
-      const active = track.querySelector<HTMLElement>(".is-active")
-      if (!active) {
-        setPill((value) => (value.on ? { ...value, on: false } : value))
-        return
-      }
-      const trackBox = track.getBoundingClientRect()
-      const linkBox = active.getBoundingClientRect()
-      setPill({ x: linkBox.left - trackBox.left, w: linkBox.width, on: true })
-    }
-    place()
-    window.addEventListener("resize", place)
-    return () => window.removeEventListener("resize", place)
-  }, [loc.pathname, desktop.map((item) => item.id).join("|")])
 
   useEffect(() => {
     if (!open) return
@@ -183,7 +161,10 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
 
   const renderItem = (item: (typeof menu)[number], onClick?: () => void) => {
     const className = ({ isActive }: { isActive: boolean }) => `site-nav${isActive ? " is-active" : ""}`
-    if (item.id === "blog" && !onBlog) {
+    if (item.id === "blog" && onBlog) {
+      return <Link key={item.id} to="/" onClick={onClick} aria-current={loc.pathname === "/" ? "page" : undefined} className="site-nav is-active">{item.label}</Link>
+    }
+    if (item.id === "blog") {
       return (
         <a key={item.id} href={getBlogUrl("/")} className="site-nav" onClick={onClick}>
           {item.label}
@@ -205,7 +186,7 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
 
   return (
     <>
-      <header className={`site-header${entered ? " is-in" : ""}${condensed ? " is-condensed" : ""}${hidden ? " is-hidden" : ""}`}>
+      <header className={`site-header is-in${condensed ? " is-condensed" : ""}${hidden ? " is-hidden" : ""}`}>
         <div className="site-header-stack">
         <div className="site-header-utility">
           <span>امتدكس سوفت — من الفكرة إلى التنفيذ</span>
@@ -220,17 +201,9 @@ export function Header({ onToast }: { onToast: (m: string) => void }) {
             </span>
           </SiteLink>
 
-          <div className="site-nav-track" ref={trackRef}>
-            <span
-              className="site-nav-pill"
-              aria-hidden
-              style={{
-                transform: `translateX(${pill.x}px) scaleX(${pill.on ? pill.w : 0})`,
-                opacity: pill.on ? 1 : 0,
-              }}
-            />
+          <nav className="site-nav-track" aria-label="التنقل الرئيسي">
             {desktop.map((item) => renderItem(item))}
-          </div>
+          </nav>
 
           <div className="site-header-actions">
             {contactListed && (
