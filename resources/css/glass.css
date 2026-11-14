@@ -107,3 +107,24 @@
 /* Heroes sit directly on the aurora: no boxed backdrop, and the grid fades out on every side. */
 .brand-motion :is(.da-hero, .contact-page-hero), .home-stack .da-hero { background: none; }
 .reference-motion-scope .da-hero::before { background: linear-gradient(#6a2c9f0a 1px, transparent 1px), linear-gradient(90deg, #6a2c9f0a 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(ellipse at 50% 42%, #000 20%, transparent 70%); }
+
+/* ── Home: hero carries the product scene; proof follows it; guarantee and contact close together ── */
+.reference-home .reference-hero--scene .product-scene { min-height: 480px; width: 100%; max-width: 540px; margin: 36px auto 0; }
+.reference-home .reference-hero--scene .product-stack { width: 76%; max-width: 380px; }
+.reference-home .reference-hero--scene .product-badge-top { top: 42px; }
+.reference-home .reference-hero--scene .product-badge-bottom { bottom: 54px; }
+@media (min-width: 1024px) {
+  .reference-design-scope .reference-home .reference-hero--scene { text-align: start; }
+  .reference-design-scope .reference-home .reference-hero--scene > div { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); align-items: center; gap: clamp(32px, 4vw, 72px); }
+  .reference-home .reference-hero--scene .da-hero-copy { max-width: none; margin-inline: 0; }
+  .reference-home .reference-hero--scene :is(.da-kicker, .reference-hero-description, .reference-platforms) { margin-inline: 0; }
+  .reference-home .reference-hero--scene .hero-actions { justify-content: flex-start; }
+  .reference-motion-scope .reference-hero--scene .reference-platform-track > div { justify-content: flex-start; }
+  .reference-motion-scope .reference-hero--scene .reference-platform-track span:first-child { padding-inline-start: 0; }
+  .reference-home .reference-hero--scene .product-scene { margin-top: 0; }
+}
+@media (max-width: 639px) {
+  .reference-home .reference-hero--scene .product-scene { min-height: 400px; margin-top: 28px; }
+}
+.reference-home .reference-stats { padding-block: clamp(40px, 6vw, 72px) 0; }
+.reference-home .guarantee-section { padding-bottom: 20px; }

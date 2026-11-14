@@ -112,3 +112,10 @@ Motion budget: header border sweep, heading shimmer, kicker halo, floating hero 
 the custom cursor ring and the second marquee are off; the pause control sits under the
 footer. Brand purples are unified (`#6a2c9f` violet, `#31144d` ink), muted text is
 darker (`#675777`), and type below 14px steps up on public pages.
+
+### Home structure
+
+Seven blocks: hero (now carrying the product scene, two columns from 1024px), stats,
+services, project showcase, workflow, testimonials, and a closing pair (guarantee +
+contact). The separate intro block and the second screenshot gallery are no longer
+rendered on the home page; the `intro` visibility switch now controls the hero scene.
