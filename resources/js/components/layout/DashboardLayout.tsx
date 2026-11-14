@@ -1,10 +1,12 @@
 import "../../../css/dashboard.css"
+import "../../../css/dashboard-mobile.css"
 import { useEffect, useMemo, useState } from "react"
 import { useDebouncedValue } from "@/routing/search"
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { Icon } from "@/components/ui/Icon"
 import { useSession, logout } from "@/lib/auth"
-import { dashboardNavigation } from "@/routing/dashboard"
+import { useDialog } from "@/hooks/useDialog"
+import { DASHBOARD_PAGES, dashboardNavigation } from "@/routing/dashboard"
 import { getMainUrl } from "@/lib/subdomain"
 
 function SidebarContent({
@@ -127,58 +129,74 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const location = useLocation()
   const isOverview = location.pathname === "/dashboard" || location.pathname === "/dashboard/overview"
   const content = children ?? <Outlet />
+  const drawer = useDialog(mobileOpen, () => setMobileOpen(false))
+  const currentPage = Object.values(DASHBOARD_PAGES).find(page => location.pathname === page.path || (page.path !== "/dashboard" && location.pathname.startsWith(`${page.path}/`)))
+  const quickLinks = useMemo(() => {
+    const allowed = dashboardNavigation(session?.user.role).flatMap(group => group.items)
+    return ["/dashboard", "/dashboard/leads", "/dashboard/blog", "/dashboard/content", "/dashboard/media"]
+      .flatMap(path => allowed.filter(item => item.to === path)).slice(0, 4)
+  }, [session?.user.role])
+
 
   useEffect(() => {
     setMobileOpen(false)
   }, [location.pathname])
 
   useEffect(() => {
-    if (!mobileOpen) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMobileOpen(false)
-    }
-    window.addEventListener("keydown", onKey)
-    return () => window.removeEventListener("keydown", onKey)
-  }, [mobileOpen])
+    const closeOnDesktop = () => { if (window.innerWidth >= 1024) setMobileOpen(false) }
+    window.addEventListener("resize", closeOnDesktop, { passive: true })
+    return () => window.removeEventListener("resize", closeOnDesktop)
+  }, [])
 
   return (
     <div className="dash-shell" dir="rtl" lang="ar">
       <div className="dash-frame">
-        <aside className="dash-sidebar hidden lg:flex">
+        <aside className="dash-sidebar dash-desktop-sidebar">
           <SidebarContent filter={navFilter} showSearch searchValue={navQuery} onSearch={setNavQuery} />
         </aside>
 
         <div className="dash-main" id="main-content" tabIndex={-1}>
-          <div className="dash-topbar lg:hidden">
+          <div className="dash-topbar">
             <button
               type="button"
               className="dash-mobile-toggle"
               aria-label="فتح القائمة"
               aria-expanded={mobileOpen}
+              aria-controls="dash-mobile-navigation"
               onClick={() => setMobileOpen(true)}
             >
               <Icon name="menu" size={18} />
             </button>
-            <div className="min-w-0">
-              <div className="text-[13px] font-extrabold text-[var(--color-ink)] font-display tracking-tight">AMTDEX</div>
-              <div className="text-[10px] text-[var(--color-text-faint)] truncate">{session?.user.name ?? "لوحة التحكم"}</div>
+            <div className="dash-topbar-heading">
+              <span className="dash-topbar-brand">AMTDEX</span>
+              <strong>{currentPage?.label ?? "لوحة التحكم"}</strong>
             </div>
             <a
               href={getMainUrl("/")}
-              className="text-[11px] font-bold px-3 py-2 rounded-full border border-[var(--color-border)] bg-white text-[var(--color-ink)]"
+              className="dash-topbar-site"
             >
               الموقع
             </a>
           </div>
 
-          {isOverview ? content : <div className="dash-panel min-h-[70vh]">{content}</div>}
+          <div className={`dash-content${isOverview ? " is-overview" : ""}`}>{content}</div>
         </div>
       </div>
 
+      <nav className="dash-mobile-dock" aria-label="التنقل السريع في لوحة التحكم">
+        {quickLinks.map(item => <NavLink key={item.to} to={item.to} end={item.end}
+          className={({ isActive }) => `dash-dock-link${isActive ? " is-active" : ""}`}>
+          <Icon name={item.icon} size={20} /><span>{item.label}</span>
+        </NavLink>)}
+        <button type="button" className="dash-dock-link" aria-label="المزيد من أقسام اللوحة" aria-controls="dash-mobile-navigation" aria-expanded={mobileOpen} onClick={() => setMobileOpen(true)}>
+          <Icon name="menu" size={20} /><span>المزيد</span>
+        </button>
+      </nav>
+
       {mobileOpen && (
-        <div className="dash-mobile-drawer lg:hidden" role="dialog" aria-modal="true" aria-label="قائمة لوحة التحكم">
+        <div className="dash-mobile-drawer">
           <button type="button" className="absolute inset-0 cursor-default" aria-label="إغلاق" onClick={() => setMobileOpen(false)} />
-          <div className="dash-mobile-drawer-panel dash-sidebar relative z-10">
+          <div ref={drawer} id="dash-mobile-navigation" className="dash-mobile-drawer-panel dash-sidebar relative z-10" role="dialog" aria-modal="true" aria-label="قائمة لوحة التحكم" tabIndex={-1}>
             <div className="flex items-center justify-between px-2 pb-2">
               <span className="text-[12px] font-bold text-[var(--color-ink)]">القائمة</span>
               <button

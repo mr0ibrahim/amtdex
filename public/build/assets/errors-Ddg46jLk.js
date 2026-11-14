@@ -1,0 +1,1 @@
+function e(e,t=`تعذر إكمال العملية`){return e instanceof Error&&e.message?e.message:t}export{e as t};

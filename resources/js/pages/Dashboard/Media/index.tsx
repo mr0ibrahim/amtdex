@@ -104,7 +104,7 @@ export function MediaPage() {
             لا توجد وسائط مرفوعة حالياً.
           </div>
         ) : (
-          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <div className="dash-media-grid">
             {media.map((item) => {
               const isImage = item.mime.startsWith("image/") && !item.mime.includes("svg")
               const isSvg = item.mime.includes("svg")
@@ -141,7 +141,8 @@ export function MediaPage() {
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="absolute top-1.5 left-1.5 bg-black/60 hover:bg-black text-white text-[10px] size-6 rounded-full grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="dash-media-open absolute top-1.5 left-1.5 bg-black/60 hover:bg-black text-white text-[10px] size-6 rounded-full grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label={`فتح ${item.name} في نافذة جديدة`}
                       title="فتح في نافذة جديدة"
                     >
                       ↗
@@ -177,6 +178,7 @@ export function MediaPage() {
                       disabled={deleteMutation.isPending}
                       onClick={() => handleDelete(item.id, item.name)}
                       className="text-[11px] text-red-600 hover:bg-red-50 p-1 rounded-lg border border-transparent hover:border-red-200 transition-colors"
+                      aria-label={`حذف ${item.name}`}
                       title="حذف الملف"
                     >
                       🗑️

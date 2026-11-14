@@ -258,12 +258,12 @@ export function ArticleEditorModal({
   return (
     <div className="dash-editor-shell" role="dialog" aria-modal="true" aria-label="محرر المقال">
       <div className={`dash-editor-panel${fullscreen ? " is-fullscreen" : ""}`}>
-        <div className="px-4 sm:px-6 py-3.5 border-b border-[var(--color-border)] bg-[var(--color-card-soft)] flex items-start justify-between gap-3">
+        <div className="dash-editor-head px-4 sm:px-6 py-3.5 border-b border-[var(--color-border)] bg-[var(--color-card-soft)] flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h2 className="text-sm sm:text-base font-bold text-[var(--color-ink)] truncate">
               {form.id ? `تعديل: ${form.title || "مقال"}` : "إنشاء مقال جديد"}
             </h2>
-            <p className="text-[11px] text-[var(--color-text-muted)] mt-0.5">
+            <p className="dash-editor-description text-[11px] text-[var(--color-text-muted)] mt-0.5">
               اكتب المحتوى، راجع SEO، ثم احفظ كمسودة أو انشر. اختصارات: Ctrl/Cmd+S حفظ — Esc إغلاق
             </p>
           </div>
@@ -271,7 +271,7 @@ export function ArticleEditorModal({
             <button
               type="button"
               onClick={() => setFullscreen((v) => !v)}
-              className="h-9 px-3 rounded-full bg-white border border-[var(--color-border)] text-[11px] font-bold text-[var(--color-ink)]"
+              className="dash-editor-expand h-9 px-3 rounded-full bg-white border border-[var(--color-border)] text-[11px] font-bold text-[var(--color-ink)]"
               title={fullscreen ? "الخروج من ملء الشاشة" : "توسيع المحرر لملء الشاشة"}
               aria-pressed={fullscreen}
             >
@@ -308,7 +308,7 @@ export function ArticleEditorModal({
           </div>
         </div>
 
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1 text-xs">
+        <div className="dash-editor-body p-4 sm:p-6 overflow-y-auto space-y-4 flex-1 text-xs">
           {saveError && (
             <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-[11px] text-rose-700 font-semibold">
               {saveError}

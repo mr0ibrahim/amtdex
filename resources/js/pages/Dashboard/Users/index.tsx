@@ -1,3 +1,4 @@
+import { Modal } from "@/components/ui/Modal"
 import { useState } from "react"
 import { useSession } from "@/lib/auth"
 import {
@@ -310,9 +311,9 @@ export function UsersPage() {
 
       {/* User Form Modal */}
       {editingUser && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-end sm:place-items-center p-0 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-t-3xl sm:rounded-2xl max-w-[540px] w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-[var(--color-border)] my-0 sm:my-8 max-h-[92vh] overflow-y-auto">
-            <div className="flex items-start justify-between gap-3 pb-3 border-b border-[var(--color-border)]">
+        <Modal label="محرر المستخدم" onClose={() => setEditingUser(null)}>
+          <div className="dash-dialog-card bg-white rounded-t-3xl sm:rounded-2xl max-w-[540px] w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-[var(--color-border)] my-0 sm:my-8 max-h-[92vh] overflow-y-auto">
+            <div className="dash-dialog-head flex items-start justify-between gap-3 pb-3 border-b border-[var(--color-border)]">
               <h3 className="text-[15px] sm:text-[16px] font-bold text-[var(--color-ink)] leading-snug">
                 {editingUser.id ? `تعديل المستخدم: ${editingUser.name}` : "إضافة مستخدم جديد للنظام"}
               </h3>
@@ -491,7 +492,7 @@ export function UsersPage() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-[var(--color-border)]">
+            <div className="dash-dialog-actions flex justify-end gap-2 pt-3 border-t border-[var(--color-border)]">
               <button
                 type="button"
                 onClick={() => setEditingUser(null)}
@@ -509,7 +510,7 @@ export function UsersPage() {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   )

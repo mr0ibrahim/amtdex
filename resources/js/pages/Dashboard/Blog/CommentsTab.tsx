@@ -62,10 +62,10 @@ export function CommentsTab({ onNotify }: { onNotify: (m: string) => void }) {
         <div className="space-y-3">
           {comments.map((c: BlogComment) => (
             <div key={c.id} className="p-4 bg-white border border-[var(--color-border)] rounded-2xl space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-2 min-w-0">
                   <span className="font-bold text-xs text-[var(--color-ink)]">{c.author_name}</span>
-                  <span className="text-[11px] text-[var(--color-text-faint)] font-mono">({c.author_email})</span>
+                  <span className="text-[11px] text-[var(--color-text-faint)] font-mono break-all">({c.author_email})</span>
                   <span
                     className={`px-2 py-0.2 rounded-full text-[10px] font-bold ${
                       c.status === "approved"
@@ -78,7 +78,7 @@ export function CommentsTab({ onNotify }: { onNotify: (m: string) => void }) {
                     {c.status}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-xs">
+                <div className="grid grid-cols-3 gap-2 text-xs sm:flex sm:shrink-0">
                   {c.status !== "approved" && (
                     <button
                       onClick={() => updateStatusMutation.mutate({ id: c.id, status: "approved" })}
