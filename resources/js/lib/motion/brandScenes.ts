@@ -13,7 +13,7 @@ export function mountBrandScenes(root: HTMLElement) {
     if (!context.conditions?.motion) return
     const desktop = context.conditions.desktop
     const scenes = new Map<Element, { context: gsap.Context; dispose?: () => void }>()
-    const automaticTargets = "main h2, main .service-bento-card, main .service-card, main .blog-article-card, main .da-card, main .contact-details-card, main .contact-next-card, main .contact-hours, main .quote-choice, main .portfolio-card, main .da-works > a"
+    const automaticTargets = "main h2, main .reference-service-card, main .service-bento-card, main .service-card, main .blog-article-card, main .da-card, main .contact-details-card, main .contact-next-card, main .contact-hours, main .quote-choice, main .portfolio-card, main .da-works > a"
     let initialScan = true
     const scan = () => {
       scenes.forEach((scene, el) => {

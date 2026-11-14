@@ -11,6 +11,7 @@
 @import "./contact-page.css";
 @import "./project-motion.css";
 @import "./reference-motion.css";
+@import "./reference-layout.css";
 
 @font-face {
   font-family: "IBM Plex Sans Arabic";
