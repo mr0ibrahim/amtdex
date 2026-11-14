@@ -58,28 +58,6 @@
 @media (hover: hover) and (pointer: fine) {
   .brand-motion main [data-geo-card="light"]:hover { border-color: #ffffff; box-shadow: inset 0 1px 0 #ffffff, inset 0 0 0 1px #ffffff80, 0 0 0 1px #7a3cc252, 0 36px 66px -32px #5a2391cc; }
 }
-.brand-motion[data-geo-touch="true"] main [data-geo-card="light"][data-geo-active="true"] { border-color: #ffffff; box-shadow: inset 0 1px 0 #ffffff, inset 0 0 0 1px #ffffff80, 0 0 0 1px #7a3cc252, 0 32px 58px -30px #5a2391cc; }
-
-/* ── Sheen: a band of light crosses the glass when a card arrives and when it is pointed at ── */
-.geo-sheen {
-  position: absolute;
-  top: -25%;
-  left: 0;
-  width: 42%;
-  height: 150%;
-  background: linear-gradient(100deg, transparent 0%, #ffffff00 20%, #ffffffb8 50%, #ffffff00 80%, transparent 100%);
-  transform: translateX(-160%) skewX(-18deg);
-  opacity: 0;
-}
-[data-geo-card="dark"] > .geo-layer .geo-sheen { background: linear-gradient(100deg, transparent 0%, #ffffff00 20%, #ffffff33 50%, #ffffff00 80%, transparent 100%); }
-[data-geo-card="light"] > .geo-layer .geo-sheen { background: linear-gradient(100deg, transparent 0%, #ffffff00 20%, #ffffffd9 50%, #ffffff00 80%, transparent 100%); }
-/* One entrance per card: the scroll reveal. The sheen answers a pointer or touch focus only. */
-@media (hover: hover) and (pointer: fine) {
-  [data-geo-card]:hover > .geo-layer .geo-sheen { animation: glass-sheen-again 1.1s var(--ease-out) 1 both; }
-}
-.brand-motion[data-geo-touch="true"] [data-geo-active="true"] > .geo-layer .geo-sheen { animation: glass-sheen-again 1.1s var(--ease-out) 1 both; }
-@keyframes glass-sheen { 0% { transform: translateX(-160%) skewX(-18deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(400%) skewX(-18deg); opacity: 0; } }
-@keyframes glass-sheen-again { 0% { transform: translateX(-160%) skewX(-18deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(400%) skewX(-18deg); opacity: 0; } }
 
 /* ── Motion budget: scroll motion, geometric cards, the header light sweep and one ribbon. The rest stands still. ── */
 .reference-motion-scope :is(.da-kicker, .contact-eyebrow, .blog-follow-eyebrow)::after,
@@ -100,7 +78,7 @@
 .reference-motion-scope .reference-motion-toggle span { display: inline; }
 
 @media (prefers-reduced-motion: reduce) {
-  .geo-sheen, .site-header-sweep > i { animation: none !important; }
+  .site-header-sweep > i { animation: none !important; }
   .site-header-sweep { display: none; }
 }
 

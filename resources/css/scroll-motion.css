@@ -9,6 +9,9 @@
       animation-range: cover calc(var(--rd, 0) * 1px) cover 100%;
     }
     .brand-motion[data-reveal-mode="timeline"] [data-reveal-kind="block"] { --reveal-rise: 32px; }
+    /* Cards travel further and settle from slightly small, so the motion reads as the card
+       arriving under the finger: it fades in first (readable early), then finishes rising. */
+    .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) [data-reveal-kind="block"] { animation-name: reveal-card; }
     .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) [data-reveal="initial"] { animation-name: reveal-initial; }
 
     /* Decoration follows its card without separate JavaScript scroll work. */
@@ -23,6 +26,7 @@
     transition-delay: calc(var(--rd, 0) * 3ms), calc(var(--rd, 0) * 3ms), 0s, 0s, 0s, 0s, 0s;
   }
   .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal-state="below"] { opacity: 0; transform: translate3d(0, 24px, 0); }
+  .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal-kind="block"][data-reveal-state="below"] { transform: translate3d(0, 40px, 0) scale(.96); }
   .brand-motion[data-reveal-mode="observe"]:not([data-motion-paused="true"]) [data-reveal-state="above"] { opacity: 0; transform: translate3d(0, -16px, 0); transition-delay: 0s; }
 }
 
@@ -30,6 +34,12 @@
   0% { opacity: 0; transform: translate3d(0, var(--reveal-rise, 24px), 0); }
   14%, 92% { opacity: 1; transform: translate3d(0, 0, 0); }
   100% { opacity: 0; transform: translate3d(0, -16px, 0); }
+}
+@keyframes reveal-card {
+  0% { opacity: 0; transform: translate3d(0, 56px, 0) scale(.95); }
+  12% { opacity: 1; }
+  24%, 91% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+  100% { opacity: 0; transform: translate3d(0, -22px, 0) scale(.98); }
 }
 @keyframes reveal-initial {
   0%, 92% { opacity: 1; transform: translate3d(0, 0, 0); }
@@ -41,10 +51,10 @@
 
 /* Touch scrolling has no hover phase. Keep the focus treatment composited and stable. */
 @media (hover: none), (pointer: coarse) {
-  .brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] { translate: none; }
-  .brand-motion[data-geo-touch="true"] main [data-geo-card] { transition: scale .2s, border-color .2s, color .2s; }
-  .brand-motion[data-geo-touch="true"] main [data-geo-card="light"][data-geo-active="true"] { box-shadow: inset 0 1px 0 #fff, 0 1px 2px #31144d08, 0 28px 56px -40px #6a2c9f80; }
-  .brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer::after { opacity: 0; }
+  
+  
+  
+  
   .brand-motion .site-header-bar::after,
   .brand-motion :is(.da-hero h1, .brand-page-header h1, .contact-page-hero h1, .quote-page h1, .blog-hero h1) { animation: none; }
 }
@@ -55,7 +65,7 @@
 .brand-motion main form,
 .brand-motion main .blog-post-content { opacity: 1; }
 .brand-motion main form > .geo-layer { display: none; }
-.brand-motion main form[data-geo-card]:is(:hover, [data-geo-active="true"]) { translate: none; scale: none; }
+.brand-motion main form[data-geo-card]:hover { translate: none; scale: none; }
 .brand-motion [data-reveal]:focus-within { animation: none !important; opacity: 1 !important; transform: none !important; }
 
 .reading-progress { position: fixed; top: 0; inset-inline: 0; height: 3px; z-index: 50; pointer-events: none; background: #0000000d; }

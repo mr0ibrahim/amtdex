@@ -48,7 +48,7 @@
 }
 /* A light travels along the top edge. It moves by transform only. */
 .geo-layer::before { content: ""; position: absolute; inset-inline: 0; top: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--geo-violet-soft) 50%, transparent); opacity: .5; }
-.geo-line { position: absolute; top: 0; left: 0; width: 38%; height: 2px; background: linear-gradient(90deg, transparent, var(--geo-violet) 50%, transparent); transform: translateX(-100%); opacity: 0; }
+
 /* Pointer spotlight. */
 .geo-layer::after {
   content: "";
@@ -78,9 +78,6 @@
 .geo-layer[data-geo="grid"] .geo-figure { top: -10%; inset-inline-end: -8%; }
 .geo-layer .geo-node { fill: currentColor; stroke: none; }
 
-@keyframes geo-line { 0% { transform: translateX(-100%); opacity: 0; } 15%, 85% { opacity: 1; } 100% { transform: translateX(365%); opacity: 0; } }
-@keyframes geo-line-again { 0% { transform: translateX(-100%); opacity: 0; } 15%, 85% { opacity: 1; } 100% { transform: translateX(365%); opacity: 0; } }
-
 /* ── Interaction ── */
 @media (hover: hover) and (pointer: fine) {
   .brand-motion main [data-geo-card]:hover { transform: none; translate: 0 -6px; }
@@ -90,7 +87,7 @@
   }
   .brand-motion main [data-geo-card="dark"]:hover { box-shadow: inset 0 1px 0 #ffffff2e, 0 44px 80px -40px #2a0f4a; }
   .brand-motion main [data-geo-card]:hover > .geo-layer::after { opacity: 1; }
-  .brand-motion main [data-geo-card]:hover > .geo-layer .geo-line { animation: geo-line-again 1.4s var(--ease-in-out) 1 both; }
+  
   .brand-motion main [data-geo-card]:hover > .geo-layer .geo-figure { opacity: calc(var(--geo-figure-opacity) + .3); }
   /* Service cards flood violet on hover; strokes follow. */
   .brand-motion main :is(.reference-service-card, .service-card, .service-bento-card)[data-geo-card]:hover {
@@ -102,28 +99,6 @@
   /* Large containers and forms keep their place. */
   .brand-motion main :is([data-geo-size="lg"], .about-values-card, .contact-whatsapp-card):hover { translate: none; }
 }
-/* ── Touch: no hover exists, so the card crossing the middle of the screen takes the hover look,
-   and a press gives immediate feedback. [data-geo-touch] is set from real touch input because
-   some Android phones report (hover: hover). ── */
-.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] { translate: 0 -6px; }
-.brand-motion[data-geo-touch="true"] main [data-geo-card="light"][data-geo-active="true"] {
-  border-color: var(--geo-violet-soft);
-  box-shadow: inset 0 1px 0 #ffffff, 0 2px 4px #31144d0a, 0 30px 56px -30px #6a2c9fcc;
-}
-.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-figure { opacity: calc(var(--geo-figure-opacity) + .3); }
-.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer::after { opacity: 1; }
-.brand-motion[data-geo-touch="true"] main [data-geo-card][data-geo-active="true"] > .geo-layer .geo-line { animation: geo-line-again 1.4s var(--ease-in-out) 1 both; }
-.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card)[data-geo-card]:is([data-geo-active="true"], :active) {
-  --geo-ink: #ffffff;
-  border-color: #7d43c6;
-  background: radial-gradient(ellipse at 15% 0%, #8d4fd4 0%, transparent 62%), linear-gradient(155deg, #5f2599, #3a1259);
-  box-shadow: inset 0 1px 0 #ffffff33, 0 30px 56px -28px #461667cc;
-  color: #fff;
-}
-.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(h2, h3) { color: #fff; }
-.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(p, li, .reference-service-link, .service-card-footer) { color: #eee4f8; border-color: #ffffff25; }
-.brand-motion[data-geo-touch="true"] main :is(.reference-service-card, .service-card, .service-bento-card):is([data-geo-active="true"], :active) :is(.reference-service-icon, .service-card-icon, .service-card-arrow) { background: #fff; color: #6a2c9f; }
-.brand-motion[data-geo-touch="true"] main [data-geo-card]:not([data-geo-size="lg"]):active { scale: .98; }
 
 /* ── Scroll progress ── */
 .scroll-progress { position: fixed; inset-inline: 0; top: 0; z-index: 60; height: 3px; pointer-events: none; }

@@ -127,7 +127,7 @@ export function createGeoLayer(variant: GeoVariant, ownerDocument: Document = do
   layer.className = "geo-layer"
   layer.dataset.geo = variant
   layer.setAttribute("aria-hidden", "true")
-  layer.innerHTML = `<span class="geo-line"></span><span class="geo-figure">${geoMarkup(variant)}</span><span class="geo-sheen"></span>`
+  layer.innerHTML = `<span class="geo-figure">${geoMarkup(variant)}</span>`
   return layer
 }
 
