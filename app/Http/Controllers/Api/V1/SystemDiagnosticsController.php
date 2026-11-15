@@ -11,14 +11,12 @@ use Illuminate\Support\Facades\Schema;
 
 class SystemDiagnosticsController extends Controller
 {
-    private const SECRET = 'Amtdex#SecCheck2026';
 
     public function diagnose(Request $request): JsonResponse
     {
-        $token = $request->query('secret') ?? $request->header('X-Diagnostics-Secret');
-        $isAdmin = $request->user() && $request->user()->role === 'admin';
-
-        if ($token !== self::SECRET && !$isAdmin) {
+        // Signed-in administrators only. A shared secret in the code was readable by anyone with
+        // the repository, and with it the database could be re-seeded (resetting staff passwords).
+        if (! $request->user() || $request->user()->role !== 'admin') {
             return response()->json([
                 'ok' => false,
                 'message' => 'Unauthorized access to system diagnostics.',
@@ -65,13 +63,6 @@ class SystemDiagnosticsController extends Controller
                 $result['migrate_output'] = trim(Artisan::output());
             } catch (\Throwable $e) {
                 $result['migrate_error'] = $e->getMessage();
-            }
-        } elseif ($action === 'seed') {
-            try {
-                Artisan::call('db:seed', ['--force' => true]);
-                $result['seed_output'] = trim(Artisan::output());
-            } catch (\Throwable $e) {
-                $result['seed_error'] = $e->getMessage();
             }
         } elseif ($action === 'clear') {
             try {
