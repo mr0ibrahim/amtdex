@@ -122,7 +122,7 @@ export function ServiceDetailPage() {
               "كود مصدري كامل بنسبة 100% مع حقوق الملكية",
               "لوحة تحكم إدارية سهلة الاستخدام للتحكم بالمحتوى",
               "نشر سحابي آمن وتكوين شهادات الأمان SSL",
-              "ضمان ودعم فني مجاني لمدة 30 يوماً بعد الإطلاق",
+              "صيانة مجانية لمدة عام كامل بعد الإطلاق",
             ].map((x) => (
               <li key={x} className="flex gap-2.5 text-[13px] text-[var(--color-ink)]">
                 <span className="text-emerald-500 mt-0.5 shrink-0">
