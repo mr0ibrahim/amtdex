@@ -117,9 +117,9 @@ export function AboutPage() {
             <br />
             معرفته.
           </h2>
-          <p className="mt-3 text-[13px] leading-6 text-[var(--color-text-muted)]">لم تجد إجابتك؟ تحدث مع مهندس حلول خلال دقائق.</p>
+          <p className="mt-3 text-[13px] leading-6 text-[var(--color-text-muted)]">لم تجد إجابتك؟ راسلنا ونرد عليك خلال ساعات العمل.</p>
           <a href="mailto:info@amtdex.com" className="btn btn-line brand-cta mt-6">
-            <Icon name="mail" size={16} /> تواصل معنا الآن
+            <Icon name="mail" size={16} /> راسلنا
           </a>
         </div>
         <div className="space-y-2.5">
