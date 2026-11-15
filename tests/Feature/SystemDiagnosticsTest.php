@@ -32,6 +32,20 @@ class SystemDiagnosticsTest extends TestCase
             ->assertJsonMissingPath('seed_output');
     }
 
+    public function test_database_update_requires_an_admin(): void
+    {
+        $this->postJson('/api/v1/admin/system/update-database')->assertUnauthorized();
+        $this->actingAs($this->user('editor'))->postJson('/api/v1/admin/system/update-database')->assertForbidden();
+    }
+
+    public function test_admin_can_apply_pending_database_updates(): void
+    {
+        $this->actingAs($this->user('admin'))->postJson('/api/v1/admin/system/update-database')
+            ->assertOk()
+            ->assertJson(['ok' => true])
+            ->assertJsonStructure(['applied']);
+    }
+
     private function user(string $role): User
     {
         return User::create([

@@ -75,4 +75,23 @@ class SystemDiagnosticsController extends Controller
 
         return response()->json($result);
     }
+
+    /**
+     * Run pending migrations and report which ones ran. Admin-only (route middleware),
+     * POST with the dashboard's CSRF token, so a link alone cannot trigger it.
+     */
+    public function updateDatabase(): JsonResponse
+    {
+        try {
+            $before = DB::table('migrations')->pluck('migration')->all();
+            Artisan::call('migrate', ['--force' => true]);
+            $applied = array_values(array_diff(DB::table('migrations')->pluck('migration')->all(), $before));
+
+            return response()->json(['ok' => true, 'applied' => $applied]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('System database update failed: '.$e->getMessage());
+
+            return response()->json(['ok' => false, 'message' => 'تعذّر تحديث قاعدة البيانات. راجع سجل الأخطاء في الخادم.'], 500);
+        }
+    }
 }

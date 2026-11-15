@@ -405,6 +405,13 @@ export const API = {
     },
   },
 
+  system: {
+    /** Apply database updates that came with the latest deploy. Admin only. */
+    updateDatabase() {
+      return apiClient<{ ok: boolean; applied: string[]; message?: string }>("/admin/system/update-database", "POST")
+    },
+  },
+
   settings: {
     get() {
       return apiClient<{ siteName: string; email: string; phone: string }>("/settings", "GET")

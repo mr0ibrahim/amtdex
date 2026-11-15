@@ -122,6 +122,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/settings', [SettingsController::class, 'get'])->middleware('role:admin');
         Route::put('/cms', [\App\Http\Controllers\Api\V1\CmsController::class, 'update'])->middleware('role:admin,editor');
         Route::put('/settings', [SettingsController::class, 'update'])->middleware('role:admin');
+        // Applies pending database updates shipped with a deploy (the host copies files only).
+        Route::post('/admin/system/update-database', [SystemDiagnosticsController::class, 'updateDatabase'])->middleware(['role:admin', 'throttle:5,1']);
 
         // User Management (Admin only)
         Route::get('/users', [UserController::class, 'index'])->middleware('role:admin');

@@ -1,4 +1,6 @@
 import { useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
+import { API } from "@/lib/api"
 import { useSettingsQuery, useUpdateSettingsMutation } from "@/lib/queries"
 import type { SiteSettings } from "@/lib/queries"
 import { generateSitemap, useSeo } from "@/lib/seoStore"
@@ -70,6 +72,46 @@ function SettingsForm({
   )
 }
 
+/** The host copies files on deploy but does not touch the database; this applies the rest. */
+function DatabaseUpdateCard() {
+  const queryClient = useQueryClient()
+  const [state, setState] = useState<{ status: "idle" | "running" | "done" | "error"; text?: string }>({ status: "idle" })
+
+  const run = async () => {
+    setState({ status: "running" })
+    try {
+      const result = await API.system.updateDatabase()
+      await queryClient.invalidateQueries()
+      setState({
+        status: "done",
+        text: result.applied.length ? `تم تطبيق ${result.applied.length} تحديث: ${result.applied.join("، ")}` : "قاعدة البيانات محدّثة بالفعل، لا يوجد ما يُطبَّق.",
+      })
+    } catch (error) {
+      setState({ status: "error", text: error instanceof Error ? error.message : "تعذّر تحديث قاعدة البيانات." })
+    }
+  }
+
+  return (
+    <div className="bg-white border border-[var(--color-border)] rounded-2xl p-5">
+      <h2 className="text-[14px] font-bold text-[var(--color-ink)]">تحديث قاعدة البيانات</h2>
+      <p className="mt-1 text-[12px] leading-6 text-[var(--color-text-muted)]">
+        بعض التحديثات (مثل أسماء الخدمات) تُحفظ في قاعدة البيانات، والنشر التلقائي لا يطبّقها. اضغط بعد كل نشر جديد؛ إن لم يكن هناك جديد فلن يتغير شيء.
+      </p>
+      <button
+        type="button"
+        onClick={run}
+        disabled={state.status === "running"}
+        className="mt-3 bg-gradient-primary text-white text-[12px] font-bold px-5 py-2.5 rounded-full hover:opacity-90 disabled:opacity-60"
+      >
+        {state.status === "running" ? "جارٍ التحديث..." : "تطبيق التحديثات"}
+      </button>
+      {state.text && (
+        <p role="status" className={`mt-3 text-[12px] leading-6 ${state.status === "error" ? "text-rose-600" : "text-emerald-700"}`}>{state.text}</p>
+      )}
+    </div>
+  )
+}
+
 export function SettingsPage() {
   const { data: settings, isLoading, error } = useSettingsQuery()
   const updateMutation = useUpdateSettingsMutation()
@@ -126,6 +168,8 @@ export function SettingsPage() {
           saved={saved}
         />
       ) : null}
+
+      <DatabaseUpdateCard />
 
       <div className="bg-white border border-[var(--color-border)] rounded-2xl p-5">
         <h2 className="text-[14px] font-bold text-[var(--color-ink)]">النسخ الاحتياطي والاستعادة</h2>
