@@ -34,12 +34,12 @@ class BlogSetting extends Model
     public static function getAll(): array
     {
         $defaults = [
-            'blog_title' => 'المدونة التقنية — Amtdex',
+            'blog_title' => 'المدونة التقنية — AMTDEX SOFT',
             'blog_description' => 'أفكار عملية وتجارب حية في هندسة البرمجيات، الذكاء الاصطناعي، والأنظمة السحابية.',
             'blog_subdomain' => env('BLOG_SUBDOMAIN', 'blog.amtdex.com'),
             'posts_per_page' => 9,
             'default_og_image' => 'https://amtdex.com/images/screens/projects.webp',
-            'title_template' => '{title} | مدونة Amtdex',
+            'title_template' => '{title} | مدونة AMTDEX SOFT',
             'desc_template' => '{summary}',
             'robots_txt' => "User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /dashboard/\nSitemap: https://blog.amtdex.com/sitemap.xml",
             'rss_enabled' => true,

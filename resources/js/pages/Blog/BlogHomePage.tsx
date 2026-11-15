@@ -1,4 +1,5 @@
 import "../../../css/blog-cards.css"
+import { formatDate, readingTime } from "@/lib/format"
 import { useEffect, useState, useTransition } from "react"
 import { useDebouncedValue } from "@/routing/search"
 import { getAvatarUrl } from "@/lib/avatar"
@@ -197,7 +198,7 @@ export function BlogHomePage() {
                         )}
                         <span className="text-[12px] text-[var(--color-text-faint)]">•</span>
                         <span className="text-[12px] text-[var(--color-text-muted)]">
-                          {featuredPost.reading_time_minutes} دقائق قراءة
+                          {readingTime(featuredPost.reading_time_minutes)}
                         </span>
                       </div>
                       <h2 className="line-clamp-3 text-2xl sm:text-3xl font-extrabold text-[var(--color-ink)] leading-snug hover:text-[var(--color-primary-light)] transition-colors">
@@ -223,7 +224,7 @@ export function BlogHomePage() {
                             {featuredPost.author?.name}
                           </div>
                           <div className="text-[11px] text-[var(--color-text-faint)]">
-                            {featuredPost.published_at ? new Date(featuredPost.published_at).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" }) : ""}
+                            {featuredPost.published_at ? formatDate(featuredPost.published_at) : ""}
                           </div>
                         </div>
                       </div>

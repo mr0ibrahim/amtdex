@@ -64,7 +64,7 @@ class BlogJsonLdBuilder
     {
         $settings ??= BlogSetting::getAll();
         $blogUrl = self::blogBaseUrl().'/';
-        $title = (string) ($settings['blog_title'] ?? 'المدونة التقنية — Amtdex');
+        $title = (string) ($settings['blog_title'] ?? 'المدونة التقنية — AMTDEX SOFT');
         $description = (string) ($settings['blog_description'] ?? 'أفكار عملية وتجارب حية في هندسة البرمجيات.');
 
         return [
@@ -124,7 +124,7 @@ class BlogJsonLdBuilder
             ?? now()->toAtomString();
         $dateModified = optional($post->updated_at)->toAtomString() ?? $datePublished;
 
-        $authorName = $post->author?->name ?: 'فريق Amtdex التقني';
+        $authorName = $post->author?->name ?: 'فريق AMTDEX SOFT التقني';
         $authorUrl = data_get($post->author?->social_links, 'twitter')
             ?: data_get($post->author?->social_links, 'linkedin')
             ?: self::DEFAULT_SITE_URL;
@@ -320,7 +320,7 @@ class BlogJsonLdBuilder
                 'url' => $canonical,
                 'isPartOf' => [
                     '@type' => 'WebSite',
-                    'name' => 'مدونة Amtdex',
+                    'name' => 'مدونة AMTDEX SOFT',
                     'url' => self::blogBaseUrl().'/',
                 ],
                 'inLanguage' => 'ar',

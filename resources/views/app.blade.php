@@ -107,7 +107,7 @@
     @endif
 </head>
 <body>
-    <div id="root"><p style="font-family:system-ui,sans-serif;padding:24px">Amtdex — حلول برمجية تصنع الفرق</p></div>
+    <div id="root"><p style="font-family:system-ui,sans-serif;padding:24px">AMTDEX SOFT — حلول برمجية تصنع الفرق</p></div>
 </body>
 </html>
 

@@ -155,7 +155,7 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
             return item.href ? <a key={item.label} href={item.href} target={item.href.startsWith("https:") ? "_blank" : undefined} rel={item.href.startsWith("https:") ? "noreferrer" : undefined} className="contact-method">{content}</a> : <div key={item.label} className="contact-method">{content}</div>
           })}</div></section>
           <section className="contact-next-card"><span className="contact-card-kicker">ما الخطوة التالية؟</span><h2>من رسالتك إلى خطة واضحة</h2><ol><li><span>01</span><div><strong>نفهم احتياجك</strong><p>نراجع الفكرة والتفاصيل التي شاركتها.</p></div></li><li><span>02</span><div><strong>نناقش الخيارات</strong><p>نتواصل معك لتحديد المتطلبات والخطوة القادمة.</p></div></li></ol></section>
-          <section className="contact-hours"><Icon name="clock" size={19} /><div><h2>ساعات العمل والرد</h2><p>السبت — الخميس<br /><bdi>9:00 ص — 6:00 م</bdi> · توقيت مكة</p><small>خارج ساعات العمل، اترك رسالتك وسنراجعها عند عودتنا.</small></div></section>
+          <section className="contact-hours"><Icon name="clock" size={19} /><div><h2>ساعات العمل والدعم</h2><p>المكتب: السبت — الخميس<br /><bdi>9:00 ص — 6:00 م</bdi> · توقيت مكة</p><small>الدعم الفني لعملائنا متاح 24/7. الاستفسارات الجديدة نرد عليها في ساعات المكتب.</small></div></section>
         </aside>
       </div>
     </Container>

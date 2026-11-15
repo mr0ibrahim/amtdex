@@ -325,7 +325,7 @@ class PublicBlogController extends Controller
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">';
         $xml .= '<channel>';
-        $xml .= '<title>' . htmlspecialchars($settings['blog_title'] ?? 'مدونة Amtdex') . '</title>';
+        $xml .= '<title>' . htmlspecialchars($settings['blog_title'] ?? 'مدونة AMTDEX SOFT') . '</title>';
         $xml .= '<link>' . $baseUrl . '</link>';
         $xml .= '<description>' . htmlspecialchars($settings['blog_description'] ?? '') . '</description>';
         $xml .= '<language>ar</language>';
@@ -338,7 +338,7 @@ class PublicBlogController extends Controller
             $xml .= '<link>' . $postUrl . '</link>';
             $xml .= '<guid isPermaLink="true">' . $postUrl . '</guid>';
             $xml .= '<description><![CDATA[' . ($post->summary ?: Str::limit(strip_tags($post->content), 250)) . ']]></description>';
-            $xml .= '<author>' . htmlspecialchars($post->author->name ?? 'Amtdex') . '</author>';
+            $xml .= '<author>' . htmlspecialchars($post->author->name ?? 'AMTDEX SOFT') . '</author>';
             if ($post->category) {
                 $xml .= '<category>' . htmlspecialchars($post->category->name) . '</category>';
             }

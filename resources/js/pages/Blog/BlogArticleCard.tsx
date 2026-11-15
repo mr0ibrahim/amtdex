@@ -1,4 +1,5 @@
 import { getAvatarUrl } from "@/lib/avatar"
+import { formatDate, readingTime } from "@/lib/format"
 import { Link } from "react-router-dom"
 import { Icon } from "@/components/ui/Icon"
 import { BrandArtwork } from "@/components/ui/BrandArtwork"
@@ -19,8 +20,8 @@ export function BlogArticleCard({ post, query = "" }: { post: BlogPost; query?: 
       </Link>
       <div className="blog-article-copy">
         <div className="blog-article-meta">
-          {date && !Number.isNaN(date.getTime()) && <time dateTime={post.published_at!}>{date.toLocaleDateString("ar-EG", { year: "numeric", month: "short", day: "numeric" })}</time>}
-          {minutes ? <span><Icon name="clock" size={13} /> {minutes} دقائق قراءة</span> : null}
+          {date && !Number.isNaN(date.getTime()) && <time dateTime={post.published_at!}>{formatDate(date)}</time>}
+          {minutes ? <span><Icon name="clock" size={13} /> {readingTime(minutes)}</span> : null}
         </div>
         <h3><Link to={href}>{highlightMatch(post.title, query)}</Link></h3>
         {post.summary && <p>{highlightMatch(post.summary, query)}</p>}

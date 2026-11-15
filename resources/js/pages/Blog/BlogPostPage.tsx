@@ -1,4 +1,5 @@
 import { ReadingProgress } from "@/components/ui/ReadingProgress"
+import { formatDate, formatNumber, readingTime } from "@/lib/format"
 import { getAvatarUrl } from "@/lib/avatar"
 import "../../../css/blog-cards.css"
 import { BlogArticleCard } from "./BlogArticleCard"
@@ -143,18 +144,7 @@ export function BlogPostPage() {
   }
 
   // Formatted date in Arabic
-  const formattedDate = useMemo(() => {
-    if (!post?.published_at) return ""
-    try {
-      return new Date(post.published_at).toLocaleDateString("ar-SA", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    } catch {
-      return post.published_at.substring(0, 10)
-    }
-  }, [post?.published_at])
+  const formattedDate = useMemo(() => formatDate(post?.published_at), [post?.published_at])
 
   if (isLoading) {
     return (
@@ -304,7 +294,7 @@ export function BlogPostPage() {
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {post.reading_time} دقيقة قراءة
+              {readingTime(post.reading_time)}
             </span>
             <span className="text-xs text-[var(--color-text-muted)] flex items-center gap-1">
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -317,7 +307,7 @@ export function BlogPostPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
-              {post.views_count.toLocaleString("ar-EG")} مشاهدة
+              {formatNumber(post.views_count)} مشاهدة
             </span>
           </div>
 
@@ -604,7 +594,7 @@ export function BlogPostPage() {
                               </span>
                             </div>
                             <span className="text-xs text-[var(--color-text-muted)]">
-                              {comm.created_at ? new Date(comm.created_at).toLocaleDateString("ar-SA") : ""}
+                              {formatDate(comm.created_at, "short")}
                             </span>
                           </div>
                           <p className="text-sm text-[var(--color-ink)] leading-relaxed pr-10">
