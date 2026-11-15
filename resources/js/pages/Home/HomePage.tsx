@@ -18,7 +18,8 @@ export function HomePage(_props: { onToast: (m: string) => void }) {
   const { homeSections, staff } = useCms()
   const hero = useSection("hero").fields
   // Seven blocks: hero with the product scene, proof, services, work, process, voices, closing.
-  const order = ["hero", "stats", "services", "gallery", "workflow", "aftercare", "testimonials", "guarantee", "contact"]
+  // What we do → proof → how we work → the delivery guarantee → what continues after → clients → contact.
+  const order = ["hero", "services", "stats", "gallery", "workflow", "guarantee", "aftercare", "testimonials", "contact"]
   // The product scene used to open the separate intro block; its visibility switch still applies.
   const intro = homeSections.find(section => section.id === "intro")
   const scene = !intro || intro.visible || staff
@@ -46,7 +47,7 @@ export function HomePage(_props: { onToast: (m: string) => void }) {
     {gate("services", <section className="reference-services-section page-section" aria-labelledby="home-services-title" data-motion-group>
       <div className="page-container page-container--wide">
         <header className="reference-section-heading"><span className="reference-section-label">حلول لمشروعك</span><h2 id="home-services-title">كل ما تحتاجه<br className="reference-mobile-break" /> <em>لتجربة رقمية أفضل.</em></h2><p>اختر ما يناسب احتياجك، ودعنا نبني التفاصيل معك.</p></header>
-        <ServiceCollection limit={6} />
+        <ServiceCollection limit={9} />
         <div className="reference-section-action"><Link to="/services" className="btn btn-line">استعرض جميع الخدمات<Icon name="arrowLeft" size={18} /></Link></div>
       </div>
     </section>)}

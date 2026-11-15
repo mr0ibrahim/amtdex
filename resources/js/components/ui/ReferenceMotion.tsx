@@ -1,6 +1,6 @@
 import { Icon, type IconName } from "./Icon"
 
-const capabilities = ["مواقع إلكترونية", "تطبيقات جوال", "أنظمة أعمال", "تجارب رقمية", "من الفكرة إلى التنفيذ"]
+const capabilities = ["مواقع إلكترونية", "تطبيقات جوال", "أنظمة أعمال", "إعلانات جوجل", "إدارة السوشال ميديا", "التصميم والهوية", "من الفكرة إلى التنفيذ"]
 
 export function CapabilityRibbon() {
   return <div className="reference-ribbon" role="group" aria-label="خدماتنا">
