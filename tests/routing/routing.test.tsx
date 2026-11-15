@@ -39,16 +39,18 @@ describe("routing", () => {
     expect(await screen.findByRole("heading", { name: "تصميم وبرمجة المواقع الإلكترونية" })).toBeInTheDocument()
   })
 
-  it("الأعمال /portfolio تعرض المشاريع السابقة", async () => {
+  it("الأعمال /portfolio تعرض المشاريع الحقيقية", async () => {
     renderAt("/portfolio")
-    expect(await screen.findByText(/نصنع منتجات/)).toBeInTheDocument()
+    expect(await screen.findByRole("heading", { level: 3, name: /نبض اليمن/ })).toBeInTheDocument()
+    expect(screen.getAllByRole("link", { name: /عرض المشروع|Rekabe/ }).length).toBeGreaterThan(0)
   })
-
-  it("تفاصيل مشروع /portfolio/noon-replatform", async () => {
-    renderAt("/portfolio/noon-replatform")
-    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(/نون/)
+  it("تفاصيل مشروع /portfolio/nabdh-alyaman", async () => {
+    renderAt("/portfolio/nabdh-alyaman")
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(/نبض اليمن/)
+    // Real projects link to the live product and show no invented figures.
+    expect(screen.getByRole("link", { name: /Google Play/ })).toHaveAttribute("href", expect.stringContaining("com.ezzcode.nabdh_alyaman"))
+    expect(screen.queryByText("النتائج")).toBeNull()
   })
-
   it("الأسعار /pricing غير منشورة", async () => {
     renderAt("/pricing")
     expect(await screen.findByText(/404/)).toBeInTheDocument()

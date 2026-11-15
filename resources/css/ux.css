@@ -169,3 +169,72 @@ html[dir="ltr"] .site-loader > i { transform-origin: left center; }
 .aftercare-note { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px 22px; margin-top: 30px; font-size: 16px; font-weight: 600; color: #31144d; text-align: center; }
 @media (max-width: 1023px) { .aftercare-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 639px) { .aftercare-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; } }
+
+/* ── Portfolio ── */
+.work-grid { margin-top: 26px; }
+.reference-design-scope .da-works .work-cover, .work-cover { position: relative; display: block; min-height: 0; padding: 0; aspect-ratio: 3 / 2; border-radius: 12px; overflow: hidden; isolation: isolate; }
+.work-cover img { width: 100%; height: 100%; object-fit: cover; transition: scale 600ms var(--ease-out); }
+.work-cover > span:not(.work-go) { position: absolute; inset: auto 16px 16px; color: #fff; font-weight: 700; }
+.work-go { position: absolute; inset-inline-start: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: #ffffffeb; color: #31144d; font-size: 13.5px; font-weight: 700; box-shadow: 0 10px 24px -12px #000a; opacity: 0; translate: 0 8px; transition: opacity var(--hover) ease, translate var(--hover) var(--ease-out); }
+.work-body { display: flex; flex: 1; flex-direction: column; padding: 16px 4px 4px; }
+.work-meta { font-size: 13px; font-weight: 600; color: #7a3cc2; }
+.work-body h3 { margin-top: 6px; font-size: 18px; font-weight: 700; line-height: 1.5; color: #31144d; }
+.work-body p { margin-top: 6px; font-size: 14.5px; line-height: 1.85; color: #675777; }
+.work-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 14px; }
+.work-tags span { padding: 4px 10px; border-radius: 999px; background: #f4eefb; color: #5a2391; font-size: 12.5px; font-weight: 600; }
+@media (hover: hover) and (pointer: fine) {
+  .work-card:hover .work-cover img { scale: 1.05; }
+  /* With scroll drift the cover already sits at 1.08 to hide its edges. */
+  .brand-motion[data-reveal-mode="timeline"]:not([data-motion-paused="true"]) .work-card:hover .work-cover img { scale: 1.13; }
+  .work-card:hover .work-go { opacity: 1; translate: 0 0; }
+}
+.brand-motion[data-geo-touch="true"] .work-card[data-geo-active="true"] .work-go { opacity: 1; translate: 0 0; }
+.work-card:focus-visible .work-go { opacity: 1; translate: 0 0; }
+/* Filtering: cards glide to their new places (View Transitions). */
+::view-transition-group(*) { animation-duration: 380ms; animation-timing-function: var(--ease-out); }
+::view-transition-old(*), ::view-transition-new(*) { animation-duration: 220ms; }
+
+/* Project page */
+.work-detail { max-width: 1200px; }
+.work-back { display: inline-block; font-size: 14px; font-weight: 600; color: #675777; }
+.work-back:hover { color: #6a2c9f; }
+.work-head { max-width: 760px; margin-top: 18px; }
+.work-head h1 { margin-top: 8px; font-size: clamp(28px, 4.6vw, 44px); font-weight: 700; line-height: 1.35; color: #31144d; }
+.work-head > p { margin-top: 12px; font-size: 17px; line-height: 1.9; color: #4f4160; }
+.work-head .work-tags { padding-top: 16px; }
+.work-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.work-hero { position: relative; margin-top: 30px; overflow: hidden; border-radius: 24px; box-shadow: 0 40px 80px -46px #31144dcc; }
+.work-hero img { display: block; width: 100%; height: auto; }
+.work-hero-fallback { aspect-ratio: 3 / 2; }
+.work-hero figcaption { position: absolute; inset-inline-end: 14px; bottom: 14px; padding: 6px 12px; border-radius: 999px; background: #000000a6; color: #fff; font-size: 12.5px; backdrop-filter: blur(4px); }
+.work-content { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, .8fr); gap: 32px; margin-top: 36px; }
+.work-section + .work-section { margin-top: 30px; }
+.work-section h2, .work-side h2 { font-size: 20px; font-weight: 700; color: #31144d; }
+.work-section > p { margin-top: 10px; font-size: 16px; line-height: 2; color: #4f4160; }
+.work-list { display: grid; gap: 10px; margin-top: 14px; }
+.work-list li { display: flex; gap: 10px; align-items: flex-start; font-size: 15.5px; line-height: 1.8; color: #31144d; }
+.work-list li > span { display: grid; place-items: center; flex: none; width: 24px; height: 24px; margin-top: 2px; border-radius: 8px; background: #f1e8fc; color: #6a2c9f; }
+.work-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.work-metrics > div { padding: 16px; border: 1px solid #e3d5f4; border-radius: 16px; text-align: center; }
+.work-metrics b { display: block; font-size: 24px; color: #6a2c9f; }
+.work-metrics span { font-size: 13.5px; color: #675777; }
+.work-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.work-gallery img { width: 100%; border-radius: 14px; }
+.work-side { display: grid; gap: 16px; align-content: start; }
+.brand-motion main .work-facts, .brand-motion main .work-cta { padding: 22px; }
+.work-facts dl { display: grid; margin-top: 12px; }
+.work-facts dl > div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #efe6f8; font-size: 14.5px; }
+.work-facts dl > div:last-child { border-bottom: 0; }
+.work-facts dt { color: #675777; }
+.work-facts dd { font-weight: 700; color: #31144d; text-align: end; }
+.brand-motion main .work-cta { background: radial-gradient(ellipse at 15% 0%, #7a45b8, transparent 62%), #2c1147; color: #fff; }
+.work-cta h2 { color: #fff; }
+.work-cta p { margin-top: 8px; font-size: 14.5px; line-height: 1.9; color: #e9dcf8; }
+.work-cta .btn { margin-top: 16px; background: #fff; color: #31144d; }
+@media (max-width: 1023px) { .work-content { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 639px) { .work-hero { border-radius: 16px; margin-top: 22px; } .work-hero figcaption { position: static; display: block; border-radius: 0; background: #1d102e; text-align: center; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .work-cover img, .work-go { transition: none; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none; }
+}

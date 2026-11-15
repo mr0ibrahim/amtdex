@@ -44,7 +44,7 @@ export function ProjectEditor({ editor }: { editor: ProjectEditorState }) {
                   الرابط اللطيف (Slug)
                 </label>
                 <input
-                  placeholder="noon-replatform (يُولد تلقائياً)"
+                  placeholder="nabdh-alyaman (يُولد تلقائياً)"
                   value={editingProject.slug}
                   dir="ltr"
                   onChange={(e) => setEditingProject({ ...editingProject, slug: e.target.value })}

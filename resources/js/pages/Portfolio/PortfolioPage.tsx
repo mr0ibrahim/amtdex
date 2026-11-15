@@ -1,4 +1,7 @@
-import { useMemo, useState } from "react"
+import { useMemo, useState, type CSSProperties } from "react"
+import { flushSync } from "react-dom"
+import { Icon } from "@/components/ui/Icon"
+import { coverSources } from "@/lib/projectMedia"
 import { Link } from "react-router-dom"
 import { Container } from "@/components/layout/Container"
 import { PageHeader } from "@/components/layout/PageHeader"
@@ -11,6 +14,14 @@ export function PortfolioPage() {
   // An empty collection from the CMS must not leave the page blank.
   const PROJECTS = apiProjects?.length ? apiProjects : SEED_PROJECTS
   const [filter, setFilter] = useState<string>("الكل")
+  // Filtering re-flows the grid; where supported, cards glide to their new places instead of jumping.
+  const choose = (next: string) => {
+    if (next === filter) return
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    const doc = document as Document & { startViewTransition?: (update: () => void) => unknown }
+    if (doc.startViewTransition && !reduce) doc.startViewTransition(() => flushSync(() => setFilter(next)))
+    else setFilter(next)
+  }
 
   const cats = useMemo(() => ["الكل", ...Array.from(new Set(PROJECTS.map((p) => p.cat)))], [PROJECTS])
   const filtered = useMemo(
@@ -24,20 +35,21 @@ export function PortfolioPage() {
         eyebrow="أعمالنا ومشاريعنا"
         title={
           <>
-            نصنع منتجات
+            تطبيقات ومواقع
             <br />
-            يحبها الناس وتصنع فارقاً.
+            يستخدمها الناس كل يوم.
           </>
         }
-        description="نماذج من مشاريع ومنصات رقمية قمنا بتطويرها وإطلاقها بنجاح — كل مشروع يمثل قصة نجاح وقيمة عملية قابلة للقياس."
+        description="عينة من تطبيقات ومواقع طوّرناها لعملاء في السعودية والكويت واليمن، مع رابط مباشر لكل مشروع."
       />
 
-      <div data-motion-group className="da-filters">
+      <div data-motion-group className="da-filters" role="group" aria-label="تصفية الأعمال">
         {cats.map((c) => (
           <button
             key={c}
             type="button"
-            onClick={() => setFilter(c)}
+            aria-pressed={filter === c}
+            onClick={() => choose(c)}
             className={filter === c ? "is-on" : undefined}
           >
             {c}
@@ -45,8 +57,7 @@ export function PortfolioPage() {
         ))}
       </div>
 
-      {/* Projects Grid with Skeletons */}
-      <div data-motion-group className="da-works">
+      <div data-motion-group className="da-works work-grid">
         {isLoading ? (
           <>
             <CardSkeleton />
@@ -54,58 +65,32 @@ export function PortfolioPage() {
             <CardSkeleton />
           </>
         ) : (
-          filtered.map((p, index) => (
-            <Link
-              key={p.slug}
-              to={`/portfolio/${p.slug}`}
-              data-motion="rise"
-              data-motion-delay={(index % 2) * 140}
-              className="group lift flex flex-col"
-            >
-              <div
-                className="da-plate"
-                style={{ background: p.cover_image ? undefined : p.color }}
+          filtered.map((p) => {
+            const media = coverSources(p)
+            return (
+              <Link
+                key={p.slug}
+                to={`/portfolio/${p.slug}`}
+                className="work-card group flex flex-col"
+                style={{ viewTransitionName: `work-${p.slug}` } as CSSProperties}
               >
-                {p.cover_image ? (
-                  <img
-                    src={p.cover_image}
-                    alt={p.cover_image_alt || p.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span>
-                    {p.title}
-                    <small>{p.client} · {p.year}</small>
-                  </span>
-                )}
-              </div>
-
-              <div className="pt-4 flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="text-[11.5px] font-semibold text-[var(--color-text-muted)]">
-                    {p.cat} • {p.year} • {p.client}
-                  </div>
-                  <h3 className="mt-1.5 text-[16px] font-bold text-[var(--color-ink)] leading-snug">
-                    {p.title}
-                  </h3>
-                  <p className="mt-2 text-[12.5px] leading-relaxed text-[var(--color-text-muted)]">
-                    {p.summary}
-                  </p>
+                <div className="da-plate work-cover" style={{ background: p.color }}>
+                  {media ? (
+                    <img src={media.src} srcSet={media.srcSet} sizes="(max-width: 639px) 92vw, (max-width: 1023px) 46vw, 400px" width={1200} height={800} loading="lazy" decoding="async" alt={p.cover_image_alt || p.title} />
+                  ) : (
+                    <span>{p.title}<small>{p.client}</small></span>
+                  )}
+                  <span className="work-go" aria-hidden="true">عرض المشروع<Icon name="actionArrow" size={15} /></span>
                 </div>
-
-                <div className="mt-4 pt-3 border-t border-[var(--color-border)] flex gap-1.5 flex-wrap">
-                  {p.stack.map((s) => (
-                    <span
-                      key={s}
-                      className="text-[11px] font-medium text-[var(--color-text-muted)]"
-                    >
-                      {s}
-                    </span>
-                  ))}
+                <div className="work-body">
+                  <div className="work-meta">{[p.cat, p.country, p.year].filter(Boolean).join(" · ")}</div>
+                  <h3>{p.title}</h3>
+                  <p>{p.summary}</p>
+                  <div className="work-tags">{p.stack.map((s) => <span key={s}>{s}</span>)}</div>
                 </div>
-              </div>
-            </Link>
-          ))
+              </Link>
+            )
+          })
         )}
       </div>
     </Container>

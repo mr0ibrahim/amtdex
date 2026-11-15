@@ -3,25 +3,13 @@ import { Link, useParams } from "react-router-dom"
 import { PROJECTS as SEED_PROJECTS } from "@/data/projects"
 import { useProjectsQuery } from "@/lib/queries"
 import { Skeleton } from "@/components/ui/Skeleton"
-
-const DEFAULT_DELIVERABLES = [
-  "واجهة مستخدم فائقة السرعة ومتجاوبة تماماً (LCP < 1.2s)",
-  "لوحة تحكم إدارية متكاملة للتحكم بجميع تفاصيل النظام والبيانات",
-  "واجهات برمجة API موثقة بالكامل + تكامل Webhooks",
-  "تكامل بوابات الدفع الإلكتروني المعتمدة (مدى، فيزا، أبل باي)",
-  "مراقبة سحابية على مدار الساعة ونسخ احتياطي يومي مشفر",
-]
-
-const DEFAULT_METRICS = [
-  { v: "+40%", l: "أسرع في التصفح والإنجاز" },
-  { v: "2.1×", l: "معدل تحويل وتفاعل أعلى" },
-  { v: "99.9%", l: "استقرار وتوفر مستمر" },
-]
+import { Seo } from "@/components/Seo"
+import { coverSources, projectLinkLabel } from "@/lib/projectMedia"
 
 export function PortfolioDetailPage() {
   const { slug } = useParams()
   const { data: apiProjects, isLoading } = useProjectsQuery()
-  const PROJECTS = apiProjects ?? SEED_PROJECTS
+  const PROJECTS = apiProjects?.length ? apiProjects : SEED_PROJECTS
   const p = PROJECTS.find((x) => x.slug === slug)
 
   if (isLoading) {
@@ -60,162 +48,92 @@ export function PortfolioDetailPage() {
     )
   }
 
-  const deliverables = p.deliverables && p.deliverables.length > 0 ? p.deliverables : DEFAULT_DELIVERABLES
-  const metrics = p.metrics && p.metrics.length > 0 ? p.metrics : DEFAULT_METRICS
-  const challenge =
-    p.challenge ||
-    "احتاج العميل إلى منصة رقمية حديثة، آمنة، وعالية الأداء مع تكامل متقدم لبوابات الدفع وإدارة الطلبات وتتبع العمليات لحظياً. قمنا بهندسة وتطوير بنية سحابية متينة تمكّن النظام من التوسع السلس ومواكبة نمو الأعمال بدون أي تعطل."
-  const duration = p.duration || "8 أسابيع"
-  const teamSize = p.team_size || "5 مهندسين ومصممين"
+  // No invented figures: sections appear only when the project has the data.
+  const deliverables = p.deliverables ?? []
+  const metrics = p.metrics ?? []
+  const media = coverSources(p)
+  const facts = [
+    ["العميل", p.client], ["الدولة", p.country], ["التصنيف", p.cat], ["سنة الإطلاق", p.year], ["المدة", p.duration], ["فريق العمل", p.team_size],
+  ].filter((row): row is [string, string] => !!row[1])
 
   return (
-    <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <Link
-        to="/portfolio"
-        className="text-[12px] font-medium text-[var(--color-text-muted)] hover:text-[var(--color-primary)] inline-flex items-center gap-1 transition-colors"
-      >
-        ← العودة لقائمة المشاريع والأعمال
-      </Link>
+    <div className="page-container work-detail py-8 sm:py-12">
+      <Seo title={p.meta_title || p.title} description={p.meta_description || p.summary} ogImage={p.og_image || (p.cover_image?.startsWith("/") ? `https://amtdex.com${p.cover_image}` : p.cover_image)} />
+      <Link to="/portfolio" className="work-back">→ كل الأعمال</Link>
 
-      <div className="mt-4 rounded-[28px] overflow-hidden border border-[var(--color-border)] bg-white shadow-sm">
-        {/* Hero Section */}
-        <div
-          className="min-h-[300px] sm:min-h-[380px] relative overflow-hidden flex flex-col justify-end"
-          style={{ background: p.cover_image ? "#0E2A47" : p.color }}
-        >
-          {p.cover_image && (
-            <img
-              src={p.cover_image}
-              alt={p.cover_image_alt || p.title}
-              className="absolute inset-0 w-full h-full object-cover opacity-35 mix-blend-luminosity"
-            />
+      <header className="work-head">
+        <div className="work-meta">{[p.cat, p.country, p.year].filter(Boolean).join(" · ")}</div>
+        <h1>{p.title}</h1>
+        <p>{p.summary}</p>
+        <div className="work-tags">{p.stack.map((s) => <span key={s}>{s}</span>)}</div>
+        <div className="work-actions">
+          {p.project_url && (
+            <a href={p.project_url} target="_blank" rel="noopener noreferrer" className="btn btn-ink brand-cta">
+              {projectLinkLabel(p.project_url)}<Icon name="actionArrow" size={16} />
+            </a>
           )}
-          <div
-            className="absolute inset-0 opacity-40"
-            style={{ background: `radial-gradient(800px 400px at 60% 20%, ${p.accent}, transparent 70%)` }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+          <Link to="/quote" className="btn btn-line brand-cta">ابدأ مشروعًا مشابهًا</Link>
+        </div>
+      </header>
 
-          <div className="relative z-10 p-6 sm:p-8 flex flex-col justify-end">
-            <div className="text-white/80 text-[11.5px] tracking-wide font-bold">
-              {p.cat} • {p.year}
-            </div>
-            <h1 className="text-white text-[28px] sm:text-[40px] font-bold leading-tight mt-2 max-w-[760px]">
-              {p.title}
-            </h1>
-            <div className="text-white/85 text-[13.5px] mt-2 max-w-[680px]">
-              العميل: <strong className="text-white font-bold">{p.client}</strong> — {p.summary}
-            </div>
-            <div className="mt-4 flex gap-1.5 flex-wrap">
-              {p.stack.map((s) => (
-                <span
-                  key={s}
-                  className="text-[11px] px-3 py-1 rounded-full bg-white/95 text-black font-semibold shadow-sm"
-                >
-                  {s}
-                </span>
-              ))}
-            </div>
-          </div>
+      <figure className="work-hero" style={{ background: p.color }}>
+        {media ? (
+          <img src={media.src} srcSet={media.srcSet} sizes="(max-width: 1279px) 94vw, 1200px" width={1200} height={800} fetchPriority="high" alt={p.cover_image_alt || p.title} />
+        ) : (
+          <div className="work-hero-fallback" style={{ background: `radial-gradient(800px 400px at 60% 20%, ${p.accent}, transparent 70%)` }} />
+        )}
+        {media?.illustrative && <figcaption>صورة توضيحية مصمّمة من ميزات المشروع. {p.project_url ? "المشروع الفعلي عبر الرابط أعلاه." : ""}</figcaption>}
+      </figure>
+
+      <div className="work-content">
+        <div>
+          {p.challenge && (
+            <section className="work-section">
+              <h2>عن المشروع</h2>
+              <p className="whitespace-pre-line">{p.challenge}</p>
+            </section>
+          )}
+          {deliverables.length > 0 && (
+            <section className="work-section">
+              <h2>أبرز ما في المشروع</h2>
+              <ul className="work-list">
+                {deliverables.map((x) => (
+                  <li key={x}><span aria-hidden="true"><Icon name="check" size={15} /></span>{x}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {metrics.length > 0 && (
+            <section className="work-section">
+              <h2>النتائج</h2>
+              <div className="work-metrics">
+                {metrics.map((x) => <div key={x.l}><b>{x.v}</b><span>{x.l}</span></div>)}
+              </div>
+            </section>
+          )}
+          {p.gallery && p.gallery.length > 0 && (
+            <section className="work-section">
+              <h2>لقطات من المشروع</h2>
+              <div className="work-gallery">
+                {p.gallery.map((imgUrl, i) => <img key={imgUrl} src={imgUrl} loading="lazy" decoding="async" alt={`${p.title} — لقطة ${i + 1}`} />)}
+              </div>
+            </section>
+          )}
         </div>
 
-        {/* Content Details */}
-        <div className="p-6 sm:p-8 grid lg:grid-cols-[1.4fr_0.6fr] gap-8">
-          <div>
-            <h3 className="text-[16px] font-bold text-[var(--color-ink)]">التحدي ومتطلبات العمل</h3>
-            <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--color-text-muted)] whitespace-pre-line">
-              {challenge}
-            </p>
-
-            <h3 className="mt-7 text-[16px] font-bold text-[var(--color-ink)]">ما قمنا ببنائه وتسليمه (Deliverables)</h3>
-            <ul className="mt-3 space-y-2.5">
-              {deliverables.map((x) => (
-                <li key={x} className="flex gap-2.5 text-[13px] text-[var(--color-ink)] items-start">
-                  <span className="text-emerald-500 mt-0.5 shrink-0">
-                    <Icon name="check" size={16} />
-                  </span>
-                  <span>{x}</span>
-                </li>
-              ))}
-            </ul>
-
-            <h3 className="mt-7 text-[16px] font-bold text-[var(--color-ink)]">النتائج والمؤشرات الملموسة</h3>
-            <div className="mt-3 grid grid-cols-3 gap-3">
-              {metrics.map((x) => (
-                <div
-                  key={x.l}
-                  className="bg-[var(--color-card-soft)]/50 border border-[var(--color-border)] rounded-2xl p-4 text-center"
-                >
-                  <div className="text-[22px] font-bold font-mono text-[var(--color-primary)]">{x.v}</div>
-                  <div className="text-[11.5px] text-[var(--color-text-muted)] mt-1 font-semibold">{x.l}</div>
-                </div>
-              ))}
+        <aside className="work-side">
+          {facts.length > 0 && (
+            <div className="geo-card work-facts" data-geo="wave">
+              <h2>بيانات المشروع</h2>
+              <dl>{facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
             </div>
-
-            {/* Gallery Section if available */}
-            {p.gallery && p.gallery.length > 0 && (
-              <div className="mt-8 pt-8 border-t border-[var(--color-border)]">
-                <h3 className="text-[16px] font-bold text-[var(--color-ink)] mb-4">معرض لقطات من واجهات المشروع</h3>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {p.gallery.map((imgUrl, i) => (
-                    <div
-                      key={i}
-                      className="rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-sm aspect-video bg-gray-100 group"
-                    >
-                      <img
-                        src={imgUrl}
-                        alt={`${p.title} - صورة ${i + 1}`}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+          )}
+          <div className="geo-card work-cta">
+            <h2>لديك فكرة مشابهة؟</h2>
+            <p>نراجع متطلباتك ونرسل لك عرضًا فنيًا وماليًا لمشروعك، ومعه عام كامل من الصيانة المجانية بعد الإطلاق.</p>
+            <Link to="/quote" className="btn brand-cta">ابدأ مشروعك<Icon name="actionArrow" size={16} /></Link>
           </div>
-
-          {/* Sidebar */}
-          <div className="space-y-4">
-            <div className="bg-[var(--color-card-soft)]/40 border border-[var(--color-border)] rounded-2xl p-5">
-              <div className="text-[14px] font-bold text-[var(--color-ink)]">ملخص بيانات دراسة الحالة</div>
-              <div className="mt-4 space-y-3 text-[12.5px]">
-                <div className="flex justify-between items-center border-b border-[var(--color-border)] pb-2.5">
-                  <span className="text-[var(--color-text-muted)]">العميل</span>
-                  <span className="font-bold text-[var(--color-ink)]">{p.client}</span>
-                </div>
-                <div className="flex justify-between items-center border-b border-[var(--color-border)] pb-2.5">
-                  <span className="text-[var(--color-text-muted)]">سنة الإطلاق</span>
-                  <span className="font-bold font-mono text-[var(--color-ink)]">{p.year}</span>
-                </div>
-                <div className="flex justify-between items-center border-b border-[var(--color-border)] pb-2.5">
-                  <span className="text-[var(--color-text-muted)]">المدة الزمنية</span>
-                  <span className="font-bold text-[var(--color-ink)]">{duration}</span>
-                </div>
-                <div className="flex justify-between items-center border-b border-[var(--color-border)] pb-2.5">
-                  <span className="text-[var(--color-text-muted)]">فريق العمل</span>
-                  <span className="font-bold text-[var(--color-ink)]">{teamSize}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-[var(--color-text-muted)]">التصنيف</span>
-                  <span className="font-bold text-[var(--color-primary)]">{p.cat}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="geo-card bg-[var(--color-ink)] text-white rounded-2xl p-6 text-center shadow-md">
-              <h4 className="text-[16px] font-bold">هل لديك فكرة مشروع مشابه؟</h4>
-              <p className="text-[12.5px] text-white/70 mt-2 leading-relaxed">
-                دعنا ندرس متطلباتك ونقدم لك عرضاً فنياً ومالياً مخصصاً لمشروعك.
-              </p>
-              <Link
-                to={`/quote?service=${encodeURIComponent(p.title)}`}
-                className="mt-4 inline-block w-full py-3 px-4 rounded-full bg-[var(--color-primary)] text-white font-bold text-[12.5px] hover:bg-[var(--color-primary-light)] transition-colors"
-              >
-                اطلب مشروعك الآن ←
-              </Link>
-            </div>
-          </div>
-        </div>
+        </aside>
       </div>
     </div>
   )

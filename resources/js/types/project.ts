@@ -9,6 +9,8 @@ export type Project = {
   cat: string
   title: string
   client: string
+  /** Where the client is based, e.g. "السعودية". */
+  country?: string
   year: string
   stack: string[]
   color: string
