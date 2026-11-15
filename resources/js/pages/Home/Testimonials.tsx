@@ -1,17 +1,23 @@
 import { PublicLink as Link } from "@/cms/PublicLink"
 import { useState } from "react"
 import { Icon } from "@/components/ui/Icon"
-import { TESTIMONIALS } from "@/data/site"
 import { useTestimonialsQuery } from "@/lib/queries"
 
 export function Testimonials() {
   const { data: dbData } = useTestimonialsQuery()
-  const rawList = dbData ?? TESTIMONIALS
-  const list = rawList.map((item: any) => ({
-    name: item.author || item.name,
-    text: item.content || item.text,
-    avatar: item.avatar || (item.author ? item.author.charAt(0) : item.name?.charAt(0) || "U"),
-  }))
+  // Only what is published in the dashboard (the query itself falls back if the server is unreachable).
+  // Nothing is shown while loading, so sample quotes never flash before the real ones.
+  const list = (dbData ?? []).map((item: any) => {
+    const name = item.author || item.name || ""
+    const photo = typeof item.avatar === "string" && /^(https?:|\/)/.test(item.avatar) ? item.avatar : ""
+    return {
+      name,
+      text: item.content || item.text,
+      photo,
+      initial: (!photo && item.avatar) || name.charAt(0) || "؟",
+      title: [item.role, item.company].filter(Boolean).join(" · "),
+    }
+  })
 
   const [index, setIndex] = useState(0)
   const safeIndex = index < list.length ? index : 0
@@ -26,7 +32,7 @@ export function Testimonials() {
       <div className="testimonial-story" aria-live="polite" aria-atomic="true">
         <span className="sr-only">الرأي {safeIndex + 1} من {list.length}</span>
         <blockquote key={quote?.name}>{quote?.text}</blockquote>
-        <div className="testimonial-author"><span className="testimonial-avatar" aria-hidden="true">{quote?.avatar}</span><div><strong>{quote?.name}</strong></div></div>
+        <div className="testimonial-author">{quote?.photo ? <img className="testimonial-avatar testimonial-photo" src={quote.photo} alt="" width={48} height={48} loading="lazy" /> : <span className="testimonial-avatar" aria-hidden="true">{quote?.initial}</span>}<div><strong>{quote?.name}</strong>{quote?.title && <p>{quote.title}</p>}</div></div>
       </div>
       <div className="testimonial-navigation">
         <div className="testimonial-dots" role="group" aria-label="اختيار رأي العميل">{list.map((item: any, position: number) => <button key={item.name} type="button" aria-label={`عرض رأي ${item.name}`} aria-pressed={position === safeIndex} onClick={() => setIndex(position)}><span /></button>)}</div>

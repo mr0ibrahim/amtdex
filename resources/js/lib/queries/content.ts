@@ -4,10 +4,8 @@ import type { TestimonialData, FaqData, TeamMemberData, ClientData } from "@/typ
 import { useContentCollection, type ContentQueryOptions } from "./collection"
 
 export function useTestimonialsQuery(options: ContentQueryOptions = {}) {
-  return useContentCollection<TestimonialData>("testimonials", API.testimonials.list, async () => {
-    const { TESTIMONIALS } = await import("@/data/site")
-    return TESTIMONIALS.map((item, index) => ({ author: item.name, content: item.text, role: "", company: "", avatar: item.avatar, rating: 5, sort_order: index, is_active: true }))
-  }, options)
+  // People and quotes are never invented: without the server there is nothing to show.
+  return useContentCollection<TestimonialData>("testimonials", API.testimonials.list, async () => [], options)
 }
 
 export function useCreateTestimonialMutation() {
@@ -65,10 +63,7 @@ export function useDeleteFaqMutation() {
 
 // ── TEAM QUERY & MUTATIONS ──
 export function useTeamQuery(options: ContentQueryOptions = {}) {
-  return useContentCollection<TeamMemberData>("team", API.team.list, async () => {
-    const { TEAM } = await import("@/data/site")
-    return TEAM.map((item, index) => ({ name: item.n, role: item.r, sort_order: index, is_active: true }))
-  }, options)
+  return useContentCollection<TeamMemberData>("team", API.team.list, async () => [], options)
 }
 
 export function useCreateTeamMemberMutation() {

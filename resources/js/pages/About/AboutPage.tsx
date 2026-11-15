@@ -1,7 +1,6 @@
 import { BrandArtwork } from "@/components/ui/BrandArtwork"
 import { Icon } from "@/components/ui/Icon"
 import { useState } from "react"
-import { TEAM as FALLBACK_TEAM } from "@/data/site"
 import { useTeamQuery, useFaqsQuery } from "@/lib/queries"
 
 export function AboutPage() {
@@ -20,7 +19,8 @@ export function AboutPage() {
     ? apiFaqs.map((f: any) => ({ q: f.question, a: f.answer }))
     : defaultFaqs
 
-  const team = (apiTeam && apiTeam.length > 0)
+  // Members published in the dashboard; an empty list hides the block.
+  const team = apiTeam
     ? apiTeam.map((m: any) => {
         const name = m.name || m.n || ""
         return {
@@ -30,7 +30,7 @@ export function AboutPage() {
           avatar: m.avatar,
         }
       })
-    : FALLBACK_TEAM
+    : []
 
   return (
     <div>
@@ -89,7 +89,7 @@ export function AboutPage() {
           </div>
         </div>
 
-        <div className="mt-10">
+        {team.length > 0 && <div className="mt-10">
           <h2 className="text-[20px] font-bold text-[var(--color-ink)]">الفريق</h2>
           <p className="text-[12px] text-[var(--color-text-faint)] mt-1">فريق صغير، خبرة كبيرة — نعمل كامتداد لفريقك.</p>
           <div className="da-people mt-6">
@@ -105,7 +105,7 @@ export function AboutPage() {
               </div>
             ))}
           </div>
-        </div>
+        </div>}
       </div>
 
       {/* FAQ — خلفية var(--color-beige) مثل المرجع + رسائل محسنة */}

@@ -4,28 +4,43 @@ import { expect, it } from "vitest"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Testimonials } from "@/pages/Home/Testimonials"
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-})
+const published = [
+  { author: "خالد", content: "عمل ممتاز.", role: "مدير التسويق", company: "شركة أ", avatar: "/storage/khaled.jpg", rating: 5, sort_order: 0, is_active: true },
+  { author: "منى", content: "تعامل راقٍ.", role: "", company: "", avatar: null, rating: 5, sort_order: 1, is_active: true },
+  { author: "سعيد", content: "تسليم في الموعد.", role: "مؤسس", company: "", avatar: null, rating: 5, sort_order: 2, is_active: true },
+]
 
-it("lets readers navigate all existing testimonials and wraps in both directions", () => {
-  render(
+function renderWith(data: unknown[]) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  queryClient.setQueryData(["content", "testimonials", "public"], data)
+  return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter><Testimonials /></MemoryRouter>
-    </QueryClientProvider>
+    </QueryClientProvider>,
   )
-  expect(screen.getByText("سارة العتيبي")).toBeVisible()
+}
+
+it("lets readers navigate the published testimonials and wraps in both directions", () => {
+  renderWith(published)
+  expect(screen.getByText("خالد")).toBeVisible()
   fireEvent.click(screen.getByRole("button", { name: "الرأي التالي" }))
-  expect(screen.getByText("عمر الحربي")).toBeVisible()
-  fireEvent.click(screen.getByRole("button", { name: "عرض رأي نورة القحطاني" }))
-  expect(screen.getByText("نورة القحطاني")).toBeVisible()
-  expect(screen.getByRole("button", { name: "عرض رأي نورة القحطاني" })).toHaveAttribute("aria-pressed", "true")
+  expect(screen.getByText("منى")).toBeVisible()
+  fireEvent.click(screen.getByRole("button", { name: "عرض رأي سعيد" }))
+  expect(screen.getByText("سعيد")).toBeVisible()
+  expect(screen.getByRole("button", { name: "عرض رأي سعيد" })).toHaveAttribute("aria-pressed", "true")
   fireEvent.click(screen.getByRole("button", { name: "الرأي التالي" }))
-  expect(screen.getByText("سارة العتيبي")).toBeVisible()
+  expect(screen.getByText("خالد")).toBeVisible()
   fireEvent.click(screen.getByRole("button", { name: "الرأي السابق" }))
-  expect(screen.getByText("نورة القحطاني")).toBeVisible()
+  expect(screen.getByText("سعيد")).toBeVisible()
+})
+
+it("shows the photo, role and company entered in the dashboard", () => {
+  const { container } = renderWith(published)
+  expect(screen.getByText("مدير التسويق · شركة أ")).toBeVisible()
+  expect(container.querySelector("img.testimonial-photo")).toHaveAttribute("src", "/storage/khaled.jpg")
+})
+
+it("renders nothing when no testimonial is published", () => {
+  const { container } = renderWith([])
+  expect(container.querySelector(".testimonial-panel")).toBeNull()
 })

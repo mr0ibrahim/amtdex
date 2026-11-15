@@ -87,8 +87,8 @@ export function TestimonialsTab() {
 
     const payload = {
       author: editingItem.author,
-      role: editingItem.role || "عميل",
-      company: editingItem.company || "عميل أمـتـدِكس",
+      role: editingItem.role || "",
+      company: editingItem.company || "",
       content: editingItem.content,
       avatar: editingItem.avatar || null,
       rating: editingItem.rating || 5,
