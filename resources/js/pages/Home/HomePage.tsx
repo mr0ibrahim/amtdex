@@ -11,13 +11,14 @@ import { GuaranteeBanner } from "@/pages/Home/GuaranteeBanner"
 import { ExperienceStudio } from "./ExperienceStudio"
 import { useCms, useSection } from "@/cms/useCms"
 import { StatsBand } from "@/pages/Home/StatsBand"
+import { AfterCareSection } from "./AfterCareSection"
 import { WorkflowSection } from "@/pages/Home/WorkflowSection"
 
 export function HomePage(_props: { onToast: (m: string) => void }) {
   const { homeSections, staff } = useCms()
   const hero = useSection("hero").fields
   // Seven blocks: hero with the product scene, proof, services, work, process, voices, closing.
-  const order = ["hero", "stats", "services", "gallery", "workflow", "testimonials", "guarantee", "contact"]
+  const order = ["hero", "stats", "services", "gallery", "workflow", "aftercare", "testimonials", "guarantee", "contact"]
   // The product scene used to open the separate intro block; its visibility switch still applies.
   const intro = homeSections.find(section => section.id === "intro")
   const scene = !intro || intro.visible || staff
@@ -52,6 +53,7 @@ export function HomePage(_props: { onToast: (m: string) => void }) {
     {gate("gallery", <ExperienceStudio />)}
     {gate("stats", <StatsBand />)}
     {gate("workflow", <WorkflowSection />)}
+    {gate("aftercare", <AfterCareSection />)}
     {gate("testimonials", <section data-motion-group className="page-container page-container--wide page-section home-testimonials"><header className="reference-section-heading"><span className="reference-section-label">الثقة تصنع الفرق</span><h2>تجارب يرويها <em>عملاؤنا.</em></h2></header><Testimonials /></section>)}
     {gate("guarantee", <GuaranteeBanner />)}
     {gate("contact", <section data-motion-group className="page-container page-container--wide contact-news-section" aria-labelledby="contact-news-title">

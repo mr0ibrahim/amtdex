@@ -123,6 +123,8 @@ export function ServiceDetailPage() {
               "لوحة تحكم إدارية سهلة الاستخدام للتحكم بالمحتوى",
               "نشر سحابي آمن وتكوين شهادات الأمان SSL",
               "صيانة مجانية لمدة عام كامل بعد الإطلاق",
+              "خدمة عملاء مستمرة ودعم فني 24/7",
+              "إصلاح المشاكل وإضافة التحديثات بعد التسليم",
             ].map((x) => (
               <li key={x} className="flex gap-2.5 text-[13px] text-[var(--color-ink)]">
                 <span className="text-emerald-500 mt-0.5 shrink-0">
