@@ -1,4 +1,5 @@
 import { BrandArtwork } from "@/components/ui/BrandArtwork"
+import { beginLoading } from "@/lib/loading"
 import { SearchSelect } from "@/components/ui/SearchSelect"
 import { countryOptions, currencyOptions } from "@/data/selectOptions"
 import { Icon } from "@/components/ui/Icon"
@@ -91,6 +92,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
     setQuoteErrors({})
     pendingRef.current = true
     setIsSubmitting(true)
+    const endLoading = beginLoading()
 
     try {
       await API.quote(parsed.data)
@@ -103,6 +105,7 @@ export function QuotePage({ onToast }: { onToast: (m: string) => void }) {
     } finally {
       pendingRef.current = false
       setIsSubmitting(false)
+      endLoading()
     }
   }
 

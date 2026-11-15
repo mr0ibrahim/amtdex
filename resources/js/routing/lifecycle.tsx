@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useLocation, useNavigationType } from "react-router-dom"
 import { applyVisibility, pageIsListed } from "@/cms/visibility"
 
@@ -38,19 +38,6 @@ export function prefetchRoute(path: string) {
   if (key.startsWith("/services/")) void import("@/pages/Services/ServiceDetailPage")
   else if (key.startsWith("/portfolio/")) void import("@/pages/Portfolio/PortfolioDetailPage")
   else if (key.startsWith("/blog")) void import("@/pages/Blog/BlogPostPage")
-}
-
-export function RouteProgress() {
-  const { pathname } = useLocation()
-  const [on, setOn] = useState(false)
-
-  useEffect(() => {
-    setOn(true)
-    const done = window.setTimeout(() => setOn(false), 450)
-    return () => window.clearTimeout(done)
-  }, [pathname])
-
-  return <div className={`route-progress${on ? " is-on" : ""}`} aria-hidden />
 }
 
 /** Scroll restoration, focus move, and cancellation when the route changes. */

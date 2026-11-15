@@ -1,6 +1,7 @@
 import { MotionPlayback } from "@/hooks/useMotionPlayback"
 import { useAmbientMotion } from "@/hooks/useAmbientMotion"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, Suspense } from "react"
+import { PageLoader } from "@/components/ui/SiteLoader"
 import { Icon } from "@/components/ui/Icon"
 import { Outlet, useLocation } from "react-router-dom"
 import { Footer } from "@/components/layout/Footer"
@@ -34,7 +35,8 @@ export function MarketingLayout({ onToast }: { onToast: (m: string) => void }) {
       <div className="scroll-progress" aria-hidden="true"><i /></div>
       <Header onToast={onToast} />
       <main id="main-content" tabIndex={-1}>
-        <Outlet />
+        {/* The header and footer stay in place while the next page's code arrives. */}
+        <Suspense fallback={<PageLoader />}><Outlet /></Suspense>
       </main>
       <Footer onToast={onToast} />
       <WhatsAppButton />

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { beginLoading } from "@/lib/loading"
 import { whatsappUrl } from "@/lib/site"
 import { SearchSelect } from "@/components/ui/SearchSelect"
 import { countryOptions } from "@/data/selectOptions"
@@ -81,6 +82,7 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
     setErrors({})
     requestRef.current = true
     setSending(true)
+    const endLoading = beginLoading()
     Object.entries(parsed.data).forEach(([key, value]) => fd.set(key, value ?? ""))
     try {
       await API.contact(fd)
@@ -101,6 +103,7 @@ export function ContactPage({ onToast }: { onToast: (m: string) => void }) {
     } finally {
       requestRef.current = false
       setSending(false)
+      endLoading()
     }
   }
   return (

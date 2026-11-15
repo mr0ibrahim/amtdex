@@ -2,10 +2,12 @@
  * Amtdex - App shell (routing + lazy code-splitting + auth + SEO).
  * Layout Routes: Marketing (Header/Footer) | Auth (standalone) | Dashboard (own shell) | 404
  */
-import { Suspense, lazy, useEffect } from "react"
+import { Suspense, lazy, useEffect, type ComponentType } from "react"
+import { beginLoading } from "@/lib/loading"
 import { Route, Routes, useLocation } from "react-router-dom"
 import { dashboardRoutes } from "@/routing/dashboardRoutes"
-import { RouteProgress, useRouteLifecycle } from "@/routing/lifecycle"
+import { useRouteLifecycle } from "@/routing/lifecycle"
+import { PageLoader, SiteLoader } from "@/components/ui/SiteLoader"
 import { PublicPage } from "@/cms/PublicPage"
 import { MarketingLayout } from "@/components/layout/MarketingLayout"
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary"
@@ -13,35 +15,36 @@ import { ForbiddenPage } from "@/components/layout/ProtectedRoute"
 import { Seo } from "@/components/Seo"
 import { useToast } from "@/components/ui/Toast"
 import { isBlogSubdomain, isDashboardHost, getMainUrl } from "@/lib/subdomain"
-const HomePage = lazy(() => import("@/pages/Home/HomePage").then(m => ({ default: m.HomePage })))
-const ServicesPage = lazy(() => import("@/pages/Services/ServicesPage").then(m => ({ default: m.ServicesPage })))
-const LegalPage = lazy(() => import("@/pages/Legal/LegalPage").then(m => ({ default: m.LegalPage })))
-const AboutPage = lazy(() => import("@/pages/About/AboutPage").then(m => ({ default: m.AboutPage })))
-const ContactPage = lazy(() => import("@/pages/Contact/ContactPage").then(m => ({ default: m.ContactPage })))
+/**
+ * A lazy page that reports its download to the site loader. Navigation keeps the current page
+ * on screen while the next one loads, so without this there is no sign that anything is happening.
+ * Prefetched pages resolve at once and never show the line.
+ */
+function lazyPage<T extends ComponentType<any>>(load: () => Promise<{ default: T }>) {
+  return lazy(() => {
+    const end = beginLoading()
+    return load().finally(end)
+  })
+}
 
-const ServiceDetailPage = lazy(() => import("@/pages/Services/ServiceDetailPage").then((m) => ({ default: m.ServiceDetailPage })))
-const PortfolioPage = lazy(() => import("@/pages/Portfolio/PortfolioPage").then((m) => ({ default: m.PortfolioPage })))
-const PortfolioDetailPage = lazy(() => import("@/pages/Portfolio/PortfolioDetailPage").then((m) => ({ default: m.PortfolioDetailPage })))
-const QuotePage = lazy(() => import("@/pages/Quote/QuotePage").then((m) => ({ default: m.QuotePage })))
-const NotFoundPage = lazy(() => import("@/pages/NotFound/NotFoundPage").then((m) => ({ default: m.NotFoundPage })))
+const HomePage = lazyPage(() => import("@/pages/Home/HomePage").then(m => ({ default: m.HomePage })))
+const ServicesPage = lazyPage(() => import("@/pages/Services/ServicesPage").then(m => ({ default: m.ServicesPage })))
+const LegalPage = lazyPage(() => import("@/pages/Legal/LegalPage").then(m => ({ default: m.LegalPage })))
+const AboutPage = lazyPage(() => import("@/pages/About/AboutPage").then(m => ({ default: m.AboutPage })))
+const ContactPage = lazyPage(() => import("@/pages/Contact/ContactPage").then(m => ({ default: m.ContactPage })))
+
+const ServiceDetailPage = lazyPage(() => import("@/pages/Services/ServiceDetailPage").then((m) => ({ default: m.ServiceDetailPage })))
+const PortfolioPage = lazyPage(() => import("@/pages/Portfolio/PortfolioPage").then((m) => ({ default: m.PortfolioPage })))
+const PortfolioDetailPage = lazyPage(() => import("@/pages/Portfolio/PortfolioDetailPage").then((m) => ({ default: m.PortfolioDetailPage })))
+const QuotePage = lazyPage(() => import("@/pages/Quote/QuotePage").then((m) => ({ default: m.QuotePage })))
+const NotFoundPage = lazyPage(() => import("@/pages/NotFound/NotFoundPage").then((m) => ({ default: m.NotFoundPage })))
 
 // Blog Pages
-const BlogHomePage = lazy(() => import("@/pages/Blog/BlogHomePage").then((m) => ({ default: m.BlogHomePage })))
-const BlogPostPage = lazy(() => import("@/pages/Blog/BlogPostPage").then((m) => ({ default: m.BlogPostPage })))
-const BlogCategoryPage = lazy(() => import("@/pages/Blog/BlogCategoryPage").then((m) => ({ default: m.BlogCategoryPage })))
-const BlogTagPage = lazy(() => import("@/pages/Blog/BlogTagPage").then((m) => ({ default: m.BlogTagPage })))
-const BlogNotFoundPage = lazy(() => import("@/pages/Blog/BlogNotFoundPage").then((m) => ({ default: m.BlogNotFoundPage })))
-
-function PageLoader() {
-  return (
-    <div className="grid place-items-center py-24">
-      <div className="flex items-center gap-3 text-[13px] text-[var(--color-text-faint)]">
-        <span className="size-4 rounded-full border-2 border-[var(--color-border)] border-t-[var(--color-text-faint)] animate-spin" aria-hidden />
-        جار تحميل الصفحة...
-      </div>
-    </div>
-  )
-}
+const BlogHomePage = lazyPage(() => import("@/pages/Blog/BlogHomePage").then((m) => ({ default: m.BlogHomePage })))
+const BlogPostPage = lazyPage(() => import("@/pages/Blog/BlogPostPage").then((m) => ({ default: m.BlogPostPage })))
+const BlogCategoryPage = lazyPage(() => import("@/pages/Blog/BlogCategoryPage").then((m) => ({ default: m.BlogCategoryPage })))
+const BlogTagPage = lazyPage(() => import("@/pages/Blog/BlogTagPage").then((m) => ({ default: m.BlogTagPage })))
+const BlogNotFoundPage = lazyPage(() => import("@/pages/Blog/BlogNotFoundPage").then((m) => ({ default: m.BlogNotFoundPage })))
 
 function SubdomainCrossRedirect() {
   const loc = useLocation()
@@ -69,7 +72,7 @@ export default function App() {
 
   return (
     <>
-      <RouteProgress />
+      <SiteLoader />
       {el}
       <ErrorBoundary>
         <Suspense fallback={<PageLoader />}>

@@ -107,7 +107,15 @@
     @endif
 </head>
 <body>
-    <div id="root"><p style="font-family:system-ui,sans-serif;padding:24px">AMTDEX SOFT — حلول برمجية تصنع الفرق</p></div>
+    <div id="root">
+        {{-- Shown until the application starts, then replaced by it. --}}
+        <div class="boot" role="status">
+            <div class="boot-brand">AMTDEX SOFT</div>
+            <div class="boot-bar" aria-hidden="true"><i></i></div>
+            <p>جارٍ تحميل الموقع…</p>
+            <noscript><p>AMTDEX SOFT — حلول برمجية تصنع الفرق. يحتاج هذا الموقع إلى تفعيل JavaScript.</p></noscript>
+        </div>
+    </div>
 </body>
 </html>
 
