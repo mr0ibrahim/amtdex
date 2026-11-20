@@ -68,16 +68,21 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
         else if (layer.parentElement !== card) card.append(layer)
       })
       let index = cards.size
-      root.querySelectorAll<HTMLElement>(GEO_CARD_SELECTOR).forEach(card => {
-        if (cards.has(card) || card.closest("form, .blog-post-content, [data-motion-static]")) return
+      const measurements = []
+      for (const card of root.querySelectorAll<HTMLElement>(GEO_CARD_SELECTOR)) {
+        if (cards.has(card) || card.closest("form, .blog-post-content, [data-motion-static]")) continue
         const rect = card.getBoundingClientRect()
         // Explicit .geo-card elements are always cards; inferred ones must be large enough to read as one.
-        if (!card.classList.contains("geo-card") && (rect.width < MIN_WIDTH || rect.height < MIN_HEIGHT)) return
+        if (!card.classList.contains("geo-card") && (rect.width < MIN_WIDTH || rect.height < MIN_HEIGHT)) continue
         // A frame that only holds media is a picture, not a card.
-        if (card.children.length === 1 && /^(IMG|VIDEO|PICTURE|IFRAME)$/.test(card.children[0].tagName)) return
+        if (card.children.length === 1 && /^(IMG|VIDEO|PICTURE|IFRAME)$/.test(card.children[0].tagName)) continue
+        measurements.push({ card, rect, tone: toneOf(getComputedStyle(card).backgroundColor) })
+      }
+      // Finish layout reads before inserting decorative layers.
+      for (const { card, rect, tone } of measurements) {
         const requested = card.dataset.geo as GeoVariant | undefined
         const variant = requested && GEO_VARIANTS.includes(requested) ? requested : GEO_VARIANTS[index++ % GEO_VARIANTS.length]
-        card.dataset.geoCard = toneOf(getComputedStyle(card).backgroundColor)
+        card.dataset.geoCard = tone
         // Containers and forms keep their place on hover.
         if (rect.width > 640 || rect.height > 600) card.dataset.geoSize = "lg"
         const layer = createGeoLayer(variant)
@@ -85,7 +90,7 @@ export function useGeoCards(ref: RefObject<HTMLDivElement | null>, route: string
         cards.set(card, layer)
         // Only cards that fit inside the focus band can be singled out.
         if (rect.height < window.innerHeight * .75) focus?.observe(card)
-      })
+      }
     }
 
     let frame = 0

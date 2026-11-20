@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api"
 import { hasRole, isAuthenticated } from "@/lib/auth"
 import { CMS_DEFAULTS, type CmsDocument, type CmsSection } from "./defaults"
-import { applyVisibility } from "./visibility"
+import { applyVisibility, readBootstrap } from "./visibility"
 
 export function useCms() {
   const staff = isAuthenticated() && hasRole(["admin", "editor"])
@@ -14,7 +14,7 @@ export function useCms() {
     queryFn: ({ signal }) => apiClient<CmsDocument>(preview ? "/cms?preview=1" : "/cms", "GET", undefined, { signal }),
     initialData: preview ? undefined : boot,
     placeholderData: preview ? CMS_DEFAULTS : boot,
-    staleTime: 0,
+    staleTime: !preview && readBootstrap()?.pages ? 120_000 : 0,
   })
   const doc = applyVisibility(query.data ?? (preview ? undefined : boot))
   return { ...doc, staff: preview, ready: preview ? query.isSuccess : true }
