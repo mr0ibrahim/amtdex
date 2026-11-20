@@ -62,10 +62,26 @@ export function useRouteLifecycle() {
     const typing = active instanceof HTMLElement && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)
     if (!typing) document.getElementById("main-content")?.focus({ preventScroll: true })
 
+    const key = scrollKey(location.key)
+    let position: number | undefined
+    let timer: number | undefined
+    const savePosition = () => {
+      window.clearTimeout(timer)
+      if (position === undefined) return
+      try { sessionStorage.setItem(key, String(position)) } catch { /* Storage can be unavailable. */ }
+      position = undefined
+    }
     const onScroll = () => {
-      sessionStorage.setItem(scrollKey(location.key), String(window.scrollY))
+      position = window.scrollY
+      window.clearTimeout(timer)
+      timer = window.setTimeout(savePosition, 150)
     }
     window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
-  }, [location.pathname, location.hash])
+    window.addEventListener("pagehide", savePosition)
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+      window.removeEventListener("pagehide", savePosition)
+      savePosition()
+    }
+  }, [location.key, location.pathname, location.hash])
 }
