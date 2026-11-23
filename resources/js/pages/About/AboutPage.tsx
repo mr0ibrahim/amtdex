@@ -77,7 +77,7 @@ export function AboutPage() {
                 { t: "الالتزام", d: "نحترم الوقت والاتفاقيات." },
                 { t: "تطوير الأعمال", d: "نساعد عملاءنا على النمو والتوسع." },
               ].map((v) => (
-                <li key={v.t} className="flex gap-3">
+                <li key={v.t} className="premium-card flex gap-3">
                   <span className="mt-1 text-[var(--color-gold)] shrink-0"><Icon name="check" size={16} /></span>
                   <div>
                     <div className="text-[13px] font-semibold">{v.t}</div>

@@ -27,7 +27,7 @@ export function Testimonials() {
   if (!list.length) return null
 
   return (
-    <section className="testimonial-panel" aria-label="آراء العملاء">
+    <section className="testimonial-panel premium-card" aria-label="آراء العملاء">
       <div className="testimonial-heading"><div><span>علاقات تُبنى على الثقة</span><h3>ماذا يقول عملاؤنا</h3></div><Icon name="quote" size={38} /></div>
       <div className="testimonial-story" aria-live="polite" aria-atomic="true">
         <span className="sr-only">الرأي {safeIndex + 1} من {list.length}</span>

@@ -14,6 +14,7 @@
     "check": "npm run types:check && npm run lint && npm run check:unused"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-query": "^5.105.0",
     "@tiptap/extension-color": "^3.32.2",
