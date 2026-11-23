@@ -18,6 +18,7 @@
 @import "./search-select.css";
 @import "./scroll-motion.css";
 @import "./ux.css";
+@import "./gsap-public.css";
 
 @source "../js";
 @source "../views";

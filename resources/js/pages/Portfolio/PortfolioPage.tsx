@@ -71,7 +71,7 @@ export function PortfolioPage() {
               <Link
                 key={p.slug}
                 to={`/portfolio/${p.slug}`}
-                className="work-card group flex flex-col"
+                className="work-card premium-card group flex flex-col"
                 style={{ viewTransitionName: `work-${p.slug}` } as CSSProperties}
               >
                 <div className="da-plate work-cover" style={{ background: p.color }}>

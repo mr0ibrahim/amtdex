@@ -13,6 +13,8 @@ import { useCms, useSection } from "@/cms/useCms"
 import { StatsBand } from "@/pages/Home/StatsBand"
 import { AfterCareSection } from "./AfterCareSection"
 import { WorkflowSection } from "@/pages/Home/WorkflowSection"
+import { ServicesShowcase } from "@/pages/Home/ServicesShowcase"
+import { PinnedTimeline } from "@/pages/Home/PinnedTimeline"
 
 export function HomePage(_props: { onToast: (m: string) => void }) {
   const { homeSections, staff } = useCms()
@@ -32,10 +34,10 @@ export function HomePage(_props: { onToast: (m: string) => void }) {
     {gate("hero", <>
       <section data-motion-group className={`page-container page-container--wide da-hero reference-hero${scene ? " reference-hero--scene" : ""}`}>
         <div><div className="da-hero-copy">
-          <p className="da-kicker">{hero.kicker}</p>
-          <h1>{hero.title.split("\n").map((line, index) => <span key={line}>{index > 0 && <br />}{line}</span>)}</h1>
-          <p className="reference-hero-description">{hero.lede}</p>
-          <div className="hero-actions">
+          <p data-gsap-line className="da-kicker">{hero.kicker}</p>
+          <h1 data-gsap-title>{hero.title.split("\n").map((line, index) => <span key={line}>{index > 0 && <br />}{line}</span>)}</h1>
+          <p data-gsap-line className="reference-hero-description">{hero.lede}</p>
+          <div data-gsap-line className="hero-actions">
             <Link to="/quote" className="btn btn-ink brand-cta">ابدأ مشروعك<Icon name="launch" size={17} /></Link>
             <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="btn btn-line brand-cta"><Icon name="whatsapp" size={17} />واتساب</a>
           </div>
@@ -54,6 +56,7 @@ export function HomePage(_props: { onToast: (m: string) => void }) {
     {gate("gallery", <ExperienceStudio />)}
     {gate("stats", <StatsBand />)}
     {gate("workflow", <WorkflowSection />)}
+    <div style={{ order: 4 }}><ServicesShowcase /><PinnedTimeline /></div>
     {gate("aftercare", <AfterCareSection />)}
     {gate("testimonials", <section data-motion-group className="page-container page-container--wide page-section home-testimonials"><header className="reference-section-heading"><span className="reference-section-label">الثقة تصنع الفرق</span><h2>تجارب يرويها <em>عملاؤنا.</em></h2></header><Testimonials /></section>)}
     {gate("guarantee", <GuaranteeBanner />)}
